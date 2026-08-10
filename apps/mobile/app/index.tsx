@@ -3,6 +3,8 @@ import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useState } from "react";
 import { Platform, Pressable, SafeAreaView, StyleSheet, Text, View } from "react-native";
 
+import { isSupabaseConfigured, supabaseProjectUrl } from "../lib/supabase";
+
 type HealthResponse = {
   status: string;
   service: string;
@@ -135,6 +137,13 @@ export default function HomeScreen() {
             <Text style={styles.statusDetail}>User ID: {home.user.id}</Text>
           </View>
         ) : null}
+
+        <View style={styles.statusPanel}>
+          <Text style={styles.statusLabel}>
+            {isSupabaseConfigured ? "Supabase configured" : "Supabase missing config"}
+          </Text>
+          <Text style={styles.statusDetail}>{supabaseProjectUrl}</Text>
+        </View>
 
         <Pressable style={styles.button} onPress={refreshHome}>
           <Text style={styles.buttonText}>Refresh</Text>

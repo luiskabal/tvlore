@@ -37,6 +37,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 - [x] Add Prisma ORM baseline.
 - [x] Add the initial TVLore user model and migration.
 - [x] Add database health check endpoint.
+- [x] Add Supabase mobile client baseline.
 
 ## Deferred
 
