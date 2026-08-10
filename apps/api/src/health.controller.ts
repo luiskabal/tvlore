@@ -1,9 +1,11 @@
-import { Controller, Get, InternalServerErrorException, ServiceUnavailableException } from "@nestjs/common";
+import { Controller, Get, InternalServerErrorException, Logger, ServiceUnavailableException } from "@nestjs/common";
 
 import { PrismaService } from "./prisma.service";
 
 @Controller("health")
 export class HealthController {
+  private readonly logger = new Logger(HealthController.name);
+
   constructor(private readonly prismaService: PrismaService) {}
 
   @Get()
@@ -19,7 +21,9 @@ export class HealthController {
   async getDatabaseHealth() {
     try {
       await this.prismaService.ping();
-    } catch {
+    } catch (error) {
+      this.logger.error("Database health check failed", error instanceof Error ? error.stack : String(error));
+
       throw new ServiceUnavailableException({
         code: "DATABASE_UNAVAILABLE",
         message: "Database health check failed",
