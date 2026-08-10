@@ -1,0 +1,154 @@
+{
+  "info": {
+    "_postman_id": "33fbe78a-65de-4ef0-a5da-5de66447464f",
+    "name": "TVLore API",
+    "description": "Local development collection for the TVLore API.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET /health",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "postman-{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('response is healthy', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.status).to.eql('ok');",
+                  "  pm.expect(body.service).to.eql('tvlore-api');",
+                  "  pm.expect(body.time).to.be.a('string');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /health/error",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "postman-error"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/health/error",
+              "host": ["{{baseUrl}}"],
+              "path": ["health", "error"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 500', function () {",
+                  "  pm.response.to.have.status(500);",
+                  "});",
+                  "",
+                  "pm.test('response uses TVLore error contract', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.code).to.eql('HEALTH_CHECK_ERROR');",
+                  "  pm.expect(body.message).to.eql('Health check error');",
+                  "  pm.expect(body.details).to.eql(null);",
+                  "  pm.expect(body.correlationId).to.eql('postman-error');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "GET /users/me",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "postman-{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "me"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('response is the demo user shape', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.id).to.eql('00000000-0000-4000-8000-000000000001');",
+                  "  pm.expect(body.displayName).to.eql('Demo User');",
+                  "  pm.expect(body.createdAt).to.be.a('string');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "tvlore",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@11.21.0",
+  "description": "TVLore mobile-first entertainment tracking monorepo.",
+  "scripts": {
+    "db:migrate": "corepack pnpm --filter @tvlore/api db:migrate",
+    "db:logs": "docker compose logs -f postgres",
+    "db:start": "docker compose up -d postgres",
+    "db:stop": "docker compose down",
+    "typecheck": "corepack pnpm -r typecheck",
+    "build": "corepack pnpm -r --if-present build"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
+}
