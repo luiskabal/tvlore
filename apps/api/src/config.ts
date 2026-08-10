@@ -1,4 +1,6 @@
 import type { Provider } from "@nestjs/common";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
 
 export type ApiConfig = {
   databaseUrl: string;
@@ -13,10 +15,20 @@ export const ApiConfigProvider: Provider<ApiConfig> = {
 };
 
 export function getConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
+  loadLocalEnv();
+
   return {
     databaseUrl: parseDatabaseUrl(env.DATABASE_URL),
     port: parsePort(env.PORT),
   };
+}
+
+function loadLocalEnv() {
+  const envPath = resolve(process.cwd(), ".env");
+
+  if (existsSync(envPath)) {
+    process.loadEnvFile(envPath);
+  }
 }
 
 function parsePort(value: string | undefined) {

@@ -85,6 +85,17 @@ Local migration setup:
 corepack pnpm db:migrate:deploy
 ```
 
+Local API setup:
+
+1. Create `apps/api/.env` from `apps/api/.env.example`.
+2. Replace `YOUR_PASSWORD` with the real Supabase database password.
+3. Restart the API:
+
+```bash
+corepack pnpm --filter @tvlore/api build
+corepack pnpm --filter @tvlore/api start
+```
+
 Public API verification command:
 
 ```bash
@@ -92,8 +103,8 @@ corepack pnpm api:check
 ```
 
 The API validates `DATABASE_URL` during Nest application startup. If the
-variable is missing, the app fails to boot instead of exposing partial routes
-with a broken database dependency.
+variable is missing after loading local `.env`, the app fails to boot instead
+of exposing partial routes with a broken database dependency.
 
 ## Mobile App
 
