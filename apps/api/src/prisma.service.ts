@@ -18,7 +18,7 @@ export class PrismaService implements OnModuleDestroy {
     await this.client?.$disconnect();
   }
 
-  private getClient() {
+  getClient() {
     if (this.client) {
       return this.client;
     }

@@ -40,6 +40,7 @@ No active infrastructure tasks.
 - [x] Centralize API environment validation at startup.
 - [x] Verify Supabase runtime connectivity from Vercel with `GET /health/db`.
 - [x] Apply and verify the initial Prisma migration against Supabase.
+- [x] Back `GET /users/me` with the Supabase `users` table for the demo user.
 
 ## Deferred
 

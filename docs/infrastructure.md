@@ -38,6 +38,7 @@ GET /users/me
 ```
 
 `GET /health/db` verifies runtime connectivity from Vercel to PostgreSQL. If Vercel has no `DATABASE_URL`, the API fails during startup.
+`GET /users/me` currently upserts and returns the fixed demo user from the Supabase `users` table. Authenticated user lookup is still pending.
 
 ## Database
 

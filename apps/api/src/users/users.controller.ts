@@ -7,7 +7,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get("me")
-  getMe(): UserDto {
+  getMe(): Promise<UserDto> {
     return this.usersService.getMe();
   }
 }
