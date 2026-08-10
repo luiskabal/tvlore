@@ -2,13 +2,54 @@
   "info": {
     "_postman_id": "33fbe78a-65de-4ef0-a5da-5de66447464f",
     "name": "TVLore API",
-    "description": "Local development collection for the TVLore API.",
+    "description": "Collection for the TVLore API. Switch environments to target local or Vercel.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
       "name": "Health",
       "item": [
+        {
+          "name": "GET /",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "postman-{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('response is API root', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.status).to.eql('ok');",
+                  "  pm.expect(body.service).to.eql('tvlore-api');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
         {
           "name": "GET /health",
           "request": {
