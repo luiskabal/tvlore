@@ -75,6 +75,22 @@ Migration command:
 corepack pnpm db:migrate:deploy
 ```
 
+Local migration setup:
+
+1. Create `apps/api/.env` from `apps/api/.env.example`.
+2. Replace `YOUR_PASSWORD` with the real Supabase database password.
+3. Run:
+
+```bash
+corepack pnpm db:migrate:deploy
+```
+
+Public API verification command:
+
+```bash
+corepack pnpm api:check
+```
+
 ## Mobile App
 
 - App: `apps/mobile`

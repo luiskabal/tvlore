@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import { defineConfig } from "prisma/config";
 
 const localDatabaseUrl = "postgresql://tvlore:tvlore@localhost:5432/tvlore?schema=public";

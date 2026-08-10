@@ -47,6 +47,9 @@ importers:
       '@types/pg':
         specifier: ^8.16.0
         version: 8.21.0
+      dotenv:
+        specifier: ^17.4.2
+        version: 17.4.2
       prisma:
         specifier: ^7.9.1
         version: 7.9.1(@types/react@19.1.17)(react-dom@19.2.8(react@19.1.0))(react@19.1.0)(typescript@5.9.3)
