@@ -4,7 +4,6 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 
 ## Active
 
-- [ ] Verify Supabase runtime connectivity from Vercel with `GET /health/db`.
 - [ ] Apply and verify the initial Prisma migration against Supabase.
 
 ## Next
@@ -39,6 +38,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 - [x] Add database health check endpoint.
 - [x] Add Supabase mobile client baseline.
 - [x] Centralize API environment validation at startup.
+- [x] Verify Supabase runtime connectivity from Vercel with `GET /health/db`.
 
 ## Deferred
 
