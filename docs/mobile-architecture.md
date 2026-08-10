@@ -80,6 +80,41 @@ Example hooks:
 
 Query hooks are client infrastructure. They must not implement backend business decisions.
 
+## Current Implemented Layout
+
+The first mobile screen now follows this smaller version of the target shape:
+
+```text
+app/
+|-- _layout.tsx
+`-- index.tsx
+
+src/
+|-- api/
+|   `-- tvlore-api.ts
+|
+|-- auth/
+|   |-- supabase-auth.ts
+|   `-- use-auth-session.ts
+|
+|-- config/
+|   `-- env.ts
+|
+`-- home/
+    |-- HomeScreen.tsx
+    `-- use-home-data.ts
+```
+
+The rule is:
+
+```text
+Screen -> hook -> API/auth client -> external system
+```
+
+`HomeScreen` renders state and handles button wiring. `useHomeData` owns the
+home loading flow. `tvlore-api.ts` owns HTTP and response-shape validation.
+`supabase-auth.ts` owns Supabase session and OAuth behavior.
+
 ## Request Interceptors
 
 The API client may:

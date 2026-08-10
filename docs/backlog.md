@@ -43,6 +43,9 @@ No active infrastructure tasks.
 - [x] Validate Google login on an Expo development build.
 - [x] Validate Supabase access tokens in the backend.
 - [x] Replace demo `/users/me` with authenticated user lookup.
+- [x] Refactor backend auth/users into controller, service, repository, and provider boundaries.
+- [x] Refactor mobile home/auth flow into screen, hooks, API client, auth client, and config boundaries.
+- [x] Add initial backend unit test setup with Vitest.
 
 ## Deferred
 

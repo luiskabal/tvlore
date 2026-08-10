@@ -33,6 +33,43 @@ notifications/
 
 Do not implement future modules in the MVP.
 
+## Current Implemented Layout
+
+The current codebase uses the same pattern in a smaller form:
+
+```text
+src/
+|-- auth/
+|   |-- bearer-token.ts
+|   |-- authenticated-user.ts
+|   `-- supabase-auth.service.ts
+|
+|-- users/
+|   |-- users.controller.ts
+|   |-- users.service.ts
+|   |-- users.repository.ts
+|   |-- users.types.ts
+|   `-- user-profile.ts
+|
+|-- config.ts
+|-- prisma.service.ts
+`-- app.module.ts
+```
+
+The rule is:
+
+```text
+Controller -> Service / use case -> Repository or provider -> external system
+```
+
+For example, `GET /users/me` is split as:
+
+- `UsersController`: HTTP route only.
+- `UsersService`: orchestrates authenticated-user resolution and persistence.
+- `SupabaseAuthService`: validates Supabase bearer tokens.
+- `UsersRepository`: owns Prisma upsert logic.
+- `user-profile.ts`: pure display-name logic with unit tests.
+
 ## Layer Separation
 
 ### Controllers / Transport
@@ -129,4 +166,3 @@ Authorization is backend-owned.
 Protected endpoints should resolve the authenticated TVLore user from the access token, then use server-side ownership checks for requested resources.
 
 The client must not provide a `userId` for user-scoped actions.
-

@@ -12,6 +12,7 @@
     "db:logs": "docker compose logs -f postgres",
     "db:start": "docker compose up -d postgres",
     "db:stop": "docker compose down",
+    "test:run": "corepack pnpm -r --if-present test:run",
     "typecheck": "corepack pnpm -r typecheck",
     "build": "corepack pnpm -r --if-present build"
   },

@@ -1,6 +1,7 @@
 import { Controller, Get, Headers } from "@nestjs/common";
 
-import { UserDto, UsersService } from "./users.service";
+import { UsersService } from "./users.service";
+import type { UserDto } from "./users.types";
 
 @Controller("users")
 export class UsersController {

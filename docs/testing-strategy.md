@@ -2,6 +2,28 @@
 
 Tests should focus on TVLore behavior, not framework internals.
 
+## Current Tooling
+
+Backend unit tests use Vitest:
+
+```bash
+corepack pnpm --filter @tvlore/api test:run
+```
+
+From the monorepo root:
+
+```bash
+corepack pnpm test:run
+```
+
+The first tests cover pure authentication/user helpers:
+
+- Bearer-token parsing.
+- Authenticated display-name derivation.
+
+Keep this style for the MVP: small tests around rules and parsing, broader
+integration tests only when persistence or endpoint contracts become risky.
+
 ## Backend Tests
 
 ### Domain and Business Rules
@@ -104,4 +126,3 @@ Minimal E2E tests can be added later for:
 - See library/progress update.
 
 Do not build a large E2E suite before product flow stabilizes.
-

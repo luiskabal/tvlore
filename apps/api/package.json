@@ -9,6 +9,9 @@
     "prisma:generate": "prisma generate",
     "prisma:validate": "prisma validate",
     "start": "node dist/src/main.js",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:run": "vitest run",
     "typecheck": "prisma generate && tsc --noEmit"
   },
   "dependencies": {
@@ -27,8 +30,10 @@
     "@types/express": "^5.0.6",
     "@types/node": "^26.2.0",
     "@types/pg": "^8.16.0",
+    "@vitest/coverage-v8": "^4.1.10",
     "dotenv": "^17.4.2",
     "prisma": "^7.9.1",
-    "typescript": "~5.9.2"
+    "typescript": "~5.9.2",
+    "vitest": "^4.1.10"
   }
 }
