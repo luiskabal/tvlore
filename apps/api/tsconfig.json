@@ -8,6 +8,7 @@
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "noEmitOnError": true,
     "noEmit": true,
     "rootDir": ".",
     "outDir": "dist",
