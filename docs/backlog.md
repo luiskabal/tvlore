@@ -4,7 +4,8 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 
 ## Active
 
-- [ ] Apply and verify the initial Prisma migration after Docker is installed or added to PATH.
+- [ ] Verify Supabase runtime connectivity from Vercel with `GET /health/db`.
+- [ ] Apply and verify the initial Prisma migration against Supabase.
 
 ## Next
 
@@ -35,6 +36,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 - [x] Add local PostgreSQL setup.
 - [x] Add Prisma ORM baseline.
 - [x] Add the initial TVLore user model and migration.
+- [x] Add database health check endpoint.
 
 ## Deferred
 
