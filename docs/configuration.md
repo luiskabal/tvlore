@@ -59,6 +59,17 @@ Backend configuration should be validated at startup.
 
 The API should fail fast if required configuration is missing or malformed.
 
+Use the tracked `.env.example` files as the variable contract and local `.env`
+files for real machine-specific values:
+
+```bash
+corepack pnpm env:check
+```
+
+The env check verifies local `.env` files against their `.env.example`
+contracts and verifies that Vercel `tvlore-api` has the required server-side
+keys configured for Production and Preview.
+
 Examples:
 
 - `DATABASE_URL` must be a valid PostgreSQL connection string.
@@ -71,7 +82,7 @@ Examples:
 ## Secrets
 
 - Do not commit secrets.
-- Do not create `.env` files as part of documentation or scaffolding tasks.
+- Keep real local values in ignored `.env` files.
 - Use `.env.example` only when implementation begins and only with placeholder values.
 - Store production secrets in the deployment platform's secret manager.
 - Redact secrets in logs and error reports.

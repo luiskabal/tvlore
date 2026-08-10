@@ -11,7 +11,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Monorepo is initialized with API, mobile, and shared contracts packages.
 - Backend API is deployed on Vercel at `https://tvlore-api.vercel.app`.
 - Expo mobile app can consume the Vercel API from iPhone.
-- Supabase and Prisma infrastructure baseline exists; production DB connectivity is pending Vercel env vars and migration verification.
+- Supabase and Prisma infrastructure baseline exists; production DB connectivity is verified and migration verification is pending.
 
 ## Workspace Layout
 

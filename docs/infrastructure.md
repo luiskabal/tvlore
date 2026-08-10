@@ -89,7 +89,13 @@ Local API setup:
 
 1. Create `apps/api/.env` from `apps/api/.env.example`.
 2. Replace `YOUR_PASSWORD` with the real Supabase database password.
-3. Restart the API:
+3. Validate local and Vercel environment coverage:
+
+```bash
+corepack pnpm env:check
+```
+
+4. Restart the API:
 
 ```bash
 corepack pnpm --filter @tvlore/api build
@@ -121,6 +127,9 @@ EXPO_PUBLIC_TVLORE_API_BASE_URL=https://tvlore-api.vercel.app
 EXPO_PUBLIC_SUPABASE_URL=https://qpekdijebjzigrgcumpv.supabase.co
 EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=YOUR_SUPABASE_PUBLISHABLE_KEY
 ```
+
+Local mobile setup uses `apps/mobile/.env` with the same keys as
+`apps/mobile/.env.example`.
 
 Local iPhone testing command:
 
