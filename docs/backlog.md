@@ -41,6 +41,7 @@ No active infrastructure tasks.
 - [x] Verify Supabase runtime connectivity from Vercel with `GET /health/db`.
 - [x] Apply and verify the initial Prisma migration against Supabase.
 - [x] Back `GET /users/me` with the Supabase `users` table for the demo user.
+- [x] Add and verify auth identity/session database tables.
 
 ## Deferred
 
