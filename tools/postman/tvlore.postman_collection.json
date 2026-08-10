@@ -2,10 +2,217 @@
   "info": {
     "_postman_id": "33fbe78a-65de-4ef0-a5da-5de66447464f",
     "name": "TVLore API",
-    "description": "Collection for the TVLore API. Switch environments to target local or Vercel.",
+    "description": "Collection for the TVLore API. Switch environments to target local or Vercel. Supabase Auth requests help obtain and validate the access token used by protected TVLore routes.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
+    {
+      "name": "Auth / Supabase",
+      "description": "Google login is handled by Supabase Auth. Use the OAuth helper to open Google, then copy the access_token from the callback URL fragment into supabaseAccessToken. Add the Postman callback URL to Supabase Auth redirect URLs before using this helper.",
+      "item": [
+        {
+          "name": "Open Google OAuth URL",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{supabasePublishableKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{supabaseUrl}}/auth/v1/authorize?provider=google&redirect_to={{postmanAuthRedirectUrl}}",
+              "host": [
+                "{{supabaseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "v1",
+                "authorize"
+              ],
+              "query": [
+                {
+                  "key": "provider",
+                  "value": "google"
+                },
+                {
+                  "key": "redirect_to",
+                  "value": "{{postmanAuthRedirectUrl}}"
+                }
+              ]
+            },
+            "description": "Starts Supabase Google OAuth. If Postman follows the redirect, use the final callback URL fragment to copy access_token and refresh_token into the selected environment."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Supabase user",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{supabasePublishableKey}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{supabaseUrl}}/auth/v1/user",
+              "host": [
+                "{{supabaseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "v1",
+                "user"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('response is Supabase user', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.id).to.be.a('string');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Refresh Supabase token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{supabasePublishableKey}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{supabaseRefreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{supabaseUrl}}/auth/v1/token?grant_type=refresh_token",
+              "host": [
+                "{{supabaseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "v1",
+                "token"
+              ],
+              "query": [
+                {
+                  "key": "grant_type",
+                  "value": "refresh_token"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('stores refreshed tokens', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.access_token).to.be.a('string');",
+                  "  pm.expect(body.refresh_token).to.be.a('string');",
+                  "  pm.environment.set('supabaseAccessToken', body.access_token);",
+                  "  pm.environment.set('supabaseRefreshToken', body.refresh_token);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Supabase logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "apikey",
+                "value": "{{supabasePublishableKey}}"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{supabaseUrl}}/auth/v1/logout",
+              "host": [
+                "{{supabaseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "v1",
+                "logout"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200 or 204', function () {",
+                  "  pm.expect([200, 204]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
     {
       "name": "Health",
       "item": [
@@ -307,6 +514,31 @@
       "key": "baseUrl",
       "value": "http://localhost:3000",
       "type": "string"
+    },
+    {
+      "key": "supabaseUrl",
+      "value": "https://qpekdijebjzigrgcumpv.supabase.co",
+      "type": "string"
+    },
+    {
+      "key": "supabasePublishableKey",
+      "value": "sb_publishable_M4AKixe3U6cHXmdnYN0Lkg_JghI3Tn9",
+      "type": "string"
+    },
+    {
+      "key": "postmanAuthRedirectUrl",
+      "value": "https://oauth.pstmn.io/v1/callback",
+      "type": "string"
+    },
+    {
+      "key": "supabaseAccessToken",
+      "value": "",
+      "type": "secret"
+    },
+    {
+      "key": "supabaseRefreshToken",
+      "value": "",
+      "type": "secret"
     }
   ]
 }

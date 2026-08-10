@@ -179,6 +179,17 @@ Use the `TVLore Vercel` environment to test the deployed API.
 Set `supabaseAccessToken` in the selected Postman environment to call protected
 routes such as `GET /users/me`.
 
+The collection also includes `Auth / Supabase` helpers for manual Google OAuth
+testing. To use them, add this URL to Supabase Auth redirect URLs:
+
+```text
+https://oauth.pstmn.io/v1/callback
+```
+
+Then run `Auth / Supabase / Open Google OAuth URL`, complete Google login, and
+copy the `access_token` and `refresh_token` from the callback URL fragment into
+the selected Postman environment.
+
 ## Current Infra Checklist
 
 - GitHub repository is connected.
