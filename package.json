@@ -6,6 +6,7 @@
   "description": "TVLore mobile-first entertainment tracking monorepo.",
   "scripts": {
     "db:migrate": "corepack pnpm --filter @tvlore/api db:migrate",
+    "db:migrate:deploy": "corepack pnpm --filter @tvlore/api db:migrate:deploy",
     "db:logs": "docker compose logs -f postgres",
     "db:start": "docker compose up -d postgres",
     "db:stop": "docker compose down",
