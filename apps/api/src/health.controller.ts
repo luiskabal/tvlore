@@ -1,4 +1,4 @@
-import { Controller, Get, InternalServerErrorException } from "@nestjs/common";
+import { Controller, Get, InternalServerErrorException, ServiceUnavailableException } from "@nestjs/common";
 
 import { PrismaService } from "./prisma.service";
 
@@ -17,7 +17,17 @@ export class HealthController {
 
   @Get("db")
   async getDatabaseHealth() {
-    await this.prismaService.ping();
+    try {
+      await this.prismaService.ping();
+    } catch (error) {
+      const isMissingDatabaseUrl = error instanceof Error && error.message === "DATABASE_URL is required";
+
+      throw new ServiceUnavailableException({
+        code: isMissingDatabaseUrl ? "DATABASE_CONFIG_MISSING" : "DATABASE_UNAVAILABLE",
+        message: isMissingDatabaseUrl ? "DATABASE_URL is not configured" : "Database health check failed",
+        details: null,
+      });
+    }
 
     return {
       status: "ok",
