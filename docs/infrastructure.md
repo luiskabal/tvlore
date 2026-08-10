@@ -37,7 +37,7 @@ GET /health/error
 GET /users/me
 ```
 
-`GET /health/db` verifies runtime connectivity from Vercel to PostgreSQL. If Vercel has no `DATABASE_URL`, it returns `DATABASE_CONFIG_MISSING`.
+`GET /health/db` verifies runtime connectivity from Vercel to PostgreSQL. If Vercel has no `DATABASE_URL`, the API fails during startup.
 
 ## Database
 
@@ -55,16 +55,16 @@ DATABASE_URL
 MIGRATE_DATABASE_URL
 ```
 
-`DATABASE_URL` is used by the API at runtime. Prefer Supabase Transaction Pooler on port `6543`:
+`DATABASE_URL` is used by the API at runtime. Prefer the exact Supabase Transaction Pooler URL from the Supabase dashboard. Do not infer the pooler host from the region:
 
 ```text
-postgresql://postgres.qpekdijebjzigrgcumpv:YOUR_PASSWORD@aws-0-us-west-2.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1
+postgresql://postgres.PROJECT_REF:YOUR_PASSWORD@YOUR_TRANSACTION_POOLER_HOST:6543/postgres?pgbouncer=true&connection_limit=1
 ```
 
 `MIGRATE_DATABASE_URL` is used by Prisma migrations. Use the direct or session connection:
 
 ```text
-postgresql://postgres:YOUR_PASSWORD@db.qpekdijebjzigrgcumpv.supabase.co:5432/postgres
+postgresql://postgres:YOUR_PASSWORD@db.PROJECT_REF.supabase.co:5432/postgres
 ```
 
 Do not commit real database passwords.
@@ -145,6 +145,7 @@ Use the `TVLore Vercel` environment to test the deployed API.
 - Mobile app can call the Vercel API from iPhone through Expo Go.
 - Supabase mobile client baseline is present.
 - Prisma schema and initial migration exist.
-- Pending: configure Vercel `DATABASE_URL`.
+- Pending: consolidate Vercel API projects. `tvlore-api.vercel.app` currently has no env vars; `tvlore-api-hu1i.vercel.app` has env vars.
+- Pending: replace the guessed Transaction Pooler host with the exact Supabase-provided one.
 - Pending: apply Prisma migration to Supabase.
 - Pending: verify `GET /health/db` returns `200`.
