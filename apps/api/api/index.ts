@@ -2,7 +2,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 
 import express from "express";
 
-import { createApp } from "./create-app";
+import { createApp } from "../src/create-app";
 
 const server = express();
 let ready: Promise<void> | undefined;
