@@ -1,4 +1,4 @@
-import { Controller, Get } from "@nestjs/common";
+import { Controller, Get, Headers } from "@nestjs/common";
 
 import { UserDto, UsersService } from "./users.service";
 
@@ -7,7 +7,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get("me")
-  getMe(): Promise<UserDto> {
-    return this.usersService.getMe();
+  getMe(@Headers("authorization") authorizationHeader: string | undefined): Promise<UserDto> {
+    return this.usersService.getMe(authorizationHeader);
   }
 }

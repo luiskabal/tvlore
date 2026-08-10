@@ -7,7 +7,8 @@ The MVP goal is intentionally small: authenticate with Google, search catalog co
 ## Architecture at a Glance
 
 - Mobile-first client: React Native, Expo, Expo Router, TypeScript.
-- Backend: NestJS modular monolith, PostgreSQL, REST, TMDB adapter, Google Identity/OpenID Connect.
+- Backend: NestJS modular monolith, PostgreSQL, REST, TMDB adapter.
+- Authentication: Supabase Auth with Google as the first identity provider.
 - Shared contracts: TypeScript and Zod transport schemas only.
 - Source of truth: the backend.
 - Server state: TanStack Query.
@@ -61,8 +62,9 @@ The MVP goal is intentionally small: authenticate with Google, search catalog co
 13. [Social Vision](social-vision.md)
 14. [TVLore Match](tvlore-match.md)
 15. [Infrastructure Setup](infrastructure.md)
-16. [Roadmap](roadmap.md)
-17. [Architecture Decision Records](adr/)
+16. [Mobile Development Build](mobile-development-build.md)
+17. [Roadmap](roadmap.md)
+18. [Architecture Decision Records](adr/)
 
 ## Documentation Index
 
@@ -78,6 +80,7 @@ The MVP goal is intentionally small: authenticate with Google, search catalog co
 - [Glossary](glossary.md)
 - [Infrastructure Setup](infrastructure.md)
 - [Mobile Architecture](mobile-architecture.md)
+- [Mobile Development Build](mobile-development-build.md)
 - [MVP Scope](mvp-scope.md)
 - [Observability](observability.md)
 - [Privacy](privacy.md)
@@ -115,12 +118,10 @@ Accepted decisions are stable enough for the first implementation pass. Proposed
 
 ## Unresolved Decisions
 
-- Exact production access token lifetime and refresh token lifetime.
-- Exact Google Sign-In mobile library/package choice.
+- Exact production Supabase Auth policy settings.
 - Whether poster/backdrop images are proxied, cached, or loaded directly from TMDB image URLs.
 - Whether provider identifiers start as direct columns or an `ExternalIdentifier` table in the very first migration.
 - Exact rate-limit thresholds.
-- Whether refresh sessions are represented by signed opaque tokens or random opaque database tokens.
 - Final branding around "Lore", "My Lore", and "Taste Profile".
 - Future TVLore Match scoring formula.
 

@@ -6,20 +6,23 @@ Accepted
 
 ## Context
 
-TVLore needs mobile authentication and should start with Google. Google should prove external identity, but TVLore must own application users, sessions, and product data.
+TVLore needs mobile authentication and should start with Google. The product
+already uses Supabase for PostgreSQL and can reuse Supabase Auth instead of
+owning the OAuth exchange and refresh-token implementation from day one.
 
 ## Decision
 
-Use Google Identity/OpenID Connect for initial sign-in.
+Use Supabase Auth with Google as the first identity provider.
 
-Backend flow:
+Mobile flow:
 
-1. Mobile obtains a Google credential.
-2. Mobile sends it to TVLore API.
-3. API verifies the credential with Google.
-4. API resolves or creates `UserIdentity`.
-5. API resolves or creates `User`.
-6. API issues TVLore credentials.
+1. Mobile starts `signInWithOAuth` with provider `google`.
+2. Supabase redirects the user to Google.
+3. Google redirects back to Supabase.
+4. Supabase redirects back to the app through a deep link.
+5. Mobile stores the Supabase session through the Supabase client.
+6. Mobile calls TVLore API with `Authorization: Bearer <supabase_access_token>`.
+7. API validates the Supabase token and resolves or creates the TVLore `User`.
 
 Use separate `User` and `UserIdentity` concepts.
 
@@ -27,18 +30,26 @@ Do not use Gmail API.
 
 ## Alternatives Considered
 
-- Firebase Authentication: good managed auth option, but this architecture keeps TVLore identity/session ownership explicit and backend-owned.
-- Email/password: increases account security surface and is not needed for the first identity path.
-- Google-only user table: simpler now, but blocks future Apple or other identity providers.
+- TVLore-owned Google OIDC flow and tokens: more control, but more security
+  surface before the product needs it.
+- Firebase Authentication: good managed auth option, but adding it beside
+  Supabase duplicates identity infrastructure.
+- Email/password: increases account security surface and is not needed for the
+  first identity path.
+- Google-only user table: simpler now, but blocks future Apple or other identity
+  providers.
 
 ## Consequences
 
-- TVLore owns user identity even when Google is the first provider.
+- Supabase owns OAuth callback handling and session refresh for the MVP.
+- TVLore still owns product authorization and data.
+- Backend protected routes must validate Supabase access tokens.
 - Future Apple sign-in can map to the same `UserIdentity` pattern.
-- Backend must verify provider credentials and never trust client-provided identity.
-- Mobile stores TVLore credentials, not Google as a permanent app session.
+- Custom TVLore refresh sessions can be added later only if Supabase sessions no
+  longer satisfy product/security needs.
 
 ## References
 
-- https://developers.google.com/identity/openid-connect/openid-connect
-
+- https://supabase.com/docs/guides/auth/social-login/auth-google
+- https://supabase.com/docs/guides/auth/native-mobile-deep-linking
+- https://docs.expo.dev/versions/latest/sdk/webbrowser/

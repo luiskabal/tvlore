@@ -14,9 +14,11 @@
       "backgroundColor": "#f7f4ee"
     },
     "ios": {
+      "bundleIdentifier": "com.luiskabal.tvlore",
       "supportsTablet": true
     },
     "android": {
+      "package": "com.luiskabal.tvlore",
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#f7f4ee"

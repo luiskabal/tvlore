@@ -38,7 +38,7 @@ GET /users/me
 ```
 
 `GET /health/db` verifies runtime connectivity from Vercel to PostgreSQL. If Vercel has no `DATABASE_URL`, the API fails during startup.
-`GET /users/me` currently upserts and returns the fixed demo user from the Supabase `users` table. Authenticated user lookup is still pending.
+`GET /users/me` validates a Supabase Auth bearer token, upserts the matching `UserIdentity`, and returns the real TVLore user.
 
 ## Database
 
@@ -56,6 +56,8 @@ Vercel environment variables:
 ```text
 DATABASE_URL
 MIGRATE_DATABASE_URL
+SUPABASE_URL
+SUPABASE_PUBLISHABLE_KEY
 ```
 
 `DATABASE_URL` is used by the API at runtime. Use the Supabase Transaction Pooler:
@@ -71,6 +73,8 @@ postgresql://postgres:YOUR_PASSWORD@db.qpekdijebjzigrgcumpv.supabase.co:5432/pos
 ```
 
 Do not commit real database passwords.
+`SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` are used by the API to validate
+Supabase Auth access tokens.
 
 Migration command:
 
@@ -111,6 +115,18 @@ Public API verification command:
 corepack pnpm api:check
 ```
 
+For local verification, point the smoke test at the local API:
+
+```powershell
+$env:TVLORE_API_BASE_URL="http://localhost:3000"
+corepack pnpm api:check
+Remove-Item Env:\TVLORE_API_BASE_URL
+```
+
+The smoke test expects `GET /users/me` to return `401` without a token. To also
+verify the authenticated path, set `TVLORE_SUPABASE_ACCESS_TOKEN` to a real
+Supabase access token before running `api:check`.
+
 The API validates `DATABASE_URL` during Nest application startup. If the
 variable is missing after loading local `.env`, the app fails to boot instead
 of exposing partial routes with a broken database dependency.
@@ -120,7 +136,7 @@ of exposing partial routes with a broken database dependency.
 - App: `apps/mobile`
 - Runtime: Expo SDK 54.
 - Current API target for device testing: `https://tvlore-api.vercel.app`
-- Supabase client baseline exists for future Auth/session work.
+- Supabase Auth client handles Google login and stores the mobile session.
 - Core product data should still go through the backend API, not direct table access from mobile.
 
 Public mobile environment variables:
@@ -160,15 +176,18 @@ tools/postman/tvlore.vercel.postman_environment.json
 ```
 
 Use the `TVLore Vercel` environment to test the deployed API.
+Set `supabaseAccessToken` in the selected Postman environment to call protected
+routes such as `GET /users/me`.
 
 ## Current Infra Checklist
 
 - GitHub repository is connected.
 - Vercel backend deploy is live.
 - Mobile app can call the Vercel API from iPhone through Expo Go.
-- Supabase mobile client baseline is present.
+- Supabase Google login works from an Expo development build.
 - Prisma schema and initial migration exist.
-- Vercel `tvlore-api` has Supabase env vars configured.
+- Vercel `tvlore-api` has database and Supabase Auth env vars configured.
 - `GET /health/db` returns `200` from production.
 - Initial Prisma migration has been applied to Supabase.
 - Auth identity/session tables have been applied to Supabase.
+- `GET /users/me` resolves authenticated Supabase users into TVLore users.

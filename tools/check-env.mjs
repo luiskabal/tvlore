@@ -101,16 +101,16 @@ function checkVercelEnv(vercel, keys) {
   const lines = result.stdout.split(/\r?\n/);
 
   for (const key of keys) {
-    const line = lines.find((candidate) => candidate.trim().startsWith(`${key} `));
+    const matchingLines = lines.filter((candidate) => candidate.trim().startsWith(`${key} `));
 
-    if (!line) {
+    if (matchingLines.length === 0) {
       fail(`vercel key missing in ${vercel.project}: ${key}`);
       vercelHasError = true;
       continue;
     }
 
     for (const environment of vercel.environments) {
-      if (!line.includes(environment)) {
+      if (!matchingLines.some((line) => line.includes(environment))) {
         fail(`vercel key ${key} missing ${environment} environment`);
         vercelHasError = true;
       }

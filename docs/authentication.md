@@ -1,8 +1,10 @@
 # Authentication
 
-TVLore uses Google Identity/OpenID Connect for external identity and TVLore-owned credentials for application access.
+TVLore uses Supabase Auth with Google as the first identity provider.
 
-Google proves who the user is. TVLore owns the application user, session, authorization, and product data.
+Google proves who the user is. Supabase manages the OAuth exchange, session,
+access token, and refresh token. TVLore owns the application user, authorization,
+watch history, catalog records, and product data.
 
 Do not use Gmail API.
 
@@ -10,15 +12,34 @@ Do not use Gmail API.
 
 ```text
 TVLore Mobile
-  -> Google Sign-In
-  -> Google credential
-  -> TVLore API
-  -> Verify credential with Google
-  -> Resolve UserIdentity
-  -> Find/Create TVLore User
-  -> Issue TVLore credentials
-  -> Store sensitive credentials in SecureStore
+  -> Supabase Auth signInWithOAuth(provider: google)
+  -> Google consent/login
+  -> Supabase Auth callback
+  -> TVLore app deep link callback
+  -> Supabase session stored on device
+  -> TVLore API called with Authorization: Bearer <supabase_access_token>
 ```
+
+## Redirects
+
+Google redirects only to Supabase:
+
+```text
+https://qpekdijebjzigrgcumpv.supabase.co/auth/v1/callback
+```
+
+Supabase redirects back to the app through allowed callback URLs:
+
+```text
+tvlore://auth/callback
+```
+
+`tvlore://auth/callback` is the app callback used by development builds and
+production builds. OAuth should not be validated in Expo Go because Expo Go does
+not own the `tvlore://` scheme.
+
+Expo Go can still be used for UI and backend smoke tests. Google OAuth requires a
+development build or production build.
 
 ## Identity Model
 
@@ -34,90 +55,57 @@ UserIdentity
 `-- providerSubject
 ```
 
-`providerSubject` stores the stable subject from the identity provider. It should be unique per provider.
+`providerSubject` stores the stable subject from Supabase/Google. It should be
+unique per provider.
 
-Do not model the system as if Google will always be the only identity provider. Apple may be added later.
+Do not model the system as if Google will always be the only identity provider.
+Apple may be added later.
 
-## API Endpoints
+## API Authentication
 
-- `POST /auth/google`: accepts a Google credential and returns TVLore credentials.
-- `POST /auth/refresh`: rotates or refreshes TVLore credentials.
-- `POST /auth/logout`: revokes the current refresh session.
+Protected TVLore API endpoints require:
+
+```http
+Authorization: Bearer <supabase_access_token>
+```
+
+The backend validates the Supabase access token, resolves the provider subject,
+and finds or creates the matching TVLore `User` and `UserIdentity`.
+
+## MVP Auth Endpoints
+
+For the Supabase Auth path, the mobile app does not need custom TVLore endpoints
+for login, refresh, or logout. Supabase handles those session operations.
+
+The backend still needs authenticated user resolution:
+
 - `GET /users/me`: returns the authenticated TVLore user.
 
-Detailed contracts are in [API Design](api-design.md).
+Detailed endpoint contracts are in [API Design](api-design.md).
 
-## Token and Session Strategy
+## Session Strategy
 
-Because the primary client is mobile, use an access-token plus refresh-token model:
+Use Supabase-managed sessions for the MVP:
 
-- Short-lived access token.
-- Longer-lived refresh token.
-- Secure storage for refresh credentials.
-- Refresh-session record in PostgreSQL.
-- Token rotation considerations.
-- Server-side revocation.
-- Explicit logout.
+- Supabase access token for API authorization.
+- Supabase refresh token for persistent mobile login.
+- Supabase client handles token refresh.
 - Backend authorization on every protected route.
 - No credentials logged.
-- No sensitive tokens stored in AsyncStorage.
-
-## Access Token Decision
-
-Use short-lived signed JWT access tokens for MVP API authorization.
-
-Rationale:
-
-- They are efficient for stateless request authentication.
-- They fit standard NestJS guard patterns.
-- Short lifetimes reduce impact if leaked.
-- They avoid a database lookup on every request for the MVP.
-
-Constraints:
-
-- The backend still verifies authorization and ownership.
-- The JWT must contain minimal claims: TVLore user ID, session ID, issued-at, expiration, issuer, audience.
-- Do not put email, viewing data, Google profile data, or permissions lists in the token.
-- Keep access tokens short-lived.
-
-## Refresh Token Decision
-
-Use opaque refresh tokens backed by server-side refresh-session records.
-
-Rationale:
-
-- Refresh tokens need revocation.
-- Rotation and reuse detection are easier with server-side state.
-- The client should not inspect token contents.
-
-Store only a hash of the refresh token in PostgreSQL. The raw token is returned once to the client and stored in SecureStore.
-
-## Refresh Flow
-
-1. Mobile detects an expired or soon-to-expire access token.
-2. Mobile sends the refresh token to `POST /auth/refresh`.
-3. API hashes and validates the refresh token against an active refresh session.
-4. API checks expiration, revocation, and reuse indicators.
-5. API rotates the refresh token when configured.
-6. API issues a new short-lived access token.
-7. API returns the new refresh token if rotation occurs.
-8. Mobile updates SecureStore.
-
-If refresh fails, the mobile app clears local credentials and returns to authentication.
+- No database credentials, provider secrets, or service-role keys in mobile.
 
 ## Logout
 
-Logout revokes the current refresh session server-side and clears local SecureStore values client-side.
-
-Logout should succeed from the user's perspective even if local cleanup is the only step that completes, but the app should attempt backend revocation first when online.
+Mobile calls Supabase sign-out and clears the local Supabase session. Backend
+session revocation is not needed for the MVP unless TVLore adds custom sessions
+later.
 
 ## Security Notes
 
 - Never trust client-provided identity.
-- Verify Google credentials on the backend.
+- Verify Supabase access tokens on the backend.
 - Use HTTPS outside local development.
 - Do not log credentials.
-- Do not store sensitive tokens in AsyncStorage.
-- Rate-limit authentication endpoints.
-- Design refresh sessions for revocation.
-
+- Rate-limit protected backend routes where abuse matters.
+- Keep Google Client Secret only in Supabase/Google configuration, never in the
+  mobile app or Git.

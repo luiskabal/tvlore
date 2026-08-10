@@ -6,36 +6,40 @@ Accepted
 
 ## Context
 
-The primary client is mobile. Users expect persistent login, but protected API requests need short-lived credentials and revocation support.
+The primary client is mobile. Users expect persistent login, and protected API
+requests need credentials that the backend can validate.
+
+ADR 004 selects Supabase Auth for the MVP.
 
 ## Decision
 
-Use:
+Use Supabase-managed sessions for MVP authentication:
 
-- Short-lived signed JWT access tokens.
-- Opaque refresh tokens backed by server-side `RefreshSession` records.
-- Refresh token hashes stored in PostgreSQL.
-- Refresh credentials stored in Expo SecureStore.
-- Refresh-session revocation on logout.
-- Rotation considerations for refresh tokens.
+- Supabase access token for protected TVLore API requests.
+- Supabase refresh token managed by `@supabase/supabase-js`.
+- Supabase client persistence on device.
+- Backend validation of Supabase access tokens.
 
-Do not store sensitive tokens in AsyncStorage.
+Do not create TVLore-owned access or refresh tokens for the MVP.
 
 ## Alternatives Considered
 
-- JWT access and JWT refresh tokens: simpler stateless implementation, weaker revocation story for refresh credentials.
-- Opaque access and opaque refresh tokens: strongest centralized control, but requires backend/session lookup on every request.
+- TVLore signed JWT access tokens plus opaque refresh tokens: more ownership and
+  revocation control, but unnecessary until we outgrow Supabase Auth.
+- Opaque TVLore access and refresh tokens: strongest centralized control, but
+  requires backend/session lookup on every request.
 - Long-lived access token only: simpler, but poor security posture for mobile.
 
 ## Consequences
 
-- Access-token verification is efficient.
-- Refresh sessions remain revocable.
-- Reuse detection and rotation can be implemented server-side.
-- Tokens must be redacted from logs and analytics.
-- Token lifetimes remain an unresolved production tuning decision.
+- Less custom security code in the MVP.
+- Backend auth work focuses on token verification and user resolution.
+- Logout and refresh are delegated to Supabase.
+- Token revocation behavior follows Supabase Auth unless custom sessions are
+  introduced later.
+- Tokens must still be redacted from logs and analytics.
 
 ## References
 
-- https://docs.expo.dev/versions/latest/sdk/securestore/
-
+- https://supabase.com/docs/guides/auth
+- https://supabase.com/docs/guides/auth/jwts

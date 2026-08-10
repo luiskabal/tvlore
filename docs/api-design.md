@@ -20,6 +20,13 @@ This avoids using TMDB IDs as permanent API identity.
 
 ## MVP Endpoints
 
+Google login, refresh, and logout are handled by Supabase Auth for the MVP.
+TVLore protected endpoints receive the Supabase access token through:
+
+```http
+Authorization: Bearer <supabase_access_token>
+```
+
 ### `GET /health`
 
 Purpose: health check for local development, deployment, and smoke tests.
@@ -55,9 +62,11 @@ Business validation: none.
 
 Errors: `SERVICE_UNAVAILABLE`.
 
-### `POST /auth/google`
+### Deferred `POST /auth/google`
 
-Purpose: authenticate using a Google credential and create or resolve a TVLore user.
+Purpose: authenticate using a Google credential and create or resolve a TVLore user if TVLore-owned auth is introduced later.
+
+Current MVP status: not implemented. Supabase Auth handles Google login.
 
 Auth: none.
 
@@ -112,9 +121,11 @@ Business validation:
 
 Errors: `INVALID_GOOGLE_CREDENTIAL`, `AUTH_RATE_LIMITED`, `VALIDATION_FAILED`, `UNEXPECTED_ERROR`.
 
-### `POST /auth/refresh`
+### Deferred `POST /auth/refresh`
 
-Purpose: exchange a valid refresh token for a new access token and optionally a rotated refresh token.
+Purpose: exchange a valid refresh token for a new access token and optionally a rotated refresh token if TVLore-owned auth is introduced later.
+
+Current MVP status: not implemented. Supabase Auth handles refresh.
 
 Auth: refresh token body credential.
 
@@ -162,9 +173,11 @@ Business validation:
 
 Errors: `INVALID_REFRESH_TOKEN`, `REFRESH_SESSION_REVOKED`, `REFRESH_TOKEN_EXPIRED`, `AUTH_RATE_LIMITED`.
 
-### `POST /auth/logout`
+### Deferred `POST /auth/logout`
 
-Purpose: revoke the current refresh session.
+Purpose: revoke the current refresh session if TVLore-owned auth is introduced later.
+
+Current MVP status: not implemented. Supabase Auth handles sign-out.
 
 Auth: required.
 
@@ -234,13 +247,15 @@ Status codes:
 - `200 OK`
 - `401 UNAUTHORIZED`
 
-Authorization: access token must represent an active TVLore user.
+Authorization: Supabase access token must represent an active Supabase Auth user.
 
 Transport validation: none.
 
 Business validation:
 
-- User exists and is not disabled/deleted.
+- Supabase token resolves to a user.
+- `UserIdentity(provider = "supabase", providerSubject = Supabase user ID)` is found or created.
+- TVLore `User` is found or created.
 
 Errors: `UNAUTHORIZED`, `USER_NOT_FOUND`.
 
@@ -1013,4 +1028,3 @@ Business validation:
 
 - Authenticated user owns the link.
 - Revocation is idempotent.
-

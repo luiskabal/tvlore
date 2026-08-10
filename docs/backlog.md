@@ -8,9 +8,6 @@ No active infrastructure tasks.
 
 ## Next
 
-- [ ] Add Google login.
-- [ ] Issue access and refresh tokens.
-- [ ] Replace demo `/users/me` with authenticated user lookup.
 - [ ] Add TMDB-backed catalog search.
 - [ ] Add show/movie detail endpoints.
 - [ ] Add episode/movie watch tracking.
@@ -42,9 +39,14 @@ No active infrastructure tasks.
 - [x] Apply and verify the initial Prisma migration against Supabase.
 - [x] Back `GET /users/me` with the Supabase `users` table for the demo user.
 - [x] Add and verify auth identity/session database tables.
+- [x] Configure Google OAuth provider through Supabase Auth.
+- [x] Validate Google login on an Expo development build.
+- [x] Validate Supabase access tokens in the backend.
+- [x] Replace demo `/users/me` with authenticated user lookup.
 
 ## Deferred
 
+- TVLore-owned access and refresh token service.
 - Social features.
 - Ratings and recommendations.
 - Offline mutation queues.

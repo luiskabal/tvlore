@@ -5,6 +5,8 @@ import { resolve } from "node:path";
 export type ApiConfig = {
   databaseUrl: string;
   port: number;
+  supabasePublishableKey: string;
+  supabaseUrl: string;
 };
 
 export const API_CONFIG = Symbol("API_CONFIG");
@@ -20,6 +22,8 @@ export function getConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
   return {
     databaseUrl: parseDatabaseUrl(env.DATABASE_URL),
     port: parsePort(env.PORT),
+    supabasePublishableKey: parseRequiredString(env.SUPABASE_PUBLISHABLE_KEY, "SUPABASE_PUBLISHABLE_KEY"),
+    supabaseUrl: parseUrl(env.SUPABASE_URL, "SUPABASE_URL"),
   };
 }
 
@@ -63,4 +67,32 @@ function parseDatabaseUrl(value: string | undefined) {
   }
 
   return value;
+}
+
+function parseRequiredString(value: string | undefined, name: string) {
+  if (!value) {
+    throw new Error(`${name} is required`);
+  }
+
+  return value;
+}
+
+function parseUrl(value: string | undefined, name: string) {
+  if (!value) {
+    throw new Error(`${name} is required`);
+  }
+
+  let url: URL;
+
+  try {
+    url = new URL(value);
+  } catch {
+    throw new Error(`${name} must be a valid URL`);
+  }
+
+  if (url.protocol !== "https:" && url.protocol !== "http:") {
+    throw new Error(`${name} must be an HTTP URL`);
+  }
+
+  return value.replace(/\/$/, "");
 }

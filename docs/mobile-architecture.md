@@ -1,6 +1,6 @@
 # Mobile Architecture
 
-TVLore mobile uses Expo Router, React Native, TypeScript, TanStack Query, Zustand, SecureStore, and AsyncStorage.
+TVLore mobile uses Expo Router, React Native, TypeScript, Supabase Auth, SecureStore, and AsyncStorage.
 
 ## Conceptual Expo Router Structure
 
@@ -37,13 +37,16 @@ This structure is a starting point, not a permanent requirement.
 
 ## Authentication Bootstrap
 
+Google OAuth must be tested in a development build or production build. Expo Go
+does not provide TVLore's native `tvlore://` URL scheme, so it cannot reliably
+receive the OAuth callback.
+
 On launch:
 
-1. Read refresh credential from SecureStore.
-2. If absent, show auth flow.
-3. If present, attempt `POST /auth/refresh`.
-4. If refresh succeeds, store returned credentials and fetch `GET /users/me`.
-5. If refresh fails, clear local credentials and show auth flow.
+1. Ask the Supabase client for the current session.
+2. If absent, show the Google sign-in flow.
+3. If present, call TVLore API with `Authorization: Bearer <supabase_access_token>`.
+4. If backend auth fails, sign out locally and show the auth flow.
 
 Avoid showing authenticated screens with stale identity assumptions.
 
@@ -81,10 +84,8 @@ Query hooks are client infrastructure. They must not implement backend business 
 
 The API client may:
 
-- Attach access token to authenticated requests.
-- Detect `401` caused by expiration.
-- Attempt a single refresh.
-- Replay the original request once if refresh succeeds.
+- Attach the Supabase access token to authenticated requests.
+- Let the Supabase client refresh its session.
 - Clear credentials and redirect to login if refresh fails.
 
 Avoid infinite refresh loops.
@@ -137,4 +138,3 @@ MVP offline behavior:
 - Revalidate when the app returns online.
 
 Offline-first mutation sync is out of scope.
-

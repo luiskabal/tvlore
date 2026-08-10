@@ -17,14 +17,9 @@ NODE_ENV
 PORT
 DATABASE_URL
 MIGRATE_DATABASE_URL
+SUPABASE_URL
+SUPABASE_PUBLISHABLE_KEY
 TMDB_ACCESS_TOKEN
-GOOGLE_CLIENT_ID
-ACCESS_TOKEN_SIGNING_KEY
-REFRESH_TOKEN_SECRET
-ACCESS_TOKEN_ISSUER
-ACCESS_TOKEN_AUDIENCE
-ACCESS_TOKEN_TTL_SECONDS
-REFRESH_TOKEN_TTL_DAYS
 LOG_LEVEL
 ```
 
@@ -38,9 +33,6 @@ Conceptual values:
 EXPO_PUBLIC_TVLORE_API_BASE_URL
 EXPO_PUBLIC_SUPABASE_URL
 EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY
-EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID
-EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID
-EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID
 ```
 
 Only public/mobile-safe values may be included in the mobile bundle.
@@ -74,10 +66,9 @@ Examples:
 
 - `DATABASE_URL` must be a valid PostgreSQL connection string.
 - `MIGRATE_DATABASE_URL` should be a direct or session PostgreSQL connection string for Prisma migrations.
+- `SUPABASE_URL` must match the Supabase project URL when backend auth verification is implemented.
+- `SUPABASE_PUBLISHABLE_KEY` must be available to verify Supabase-authenticated flows where needed.
 - `TMDB_ACCESS_TOKEN` must be present in non-test environments.
-- `GOOGLE_CLIENT_ID` must be present for authentication.
-- Signing keys must meet minimum length/entropy requirements.
-- Token TTL values must parse as positive durations.
 
 ## Secrets
 
@@ -94,3 +85,5 @@ Examples:
 - Supabase project ref: `qpekdijebjzigrgcumpv`
 
 `DATABASE_URL` and `MIGRATE_DATABASE_URL` must be configured in Vercel for production database connectivity.
+Google OAuth Client ID and Client Secret are configured in Supabase Auth, not in
+the TVLore repository or mobile bundle.
