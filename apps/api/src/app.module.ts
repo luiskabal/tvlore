@@ -2,11 +2,12 @@ import { MiddlewareConsumer, Module } from "@nestjs/common";
 
 import { CorrelationIdMiddleware } from "./correlation-id.middleware";
 import { HealthController } from "./health.controller";
+import { RootController } from "./root.controller";
 import { UsersController } from "./users/users.controller";
 import { UsersService } from "./users/users.service";
 
 @Module({
-  controllers: [HealthController, UsersController],
+  controllers: [RootController, HealthController, UsersController],
   providers: [UsersService],
 })
 export class AppModule {
