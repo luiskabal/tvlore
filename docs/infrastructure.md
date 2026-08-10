@@ -91,6 +91,10 @@ Public API verification command:
 corepack pnpm api:check
 ```
 
+The API validates `DATABASE_URL` during Nest application startup. If the
+variable is missing, the app fails to boot instead of exposing partial routes
+with a broken database dependency.
+
 ## Mobile App
 
 - App: `apps/mobile`

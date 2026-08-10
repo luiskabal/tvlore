@@ -1,6 +1,15 @@
+import type { Provider } from "@nestjs/common";
+
 export type ApiConfig = {
-  databaseUrl?: string;
+  databaseUrl: string;
   port: number;
+};
+
+export const API_CONFIG = Symbol("API_CONFIG");
+
+export const ApiConfigProvider: Provider<ApiConfig> = {
+  provide: API_CONFIG,
+  useFactory: getConfig,
 };
 
 export function getConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
@@ -26,7 +35,7 @@ function parsePort(value: string | undefined) {
 
 function parseDatabaseUrl(value: string | undefined) {
   if (!value) {
-    return undefined;
+    throw new Error("DATABASE_URL is required");
   }
 
   let url: URL;

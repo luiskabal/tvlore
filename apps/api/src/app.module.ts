@@ -1,6 +1,7 @@
 import { MiddlewareConsumer, Module } from "@nestjs/common";
 
 import { CorrelationIdMiddleware } from "./correlation-id.middleware";
+import { ApiConfigProvider } from "./config";
 import { HealthController } from "./health.controller";
 import { PrismaService } from "./prisma.service";
 import { RootController } from "./root.controller";
@@ -9,7 +10,7 @@ import { UsersService } from "./users/users.service";
 
 @Module({
   controllers: [RootController, HealthController, UsersController],
-  providers: [PrismaService, UsersService],
+  providers: [ApiConfigProvider, PrismaService, UsersService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {

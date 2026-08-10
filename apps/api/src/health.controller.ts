@@ -19,12 +19,10 @@ export class HealthController {
   async getDatabaseHealth() {
     try {
       await this.prismaService.ping();
-    } catch (error) {
-      const isMissingDatabaseUrl = error instanceof Error && error.message === "DATABASE_URL is required";
-
+    } catch {
       throw new ServiceUnavailableException({
-        code: isMissingDatabaseUrl ? "DATABASE_CONFIG_MISSING" : "DATABASE_UNAVAILABLE",
-        message: isMissingDatabaseUrl ? "DATABASE_URL is not configured" : "Database health check failed",
+        code: "DATABASE_UNAVAILABLE",
+        message: "Database health check failed",
         details: null,
       });
     }
