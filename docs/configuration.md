@@ -16,6 +16,7 @@ Conceptual variables:
 NODE_ENV
 PORT
 DATABASE_URL
+MIGRATE_DATABASE_URL
 TMDB_ACCESS_TOKEN
 GOOGLE_CLIENT_ID
 ACCESS_TOKEN_SIGNING_KEY
@@ -35,6 +36,8 @@ Conceptual values:
 
 ```text
 EXPO_PUBLIC_TVLORE_API_BASE_URL
+EXPO_PUBLIC_SUPABASE_URL
+EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID
 EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID
 EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID
@@ -59,6 +62,7 @@ The API should fail fast if required configuration is missing or malformed.
 Examples:
 
 - `DATABASE_URL` must be a valid PostgreSQL connection string.
+- `MIGRATE_DATABASE_URL` should be a direct or session PostgreSQL connection string for Prisma migrations.
 - `TMDB_ACCESS_TOKEN` must be present in non-test environments.
 - `GOOGLE_CLIENT_ID` must be present for authentication.
 - Signing keys must meet minimum length/entropy requirements.
@@ -72,3 +76,10 @@ Examples:
 - Store production secrets in the deployment platform's secret manager.
 - Redact secrets in logs and error reports.
 
+## Current Deploy Targets
+
+- API: `https://tvlore-api.vercel.app`
+- Supabase project URL: `https://qpekdijebjzigrgcumpv.supabase.co`
+- Supabase project ref: `qpekdijebjzigrgcumpv`
+
+`DATABASE_URL` and `MIGRATE_DATABASE_URL` must be configured in Vercel for production database connectivity.

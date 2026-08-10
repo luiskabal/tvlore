@@ -60,8 +60,9 @@ The MVP goal is intentionally small: authenticate with Google, search catalog co
 12. [Security](security.md)
 13. [Social Vision](social-vision.md)
 14. [TVLore Match](tvlore-match.md)
-15. [Roadmap](roadmap.md)
-16. [Architecture Decision Records](adr/)
+15. [Infrastructure Setup](infrastructure.md)
+16. [Roadmap](roadmap.md)
+17. [Architecture Decision Records](adr/)
 
 ## Documentation Index
 
@@ -75,6 +76,7 @@ The MVP goal is intentionally small: authenticate with Google, search catalog co
 - [Domain Model](domain-model.md)
 - [Error Handling](error-handling.md)
 - [Glossary](glossary.md)
+- [Infrastructure Setup](infrastructure.md)
 - [Mobile Architecture](mobile-architecture.md)
 - [MVP Scope](mvp-scope.md)
 - [Observability](observability.md)
@@ -107,9 +109,9 @@ The MVP goal is intentionally small: authenticate with Google, search catalog co
 
 ## Current Architecture Status
 
-This documentation is the Phase 0 architecture baseline. No application code, framework initialization, dependencies, database migrations, or environment files have been created.
+This documentation started as the Phase 0 architecture baseline. The repository now also contains the initial monorepo, NestJS API, Expo mobile app, Prisma schema, Vercel deploy setup, Supabase infrastructure baseline, and Postman collection.
 
-Accepted decisions are stable enough for the first implementation pass. Proposed decisions should influence boundaries but should be revisited before implementation of the related feature.
+Accepted decisions are stable enough for the first implementation pass. Proposed decisions should influence boundaries but should be revisited before implementation of the related feature. See [Infrastructure Setup](infrastructure.md) for the current deployed state.
 
 ## Unresolved Decisions
 
@@ -148,4 +150,3 @@ Accepted decisions are stable enough for the first implementation pass. Proposed
 22. How does QR sharing remain private? See [TVLore Match](tvlore-match.md) and [Privacy](privacy.md).
 23. Why is matching backend-owned? See [Architecture](architecture.md), [Privacy](privacy.md), and [TVLore Match](tvlore-match.md).
 24. What should the first implementation task be? See [Roadmap](roadmap.md).
-
