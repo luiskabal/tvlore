@@ -4,7 +4,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 
 ## Active
 
-- [ ] Apply and verify the initial Prisma migration against Supabase.
+No active infrastructure tasks.
 
 ## Next
 
@@ -39,6 +39,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 - [x] Add Supabase mobile client baseline.
 - [x] Centralize API environment validation at startup.
 - [x] Verify Supabase runtime connectivity from Vercel with `GET /health/db`.
+- [x] Apply and verify the initial Prisma migration against Supabase.
 
 ## Deferred
 

@@ -47,6 +47,8 @@ GET /users/me
 - ORM: Prisma.
 - Prisma schema: `apps/api/prisma/schema.prisma`
 - Initial migration: `apps/api/prisma/migrations/20260810162500_init_user/migration.sql`
+- Applied migration: `20260810162500_init_user`
+- Current database tables: `_prisma_migrations`, `users`
 
 Vercel environment variables:
 
@@ -167,4 +169,4 @@ Use the `TVLore Vercel` environment to test the deployed API.
 - Prisma schema and initial migration exist.
 - Vercel `tvlore-api` has Supabase env vars configured.
 - `GET /health/db` returns `200` from production.
-- Pending: apply Prisma migration to Supabase.
+- Initial Prisma migration has been applied to Supabase.
