@@ -68,6 +68,13 @@ src/
 |   |-- tracking.service.ts
 |   `-- tracking.types.ts
 |
+|-- library/
+|   |-- library.controller.ts
+|   |-- library.repository.ts
+|   |-- library.service.ts
+|   `-- library.types.ts
+|
+|-- progress.ts
 |-- config.ts
 |-- prisma.service.ts
 `-- app.module.ts

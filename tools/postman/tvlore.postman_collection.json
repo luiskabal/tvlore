@@ -865,6 +865,60 @@
           ]
         },
         {
+          "name": "GET /shows/:showId/progress",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "postman-{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shows/{{resolvedShowId}}/progress",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shows",
+                "{{resolvedShowId}}",
+                "progress"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('response is show progress', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.showId).to.eql(pm.environment.get('resolvedShowId'));",
+                  "  pm.expect(body.watchedEpisodeCount).to.be.a('number');",
+                  "  pm.expect(body.totalEpisodeCount).to.be.a('number');",
+                  "  pm.expect(body.percentComplete).to.be.a('number');",
+                  "  pm.expect(body.seasons).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "DELETE /episodes/:episodeId/watches",
           "request": {
             "method": "DELETE",
@@ -1084,6 +1138,58 @@
                   "  pm.expect(body.watched).to.eql(true);",
                   "  pm.expect(body.watchCount).to.eql(1);",
                   "  pm.expect(body.lastWatchedAt).to.be.a('string');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /library",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "postman-{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/library",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "library"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('response is library summary', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.summary.watchedEpisodeCount).to.be.a('number');",
+                  "  pm.expect(body.summary.watchedMovieCount).to.be.a('number');",
+                  "  pm.expect(body.summary.watchedShowCount).to.be.a('number');",
+                  "  pm.expect(body.continueWatching).to.be.an('array');",
+                  "  pm.expect(body.recentlyWatched).to.be.an('array');",
                   "});"
                 ]
               }

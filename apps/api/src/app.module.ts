@@ -8,6 +8,9 @@ import { TmdbClient } from "./catalog/tmdb-client";
 import { CorrelationIdMiddleware } from "./correlation-id.middleware";
 import { ApiConfigProvider } from "./config";
 import { HealthController } from "./health.controller";
+import { LibraryController, ShowProgressController } from "./library/library.controller";
+import { LibraryRepository } from "./library/library.repository";
+import { LibraryService } from "./library/library.service";
 import { PrismaService } from "./prisma.service";
 import { RootController } from "./root.controller";
 import { EpisodeTrackingController, MovieTrackingController } from "./tracking/tracking.controller";
@@ -28,6 +31,8 @@ import { UsersService } from "./users/users.service";
     MoviesController,
     EpisodeTrackingController,
     MovieTrackingController,
+    LibraryController,
+    ShowProgressController,
   ],
   providers: [
     ApiConfigProvider,
@@ -35,9 +40,11 @@ import { UsersService } from "./users/users.service";
     SupabaseAuthService,
     CatalogRepository,
     TrackingRepository,
+    LibraryRepository,
     TmdbClient,
     CatalogService,
     TrackingService,
+    LibraryService,
     UsersRepository,
     UsersService,
   ],

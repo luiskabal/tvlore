@@ -16,7 +16,9 @@ await check("/catalog/resolve", {
 await check("/shows/00000000-0000-4000-8000-000000000001", { expectedStatus: 401 });
 await check("/shows/00000000-0000-4000-8000-000000000001/seasons", { expectedStatus: 401 });
 await check("/shows/00000000-0000-4000-8000-000000000001/seasons/1", { expectedStatus: 401 });
+await check("/shows/00000000-0000-4000-8000-000000000001/progress", { expectedStatus: 401 });
 await check("/movies/00000000-0000-4000-8000-000000000001", { expectedStatus: 401 });
+await check("/library", { expectedStatus: 401 });
 await check("/episodes/00000000-0000-4000-8000-000000000001/watches", {
   expectedStatus: 401,
   method: "POST",
@@ -79,10 +81,9 @@ if (supabaseAccessToken) {
     },
     method: "POST",
   });
-  await check(`/episodes/${firstEpisodeId}/watches`, {
+  await check(`/shows/${resolvedShow.id}/progress`, {
     expectedStatus: 200,
     headers: { Authorization: `Bearer ${supabaseAccessToken}` },
-    method: "DELETE",
   });
   const resolvedMovie = await check("/catalog/resolve", {
     body: JSON.stringify({ mediaType: "movie", provider: "tmdb", providerId: "155" }),
@@ -105,6 +106,15 @@ if (supabaseAccessToken) {
       "content-type": "application/json",
     },
     method: "POST",
+  });
+  await check("/library", {
+    expectedStatus: 200,
+    headers: { Authorization: `Bearer ${supabaseAccessToken}` },
+  });
+  await check(`/episodes/${firstEpisodeId}/watches`, {
+    expectedStatus: 200,
+    headers: { Authorization: `Bearer ${supabaseAccessToken}` },
+    method: "DELETE",
   });
   await check(`/movies/${resolvedMovie.id}/watches`, {
     expectedStatus: 200,

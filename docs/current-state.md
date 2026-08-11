@@ -18,13 +18,13 @@ Implemented:
 - Season list and season detail endpoints for shows.
 - Episode catalog persistence when a season is opened.
 - Authenticated watch/unwatch endpoints for episodes and movies.
+- Authenticated personal library and show progress read endpoints.
 - Postman collection and local/Vercel environments.
 - Environment validation for local and Vercel.
 - Backend unit tests with Vitest.
 
 Not implemented yet:
 
-- Progress and personal library endpoints.
 - Social matching.
 
 ## 2. Current System Diagram
@@ -374,6 +374,8 @@ POST /episodes/:episodeId/watches
 DELETE /episodes/:episodeId/watches
 POST /movies/:movieId/watches
 DELETE /movies/:movieId/watches
+GET /shows/:showId/progress
+GET /library
 ```
 
 Current watched-state behavior:
@@ -381,7 +383,8 @@ Current watched-state behavior:
 - Movies return `watched`, `watchCount`, and `lastWatchedAt` for the authenticated user.
 - Episodes return `watched`, `watchCount`, and `lastWatchedAt` for the authenticated user.
 - Mark watched/unwatched is idempotent in the MVP: one active row per user/movie or user/episode.
-- Show progress returned by episode watch mutations is based on episodes currently persisted in TVLore. Opening a season hydrates its episode rows.
+- Show progress returned by episode watch mutations and `GET /shows/:showId/progress` is based on episodes currently persisted in TVLore. Opening a season hydrates its episode rows.
+- `GET /library` returns summary counts, continue-watching shows, and recent movie/episode activity for the authenticated user.
 
 Why season detail fetches TMDB:
 
@@ -560,10 +563,12 @@ flowchart TB
   Seasons[Catalog / GET /shows/:showId/seasons]
   Season[Catalog / GET /shows/:showId/seasons/1]
   EpisodeWatch[Tracking / POST /episodes/:episodeId/watches]
+  Progress[Library / GET /shows/:showId/progress]
   EpisodeUnwatch[Tracking / DELETE /episodes/:episodeId/watches]
   ResolveMovie[Catalog / POST /catalog/resolve movie]
   Movie[Catalog / GET /movies/:movieId]
   MovieWatch[Tracking / POST /movies/:movieId/watches]
+  Library[Library / GET /library]
   MovieUnwatch[Tracking / DELETE /movies/:movieId/watches]
 
   Env --> Login
@@ -576,11 +581,13 @@ flowchart TB
   Show --> Seasons
   Seasons --> Season
   Season --> EpisodeWatch
-  EpisodeWatch --> EpisodeUnwatch
+  EpisodeWatch --> Progress
+  Progress --> EpisodeUnwatch
   EpisodeUnwatch --> ResolveMovie
   ResolveMovie --> Movie
   Movie --> MovieWatch
-  MovieWatch --> MovieUnwatch
+  MovieWatch --> Library
+  Library --> MovieUnwatch
 ```
 
 Expected behavior:
@@ -594,8 +601,10 @@ Expected behavior:
 - `GET /shows/:showId` returns show detail and season summaries.
 - `GET /shows/:showId/seasons/:seasonNumber` fetches and persists that season's episodes.
 - `POST /episodes/:episodeId/watches` marks an episode watched for the authenticated user.
+- `GET /shows/:showId/progress` returns show/season progress for the authenticated user.
 - `DELETE /episodes/:episodeId/watches` marks that episode unwatched for the authenticated user.
 - `POST /movies/:movieId/watches` marks a movie watched for the authenticated user.
+- `GET /library` returns personal summary, continue-watching, and recently watched activity.
 - `DELETE /movies/:movieId/watches` marks that movie unwatched for the authenticated user.
 - `GET /movies/:movieId` returns movie detail with authenticated user's watched state.
 
@@ -619,6 +628,7 @@ Backend architecture:
 - TMDB HTTP and provider errors are isolated in `TmdbClient`.
 - Catalog persistence is isolated in `CatalogRepository`.
 - Tracking persistence is isolated in `TrackingRepository`.
+- Library/progress reads are isolated in `LibraryRepository`.
 - Search/resolve/detail parsing and mapping are pure functions with unit tests.
 
 Product foundation:
@@ -651,15 +661,14 @@ Search screen
 
 ## 13. Recommended Next Step
 
-Build personal library/progress read endpoints:
+Build mobile screens against the backend contract:
 
 ```text
-GET /library
-GET /shows/:showId/progress
+Search -> Resolve -> Detail -> Watch/Unwatch -> Library
 ```
 
 Why this is next:
 
-- Tracking mutations now exist.
-- The app needs a read model for "what am I watching?" instead of recomputing that from detail screens.
-- This gives the future Home/Profile tabs stable backend-owned data.
+- Search, resolve, details, tracking, progress, and library now exist in the API.
+- The app can start consuming real backend state instead of demo cards.
+- Frontend implementation will expose any missing backend read shape before adding more domain features.

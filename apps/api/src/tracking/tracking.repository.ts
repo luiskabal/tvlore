@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { PrismaService } from "../prisma.service";
+import { calculatePercentComplete } from "../progress";
 import type { EpisodeWatchResponseDto, MovieWatchResponseDto, ShowProgressDto } from "./tracking.types";
 
 @Injectable()
@@ -118,7 +119,7 @@ export class TrackingRepository {
     ]);
 
     return {
-      percentComplete: totalEpisodeCount === 0 ? 0 : Math.round((watchedEpisodeCount / totalEpisodeCount) * 100),
+      percentComplete: calculatePercentComplete(watchedEpisodeCount, totalEpisodeCount),
       showId,
       totalEpisodeCount,
       watchedEpisodeCount,

@@ -8,7 +8,8 @@ No active infrastructure tasks.
 
 ## Next
 
-- [ ] Add progress and personal library endpoints.
+- [ ] Build mobile search/detail/tracking screens against the backend API.
+- [ ] Add progress/library views to the mobile app.
 
 ## Done
 
@@ -48,6 +49,7 @@ No active infrastructure tasks.
 - [x] Add show/movie detail endpoints by TVLore ID.
 - [x] Add season and episode catalog persistence.
 - [x] Add episode/movie watch tracking.
+- [x] Add progress and personal library endpoints.
 
 ## Deferred
 

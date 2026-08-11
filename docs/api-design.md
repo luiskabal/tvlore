@@ -819,6 +819,8 @@ Errors: `MOVIE_NOT_FOUND`, `VALIDATION_FAILED`, `UNAUTHORIZED`.
 
 Purpose: return backend-calculated show and season progress for authenticated user.
 
+Current MVP status: implemented. Progress is calculated from episodes currently persisted in TVLore, so opening more seasons gives the backend more episode rows to count.
+
 Auth: required.
 
 Route parameters:
@@ -880,11 +882,17 @@ Errors: `SHOW_NOT_FOUND`, `VALIDATION_FAILED`.
 
 Purpose: return personal library/profile summary for authenticated user.
 
+Current MVP status: implemented with summary, continue-watching shows, and recent movie/episode activity.
+
 Auth: required.
 
 Route parameters: none.
 
 Query parameters:
+
+- None in the MVP.
+
+Future query parameters:
 
 - `section` optional enum: `all`, `continueWatching`, `shows`, `movies`.
 - `page` optional positive integer.
@@ -919,6 +927,17 @@ Response:
       "mediaType": "movie",
       "id": "uuid",
       "title": "Arrival",
+      "posterPath": "/path.jpg",
+      "watchedAt": "2026-08-09T00:00:00.000Z"
+    },
+    {
+      "mediaType": "episode",
+      "id": "uuid",
+      "showId": "uuid",
+      "showTitle": "Dark",
+      "seasonNumber": 1,
+      "episodeNumber": 1,
+      "title": "Secrets",
       "watchedAt": "2026-08-09T00:00:00.000Z"
     }
   ]
@@ -933,10 +952,7 @@ Status codes:
 
 Authorization: library is only for the authenticated user.
 
-Transport validation:
-
-- Section enum.
-- Page positive integer.
+Transport validation: none in the MVP.
 
 Business validation:
 
