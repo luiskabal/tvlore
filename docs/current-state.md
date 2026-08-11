@@ -17,13 +17,13 @@ Implemented:
 - Authenticated show/movie detail endpoints by internal TVLore ID.
 - Season list and season detail endpoints for shows.
 - Episode catalog persistence when a season is opened.
+- Authenticated watch/unwatch endpoints for episodes and movies.
 - Postman collection and local/Vercel environments.
 - Environment validation for local and Vercel.
 - Backend unit tests with Vitest.
 
 Not implemented yet:
 
-- Watch/unwatch endpoints.
 - Progress and personal library endpoints.
 - Social matching.
 
@@ -370,13 +370,18 @@ GET /shows/:showId
 GET /shows/:showId/seasons
 GET /shows/:showId/seasons/:seasonNumber
 GET /movies/:movieId
+POST /episodes/:episodeId/watches
+DELETE /episodes/:episodeId/watches
+POST /movies/:movieId/watches
+DELETE /movies/:movieId/watches
 ```
 
 Current watched-state behavior:
 
-- Movies return `watched: false`, `watchCount: 0`, and `lastWatchedAt: null`.
-- Episodes return `watched: false`, `watchCount: 0`, and `lastWatchedAt: null`.
-- These fields are placeholders for the next tracking slice, where they will be derived per authenticated user.
+- Movies return `watched`, `watchCount`, and `lastWatchedAt` for the authenticated user.
+- Episodes return `watched`, `watchCount`, and `lastWatchedAt` for the authenticated user.
+- Mark watched/unwatched is idempotent in the MVP: one active row per user/movie or user/episode.
+- Show progress returned by episode watch mutations is based on episodes currently persisted in TVLore. Opening a season hydrates its episode rows.
 
 Why season detail fetches TMDB:
 
@@ -390,9 +395,13 @@ Why season detail fetches TMDB:
 erDiagram
   USER ||--o{ USER_IDENTITY : has
   USER ||--o{ REFRESH_SESSION : has
+  USER ||--o{ EPISODE_WATCH : marks
+  USER ||--o{ MOVIE_WATCH : marks
   SHOW ||--o{ SEASON : has
   SHOW ||--o{ EPISODE : has
   SEASON ||--o{ EPISODE : contains
+  EPISODE ||--o{ EPISODE_WATCH : watched
+  MOVIE ||--o{ MOVIE_WATCH : watched
   SHOW ||--o{ EXTERNAL_IDENTIFIER : maps
   MOVIE ||--o{ EXTERNAL_IDENTIFIER : maps
 
@@ -485,6 +494,22 @@ erDiagram
     string providerId
     datetime createdAt
   }
+
+  EPISODE_WATCH {
+    uuid id PK
+    uuid userId FK
+    uuid episodeId FK
+    datetime watchedAt
+    datetime createdAt
+  }
+
+  MOVIE_WATCH {
+    uuid id PK
+    uuid userId FK
+    uuid movieId FK
+    datetime watchedAt
+    datetime createdAt
+  }
 ```
 
 Current tables:
@@ -497,18 +522,24 @@ Current tables:
 - `seasons`: internal TVLore season records created from TMDB show details.
 - `episodes`: internal TVLore episode records created when a season is opened.
 - `external_identifiers`: maps TVLore IDs to provider refs like `tmdb:70523`.
+- `episode_watches`: per-user watched marker for an episode.
+- `movie_watches`: per-user watched marker for a movie.
 
 Important constraint:
 
 ```text
 external_identifiers(entity_type, provider, provider_id) is unique
+episode_watches(user_id, episode_id) is unique
+movie_watches(user_id, movie_id) is unique
 ```
 
 Why:
 
 - A TMDB show ID should resolve to exactly one TVLore show ID.
 - Repeated resolve calls stay idempotent.
-- Future tracking can reference stable TVLore UUIDs.
+- Watch tracking references stable TVLore UUIDs.
+- Repeated mark-watched calls stay idempotent.
+- Watched state belongs to a user, not to the catalog row.
 
 Implementation note:
 
@@ -524,16 +555,32 @@ flowchart TB
   Validate[Auth / Supabase / GET Supabase user]
   Me[Users / GET /users/me]
   Search[Catalog / GET /search]
-  Resolve[Catalog / POST /catalog/resolve]
-  SearchAgain[Catalog / GET /search again]
+  ResolveShow[Catalog / POST /catalog/resolve show]
+  Show[Catalog / GET /shows/:showId]
+  Seasons[Catalog / GET /shows/:showId/seasons]
+  Season[Catalog / GET /shows/:showId/seasons/1]
+  EpisodeWatch[Tracking / POST /episodes/:episodeId/watches]
+  EpisodeUnwatch[Tracking / DELETE /episodes/:episodeId/watches]
+  ResolveMovie[Catalog / POST /catalog/resolve movie]
+  Movie[Catalog / GET /movies/:movieId]
+  MovieWatch[Tracking / POST /movies/:movieId/watches]
+  MovieUnwatch[Tracking / DELETE /movies/:movieId/watches]
 
   Env --> Login
   Login --> Token
   Token --> Validate
   Validate --> Me
   Me --> Search
-  Search --> Resolve
-  Resolve --> SearchAgain
+  Search --> ResolveShow
+  ResolveShow --> Show
+  Show --> Seasons
+  Seasons --> Season
+  Season --> EpisodeWatch
+  EpisodeWatch --> EpisodeUnwatch
+  EpisodeUnwatch --> ResolveMovie
+  ResolveMovie --> Movie
+  Movie --> MovieWatch
+  MovieWatch --> MovieUnwatch
 ```
 
 Expected behavior:
@@ -546,7 +593,11 @@ Expected behavior:
 - Running `GET /search` again after resolve should show `tvloreId` for the resolved item.
 - `GET /shows/:showId` returns show detail and season summaries.
 - `GET /shows/:showId/seasons/:seasonNumber` fetches and persists that season's episodes.
-- `GET /movies/:movieId` returns movie detail with default unwatched state until tracking exists.
+- `POST /episodes/:episodeId/watches` marks an episode watched for the authenticated user.
+- `DELETE /episodes/:episodeId/watches` marks that episode unwatched for the authenticated user.
+- `POST /movies/:movieId/watches` marks a movie watched for the authenticated user.
+- `DELETE /movies/:movieId/watches` marks that movie unwatched for the authenticated user.
+- `GET /movies/:movieId` returns movie detail with authenticated user's watched state.
 
 ## 11. What We Proved
 
@@ -567,6 +618,7 @@ Backend architecture:
 - User persistence is isolated in `UsersRepository`.
 - TMDB HTTP and provider errors are isolated in `TmdbClient`.
 - Catalog persistence is isolated in `CatalogRepository`.
+- Tracking persistence is isolated in `TrackingRepository`.
 - Search/resolve/detail parsing and mapping are pure functions with unit tests.
 
 Product foundation:
@@ -574,7 +626,7 @@ Product foundation:
 - TVLore owns internal user IDs.
 - TVLore owns internal catalog IDs.
 - TMDB IDs are external references only.
-- Watch tracking can now be built on top of internal IDs.
+- Watch tracking is stored against internal TVLore IDs and authenticated user IDs.
 
 ## 12. Why This Backend Base Helps The Frontend
 
@@ -599,17 +651,15 @@ Search screen
 
 ## 13. Recommended Next Step
 
-Build the tracking layer:
+Build personal library/progress read endpoints:
 
 ```text
-POST /episodes/:episodeId/watches
-DELETE /episodes/:episodeId/watches
-POST /movies/:movieId/watches
-DELETE /movies/:movieId/watches
+GET /library
+GET /shows/:showId/progress
 ```
 
 Why this is next:
 
-- We now have internal movie IDs.
-- We now have internal episode IDs after opening a season.
-- Watched state belongs to a user, so it should be stored in `movie_watches` and `episode_watches`, not on catalog rows.
+- Tracking mutations now exist.
+- The app needs a read model for "what am I watching?" instead of recomputing that from detail screens.
+- This gives the future Home/Profile tabs stable backend-owned data.

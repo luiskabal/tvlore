@@ -17,6 +17,22 @@ await check("/shows/00000000-0000-4000-8000-000000000001", { expectedStatus: 401
 await check("/shows/00000000-0000-4000-8000-000000000001/seasons", { expectedStatus: 401 });
 await check("/shows/00000000-0000-4000-8000-000000000001/seasons/1", { expectedStatus: 401 });
 await check("/movies/00000000-0000-4000-8000-000000000001", { expectedStatus: 401 });
+await check("/episodes/00000000-0000-4000-8000-000000000001/watches", {
+  expectedStatus: 401,
+  method: "POST",
+});
+await check("/episodes/00000000-0000-4000-8000-000000000001/watches", {
+  expectedStatus: 401,
+  method: "DELETE",
+});
+await check("/movies/00000000-0000-4000-8000-000000000001/watches", {
+  expectedStatus: 401,
+  method: "POST",
+});
+await check("/movies/00000000-0000-4000-8000-000000000001/watches", {
+  expectedStatus: 401,
+  method: "DELETE",
+});
 
 if (supabaseAccessToken) {
   await check("/users/me", {
@@ -44,9 +60,29 @@ if (supabaseAccessToken) {
     expectedStatus: 200,
     headers: { Authorization: `Bearer ${supabaseAccessToken}` },
   });
-  await check(`/shows/${resolvedShow.id}/seasons/1`, {
+  const seasonDetail = await check(`/shows/${resolvedShow.id}/seasons/1`, {
     expectedStatus: 200,
     headers: { Authorization: `Bearer ${supabaseAccessToken}` },
+  });
+  const firstEpisodeId = seasonDetail.episodes?.[0]?.id;
+
+  if (!firstEpisodeId) {
+    throw new Error("Authenticated check expected at least one episode in season 1.");
+  }
+
+  await check(`/episodes/${firstEpisodeId}/watches`, {
+    body: JSON.stringify({ watchedAt: "2026-08-09T00:00:00.000Z" }),
+    expectedStatus: 200,
+    headers: {
+      Authorization: `Bearer ${supabaseAccessToken}`,
+      "content-type": "application/json",
+    },
+    method: "POST",
+  });
+  await check(`/episodes/${firstEpisodeId}/watches`, {
+    expectedStatus: 200,
+    headers: { Authorization: `Bearer ${supabaseAccessToken}` },
+    method: "DELETE",
   });
   const resolvedMovie = await check("/catalog/resolve", {
     body: JSON.stringify({ mediaType: "movie", provider: "tmdb", providerId: "155" }),
@@ -60,6 +96,20 @@ if (supabaseAccessToken) {
   await check(`/movies/${resolvedMovie.id}`, {
     expectedStatus: 200,
     headers: { Authorization: `Bearer ${supabaseAccessToken}` },
+  });
+  await check(`/movies/${resolvedMovie.id}/watches`, {
+    body: JSON.stringify({ watchedAt: "2026-08-09T00:00:00.000Z" }),
+    expectedStatus: 200,
+    headers: {
+      Authorization: `Bearer ${supabaseAccessToken}`,
+      "content-type": "application/json",
+    },
+    method: "POST",
+  });
+  await check(`/movies/${resolvedMovie.id}/watches`, {
+    expectedStatus: 200,
+    headers: { Authorization: `Bearer ${supabaseAccessToken}` },
+    method: "DELETE",
   });
 } else {
   console.log("Skipping authenticated product checks: set TVLORE_SUPABASE_ACCESS_TOKEN.");

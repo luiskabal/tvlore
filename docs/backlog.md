@@ -8,7 +8,6 @@ No active infrastructure tasks.
 
 ## Next
 
-- [ ] Add episode/movie watch tracking.
 - [ ] Add progress and personal library endpoints.
 
 ## Done
@@ -48,6 +47,7 @@ No active infrastructure tasks.
 - [x] Add catalog resolve endpoint and initial catalog tables.
 - [x] Add show/movie detail endpoints by TVLore ID.
 - [x] Add season and episode catalog persistence.
+- [x] Add episode/movie watch tracking.
 
 ## Deferred
 

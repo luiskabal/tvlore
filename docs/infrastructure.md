@@ -57,8 +57,8 @@ Show and movie detail endpoints read internal TVLore IDs. Season detail fetches 
 - ORM: Prisma.
 - Prisma schema: `apps/api/prisma/schema.prisma`
 - Initial migration: `apps/api/prisma/migrations/20260810162500_init_user/migration.sql`
-- Applied migrations: `20260810162500_init_user`, `20260810211300_add_auth_tables`, `20260811144000_add_catalog_tables`, `20260811151500_add_seasons_and_episodes`
-- Current database tables: `_prisma_migrations`, `users`, `user_identities`, `refresh_sessions`, `shows`, `movies`, `seasons`, `episodes`, `external_identifiers`
+- Applied migrations: `20260810162500_init_user`, `20260810211300_add_auth_tables`, `20260811144000_add_catalog_tables`, `20260811151500_add_seasons_and_episodes`, `20260811165000_add_watch_tables`
+- Current database tables: `_prisma_migrations`, `users`, `user_identities`, `refresh_sessions`, `shows`, `movies`, `seasons`, `episodes`, `external_identifiers`, `episode_watches`, `movie_watches`
 
 Vercel environment variables:
 

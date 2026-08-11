@@ -61,6 +61,13 @@ src/
 |   |-- catalog.types.ts
 |   `-- tmdb-client.ts
 |
+|-- tracking/
+|   |-- tracking.controller.ts
+|   |-- tracking-input.ts
+|   |-- tracking.repository.ts
+|   |-- tracking.service.ts
+|   `-- tracking.types.ts
+|
 |-- config.ts
 |-- prisma.service.ts
 `-- app.module.ts

@@ -383,7 +383,7 @@ Errors: `CATALOG_ITEM_NOT_FOUND`, `CATALOG_PROVIDER_UNAVAILABLE`, `VALIDATION_FA
 
 Purpose: return TVLore show details by internal ID.
 
-Current MVP status: implemented without watch progress until tracking exists.
+Current MVP status: implemented. `progress` remains `null`; per-user progress is currently returned by watch mutations.
 
 Auth: required.
 
@@ -494,7 +494,7 @@ Errors: `SHOW_NOT_FOUND`, `VALIDATION_FAILED`, `CATALOG_PROVIDER_UNAVAILABLE`.
 
 Purpose: return a season and its episodes, including authenticated user's watch state.
 
-Current MVP status: implemented with default unwatched state until tracking exists.
+Current MVP status: implemented with authenticated user's watched state.
 
 Auth: required.
 
@@ -555,7 +555,7 @@ Errors: `SHOW_NOT_FOUND`, `SEASON_NOT_FOUND`, `VALIDATION_FAILED`.
 
 Purpose: return movie details and authenticated user's watch state.
 
-Current MVP status: implemented with default unwatched state until tracking exists.
+Current MVP status: implemented with authenticated user's watched state.
 
 Auth: required.
 
@@ -645,7 +645,6 @@ Response:
 Status codes:
 
 - `200 OK` if already watched and endpoint is idempotent
-- `201 CREATED` if a watch record is created
 - `400 BAD_REQUEST`
 - `401 UNAUTHORIZED`
 - `404 NOT_FOUND`
@@ -660,8 +659,9 @@ Transport validation:
 Business validation:
 
 - Episode exists.
-- Backend decides idempotency and rewatch behavior.
+- Mark watched is idempotent: one active watch row per user/episode in the MVP.
 - Progress is recalculated server-side.
+- Show progress is calculated from episodes currently persisted in TVLore, which means it becomes more complete as seasons are opened and hydrated.
 
 Errors: `EPISODE_NOT_FOUND`, `VALIDATION_FAILED`, `UNAUTHORIZED`.
 
@@ -699,7 +699,6 @@ Response:
 Status codes:
 
 - `200 OK`
-- `204 NO_CONTENT` if response body is omitted
 - `400 BAD_REQUEST`
 - `401 UNAUTHORIZED`
 - `404 NOT_FOUND`
@@ -713,8 +712,9 @@ Transport validation:
 Business validation:
 
 - Episode exists.
-- All MVP watch records for that user/episode are removed.
+- The MVP watch row for that user/episode is removed.
 - Progress is recalculated server-side.
+- Show progress is calculated from episodes currently persisted in TVLore.
 
 Errors: `EPISODE_NOT_FOUND`, `VALIDATION_FAILED`, `UNAUTHORIZED`.
 
@@ -752,7 +752,6 @@ Response:
 Status codes:
 
 - `200 OK` if already watched and endpoint is idempotent
-- `201 CREATED`
 - `400 BAD_REQUEST`
 - `401 UNAUTHORIZED`
 - `404 NOT_FOUND`
@@ -767,7 +766,7 @@ Transport validation:
 Business validation:
 
 - Movie exists.
-- Backend decides idempotency and rewatch behavior.
+- Mark watched is idempotent: one active watch row per user/movie in the MVP.
 
 Errors: `MOVIE_NOT_FOUND`, `VALIDATION_FAILED`, `UNAUTHORIZED`.
 
@@ -799,7 +798,6 @@ Response:
 Status codes:
 
 - `200 OK`
-- `204 NO_CONTENT`
 - `400 BAD_REQUEST`
 - `401 UNAUTHORIZED`
 - `404 NOT_FOUND`
@@ -813,7 +811,7 @@ Transport validation:
 Business validation:
 
 - Movie exists.
-- All MVP watch records for that user/movie are removed.
+- The MVP watch row for that user/movie is removed.
 
 Errors: `MOVIE_NOT_FOUND`, `VALIDATION_FAILED`, `UNAUTHORIZED`.
 

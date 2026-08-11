@@ -10,6 +10,9 @@ import { ApiConfigProvider } from "./config";
 import { HealthController } from "./health.controller";
 import { PrismaService } from "./prisma.service";
 import { RootController } from "./root.controller";
+import { EpisodeTrackingController, MovieTrackingController } from "./tracking/tracking.controller";
+import { TrackingRepository } from "./tracking/tracking.repository";
+import { TrackingService } from "./tracking/tracking.service";
 import { UsersController } from "./users/users.controller";
 import { UsersRepository } from "./users/users.repository";
 import { UsersService } from "./users/users.service";
@@ -23,14 +26,18 @@ import { UsersService } from "./users/users.service";
     CatalogResolveController,
     ShowsController,
     MoviesController,
+    EpisodeTrackingController,
+    MovieTrackingController,
   ],
   providers: [
     ApiConfigProvider,
     PrismaService,
     SupabaseAuthService,
     CatalogRepository,
+    TrackingRepository,
     TmdbClient,
     CatalogService,
+    TrackingService,
     UsersRepository,
     UsersService,
   ],

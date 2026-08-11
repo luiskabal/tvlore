@@ -31,11 +31,13 @@ EpisodeWatch
 
 A user has watched an episode if at least one `EpisodeWatch` exists for that user and episode.
 
-The watch count is the number of records for that user and episode.
+Current MVP implementation keeps one active row per `userId + episodeId`.
 
-The first watched date is `min(watchedAt)`.
+Therefore:
 
-The most recent watched date is `max(watchedAt)`.
+- `watched = row exists`
+- `watchCount = 1` when the row exists, otherwise `0`
+- `lastWatchedAt = watchedAt` on that row
 
 ## Movie Watches
 
@@ -52,6 +54,8 @@ MovieWatch
 
 A user has watched a movie if at least one `MovieWatch` exists for that user and movie.
 
+Current MVP implementation keeps one active row per `userId + movieId`.
+
 ## Watched and Unwatched Semantics
 
 For MVP UI toggles:
@@ -62,6 +66,8 @@ For MVP UI toggles:
 This keeps the initial product behavior intuitive.
 
 Future rewatch-specific UX can add an explicit command such as "Log rewatch" that creates additional watch records without ambiguity.
+
+That future slice can relax the uniqueness constraints and change `watchCount` to a real count. The current toggle behavior intentionally chooses clarity over rewatch history.
 
 If auditability becomes a product or compliance requirement, add a separate correction/audit log later. Do not use a generic event-sourcing model for MVP.
 
@@ -125,8 +131,8 @@ The mobile app displays progress returned by the API. It does not calculate cano
 For an episode:
 
 - `watched = watchCount > 0`
-- `watchCount = count(EpisodeWatch where userId and episodeId)`
-- `lastWatchedAt = max(watchedAt)`
+- `watchCount = 1` if the MVP watch row exists, otherwise `0`
+- `lastWatchedAt = watchedAt` on the MVP watch row
 
 ### Season Progress
 
@@ -203,4 +209,3 @@ The model supports future comparison by allowing backend queries such as:
 - Watch counts and recency.
 
 Do not expose raw history to another user unless privacy settings allow it. Prefer derived comparison results.
-

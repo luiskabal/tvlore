@@ -63,8 +63,15 @@ export class CatalogRepository {
     return show ? toShowDetailResponse(show) : null;
   }
 
-  async findMovieDetail(movieId: string): Promise<MovieDetailResponseDto | null> {
+  async findMovieDetail(movieId: string, userId: string): Promise<MovieDetailResponseDto | null> {
     const movie = await this.prismaService.getClient().movie.findUnique({
+      include: {
+        watches: {
+          orderBy: { watchedAt: "desc" },
+          take: 1,
+          where: { userId },
+        },
+      },
       where: { id: movieId },
     });
 
@@ -100,10 +107,19 @@ export class CatalogRepository {
       : null;
   }
 
-  async findSeasonDetail(showId: string, seasonNumber: number): Promise<ShowSeasonDetailResponseDto | null> {
+  async findSeasonDetail(showId: string, seasonNumber: number, userId: string): Promise<ShowSeasonDetailResponseDto | null> {
     const season = await this.prismaService.getClient().season.findUnique({
       include: {
-        episodes: { orderBy: { episodeNumber: "asc" } },
+        episodes: {
+          include: {
+            watches: {
+              orderBy: { watchedAt: "desc" },
+              take: 1,
+              where: { userId },
+            },
+          },
+          orderBy: { episodeNumber: "asc" },
+        },
       },
       where: {
         showId_seasonNumber: {
@@ -338,19 +354,22 @@ function toMovieDetailResponse(movie: {
   releaseDate: Date | null;
   runtimeMinutes: number | null;
   title: string;
+  watches: Array<{ watchedAt: Date }>;
 }): MovieDetailResponseDto {
+  const watch = movie.watches[0];
+
   return {
     backdropPath: movie.backdropPath,
     id: movie.id,
-    lastWatchedAt: null,
+    lastWatchedAt: watch ? watch.watchedAt.toISOString() : null,
     originalTitle: movie.originalTitle,
     overview: movie.overview,
     posterPath: movie.posterPath,
     releaseDate: toDateString(movie.releaseDate),
     runtimeMinutes: movie.runtimeMinutes,
     title: movie.title,
-    watchCount: 0,
-    watched: false,
+    watchCount: watch ? 1 : 0,
+    watched: Boolean(watch),
   };
 }
 
@@ -386,6 +405,7 @@ function toSeasonDetailResponse(season: {
     seasonNumber: number;
     stillPath: string | null;
     title: string;
+    watches: Array<{ watchedAt: Date }>;
   }>;
   id: string;
   overview: string;
@@ -410,19 +430,22 @@ function toEpisodeResponse(episode: {
   seasonNumber: number;
   stillPath: string | null;
   title: string;
+  watches: Array<{ watchedAt: Date }>;
 }): ShowEpisodeDto {
+  const watch = episode.watches[0];
+
   return {
     airDate: toDateString(episode.airDate),
     episodeNumber: episode.episodeNumber,
     id: episode.id,
-    lastWatchedAt: null,
+    lastWatchedAt: watch ? watch.watchedAt.toISOString() : null,
     overview: episode.overview,
     runtimeMinutes: episode.runtimeMinutes,
     seasonNumber: episode.seasonNumber,
     stillPath: episode.stillPath,
     title: episode.title,
-    watchCount: 0,
-    watched: false,
+    watchCount: watch ? 1 : 0,
+    watched: Boolean(watch),
   };
 }
 

@@ -73,10 +73,10 @@ export class CatalogService {
     authorizationHeader: string | undefined,
     movieId: string | undefined,
   ): Promise<MovieDetailResponseDto> {
-    await this.usersService.getMe(authorizationHeader);
+    const user = await this.usersService.getMe(authorizationHeader);
 
     const parsedMovieId = parseTvloreId(movieId, "movieId");
-    const movie = await this.catalogRepository.findMovieDetail(parsedMovieId);
+    const movie = await this.catalogRepository.findMovieDetail(parsedMovieId, user.id);
 
     if (!movie) {
       throwNotFound("MOVIE_NOT_FOUND", "Movie was not found");
@@ -106,7 +106,7 @@ export class CatalogService {
     showId: string | undefined,
     seasonNumber: string | undefined,
   ): Promise<ShowSeasonDetailResponseDto> {
-    await this.usersService.getMe(authorizationHeader);
+    const user = await this.usersService.getMe(authorizationHeader);
 
     const parsedShowId = parseTvloreId(showId, "showId");
     const parsedSeasonNumber = parseSeasonNumber(seasonNumber);
@@ -119,7 +119,7 @@ export class CatalogService {
     const season = await this.tmdbClient.getResolvedSeason(providerShowId, parsedSeasonNumber);
     await this.catalogRepository.upsertSeasonDetail(parsedShowId, season);
 
-    const storedSeason = await this.catalogRepository.findSeasonDetail(parsedShowId, parsedSeasonNumber);
+    const storedSeason = await this.catalogRepository.findSeasonDetail(parsedShowId, parsedSeasonNumber, user.id);
 
     if (!storedSeason) {
       throwNotFound("SEASON_NOT_FOUND", "Season was not found");

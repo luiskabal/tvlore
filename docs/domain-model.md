@@ -246,7 +246,7 @@ Fields:
 
 ### EpisodeWatch
 
-Represents one user watch of one episode.
+Represents one active watched marker for one user and one episode in the MVP.
 
 Fields:
 
@@ -256,9 +256,15 @@ Fields:
 - `watchedAt`
 - `createdAt`
 
+Unique constraint:
+
+- `(userId, episodeId)`
+
+Future rewatch history can relax this constraint and count multiple rows.
+
 ### MovieWatch
 
-Represents one user watch of one movie.
+Represents one active watched marker for one user and one movie in the MVP.
 
 Fields:
 
@@ -267,6 +273,12 @@ Fields:
 - `movieId`
 - `watchedAt`
 - `createdAt`
+
+Unique constraint:
+
+- `(userId, movieId)`
+
+Future rewatch history can relax this constraint and count multiple rows.
 
 ### ExternalIdentifier
 
@@ -389,4 +401,3 @@ erDiagram
     string providerId
   }
 ```
-
