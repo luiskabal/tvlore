@@ -35,10 +35,12 @@ GET /health
 GET /health/db
 GET /health/error
 GET /users/me
+GET /search
 ```
 
 `GET /health/db` verifies runtime connectivity from Vercel to PostgreSQL. If Vercel has no `DATABASE_URL`, the API fails during startup.
 `GET /users/me` validates a Supabase Auth bearer token, upserts the matching `UserIdentity`, and returns the real TVLore user.
+`GET /search` validates a Supabase Auth bearer token and calls TMDB from the backend using server-side credentials.
 
 ## Database
 
@@ -58,6 +60,7 @@ DATABASE_URL
 MIGRATE_DATABASE_URL
 SUPABASE_URL
 SUPABASE_PUBLISHABLE_KEY
+TMDB_ACCESS_TOKEN
 ```
 
 `DATABASE_URL` is used by the API at runtime. Use the Supabase Transaction Pooler:
@@ -75,6 +78,7 @@ postgresql://postgres:YOUR_PASSWORD@db.qpekdijebjzigrgcumpv.supabase.co:5432/pos
 Do not commit real database passwords.
 `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` are used by the API to validate
 Supabase Auth access tokens.
+`TMDB_ACCESS_TOKEN` is the TMDB API Read Access Token used by the backend catalog provider.
 
 Migration command:
 
@@ -124,8 +128,9 @@ Remove-Item Env:\TVLORE_API_BASE_URL
 ```
 
 The smoke test expects `GET /users/me` to return `401` without a token. To also
-verify the authenticated path, set `TVLORE_SUPABASE_ACCESS_TOKEN` to a real
-Supabase access token before running `api:check`.
+verify the authenticated `/users/me` and `/search` paths, set
+`TVLORE_SUPABASE_ACCESS_TOKEN` to a real Supabase access token before running
+`api:check`.
 
 The API validates `DATABASE_URL` during Nest application startup. If the
 variable is missing after loading local `.env`, the app fails to boot instead
@@ -198,7 +203,9 @@ the selected Postman environment.
 - Supabase Google login works from an Expo development build.
 - Prisma schema and initial migration exist.
 - Vercel `tvlore-api` has database and Supabase Auth env vars configured.
+- Vercel `tvlore-api` has `TMDB_ACCESS_TOKEN` configured for catalog search.
 - `GET /health/db` returns `200` from production.
 - Initial Prisma migration has been applied to Supabase.
 - Auth identity/session tables have been applied to Supabase.
 - `GET /users/me` resolves authenticated Supabase users into TVLore users.
+- `GET /search` proxies TMDB search through the backend.

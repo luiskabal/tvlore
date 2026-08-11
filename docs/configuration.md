@@ -68,7 +68,7 @@ Examples:
 - `MIGRATE_DATABASE_URL` should be a direct or session PostgreSQL connection string for Prisma migrations.
 - `SUPABASE_URL` must match the Supabase project URL when backend auth verification is implemented.
 - `SUPABASE_PUBLISHABLE_KEY` must be available to verify Supabase-authenticated flows where needed.
-- `TMDB_ACCESS_TOKEN` must be present in non-test environments.
+- `TMDB_ACCESS_TOKEN` must be present for the backend catalog provider. Use the TMDB API Read Access Token, not the shorter API key.
 
 ## Secrets
 

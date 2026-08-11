@@ -8,7 +8,6 @@ No active infrastructure tasks.
 
 ## Next
 
-- [ ] Add TMDB-backed catalog search.
 - [ ] Add show/movie detail endpoints.
 - [ ] Add episode/movie watch tracking.
 - [ ] Add progress and personal library endpoints.
@@ -46,6 +45,7 @@ No active infrastructure tasks.
 - [x] Refactor backend auth/users into controller, service, repository, and provider boundaries.
 - [x] Refactor mobile home/auth flow into screen, hooks, API client, auth client, and config boundaries.
 - [x] Add initial backend unit test setup with Vitest.
+- [x] Add TMDB-backed catalog search endpoint.
 
 ## Deferred
 

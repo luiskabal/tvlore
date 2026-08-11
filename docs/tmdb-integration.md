@@ -4,6 +4,15 @@ TMDB is the initial catalog provider. It supplies catalog metadata, not TVLore p
 
 The backend is the only layer that should call TMDB using server-side credentials.
 
+## Current MVP Implementation
+
+- `TMDB_ACCESS_TOKEN` is read by the backend configuration provider and validated at startup.
+- `GET /search` is protected by the Supabase bearer token used by other TVLore endpoints.
+- The API calls `https://api.themoviedb.org/3/search/multi` with the TMDB API Read Access Token as a bearer token.
+- TMDB `movie` and `tv` results are mapped to TVLore `movie` and `show` results.
+- TMDB `person` results and malformed provider rows are ignored.
+- Search currently returns provider-backed refs only. Internal `tvloreId` stays `null` until `POST /catalog/resolve` is implemented.
+
 ## Anti-Corruption Boundary
 
 Do not let TMDB API responses leak throughout TVLore.
@@ -144,4 +153,3 @@ Examples:
 - `CATALOG_PROVIDER_UNAVAILABLE`
 - `CATALOG_ITEM_NOT_FOUND`
 - `CATALOG_RATE_LIMITED`
-

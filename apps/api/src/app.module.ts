@@ -1,6 +1,9 @@
 import { MiddlewareConsumer, Module } from "@nestjs/common";
 
 import { SupabaseAuthService } from "./auth/supabase-auth.service";
+import { CatalogController } from "./catalog/catalog.controller";
+import { CatalogService } from "./catalog/catalog.service";
+import { TmdbClient } from "./catalog/tmdb-client";
 import { CorrelationIdMiddleware } from "./correlation-id.middleware";
 import { ApiConfigProvider } from "./config";
 import { HealthController } from "./health.controller";
@@ -11,11 +14,13 @@ import { UsersRepository } from "./users/users.repository";
 import { UsersService } from "./users/users.service";
 
 @Module({
-  controllers: [RootController, HealthController, UsersController],
+  controllers: [RootController, HealthController, UsersController, CatalogController],
   providers: [
     ApiConfigProvider,
     PrismaService,
     SupabaseAuthService,
+    TmdbClient,
+    CatalogService,
     UsersRepository,
     UsersService,
   ],

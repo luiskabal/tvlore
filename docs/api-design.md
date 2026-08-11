@@ -263,6 +263,8 @@ Errors: `UNAUTHORIZED`, `USER_NOT_FOUND`.
 
 Purpose: search TV shows and movies through the backend catalog provider boundary.
 
+Current MVP status: implemented for provider-backed search results.
+
 Auth: required.
 
 Route parameters: none.
@@ -271,7 +273,7 @@ Query parameters:
 
 - `query` required string.
 - `types` optional comma-separated `show,movie`.
-- `page` optional positive integer.
+- `page` optional positive integer between 1 and 500.
 
 Request: none.
 
@@ -292,7 +294,7 @@ Response:
         "provider": "tmdb",
         "providerId": "70523"
       },
-      "tvloreId": "uuid-or-null"
+      "tvloreId": null
     }
   ]
 }

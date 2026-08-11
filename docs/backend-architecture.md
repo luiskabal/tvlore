@@ -51,6 +51,13 @@ src/
 |   |-- users.types.ts
 |   `-- user-profile.ts
 |
+|-- catalog/
+|   |-- catalog.controller.ts
+|   |-- catalog.service.ts
+|   |-- catalog-search.ts
+|   |-- catalog.types.ts
+|   `-- tmdb-client.ts
+|
 |-- config.ts
 |-- prisma.service.ts
 `-- app.module.ts
@@ -69,6 +76,13 @@ For example, `GET /users/me` is split as:
 - `SupabaseAuthService`: validates Supabase bearer tokens.
 - `UsersRepository`: owns Prisma upsert logic.
 - `user-profile.ts`: pure display-name logic with unit tests.
+
+`GET /search` follows the same shape:
+
+- `CatalogController`: HTTP route only.
+- `CatalogService`: validates the Supabase bearer token through `UsersService`, parses search input, and coordinates search.
+- `TmdbClient`: owns TMDB HTTP calls and provider error mapping.
+- `catalog-search.ts`: pure query/result normalization with unit tests.
 
 ## Layer Separation
 

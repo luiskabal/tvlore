@@ -507,6 +507,134 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Catalog",
+      "description": "Catalog search is protected by Supabase bearer auth. TVLore calls TMDB server-side and returns normalized movie/show results.",
+      "item": [
+        {
+          "name": "GET /search",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "postman-{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/search?query=dark&types=show,movie&page=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "dark"
+                },
+                {
+                  "key": "types",
+                  "value": "show,movie"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('response is catalog search shape', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.query).to.eql('dark');",
+                  "  pm.expect(body.page).to.eql(1);",
+                  "  pm.expect(body.results).to.be.an('array');",
+                  "  if (body.results.length > 0) {",
+                  "    pm.expect(['show', 'movie']).to.include(body.results[0].mediaType);",
+                  "    pm.expect(body.results[0].title).to.be.a('string');",
+                  "    pm.expect(body.results[0].externalRef.provider).to.eql('tmdb');",
+                  "    pm.expect(body.results[0].externalRef.providerId).to.be.a('string');",
+                  "  }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /search without token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "postman-search-unauthorized"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/search?query=dark",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "dark"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 401', function () {",
+                  "  pm.response.to.have.status(401);",
+                  "});",
+                  "",
+                  "pm.test('response is unauthorized error', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.code).to.eql('UNAUTHORIZED');",
+                  "  pm.expect(body.message).to.eql('Valid bearer token required');",
+                  "  pm.expect(body.correlationId).to.eql('postman-search-unauthorized');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "variable": [

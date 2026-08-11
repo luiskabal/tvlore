@@ -6,14 +6,19 @@ for (const path of ["/", "/health", "/health/db"]) {
 }
 
 await check("/users/me", { expectedStatus: 401 });
+await check("/search?query=dark", { expectedStatus: 401 });
 
 if (supabaseAccessToken) {
   await check("/users/me", {
     expectedStatus: 200,
     headers: { Authorization: `Bearer ${supabaseAccessToken}` },
   });
+  await check("/search?query=dark", {
+    expectedStatus: 200,
+    headers: { Authorization: `Bearer ${supabaseAccessToken}` },
+  });
 } else {
-  console.log("Skipping authenticated /users/me check: set TVLORE_SUPABASE_ACCESS_TOKEN.");
+  console.log("Skipping authenticated /users/me and /search checks: set TVLORE_SUPABASE_ACCESS_TOKEN.");
 }
 
 async function check(path, options) {
