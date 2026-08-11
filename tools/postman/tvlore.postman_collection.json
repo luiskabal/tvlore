@@ -583,6 +583,120 @@
           ]
         },
         {
+          "name": "POST /catalog/resolve",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "postman-{{$guid}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mediaType\": \"show\",\n  \"provider\": \"tmdb\",\n  \"providerId\": \"70523\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/catalog/resolve",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "catalog",
+                "resolve"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('response is resolved catalog item', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.mediaType).to.eql('show');",
+                  "  pm.expect(body.id).to.be.a('string');",
+                  "  pm.environment.set('resolvedShowId', body.id);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /catalog/resolve without token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "postman-resolve-unauthorized"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mediaType\": \"show\",\n  \"provider\": \"tmdb\",\n  \"providerId\": \"70523\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/catalog/resolve",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "catalog",
+                "resolve"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 401', function () {",
+                  "  pm.response.to.have.status(401);",
+                  "});",
+                  "",
+                  "pm.test('response is unauthorized error', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.code).to.eql('UNAUTHORIZED');",
+                  "  pm.expect(body.message).to.eql('Valid bearer token required');",
+                  "  pm.expect(body.correlationId).to.eql('postman-resolve-unauthorized');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "GET /search without token",
           "request": {
             "method": "GET",
@@ -667,6 +781,11 @@
       "key": "supabaseRefreshToken",
       "value": "",
       "type": "secret"
+    },
+    {
+      "key": "resolvedShowId",
+      "value": "",
+      "type": "string"
     }
   ]
 }

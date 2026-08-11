@@ -8,9 +8,9 @@ No active infrastructure tasks.
 
 ## Next
 
-- [ ] Add show/movie detail endpoints.
 - [ ] Add episode/movie watch tracking.
 - [ ] Add progress and personal library endpoints.
+- [ ] Add show/movie detail endpoints by TVLore ID.
 
 ## Done
 
@@ -46,6 +46,7 @@ No active infrastructure tasks.
 - [x] Refactor mobile home/auth flow into screen, hooks, API client, auth client, and config boundaries.
 - [x] Add initial backend unit test setup with Vitest.
 - [x] Add TMDB-backed catalog search endpoint.
+- [x] Add catalog resolve endpoint and initial catalog tables.
 
 ## Deferred
 

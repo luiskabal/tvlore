@@ -50,3 +50,45 @@ model RefreshSession {
   @@index([expiresAt])
   @@map("refresh_sessions")
 }
+
+model Show {
+  id            String   @id @default(uuid()) @db.Uuid
+  title         String
+  originalTitle String?  @map("original_title")
+  overview      String
+  posterPath    String?  @map("poster_path")
+  backdropPath  String?  @map("backdrop_path")
+  firstAirDate  DateTime? @map("first_air_date") @db.Date
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("shows")
+}
+
+model Movie {
+  id             String   @id @default(uuid()) @db.Uuid
+  title          String
+  originalTitle  String?  @map("original_title")
+  overview       String
+  posterPath     String?  @map("poster_path")
+  backdropPath   String?  @map("backdrop_path")
+  releaseDate    DateTime? @map("release_date") @db.Date
+  runtimeMinutes Int?     @map("runtime_minutes")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("movies")
+}
+
+model ExternalIdentifier {
+  id           String   @id @default(uuid()) @db.Uuid
+  entityType   String   @map("entity_type")
+  entityId     String   @map("entity_id") @db.Uuid
+  provider     String
+  providerId   String   @map("provider_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@unique([entityType, provider, providerId])
+  @@index([entityType, entityId])
+  @@map("external_identifiers")
+}

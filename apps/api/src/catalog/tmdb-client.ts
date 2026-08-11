@@ -1,7 +1,8 @@
-import { BadGatewayException, HttpException, HttpStatus, Inject, Injectable, ServiceUnavailableException } from "@nestjs/common";
+import { BadGatewayException, HttpException, HttpStatus, Inject, Injectable, NotFoundException, ServiceUnavailableException } from "@nestjs/common";
 
 import { API_CONFIG, type ApiConfig } from "../config";
-import type { CatalogSearchInput } from "./catalog.types";
+import type { CatalogResolveInput, CatalogSearchInput } from "./catalog.types";
+import { toResolvedMovie, toResolvedShow } from "./catalog-resolve";
 import { toCatalogSearchResults } from "./catalog-search";
 
 @Injectable()
@@ -15,6 +16,30 @@ export class TmdbClient {
     url.searchParams.set("language", "en-US");
     url.searchParams.set("page", String(input.page));
 
+    return toCatalogSearchResults(await this.getJson(url), input.mediaTypes);
+  }
+
+  async getResolvedItem(input: CatalogResolveInput) {
+    const path = input.mediaType === "show" ? "tv" : "movie";
+    const url = new URL(`https://api.themoviedb.org/3/${path}/${input.providerId}`);
+    url.searchParams.set("language", "en-US");
+    const body = await this.getJson(url);
+    const item = input.mediaType === "show"
+      ? toResolvedShow(body, input.providerId)
+      : toResolvedMovie(body, input.providerId);
+
+    if (!item) {
+      throw new BadGatewayException({
+        code: "CATALOG_PROVIDER_UNAVAILABLE",
+        message: "Catalog provider returned an invalid response",
+        details: null,
+      });
+    }
+
+    return item;
+  }
+
+  private async getJson(url: URL) {
     const response = await fetch(url, {
       headers: {
         accept: "application/json",
@@ -27,7 +52,7 @@ export class TmdbClient {
     }
 
     try {
-      return toCatalogSearchResults(await response.json(), input.mediaTypes);
+      return await response.json() as unknown;
     } catch {
       throw new BadGatewayException({
         code: "CATALOG_PROVIDER_UNAVAILABLE",
@@ -39,6 +64,14 @@ export class TmdbClient {
 }
 
 function throwProviderError(status: number): never {
+  if (status === HttpStatus.NOT_FOUND) {
+    throw new NotFoundException({
+      code: "CATALOG_ITEM_NOT_FOUND",
+      message: "Catalog item was not found",
+      details: null,
+    });
+  }
+
   if (status === HttpStatus.TOO_MANY_REQUESTS) {
     throw new HttpException({
       code: "CATALOG_RATE_LIMITED",

@@ -1,13 +1,16 @@
 import { Injectable } from "@nestjs/common";
 
 import { UsersService } from "../users/users.service";
+import { parseCatalogResolveInput } from "./catalog-resolve";
 import { parseCatalogSearchInput } from "./catalog-search";
-import type { CatalogSearchResponseDto } from "./catalog.types";
+import type { CatalogResolveResponseDto, CatalogSearchResponseDto } from "./catalog.types";
+import { CatalogRepository } from "./catalog.repository";
 import { TmdbClient } from "./tmdb-client";
 
 @Injectable()
 export class CatalogService {
   constructor(
+    private readonly catalogRepository: CatalogRepository,
     private readonly tmdbClient: TmdbClient,
     private readonly usersService: UsersService,
   ) {}
@@ -26,7 +29,19 @@ export class CatalogService {
     return {
       page: input.page,
       query: input.query,
-      results,
+      results: await this.catalogRepository.withExistingTvloreIds(results),
     };
+  }
+
+  async resolve(
+    authorizationHeader: string | undefined,
+    body: unknown,
+  ): Promise<CatalogResolveResponseDto> {
+    await this.usersService.getMe(authorizationHeader);
+
+    const input = parseCatalogResolveInput(body);
+    const item = await this.tmdbClient.getResolvedItem(input);
+
+    return this.catalogRepository.upsertResolvedItem(item);
   }
 }

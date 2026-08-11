@@ -11,7 +11,8 @@ The backend is the only layer that should call TMDB using server-side credential
 - The API calls `https://api.themoviedb.org/3/search/multi` with the TMDB API Read Access Token as a bearer token.
 - TMDB `movie` and `tv` results are mapped to TVLore `movie` and `show` results.
 - TMDB `person` results and malformed provider rows are ignored.
-- Search currently returns provider-backed refs only. Internal `tvloreId` stays `null` until `POST /catalog/resolve` is implemented.
+- Search returns provider-backed refs and includes `tvloreId` when the provider item has already been resolved.
+- `POST /catalog/resolve` calls TMDB detail endpoints and persists `shows`, `movies`, and `external_identifiers`.
 
 ## Anti-Corruption Boundary
 
@@ -129,7 +130,7 @@ This lets watch history reference internal IDs without requiring a full TMDB mir
 3. API returns normalized search results with provider refs and optional existing TVLore IDs.
 4. User taps a result.
 5. Mobile calls `POST /catalog/resolve` with provider, media type, and provider ID.
-6. API fetches provider details if needed.
+6. API fetches provider details.
 7. API upserts internal Show/Movie records and external identifier mappings.
 8. API returns the TVLore ID.
 9. Mobile navigates to `/shows/:id` or `/movies/:id`.

@@ -53,6 +53,8 @@ src/
 |
 |-- catalog/
 |   |-- catalog.controller.ts
+|   |-- catalog.repository.ts
+|   |-- catalog-resolve.ts
 |   |-- catalog.service.ts
 |   |-- catalog-search.ts
 |   |-- catalog.types.ts
@@ -81,8 +83,10 @@ For example, `GET /users/me` is split as:
 
 - `CatalogController`: HTTP route only.
 - `CatalogService`: validates the Supabase bearer token through `UsersService`, parses search input, and coordinates search.
+- `CatalogRepository`: owns catalog persistence and existing TVLore ID lookups.
 - `TmdbClient`: owns TMDB HTTP calls and provider error mapping.
 - `catalog-search.ts`: pure query/result normalization with unit tests.
+- `catalog-resolve.ts`: pure resolve input/detail normalization with unit tests.
 
 ## Layer Separation
 

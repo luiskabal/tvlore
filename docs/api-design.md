@@ -263,7 +263,7 @@ Errors: `UNAUTHORIZED`, `USER_NOT_FOUND`.
 
 Purpose: search TV shows and movies through the backend catalog provider boundary.
 
-Current MVP status: implemented for provider-backed search results.
+Current MVP status: implemented for provider-backed search results and existing TVLore ID lookup.
 
 Auth: required.
 
@@ -328,6 +328,8 @@ Errors: `VALIDATION_FAILED`, `CATALOG_PROVIDER_UNAVAILABLE`, `CATALOG_RATE_LIMIT
 
 Purpose: resolve a provider-backed search result into an internal TVLore show or movie ID.
 
+Current MVP status: implemented for TMDB shows and movies.
+
 Auth: required.
 
 Route parameters: none.
@@ -355,8 +357,7 @@ Response:
 
 Status codes:
 
-- `200 OK` if already exists
-- `201 CREATED` if newly persisted
+- `200 OK`
 - `400 BAD_REQUEST`
 - `401 UNAUTHORIZED`
 - `404 NOT_FOUND`

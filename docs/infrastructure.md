@@ -36,11 +36,13 @@ GET /health/db
 GET /health/error
 GET /users/me
 GET /search
+POST /catalog/resolve
 ```
 
 `GET /health/db` verifies runtime connectivity from Vercel to PostgreSQL. If Vercel has no `DATABASE_URL`, the API fails during startup.
 `GET /users/me` validates a Supabase Auth bearer token, upserts the matching `UserIdentity`, and returns the real TVLore user.
 `GET /search` validates a Supabase Auth bearer token and calls TMDB from the backend using server-side credentials.
+`POST /catalog/resolve` validates a Supabase Auth bearer token, fetches TMDB details, and upserts an internal show or movie ID.
 
 ## Database
 
@@ -50,8 +52,8 @@ GET /search
 - ORM: Prisma.
 - Prisma schema: `apps/api/prisma/schema.prisma`
 - Initial migration: `apps/api/prisma/migrations/20260810162500_init_user/migration.sql`
-- Applied migrations: `20260810162500_init_user`, `20260810211300_add_auth_tables`
-- Current database tables: `_prisma_migrations`, `users`, `user_identities`, `refresh_sessions`
+- Applied migrations: `20260810162500_init_user`, `20260810211300_add_auth_tables`, `20260811144000_add_catalog_tables`
+- Current database tables: `_prisma_migrations`, `users`, `user_identities`, `refresh_sessions`, `shows`, `movies`, `external_identifiers`
 
 Vercel environment variables:
 
@@ -209,3 +211,4 @@ the selected Postman environment.
 - Auth identity/session tables have been applied to Supabase.
 - `GET /users/me` resolves authenticated Supabase users into TVLore users.
 - `GET /search` proxies TMDB search through the backend.
+- `POST /catalog/resolve` persists provider-backed shows/movies into TVLore IDs.
