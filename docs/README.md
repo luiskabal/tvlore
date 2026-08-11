@@ -49,22 +49,23 @@ The MVP goal is intentionally small: authenticate with Google, search catalog co
 
 1. [Product Vision](product-vision.md)
 2. [MVP Scope](mvp-scope.md)
-3. [Architecture](architecture.md)
-4. [Stack](stack.md)
-5. [Domain Model](domain-model.md)
-6. [Tracking Model](tracking-model.md)
-7. [API Design](api-design.md)
-8. [Mobile Architecture](mobile-architecture.md)
-9. [Backend Architecture](backend-architecture.md)
-10. [State Management](state-management.md)
-11. [Authentication](authentication.md)
-12. [Security](security.md)
-13. [Social Vision](social-vision.md)
-14. [TVLore Match](tvlore-match.md)
-15. [Infrastructure Setup](infrastructure.md)
-16. [Mobile Development Build](mobile-development-build.md)
-17. [Roadmap](roadmap.md)
-18. [Architecture Decision Records](adr/)
+3. [Current State](current-state.md)
+4. [Architecture](architecture.md)
+5. [Stack](stack.md)
+6. [Domain Model](domain-model.md)
+7. [Tracking Model](tracking-model.md)
+8. [API Design](api-design.md)
+9. [Mobile Architecture](mobile-architecture.md)
+10. [Backend Architecture](backend-architecture.md)
+11. [State Management](state-management.md)
+12. [Authentication](authentication.md)
+13. [Security](security.md)
+14. [Social Vision](social-vision.md)
+15. [TVLore Match](tvlore-match.md)
+16. [Infrastructure Setup](infrastructure.md)
+17. [Mobile Development Build](mobile-development-build.md)
+18. [Roadmap](roadmap.md)
+19. [Architecture Decision Records](adr/)
 
 ## Documentation Index
 
@@ -74,6 +75,7 @@ The MVP goal is intentionally small: authenticate with Google, search catalog co
 - [Backend Architecture](backend-architecture.md)
 - [Coding Rules](coding-rules.md)
 - [Configuration](configuration.md)
+- [Current State](current-state.md)
 - [Diagrams](diagrams.md)
 - [Domain Model](domain-model.md)
 - [Error Handling](error-handling.md)
@@ -112,9 +114,9 @@ The MVP goal is intentionally small: authenticate with Google, search catalog co
 
 ## Current Architecture Status
 
-This documentation started as the Phase 0 architecture baseline. The repository now also contains the initial monorepo, NestJS API, Expo mobile app, Prisma schema, Vercel deploy setup, Supabase infrastructure baseline, and Postman collection.
+This documentation started as the Phase 0 architecture baseline. The repository now also contains the initial monorepo, NestJS API, Expo mobile app, Prisma schema, Vercel deploy setup, Supabase infrastructure baseline, TMDB catalog search/resolve, and Postman collection.
 
-Accepted decisions are stable enough for the first implementation pass. Proposed decisions should influence boundaries but should be revisited before implementation of the related feature. See [Infrastructure Setup](infrastructure.md) for the current deployed state.
+Accepted decisions are stable enough for the first implementation pass. Proposed decisions should influence boundaries but should be revisited before implementation of the related feature. See [Current State](current-state.md) for the implemented flows and [Infrastructure Setup](infrastructure.md) for the deployed state.
 
 ## Unresolved Decisions
 
