@@ -10,7 +10,6 @@ No active infrastructure tasks.
 
 - [ ] Add episode/movie watch tracking.
 - [ ] Add progress and personal library endpoints.
-- [ ] Add show/movie detail endpoints by TVLore ID.
 
 ## Done
 
@@ -47,6 +46,8 @@ No active infrastructure tasks.
 - [x] Add initial backend unit test setup with Vitest.
 - [x] Add TMDB-backed catalog search endpoint.
 - [x] Add catalog resolve endpoint and initial catalog tables.
+- [x] Add show/movie detail endpoints by TVLore ID.
+- [x] Add season and episode catalog persistence.
 
 ## Deferred
 

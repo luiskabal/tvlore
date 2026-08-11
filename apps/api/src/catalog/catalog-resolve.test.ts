@@ -43,6 +43,7 @@ describe("resolved TMDB detail mapping", () => {
       posterPath: "/poster.jpg",
       releaseDate: null,
       runtimeMinutes: null,
+      seasons: [],
       title: "Dark",
     });
   });
@@ -57,6 +58,7 @@ describe("resolved TMDB detail mapping", () => {
       mediaType: "movie",
       releaseDate: "2008-07-16",
       runtimeMinutes: 152,
+      seasons: [],
       title: "The Dark Knight",
     });
   });

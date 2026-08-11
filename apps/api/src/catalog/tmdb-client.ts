@@ -2,6 +2,7 @@ import { BadGatewayException, HttpException, HttpStatus, Inject, Injectable, Not
 
 import { API_CONFIG, type ApiConfig } from "../config";
 import type { CatalogResolveInput, CatalogSearchInput } from "./catalog.types";
+import { toResolvedSeason } from "./catalog-detail";
 import { toResolvedMovie, toResolvedShow } from "./catalog-resolve";
 import { toCatalogSearchResults } from "./catalog-search";
 
@@ -37,6 +38,22 @@ export class TmdbClient {
     }
 
     return item;
+  }
+
+  async getResolvedSeason(providerShowId: string, seasonNumber: number) {
+    const url = new URL(`https://api.themoviedb.org/3/tv/${providerShowId}/season/${seasonNumber}`);
+    url.searchParams.set("language", "en-US");
+    const season = toResolvedSeason(await this.getJson(url));
+
+    if (!season) {
+      throw new BadGatewayException({
+        code: "CATALOG_PROVIDER_UNAVAILABLE",
+        message: "Catalog provider returned an invalid response",
+        details: null,
+      });
+    }
+
+    return season;
   }
 
   private async getJson(url: URL) {

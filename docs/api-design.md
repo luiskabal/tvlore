@@ -383,6 +383,8 @@ Errors: `CATALOG_ITEM_NOT_FOUND`, `CATALOG_PROVIDER_UNAVAILABLE`, `VALIDATION_FA
 
 Purpose: return TVLore show details by internal ID.
 
+Current MVP status: implemented without watch progress until tracking exists.
+
 Auth: required.
 
 Route parameters:
@@ -440,6 +442,8 @@ Errors: `SHOW_NOT_FOUND`, `VALIDATION_FAILED`, `CATALOG_PROVIDER_UNAVAILABLE`.
 
 Purpose: list seasons for a show.
 
+Current MVP status: implemented from internal TVLore season records.
+
 Auth: required.
 
 Route parameters:
@@ -489,6 +493,8 @@ Errors: `SHOW_NOT_FOUND`, `VALIDATION_FAILED`, `CATALOG_PROVIDER_UNAVAILABLE`.
 ### `GET /shows/:showId/seasons/:seasonNumber`
 
 Purpose: return a season and its episodes, including authenticated user's watch state.
+
+Current MVP status: implemented with default unwatched state until tracking exists.
 
 Auth: required.
 
@@ -548,6 +554,8 @@ Errors: `SHOW_NOT_FOUND`, `SEASON_NOT_FOUND`, `VALIDATION_FAILED`.
 ### `GET /movies/:movieId`
 
 Purpose: return movie details and authenticated user's watch state.
+
+Current MVP status: implemented with default unwatched state until tracking exists.
 
 Auth: required.
 

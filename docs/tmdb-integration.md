@@ -13,6 +13,7 @@ The backend is the only layer that should call TMDB using server-side credential
 - TMDB `person` results and malformed provider rows are ignored.
 - Search returns provider-backed refs and includes `tvloreId` when the provider item has already been resolved.
 - `POST /catalog/resolve` calls TMDB detail endpoints and persists `shows`, `movies`, and `external_identifiers`.
+- `GET /shows/:showId/seasons/:seasonNumber` calls TMDB season detail and persists `episodes` for that season.
 
 ## Anti-Corruption Boundary
 

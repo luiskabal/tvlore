@@ -1,9 +1,17 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { UsersService } from "../users/users.service";
+import { parseSeasonNumber, parseTvloreId } from "./catalog-detail";
 import { parseCatalogResolveInput } from "./catalog-resolve";
 import { parseCatalogSearchInput } from "./catalog-search";
-import type { CatalogResolveResponseDto, CatalogSearchResponseDto } from "./catalog.types";
+import type {
+  CatalogResolveResponseDto,
+  CatalogSearchResponseDto,
+  MovieDetailResponseDto,
+  ShowDetailResponseDto,
+  ShowSeasonDetailResponseDto,
+  ShowSeasonsResponseDto,
+} from "./catalog.types";
 import { CatalogRepository } from "./catalog.repository";
 import { TmdbClient } from "./tmdb-client";
 
@@ -44,4 +52,87 @@ export class CatalogService {
 
     return this.catalogRepository.upsertResolvedItem(item);
   }
+
+  async getShow(
+    authorizationHeader: string | undefined,
+    showId: string | undefined,
+  ): Promise<ShowDetailResponseDto> {
+    await this.usersService.getMe(authorizationHeader);
+
+    const parsedShowId = parseTvloreId(showId, "showId");
+    const show = await this.catalogRepository.findShowDetail(parsedShowId);
+
+    if (!show) {
+      throwNotFound("SHOW_NOT_FOUND", "Show was not found");
+    }
+
+    return show;
+  }
+
+  async getMovie(
+    authorizationHeader: string | undefined,
+    movieId: string | undefined,
+  ): Promise<MovieDetailResponseDto> {
+    await this.usersService.getMe(authorizationHeader);
+
+    const parsedMovieId = parseTvloreId(movieId, "movieId");
+    const movie = await this.catalogRepository.findMovieDetail(parsedMovieId);
+
+    if (!movie) {
+      throwNotFound("MOVIE_NOT_FOUND", "Movie was not found");
+    }
+
+    return movie;
+  }
+
+  async getShowSeasons(
+    authorizationHeader: string | undefined,
+    showId: string | undefined,
+  ): Promise<ShowSeasonsResponseDto> {
+    await this.usersService.getMe(authorizationHeader);
+
+    const parsedShowId = parseTvloreId(showId, "showId");
+    const seasons = await this.catalogRepository.findShowSeasons(parsedShowId);
+
+    if (!seasons) {
+      throwNotFound("SHOW_NOT_FOUND", "Show was not found");
+    }
+
+    return seasons;
+  }
+
+  async getShowSeason(
+    authorizationHeader: string | undefined,
+    showId: string | undefined,
+    seasonNumber: string | undefined,
+  ): Promise<ShowSeasonDetailResponseDto> {
+    await this.usersService.getMe(authorizationHeader);
+
+    const parsedShowId = parseTvloreId(showId, "showId");
+    const parsedSeasonNumber = parseSeasonNumber(seasonNumber);
+    const providerShowId = await this.catalogRepository.findShowProviderId(parsedShowId);
+
+    if (!providerShowId) {
+      throwNotFound("SHOW_NOT_FOUND", "Show was not found");
+    }
+
+    const season = await this.tmdbClient.getResolvedSeason(providerShowId, parsedSeasonNumber);
+    await this.catalogRepository.upsertSeasonDetail(parsedShowId, season);
+
+    const storedSeason = await this.catalogRepository.findSeasonDetail(parsedShowId, parsedSeasonNumber);
+
+    if (!storedSeason) {
+      throwNotFound("SEASON_NOT_FOUND", "Season was not found");
+    }
+
+    return storedSeason;
+  }
+}
+
+function throwNotFound(code: string, message: string): never {
+  throw new NotFoundException({
+    code,
+    message,
+    details: null,
+  });
 }

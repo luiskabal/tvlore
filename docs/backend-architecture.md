@@ -53,6 +53,7 @@ src/
 |
 |-- catalog/
 |   |-- catalog.controller.ts
+|   |-- catalog-detail.ts
 |   |-- catalog.repository.ts
 |   |-- catalog-resolve.ts
 |   |-- catalog.service.ts
@@ -87,6 +88,7 @@ For example, `GET /users/me` is split as:
 - `TmdbClient`: owns TMDB HTTP calls and provider error mapping.
 - `catalog-search.ts`: pure query/result normalization with unit tests.
 - `catalog-resolve.ts`: pure resolve input/detail normalization with unit tests.
+- `catalog-detail.ts`: pure route/detail normalization with unit tests.
 
 ## Layer Separation
 

@@ -52,15 +52,17 @@ model RefreshSession {
 }
 
 model Show {
-  id            String   @id @default(uuid()) @db.Uuid
+  id            String    @id @default(uuid()) @db.Uuid
   title         String
-  originalTitle String?  @map("original_title")
+  originalTitle String?   @map("original_title")
   overview      String
-  posterPath    String?  @map("poster_path")
-  backdropPath  String?  @map("backdrop_path")
+  posterPath    String?   @map("poster_path")
+  backdropPath  String?   @map("backdrop_path")
   firstAirDate  DateTime? @map("first_air_date") @db.Date
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  episodes      Episode[]
+  seasons       Season[]
 
   @@map("shows")
 }
@@ -91,4 +93,45 @@ model ExternalIdentifier {
   @@unique([entityType, provider, providerId])
   @@index([entityType, entityId])
   @@map("external_identifiers")
+}
+
+model Season {
+  id            String    @id @default(uuid()) @db.Uuid
+  showId        String    @map("show_id") @db.Uuid
+  seasonNumber  Int       @map("season_number")
+  title         String
+  overview      String
+  posterPath    String?   @map("poster_path")
+  airDate       DateTime? @map("air_date") @db.Date
+  episodeCount  Int       @default(0) @map("episode_count")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  episodes      Episode[]
+  show          Show      @relation(fields: [showId], references: [id], onDelete: Cascade)
+
+  @@unique([showId, seasonNumber])
+  @@index([showId])
+  @@map("seasons")
+}
+
+model Episode {
+  id             String    @id @default(uuid()) @db.Uuid
+  showId         String    @map("show_id") @db.Uuid
+  seasonId       String    @map("season_id") @db.Uuid
+  seasonNumber   Int       @map("season_number")
+  episodeNumber  Int       @map("episode_number")
+  title          String
+  overview       String
+  stillPath      String?   @map("still_path")
+  airDate        DateTime? @map("air_date") @db.Date
+  runtimeMinutes Int?      @map("runtime_minutes")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  season         Season    @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  show           Show      @relation(fields: [showId], references: [id], onDelete: Cascade)
+
+  @@unique([showId, seasonNumber, episodeNumber])
+  @@index([seasonId])
+  @@index([showId])
+  @@map("episodes")
 }

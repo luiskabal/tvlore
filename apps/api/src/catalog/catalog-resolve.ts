@@ -1,6 +1,6 @@
 import { BadRequestException } from "@nestjs/common";
 
-import type { CatalogResolveInput, CatalogResolvedItem } from "./catalog.types";
+import type { CatalogResolveInput, CatalogResolvedItem, CatalogResolvedSeasonSummary } from "./catalog.types";
 
 export function parseCatalogResolveInput(value: unknown): CatalogResolveInput {
   if (!isRecord(value)) {
@@ -49,6 +49,7 @@ export function toResolvedShow(value: unknown, providerId: string): CatalogResol
     posterPath: getString(value.poster_path),
     releaseDate: null,
     runtimeMinutes: null,
+    seasons: getResolvedSeasonSummaries(value.seasons),
     title,
   };
 }
@@ -74,7 +75,37 @@ export function toResolvedMovie(value: unknown, providerId: string): CatalogReso
     posterPath: getString(value.poster_path),
     releaseDate: getDateString(value.release_date),
     runtimeMinutes: getPositiveInteger(value.runtime),
+    seasons: [],
     title,
+  };
+}
+
+function getResolvedSeasonSummaries(value: unknown): CatalogResolvedSeasonSummary[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.map(toResolvedSeasonSummary).filter((season): season is CatalogResolvedSeasonSummary => Boolean(season));
+}
+
+function toResolvedSeasonSummary(value: unknown): CatalogResolvedSeasonSummary | null {
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  const seasonNumber = getNonNegativeInteger(value.season_number);
+
+  if (seasonNumber === null) {
+    return null;
+  }
+
+  return {
+    airDate: getDateString(value.air_date),
+    episodeCount: getNonNegativeInteger(value.episode_count) ?? 0,
+    overview: getString(value.overview) ?? "",
+    posterPath: getString(value.poster_path),
+    seasonNumber,
+    title: getString(value.name) ?? `Season ${seasonNumber}`,
   };
 }
 
@@ -102,6 +133,10 @@ function getDateString(value: unknown) {
 
 function getPositiveInteger(value: unknown) {
   return typeof value === "number" && Number.isInteger(value) && value > 0 ? value : null;
+}
+
+function getNonNegativeInteger(value: unknown) {
+  return typeof value === "number" && Number.isInteger(value) && value >= 0 ? value : null;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

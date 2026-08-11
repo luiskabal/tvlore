@@ -1,7 +1,14 @@
-import { Body, Controller, Get, Headers, HttpCode, HttpStatus, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, Headers, HttpCode, HttpStatus, Param, Post, Query } from "@nestjs/common";
 
 import { CatalogService } from "./catalog.service";
-import type { CatalogResolveResponseDto, CatalogSearchResponseDto } from "./catalog.types";
+import type {
+  CatalogResolveResponseDto,
+  CatalogSearchResponseDto,
+  MovieDetailResponseDto,
+  ShowDetailResponseDto,
+  ShowSeasonDetailResponseDto,
+  ShowSeasonsResponseDto,
+} from "./catalog.types";
 
 @Controller("search")
 export class CatalogController {
@@ -29,5 +36,48 @@ export class CatalogResolveController {
     @Body() body: unknown,
   ): Promise<CatalogResolveResponseDto> {
     return this.catalogService.resolve(authorizationHeader, body);
+  }
+}
+
+@Controller("shows")
+export class ShowsController {
+  constructor(private readonly catalogService: CatalogService) {}
+
+  @Get(":showId")
+  getShow(
+    @Headers("authorization") authorizationHeader: string | undefined,
+    @Param("showId") showId: string | undefined,
+  ): Promise<ShowDetailResponseDto> {
+    return this.catalogService.getShow(authorizationHeader, showId);
+  }
+
+  @Get(":showId/seasons")
+  getShowSeasons(
+    @Headers("authorization") authorizationHeader: string | undefined,
+    @Param("showId") showId: string | undefined,
+  ): Promise<ShowSeasonsResponseDto> {
+    return this.catalogService.getShowSeasons(authorizationHeader, showId);
+  }
+
+  @Get(":showId/seasons/:seasonNumber")
+  getShowSeason(
+    @Headers("authorization") authorizationHeader: string | undefined,
+    @Param("showId") showId: string | undefined,
+    @Param("seasonNumber") seasonNumber: string | undefined,
+  ): Promise<ShowSeasonDetailResponseDto> {
+    return this.catalogService.getShowSeason(authorizationHeader, showId, seasonNumber);
+  }
+}
+
+@Controller("movies")
+export class MoviesController {
+  constructor(private readonly catalogService: CatalogService) {}
+
+  @Get(":movieId")
+  getMovie(
+    @Headers("authorization") authorizationHeader: string | undefined,
+    @Param("movieId") movieId: string | undefined,
+  ): Promise<MovieDetailResponseDto> {
+    return this.catalogService.getMovie(authorizationHeader, movieId);
   }
 }

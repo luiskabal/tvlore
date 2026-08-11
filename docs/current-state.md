@@ -14,15 +14,15 @@ Implemented:
 - Authenticated `GET /users/me`.
 - Authenticated `GET /search` backed by TMDB.
 - Authenticated `POST /catalog/resolve` that converts TMDB refs into TVLore internal IDs.
+- Authenticated show/movie detail endpoints by internal TVLore ID.
+- Season list and season detail endpoints for shows.
+- Episode catalog persistence when a season is opened.
 - Postman collection and local/Vercel environments.
 - Environment validation for local and Vercel.
 - Backend unit tests with Vitest.
 
 Not implemented yet:
 
-- Show detail by internal TVLore ID.
-- Movie detail by internal TVLore ID.
-- Seasons and episodes persistence.
 - Watch/unwatch endpoints.
 - Progress and personal library endpoints.
 - Social matching.
@@ -335,12 +335,64 @@ Why this endpoint matters:
 
 Search gives us provider refs. Resolve gives us product identity. Watch history should reference TVLore UUIDs, not TMDB IDs.
 
-## 8. Current Database Model
+## 8. Catalog Detail Flow
+
+```mermaid
+sequenceDiagram
+  participant C as Client
+  participant A as TVLore API
+  participant S as Supabase Auth
+  participant T as TMDB
+  participant D as Postgres
+
+  C->>A: GET /shows/:showId
+  A->>S: Validate bearer token
+  S-->>A: Supabase user
+  A->>D: Load show and season summaries
+  D-->>A: Show detail
+  A-->>C: Show detail response
+
+  C->>A: GET /shows/:showId/seasons/:seasonNumber
+  A->>S: Validate bearer token
+  S-->>A: Supabase user
+  A->>D: Find TMDB provider ID for show
+  A->>T: GET /tv/:seriesId/season/:seasonNumber
+  T-->>A: Season detail with episodes
+  A->>D: Upsert season and episodes
+  D-->>A: Internal episode IDs
+  A-->>C: Season detail response
+```
+
+Implemented endpoints:
+
+```text
+GET /shows/:showId
+GET /shows/:showId/seasons
+GET /shows/:showId/seasons/:seasonNumber
+GET /movies/:movieId
+```
+
+Current watched-state behavior:
+
+- Movies return `watched: false`, `watchCount: 0`, and `lastWatchedAt: null`.
+- Episodes return `watched: false`, `watchCount: 0`, and `lastWatchedAt: null`.
+- These fields are placeholders for the next tracking slice, where they will be derived per authenticated user.
+
+Why season detail fetches TMDB:
+
+- Show resolve persists season summaries, not every episode.
+- Opening a season is the first point where the user needs episode IDs.
+- This avoids pulling every episode for every season during search or resolve.
+
+## 9. Current Database Model
 
 ```mermaid
 erDiagram
   USER ||--o{ USER_IDENTITY : has
   USER ||--o{ REFRESH_SESSION : has
+  SHOW ||--o{ SEASON : has
+  SHOW ||--o{ EPISODE : has
+  SEASON ||--o{ EPISODE : contains
   SHOW ||--o{ EXTERNAL_IDENTIFIER : maps
   MOVIE ||--o{ EXTERNAL_IDENTIFIER : maps
 
@@ -397,6 +449,34 @@ erDiagram
     datetime updatedAt
   }
 
+  SEASON {
+    uuid id PK
+    uuid showId FK
+    int seasonNumber
+    string title
+    string overview
+    string posterPath
+    date airDate
+    int episodeCount
+    datetime createdAt
+    datetime updatedAt
+  }
+
+  EPISODE {
+    uuid id PK
+    uuid showId FK
+    uuid seasonId FK
+    int seasonNumber
+    int episodeNumber
+    string title
+    string overview
+    string stillPath
+    date airDate
+    int runtimeMinutes
+    datetime createdAt
+    datetime updatedAt
+  }
+
   EXTERNAL_IDENTIFIER {
     uuid id PK
     string entityType
@@ -414,6 +494,8 @@ Current tables:
 - `refresh_sessions`: exists for the originally planned TVLore-owned refresh-token model; Supabase owns sessions in the current MVP.
 - `shows`: internal TVLore show records created by resolve.
 - `movies`: internal TVLore movie records created by resolve.
+- `seasons`: internal TVLore season records created from TMDB show details.
+- `episodes`: internal TVLore episode records created when a season is opened.
 - `external_identifiers`: maps TVLore IDs to provider refs like `tmdb:70523`.
 
 Important constraint:
@@ -432,7 +514,7 @@ Implementation note:
 
 `external_identifiers.entity_id` is a logical polymorphic reference. It can point to a `show` or a `movie` depending on `entity_type`. There is no direct database foreign key for this polymorphic relation today; consistency is enforced in `CatalogRepository` inside the resolve transaction.
 
-## 9. Postman Test Path
+## 10. Postman Test Path
 
 ```mermaid
 flowchart TB
@@ -462,8 +544,11 @@ Expected behavior:
 - `GET /search` returns normalized TMDB-backed results.
 - `POST /catalog/resolve` returns a TVLore UUID.
 - Running `GET /search` again after resolve should show `tvloreId` for the resolved item.
+- `GET /shows/:showId` returns show detail and season summaries.
+- `GET /shows/:showId/seasons/:seasonNumber` fetches and persists that season's episodes.
+- `GET /movies/:movieId` returns movie detail with default unwatched state until tracking exists.
 
-## 10. What We Proved
+## 11. What We Proved
 
 Infrastructure:
 
@@ -482,7 +567,7 @@ Backend architecture:
 - User persistence is isolated in `UsersRepository`.
 - TMDB HTTP and provider errors are isolated in `TmdbClient`.
 - Catalog persistence is isolated in `CatalogRepository`.
-- Search/resolve parsing and mapping are pure functions with unit tests.
+- Search/resolve/detail parsing and mapping are pure functions with unit tests.
 
 Product foundation:
 
@@ -491,7 +576,7 @@ Product foundation:
 - TMDB IDs are external references only.
 - Watch tracking can now be built on top of internal IDs.
 
-## 11. Why This Backend Base Helps The Frontend
+## 12. Why This Backend Base Helps The Frontend
 
 The frontend can stay simple because the backend already owns the hard parts:
 
@@ -508,25 +593,13 @@ Search screen
 -> POST /catalog/resolve
 -> navigate to show/movie detail using TVLore ID
 -> detail screen loads backend-owned details
+-> show season screen loads backend-owned episode IDs
 -> tracking buttons call backend-owned watch endpoints
 ```
 
-## 12. Recommended Next Step
+## 13. Recommended Next Step
 
-Build detail endpoints by internal ID:
-
-```text
-GET /shows/:showId
-GET /movies/:movieId
-```
-
-Why this is next:
-
-- `resolve` now gives us stable TVLore IDs.
-- Detail endpoints are the bridge from search to tracking.
-- Watch endpoints should reference internal IDs and should not need TMDB provider IDs.
-
-After detail endpoints, the next backend layer is tracking:
+Build the tracking layer:
 
 ```text
 POST /episodes/:episodeId/watches
@@ -534,3 +607,9 @@ DELETE /episodes/:episodeId/watches
 POST /movies/:movieId/watches
 DELETE /movies/:movieId/watches
 ```
+
+Why this is next:
+
+- We now have internal movie IDs.
+- We now have internal episode IDs after opening a season.
+- Watched state belongs to a user, so it should be stored in `movie_watches` and `episode_watches`, not on catalog rows.

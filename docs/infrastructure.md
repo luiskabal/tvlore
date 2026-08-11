@@ -37,12 +37,17 @@ GET /health/error
 GET /users/me
 GET /search
 POST /catalog/resolve
+GET /shows/:showId
+GET /shows/:showId/seasons
+GET /shows/:showId/seasons/:seasonNumber
+GET /movies/:movieId
 ```
 
 `GET /health/db` verifies runtime connectivity from Vercel to PostgreSQL. If Vercel has no `DATABASE_URL`, the API fails during startup.
 `GET /users/me` validates a Supabase Auth bearer token, upserts the matching `UserIdentity`, and returns the real TVLore user.
 `GET /search` validates a Supabase Auth bearer token and calls TMDB from the backend using server-side credentials.
 `POST /catalog/resolve` validates a Supabase Auth bearer token, fetches TMDB details, and upserts an internal show or movie ID.
+Show and movie detail endpoints read internal TVLore IDs. Season detail fetches and persists TMDB episodes for the requested season.
 
 ## Database
 
@@ -52,8 +57,8 @@ POST /catalog/resolve
 - ORM: Prisma.
 - Prisma schema: `apps/api/prisma/schema.prisma`
 - Initial migration: `apps/api/prisma/migrations/20260810162500_init_user/migration.sql`
-- Applied migrations: `20260810162500_init_user`, `20260810211300_add_auth_tables`, `20260811144000_add_catalog_tables`
-- Current database tables: `_prisma_migrations`, `users`, `user_identities`, `refresh_sessions`, `shows`, `movies`, `external_identifiers`
+- Applied migrations: `20260810162500_init_user`, `20260810211300_add_auth_tables`, `20260811144000_add_catalog_tables`, `20260811151500_add_seasons_and_episodes`
+- Current database tables: `_prisma_migrations`, `users`, `user_identities`, `refresh_sessions`, `shows`, `movies`, `seasons`, `episodes`, `external_identifiers`
 
 Vercel environment variables:
 
@@ -129,8 +134,8 @@ corepack pnpm api:check
 Remove-Item Env:\TVLORE_API_BASE_URL
 ```
 
-The smoke test expects `GET /users/me` to return `401` without a token. To also
-verify the authenticated `/users/me` and `/search` paths, set
+The smoke test expects protected endpoints to return `401` without a token. To
+also verify the authenticated product paths, set
 `TVLORE_SUPABASE_ACCESS_TOKEN` to a real Supabase access token before running
 `api:check`.
 
@@ -212,3 +217,5 @@ the selected Postman environment.
 - `GET /users/me` resolves authenticated Supabase users into TVLore users.
 - `GET /search` proxies TMDB search through the backend.
 - `POST /catalog/resolve` persists provider-backed shows/movies into TVLore IDs.
+- Show/movie detail endpoints read catalog records by internal TVLore IDs.
+- Season detail persists episode records for the requested season.
