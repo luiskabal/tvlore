@@ -1,19 +1,13 @@
 import { Inject, Injectable, UnauthorizedException } from "@nestjs/common";
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 import { API_CONFIG, type ApiConfig } from "../config";
 import type { AuthenticatedUser } from "./authenticated-user";
 import { getBearerToken } from "./bearer-token";
+import { toAuthenticatedUser } from "./supabase-user";
 
 @Injectable()
 export class SupabaseAuthService {
-  private readonly supabase: SupabaseClient;
-
-  constructor(@Inject(API_CONFIG) config: ApiConfig) {
-    this.supabase = createClient(config.supabaseUrl, config.supabasePublishableKey, {
-      auth: { autoRefreshToken: false, persistSession: false },
-    });
-  }
+  constructor(@Inject(API_CONFIG) private readonly config: ApiConfig) {}
 
   async getUserFromAuthorizationHeader(
     authorizationHeader: string | undefined,
@@ -24,17 +18,24 @@ export class SupabaseAuthService {
       throwUnauthorized();
     }
 
-    const { data, error } = await this.supabase.auth.getUser(token);
+    const response = await fetch(`${this.config.supabaseUrl}/auth/v1/user`, {
+      headers: {
+        apikey: this.config.supabasePublishableKey,
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-    if (error || !data.user) {
+    if (!response.ok) {
       throwUnauthorized();
     }
 
-    return {
-      email: data.user.email ?? null,
-      id: data.user.id,
-      metadata: data.user.user_metadata,
-    };
+    const authenticatedUser = toAuthenticatedUser(await response.json());
+
+    if (!authenticatedUser) {
+      throwUnauthorized();
+    }
+
+    return authenticatedUser;
   }
 }
 

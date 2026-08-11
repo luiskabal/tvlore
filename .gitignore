@@ -3,6 +3,8 @@ node_modules/
 .tmp-*/
 
 .expo/
+.vercel/
+apps/*/.vercel/
 dist/
 build/
 coverage/

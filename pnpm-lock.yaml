@@ -25,9 +25,6 @@ importers:
       '@prisma/client':
         specifier: ^7.9.1
         version: 7.9.1(prisma@7.9.1(@types/react@19.1.17)(magicast@0.5.4)(react-dom@19.2.8(react@19.1.0))(react@19.1.0)(typescript@5.9.3))(typescript@5.9.3)
-      '@supabase/supabase-js':
-        specifier: 2.112.2
-        version: 2.112.2
       express:
         specifier: ^5.2.1
         version: 5.2.1(supports-color@8.1.1)
