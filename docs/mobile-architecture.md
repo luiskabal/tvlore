@@ -111,7 +111,9 @@ src/
 |-- catalog/
 |   |-- CatalogDetailScreen.tsx
 |   |-- posters.ts
+|   |-- SeasonContent.tsx
 |   |-- SeasonDetailScreen.tsx
+|   |-- season-detail-styles.ts
 |   |-- use-season-detail.ts
 |   `-- use-catalog-detail.ts
 |

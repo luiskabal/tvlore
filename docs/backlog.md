@@ -71,6 +71,7 @@ No active infrastructure tasks.
 - [x] Add mobile holo profile summary card.
 - [x] Add navigation from mobile library rows to detail screens.
 - [x] Add profile/home skeletons and stable refresh behavior.
+- [x] Split mobile season detail presentation and styles out of `SeasonDetailScreen`.
 
 ## Deferred
 

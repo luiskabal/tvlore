@@ -1,0 +1,169 @@
+import { StyleSheet } from "react-native";
+
+export const styles = StyleSheet.create({
+  backButton: {
+    alignSelf: "flex-start",
+    paddingVertical: 4,
+  },
+  backButtonText: {
+    color: "#1f7a5c",
+    fontSize: 16,
+    fontWeight: "800",
+  },
+  bulkButtonRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+  },
+  centerPanel: {
+    alignItems: "center",
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 10,
+    padding: 18,
+  },
+  content: {
+    flexGrow: 1,
+    gap: 20,
+    padding: 24,
+    paddingTop: 48,
+  },
+  detail: {
+    gap: 20,
+  },
+  disabledButton: {
+    opacity: 0.6,
+  },
+  episodeBody: {
+    flex: 1,
+    gap: 7,
+  },
+  episodeList: {
+    gap: 12,
+  },
+  episodeOverview: {
+    color: "#5f564d",
+    fontSize: 14,
+    lineHeight: 19,
+  },
+  episodeRow: {
+    backgroundColor: "#fffdfa",
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: 12,
+    padding: 12,
+  },
+  episodeTitle: {
+    color: "#171412",
+    fontSize: 17,
+    fontWeight: "800",
+    lineHeight: 22,
+  },
+  errorText: {
+    color: "#9c2f23",
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  header: {
+    gap: 8,
+  },
+  kicker: {
+    color: "#1f7a5c",
+    fontSize: 13,
+    fontWeight: "900",
+    textTransform: "uppercase",
+  },
+  mutedText: {
+    color: "#5f564d",
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  overview: {
+    color: "#302b27",
+    fontSize: 16,
+    lineHeight: 23,
+  },
+  primaryButton: {
+    alignItems: "center",
+    alignSelf: "flex-start",
+    backgroundColor: "#1f7a5c",
+    borderRadius: 8,
+    minWidth: 118,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  primaryButtonText: {
+    color: "#ffffff",
+    fontSize: 14,
+    fontWeight: "800",
+  },
+  screen: {
+    backgroundColor: "#f7f4ee",
+    flex: 1,
+  },
+  secondaryButton: {
+    alignItems: "center",
+    alignSelf: "flex-start",
+    backgroundColor: "#171412",
+    borderRadius: 8,
+    minWidth: 136,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  secondaryButtonText: {
+    color: "#ffffff",
+    fontSize: 14,
+    fontWeight: "800",
+  },
+  sectionTitle: {
+    color: "#171412",
+    fontSize: 20,
+    fontWeight: "800",
+  },
+  statusPanel: {
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 8,
+    padding: 16,
+  },
+  statusTitle: {
+    color: "#171412",
+    fontSize: 18,
+    fontWeight: "800",
+  },
+  still: {
+    backgroundColor: "#d8d0c5",
+    borderRadius: 8,
+    height: 64,
+    width: 96,
+  },
+  stillPlaceholder: {
+    alignItems: "center",
+    backgroundColor: "#e8e2d8",
+    borderRadius: 8,
+    height: 64,
+    justifyContent: "center",
+    width: 96,
+  },
+  stillPlaceholderText: {
+    color: "#5f564d",
+    fontSize: 18,
+    fontWeight: "800",
+  },
+  title: {
+    color: "#171412",
+    fontSize: 34,
+    fontWeight: "800",
+    lineHeight: 39,
+  },
+  watchedText: {
+    color: "#1f7a5c",
+    fontSize: 13,
+    fontWeight: "800",
+    lineHeight: 18,
+  },
+});
