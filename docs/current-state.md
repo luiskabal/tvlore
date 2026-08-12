@@ -21,6 +21,8 @@ Implemented:
 - Authenticated personal library and show progress read endpoints.
 - Mobile home screen reads the authenticated user and personal library summary from the API.
 - Mobile search resolves provider results and opens backend-owned show/movie detail screens.
+- Mobile show detail opens backend-owned season episode lists.
+- Mobile season detail can mark episodes watched or unwatched.
 - Postman collection and local/Vercel environments.
 - Environment validation for local and Vercel.
 - Backend unit tests with Vitest.
@@ -28,8 +30,7 @@ Implemented:
 
 Not implemented yet:
 
-- Mobile watch/unwatch controls.
-- Mobile season episode list.
+- Dedicated Library/Profile mobile routes.
 - Social matching.
 
 ## 2. Current System Diagram
@@ -630,6 +631,9 @@ Search
 -> POST /catalog/resolve
 -> Show or movie detail route
 -> GET /shows/:id or GET /movies/:id
+-> Show season route
+-> GET /shows/:id/seasons/:seasonNumber
+-> Episode watch/unwatch
 ```
 
 Current behavior:
@@ -648,6 +652,10 @@ Current behavior:
 - Detail screens render backend-owned show/movie data.
 - Movie detail can mark a movie watched or unwatched.
 - Movie watch actions update local detail state from the backend mutation response.
+- Show detail lists seasons and opens a season route.
+- Season detail loads backend-owned episode IDs and watched state.
+- Season detail can mark episodes watched or unwatched.
+- Episode watch actions update the touched episode and display returned show progress.
 
 Why this shape matters:
 
@@ -691,6 +699,7 @@ Product foundation:
 - Mobile can prefetch search results without prefetching database writes.
 - Mobile can resolve a provider result and open internal show/movie details by TVLore ID.
 - Mobile can mark movies watched/unwatched through backend tracking endpoints.
+- Mobile can open a show season, hydrate episode IDs, and mark episodes watched/unwatched through backend tracking endpoints.
 
 ## 13. Why This Backend Base Helps The Frontend
 
@@ -710,27 +719,28 @@ Search screen
 -> navigate to show/movie detail using TVLore ID
 -> detail screen loads backend-owned details
 -> movie detail can POST/DELETE /movies/:movieId/watches
+-> show detail can navigate to a season
+-> season detail can POST/DELETE /episodes/:episodeId/watches
 ```
 
-The remaining tracking flow is:
+The remaining frontend product flow is:
 
 ```text
-Show detail
--> show season screen loads backend-owned episode IDs
--> tracking buttons call backend-owned watch endpoints
+Library/Profile routes
+-> automatic refresh after tracking changes
+-> richer navigation from library rows back into detail screens
 ```
 
 ## 14. Recommended Next Step
 
-Add mobile tracking controls against the backend contract:
+Promote the temporary mobile home into clearer app surfaces:
 
 ```text
-Show detail -> Season episodes -> Episode Watch/Unwatch -> Progress -> Library refresh
+Home -> Library route -> Profile route -> refresh on focus
 ```
 
 Why this is next:
 
-- Search, resolve, and detail are now wired in mobile.
-- Movie watch/unwatch is wired in mobile.
-- Tracking endpoints already exist and passed smoke checks.
-- Episode watch/unwatch will make show progress and continue-watching visible from the app itself.
+- Search, resolve, detail, movie tracking, and episode tracking are now wired in mobile.
+- Library data already exists in the backend.
+- The app needs cleaner navigation and automatic refresh before adding social features.

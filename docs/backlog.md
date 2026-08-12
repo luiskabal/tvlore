@@ -8,8 +8,7 @@ No active infrastructure tasks.
 
 ## Next
 
-- [ ] Add mobile season episode list for show details.
-- [ ] Add mobile watch/unwatch controls for episodes.
+- [ ] Refresh the mobile library automatically after returning from tracking screens.
 - [ ] Promote the temporary mobile home into routed Library/Profile surfaces.
 
 ## Done
@@ -58,6 +57,8 @@ No active infrastructure tasks.
 - [x] Add mobile search loading indicators and skeleton rows.
 - [x] Make mobile search filters trigger immediate loading feedback.
 - [x] Add mobile movie watch/unwatch control.
+- [x] Add mobile season episode list for show details.
+- [x] Add mobile watch/unwatch controls for episodes.
 
 ## Deferred
 

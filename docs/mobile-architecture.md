@@ -92,7 +92,10 @@ app/
 |-- movies/
 |   `-- [id].tsx
 `-- shows/
-    `-- [id].tsx
+    |-- [id].tsx
+    `-- [id]/
+        `-- seasons/
+            `-- [seasonNumber].tsx
 
 src/
 |-- api/
@@ -108,6 +111,8 @@ src/
 |-- catalog/
 |   |-- CatalogDetailScreen.tsx
 |   |-- posters.ts
+|   |-- SeasonDetailScreen.tsx
+|   |-- use-season-detail.ts
 |   `-- use-catalog-detail.ts
 |
 |-- home/
@@ -157,6 +162,9 @@ SearchScreen
   -> CatalogDetailScreen
   -> useCatalogDetail()
   -> GET /shows/:id or GET /movies/:id
+  -> SeasonDetailScreen
+  -> useSeasonDetail()
+  -> GET /shows/:id/seasons/:seasonNumber
 ```
 
 The app still does not calculate catalog identity, progress, or watched state.
@@ -179,6 +187,16 @@ CatalogDetailScreen(movie)
   -> useCatalogDetail()
   -> POST /movies/:movieId/watches or DELETE /movies/:movieId/watches
   -> Update local movie watched state from backend response
+```
+
+Episode tracking uses the same boundary:
+
+```text
+SeasonDetailScreen
+  -> useSeasonDetail()
+  -> POST /episodes/:episodeId/watches or DELETE /episodes/:episodeId/watches
+  -> Update touched episode watched state from backend response
+  -> Display returned show progress
 ```
 
 The app still does not calculate watched state. It renders the returned

@@ -2,7 +2,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { ActivityIndicator, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 
-import type { CatalogDetailResponse, MediaType, MovieDetailResponse } from "../api/tvlore-api";
+import type { CatalogDetailResponse, MediaType, MovieDetailResponse, ShowDetailResponse, ShowSeasonSummary } from "../api/tvlore-api";
 import { getTmdbPosterUrl } from "./posters";
 import { type WatchActionState, useCatalogDetail } from "./use-catalog-detail";
 
@@ -80,12 +80,43 @@ function DetailContent({
       {detail.mediaType === "movie" ? (
         <MovieWatchPanel movie={detail} watchAction={watchAction} onSetWatched={onSetMovieWatched} />
       ) : (
-        <View style={styles.statusPanel}>
-          <Text style={styles.statusTitle}>Seasons</Text>
-          <Text style={styles.mutedText}>{getStatusLine(detail)}</Text>
-        </View>
+        <ShowSeasonsPanel show={detail} />
       )}
     </View>
+  );
+}
+
+function ShowSeasonsPanel({ show }: { show: ShowDetailResponse }) {
+  return (
+    <View style={styles.seasonsSection}>
+      <Text style={styles.sectionTitle}>Seasons</Text>
+      <Text style={styles.mutedText}>{getStatusLine(show)}</Text>
+
+      {show.seasons.map((season) => (
+        <SeasonRow key={season.id} season={season} showId={show.id} />
+      ))}
+    </View>
+  );
+}
+
+function SeasonRow({ season, showId }: { season: ShowSeasonSummary; showId: string }) {
+  return (
+    <Pressable
+      style={styles.seasonRow}
+      onPress={() => router.push({
+        pathname: "/shows/[id]/seasons/[seasonNumber]",
+        params: { id: showId, seasonNumber: season.seasonNumber.toString() },
+      })}
+    >
+      <View style={styles.seasonBody}>
+        <Text style={styles.seasonTitle}>{season.title}</Text>
+        <Text style={styles.mutedText}>
+          Season {season.seasonNumber} - {formatCount(season.episodeCount, "episode")}
+        </Text>
+        {season.airDate ? <Text style={styles.mutedText}>{formatDate(season.airDate)}</Text> : null}
+      </View>
+      <Text style={styles.openText}>Open</Text>
+    </Pressable>
   );
 }
 
@@ -249,6 +280,30 @@ const styles = StyleSheet.create({
     backgroundColor: "#f7f4ee",
     flex: 1,
   },
+  seasonBody: {
+    flex: 1,
+    gap: 4,
+  },
+  seasonRow: {
+    alignItems: "center",
+    backgroundColor: "#fffdfa",
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: 12,
+    justifyContent: "space-between",
+    padding: 14,
+  },
+  seasonTitle: {
+    color: "#171412",
+    fontSize: 17,
+    fontWeight: "800",
+    lineHeight: 22,
+  },
+  seasonsSection: {
+    gap: 12,
+  },
   secondaryButton: {
     alignItems: "center",
     alignSelf: "flex-start",
@@ -260,6 +315,16 @@ const styles = StyleSheet.create({
   },
   secondaryButtonText: {
     color: "#ffffff",
+    fontSize: 14,
+    fontWeight: "800",
+  },
+  sectionTitle: {
+    color: "#171412",
+    fontSize: 20,
+    fontWeight: "800",
+  },
+  openText: {
+    color: "#1f7a5c",
     fontSize: 14,
     fontWeight: "800",
   },

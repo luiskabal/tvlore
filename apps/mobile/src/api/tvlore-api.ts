@@ -93,6 +93,25 @@ export type ShowSeasonSummary = {
   title: string;
 };
 
+export type ShowEpisode = {
+  airDate: string | null;
+  episodeNumber: number;
+  id: string;
+  lastWatchedAt: string | null;
+  overview: string;
+  runtimeMinutes: number | null;
+  seasonNumber: number;
+  stillPath: string | null;
+  title: string;
+  watchCount: number;
+  watched: boolean;
+};
+
+export type ShowSeasonDetailResponse = ShowSeasonSummary & {
+  episodes: ShowEpisode[];
+  showId: string;
+};
+
 export type ShowDetailResponse = {
   backdropPath: string | null;
   firstAirDate: string | null;
@@ -121,6 +140,21 @@ export type MovieDetailResponse = {
 };
 
 export type CatalogDetailResponse = MovieDetailResponse | ShowDetailResponse;
+
+export type ShowProgressResponse = {
+  percentComplete: number;
+  showId: string;
+  totalEpisodeCount: number;
+  watchedEpisodeCount: number;
+};
+
+export type EpisodeWatchResponse = {
+  episodeId: string;
+  lastWatchedAt: string | null;
+  showProgress: ShowProgressResponse;
+  watchCount: number;
+  watched: boolean;
+};
 
 export type MovieWatchResponse = {
   lastWatchedAt: string | null;
@@ -223,6 +257,53 @@ export async function getCatalogDetail(
   );
 
   return { ...movie, mediaType };
+}
+
+export async function getShowSeasonDetail(
+  accessToken: string | null,
+  showId: string,
+  seasonNumber: number,
+): Promise<ShowSeasonDetailResponse> {
+  return fetchJson(
+    `/shows/${showId}/seasons/${seasonNumber}`,
+    isShowSeasonDetailResponse,
+    "Unexpected season detail response",
+    { headers: getAuthHeaders(accessToken) },
+  );
+}
+
+export async function markEpisodeWatched(
+  accessToken: string | null,
+  episodeId: string,
+): Promise<EpisodeWatchResponse> {
+  return fetchJson(
+    `/episodes/${episodeId}/watches`,
+    isEpisodeWatchResponse,
+    "Unexpected episode watch response",
+    {
+      body: JSON.stringify({ watchedAt: new Date().toISOString() }),
+      headers: {
+        ...getAuthHeaders(accessToken),
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+    },
+  );
+}
+
+export async function unmarkEpisodeWatched(
+  accessToken: string | null,
+  episodeId: string,
+): Promise<EpisodeWatchResponse> {
+  return fetchJson(
+    `/episodes/${episodeId}/watches`,
+    isEpisodeWatchResponse,
+    "Unexpected episode unwatch response",
+    {
+      headers: getAuthHeaders(accessToken),
+      method: "DELETE",
+    },
+  );
 }
 
 export async function markMovieWatched(
@@ -396,6 +477,40 @@ function isShowSeasonSummary(value: unknown): value is ShowSeasonSummary {
   );
 }
 
+function isShowSeasonDetailResponse(value: unknown): value is ShowSeasonDetailResponse {
+  if (!isRecord(value) || !isShowSeasonSummary(value)) {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  return (
+    typeof candidate.showId === "string" &&
+    Array.isArray(candidate.episodes) &&
+    candidate.episodes.every(isShowEpisode)
+  );
+}
+
+function isShowEpisode(value: unknown): value is ShowEpisode {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.id === "string" &&
+    typeof value.title === "string" &&
+    typeof value.overview === "string" &&
+    isNullableString(value.stillPath) &&
+    isNullableString(value.airDate) &&
+    typeof value.seasonNumber === "number" &&
+    typeof value.episodeNumber === "number" &&
+    isNullableNumber(value.runtimeMinutes) &&
+    typeof value.watched === "boolean" &&
+    typeof value.watchCount === "number" &&
+    isNullableString(value.lastWatchedAt)
+  );
+}
+
 function isMovieDetailResponse(value: unknown): value is Omit<MovieDetailResponse, "mediaType"> {
   if (!isRecord(value)) {
     return false;
@@ -413,6 +528,33 @@ function isMovieDetailResponse(value: unknown): value is Omit<MovieDetailRespons
     typeof value.watched === "boolean" &&
     typeof value.watchCount === "number" &&
     isNullableString(value.lastWatchedAt)
+  );
+}
+
+function isEpisodeWatchResponse(value: unknown): value is EpisodeWatchResponse {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.episodeId === "string" &&
+    typeof value.watched === "boolean" &&
+    typeof value.watchCount === "number" &&
+    isNullableString(value.lastWatchedAt) &&
+    isShowProgressResponse(value.showProgress)
+  );
+}
+
+function isShowProgressResponse(value: unknown): value is ShowProgressResponse {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.showId === "string" &&
+    typeof value.percentComplete === "number" &&
+    typeof value.totalEpisodeCount === "number" &&
+    typeof value.watchedEpisodeCount === "number"
   );
 }
 
