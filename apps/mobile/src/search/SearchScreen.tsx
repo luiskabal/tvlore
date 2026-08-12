@@ -1,0 +1,395 @@
+import { router } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { useState } from "react";
+import { ActivityIndicator, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+
+import type { CatalogSearchResult, MediaType } from "../api/tvlore-api";
+import { getTmdbPosterUrl } from "../catalog/posters";
+import { getResultKey, type ResolveState, type SearchFilter, useCatalogSearch } from "./use-catalog-search";
+
+const filters: { label: string; value: SearchFilter }[] = [
+  { label: "All", value: "all" },
+  { label: "Shows", value: "show" },
+  { label: "Movies", value: "movie" },
+];
+
+export default function SearchScreen() {
+  const [query, setQuery] = useState("dark");
+  const [filter, setFilter] = useState<SearchFilter>("all");
+  const { resolveResult, resolveState, runSearch, search } = useCatalogSearch();
+
+  const submitSearch = () => {
+    void runSearch(query, filter);
+  };
+
+  const openResult = async (result: CatalogSearchResult) => {
+    if (result.tvloreId) {
+      pushDetail(result.mediaType, result.tvloreId);
+      return;
+    }
+
+    const item = await resolveResult(result);
+
+    if (!item) {
+      return;
+    }
+
+    pushDetail(item.mediaType, item.id);
+  };
+
+  return (
+    <SafeAreaView style={styles.screen}>
+      <StatusBar style="dark" />
+      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
+        <Pressable style={styles.backButton} onPress={() => router.back()}>
+          <Text style={styles.backButtonText}>Back</Text>
+        </Pressable>
+
+        <View style={styles.header}>
+          <Text style={styles.title}>Search</Text>
+          <Text style={styles.subtitle}>Shows and movies</Text>
+        </View>
+
+        <View style={styles.searchPanel}>
+          <TextInput
+            autoCapitalize="none"
+            autoCorrect={false}
+            onChangeText={setQuery}
+            onSubmitEditing={submitSearch}
+            placeholder="Dark, Severance, The Matrix"
+            returnKeyType="search"
+            style={styles.input}
+            value={query}
+          />
+
+          <View style={styles.filterRow}>
+            {filters.map((item) => (
+              <Pressable
+                key={item.value}
+                style={[styles.filterButton, filter === item.value ? styles.activeFilterButton : null]}
+                onPress={() => setFilter(item.value)}
+              >
+                <Text style={[styles.filterText, filter === item.value ? styles.activeFilterText : null]}>
+                  {item.label}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+
+          <Pressable style={styles.primaryButton} onPress={submitSearch}>
+            <Text style={styles.primaryButtonText}>Search</Text>
+          </Pressable>
+        </View>
+
+        {search.kind === "loading" ? (
+          <View style={styles.centerPanel}>
+            <ActivityIndicator color="#1f7a5c" />
+            <Text style={styles.mutedText}>Searching {search.query}</Text>
+          </View>
+        ) : null}
+
+        {search.kind === "error" ? (
+          <View style={styles.statusPanel}>
+            <Text style={styles.statusTitle}>Search failed</Text>
+            <Text style={styles.mutedText}>{search.message}</Text>
+          </View>
+        ) : null}
+
+        {search.kind === "ready" ? (
+          <View style={styles.resultsSection}>
+            <Text style={styles.sectionTitle}>
+              {search.results.length} results for {search.query}
+            </Text>
+
+            {search.results.length === 0 ? (
+              <View style={styles.statusPanel}>
+                <Text style={styles.statusTitle}>No results</Text>
+                <Text style={styles.mutedText}>Try another title or filter.</Text>
+              </View>
+            ) : null}
+
+            {search.results.map((result) => (
+              <SearchResultRow
+                key={getResultKey(result)}
+                result={result}
+                resolveState={resolveState}
+                onResolve={openResult}
+              />
+            ))}
+          </View>
+        ) : null}
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+function pushDetail(mediaType: MediaType, id: string) {
+  if (mediaType === "show") {
+    router.push({ pathname: "/shows/[id]", params: { id } });
+    return;
+  }
+
+  router.push({ pathname: "/movies/[id]", params: { id } });
+}
+
+function SearchResultRow({
+  onResolve,
+  resolveState,
+  result,
+}: {
+  onResolve: (result: CatalogSearchResult) => void;
+  resolveState: ResolveState;
+  result: CatalogSearchResult;
+}) {
+  const resultKey = getResultKey(result);
+  const isResolving = resolveState.kind === "loading" && resolveState.resultKey === resultKey;
+  const resolved = resolveState.kind === "resolved" && resolveState.resultKey === resultKey
+    ? resolveState.item
+    : null;
+  const resolveError = resolveState.kind === "error" && resolveState.resultKey === resultKey
+    ? resolveState.message
+    : null;
+
+  return (
+    <View style={styles.resultRow}>
+      {result.posterPath ? (
+        <Image source={{ uri: getTmdbPosterUrl(result.posterPath) }} style={styles.poster} />
+      ) : (
+        <View style={styles.posterPlaceholder}>
+          <Text style={styles.posterPlaceholderText}>{result.mediaType === "show" ? "TV" : "M"}</Text>
+        </View>
+      )}
+
+      <View style={styles.resultBody}>
+        <View style={styles.resultHeading}>
+          <Text style={styles.resultTitle} numberOfLines={2}>{result.title}</Text>
+          <Text style={styles.mediaPill}>{result.mediaType === "show" ? "Show" : "Movie"}</Text>
+        </View>
+        <Text style={styles.resultMeta}>{result.year ?? "Unknown year"}</Text>
+        <Text style={styles.resultOverview} numberOfLines={3}>{result.overview || "No overview available."}</Text>
+
+        {result.tvloreId ? <Text style={styles.tvloreText}>Already in TVLore</Text> : null}
+        {resolved ? <Text style={styles.tvloreText}>Ready</Text> : null}
+        {resolveError ? <Text style={styles.errorText}>{resolveError}</Text> : null}
+
+        <Pressable
+          disabled={isResolving}
+          style={[styles.resolveButton, isResolving ? styles.disabledButton : null]}
+          onPress={() => onResolve(result)}
+        >
+          <Text style={styles.resolveButtonText}>
+            {isResolving ? "Opening" : "Open"}
+          </Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  activeFilterButton: {
+    backgroundColor: "#171412",
+    borderColor: "#171412",
+  },
+  activeFilterText: {
+    color: "#ffffff",
+  },
+  backButton: {
+    alignSelf: "flex-start",
+    paddingVertical: 4,
+  },
+  backButtonText: {
+    color: "#1f7a5c",
+    fontSize: 16,
+    fontWeight: "800",
+  },
+  centerPanel: {
+    alignItems: "center",
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 10,
+    padding: 18,
+  },
+  content: {
+    flexGrow: 1,
+    gap: 20,
+    padding: 24,
+    paddingTop: 48,
+  },
+  disabledButton: {
+    opacity: 0.6,
+  },
+  errorText: {
+    color: "#9c2f23",
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  filterButton: {
+    alignItems: "center",
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    flex: 1,
+    paddingVertical: 10,
+  },
+  filterRow: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  filterText: {
+    color: "#171412",
+    fontSize: 14,
+    fontWeight: "800",
+  },
+  header: {
+    gap: 8,
+  },
+  input: {
+    backgroundColor: "#ffffff",
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    color: "#171412",
+    fontSize: 17,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+  },
+  mediaPill: {
+    alignSelf: "flex-start",
+    backgroundColor: "#e4f1ea",
+    borderRadius: 8,
+    color: "#1f7a5c",
+    fontSize: 12,
+    fontWeight: "800",
+    overflow: "hidden",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  mutedText: {
+    color: "#5f564d",
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  poster: {
+    backgroundColor: "#d8d0c5",
+    borderRadius: 8,
+    height: 112,
+    width: 76,
+  },
+  posterPlaceholder: {
+    alignItems: "center",
+    backgroundColor: "#e8e2d8",
+    borderRadius: 8,
+    height: 112,
+    justifyContent: "center",
+    width: 76,
+  },
+  posterPlaceholderText: {
+    color: "#5f564d",
+    fontSize: 18,
+    fontWeight: "800",
+  },
+  primaryButton: {
+    alignItems: "center",
+    backgroundColor: "#1f7a5c",
+    borderRadius: 8,
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+  },
+  primaryButtonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "800",
+  },
+  resolveButton: {
+    alignItems: "center",
+    alignSelf: "flex-start",
+    backgroundColor: "#171412",
+    borderRadius: 8,
+    minWidth: 108,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  resolveButtonText: {
+    color: "#ffffff",
+    fontSize: 14,
+    fontWeight: "800",
+  },
+  resultBody: {
+    flex: 1,
+    gap: 7,
+  },
+  resultHeading: {
+    gap: 6,
+  },
+  resultMeta: {
+    color: "#7a7067",
+    fontSize: 13,
+    fontWeight: "700",
+  },
+  resultOverview: {
+    color: "#5f564d",
+    fontSize: 14,
+    lineHeight: 19,
+  },
+  resultRow: {
+    backgroundColor: "#fffdfa",
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: 14,
+    padding: 12,
+  },
+  resultTitle: {
+    color: "#171412",
+    flexShrink: 1,
+    fontSize: 17,
+    fontWeight: "800",
+    lineHeight: 22,
+  },
+  resultsSection: {
+    gap: 12,
+  },
+  screen: {
+    backgroundColor: "#f7f4ee",
+    flex: 1,
+  },
+  searchPanel: {
+    gap: 12,
+  },
+  sectionTitle: {
+    color: "#171412",
+    fontSize: 20,
+    fontWeight: "800",
+  },
+  statusPanel: {
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 8,
+    padding: 16,
+  },
+  statusTitle: {
+    color: "#171412",
+    fontSize: 18,
+    fontWeight: "800",
+  },
+  subtitle: {
+    color: "#4f4740",
+    fontSize: 17,
+    lineHeight: 24,
+  },
+  title: {
+    color: "#171412",
+    fontSize: 42,
+    fontWeight: "800",
+  },
+  tvloreText: {
+    color: "#1f7a5c",
+    fontSize: 13,
+    fontWeight: "800",
+    lineHeight: 18,
+  },
+});

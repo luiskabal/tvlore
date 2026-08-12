@@ -20,6 +20,7 @@ Implemented:
 - Authenticated watch/unwatch endpoints for episodes and movies.
 - Authenticated personal library and show progress read endpoints.
 - Mobile home screen reads the authenticated user and personal library summary from the API.
+- Mobile search resolves provider results and opens backend-owned show/movie detail screens.
 - Postman collection and local/Vercel environments.
 - Environment validation for local and Vercel.
 - Backend unit tests with Vitest.
@@ -27,7 +28,8 @@ Implemented:
 
 Not implemented yet:
 
-- Mobile search/detail/tracking screens.
+- Mobile watch/unwatch controls.
+- Mobile season episode list.
 - Social matching.
 
 ## 2. Current System Diagram
@@ -613,7 +615,7 @@ Expected behavior:
 
 ## 11. Mobile Frontend Slice
 
-The current mobile app has one real product-facing screen:
+The current mobile app has these product-facing slices:
 
 ```text
 Home
@@ -622,6 +624,12 @@ Home
 -> GET /users/me
 -> GET /library
 -> Library summary, continue-watching, recently-watched
+
+Search
+-> GET /search
+-> POST /catalog/resolve
+-> Show or movie detail route
+-> GET /shows/:id or GET /movies/:id
 ```
 
 Current behavior:
@@ -631,13 +639,16 @@ Current behavior:
 - The screen shows library counts for shows, movies, and episodes.
 - The screen shows continue-watching and recently watched rows when the backend has watched data.
 - Empty library state is expected after cleanup-oriented smoke checks.
+- Search supports all/show/movie filters.
+- Opening a search result resolves it into a TVLore ID before navigating.
+- Detail screens render backend-owned show/movie data.
 
 Why this shape matters:
 
 - The mobile app owns presentation only.
 - Supabase owns session storage and refresh.
 - The backend owns product reads, progress, and library calculations.
-- The frontend now has a proven contract before adding routed Search, Detail, and Tracking screens.
+- The frontend now has a proven contract before adding watch/unwatch controls.
 
 ## 12. What We Proved
 
@@ -670,6 +681,8 @@ Product foundation:
 - TMDB IDs are external references only.
 - Watch tracking is stored against internal TVLore IDs and authenticated user IDs.
 - Mobile can render backend-owned library data through the same Supabase token used by Postman.
+- Mobile can search TMDB-backed catalog data without receiving TMDB credentials.
+- Mobile can resolve a provider result and open internal show/movie details by TVLore ID.
 
 ## 13. Why This Backend Base Helps The Frontend
 
@@ -680,7 +693,7 @@ The frontend can stay simple because the backend already owns the hard parts:
 - The app does not decide whether a provider item already exists internally.
 - The app can call `GET /search`, show results, call `POST /catalog/resolve`, then navigate using a TVLore ID.
 
-The future frontend flow becomes:
+The frontend flow is now:
 
 ```text
 Search screen
@@ -688,20 +701,26 @@ Search screen
 -> POST /catalog/resolve
 -> navigate to show/movie detail using TVLore ID
 -> detail screen loads backend-owned details
+```
+
+The remaining tracking flow is:
+
+```text
+Show detail
 -> show season screen loads backend-owned episode IDs
 -> tracking buttons call backend-owned watch endpoints
 ```
 
 ## 14. Recommended Next Step
 
-Build mobile screens against the backend contract:
+Add mobile tracking controls against the backend contract:
 
 ```text
-Search -> Resolve -> Detail -> Watch/Unwatch -> Library
+Detail -> Season episodes -> Watch/Unwatch -> Progress -> Library refresh
 ```
 
 Why this is next:
 
-- Search, resolve, details, tracking, progress, and library now exist in the API.
-- The app can start consuming real backend state instead of demo cards.
-- Frontend implementation will expose any missing backend read shape before adding more domain features.
+- Search, resolve, and detail are now wired in mobile.
+- Tracking endpoints already exist and passed smoke checks.
+- Watch/unwatch will make the library screen show real user activity from the app itself.

@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 
@@ -31,6 +32,12 @@ export default function HomeScreen() {
         <Text style={styles.subtitle}>Track what you watch. Discover what you share.</Text>
 
         {home.kind === "ready" && home.user ? <LibraryOverview library={home.library} userName={home.user.displayName} /> : null}
+
+        {auth.kind === "signedIn" ? (
+          <Pressable style={styles.button} onPress={() => router.push("/search")}>
+            <Text style={styles.buttonText}>Search catalog</Text>
+          </Pressable>
+        ) : null}
 
         <View style={styles.statusPanel}>
           <Text style={styles.statusLabel}>Google auth</Text>

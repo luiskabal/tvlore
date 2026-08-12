@@ -1,5 +1,7 @@
 import { apiBaseUrl } from "../config/env";
 
+export type MediaType = "movie" | "show";
+
 export type HealthResponse = {
   service: string;
   status: string;
@@ -55,6 +57,71 @@ export type RecentlyWatchedItem =
       watchedAt: string;
     };
 
+export type CatalogExternalRef = {
+  provider: "tmdb";
+  providerId: string;
+};
+
+export type CatalogSearchResult = {
+  externalRef: CatalogExternalRef;
+  mediaType: MediaType;
+  overview: string;
+  posterPath: string | null;
+  title: string;
+  tvloreId: string | null;
+  year: number | null;
+};
+
+export type CatalogSearchResponse = {
+  page: number;
+  query: string;
+  results: CatalogSearchResult[];
+};
+
+export type CatalogResolveResponse = {
+  id: string;
+  mediaType: MediaType;
+};
+
+export type ShowSeasonSummary = {
+  airDate: string | null;
+  episodeCount: number;
+  id: string;
+  overview: string;
+  posterPath: string | null;
+  seasonNumber: number;
+  title: string;
+};
+
+export type ShowDetailResponse = {
+  backdropPath: string | null;
+  firstAirDate: string | null;
+  id: string;
+  mediaType: "show";
+  originalTitle: string | null;
+  overview: string;
+  posterPath: string | null;
+  seasons: ShowSeasonSummary[];
+  title: string;
+};
+
+export type MovieDetailResponse = {
+  backdropPath: string | null;
+  id: string;
+  lastWatchedAt: string | null;
+  mediaType: "movie";
+  originalTitle: string | null;
+  overview: string;
+  posterPath: string | null;
+  releaseDate: string | null;
+  runtimeMinutes: number | null;
+  title: string;
+  watchCount: number;
+  watched: boolean;
+};
+
+export type CatalogDetailResponse = MovieDetailResponse | ShowDetailResponse;
+
 export type HomeData = {
   health: HealthResponse;
   library: LibraryResponse | null;
@@ -83,6 +150,74 @@ export async function getHomeData(accessToken: string | null): Promise<HomeData>
   return { health, library, user };
 }
 
+export async function searchCatalog(
+  accessToken: string | null,
+  query: string,
+  mediaTypes: MediaType[],
+): Promise<CatalogSearchResponse> {
+  const params = new URLSearchParams({
+    page: "1",
+    query,
+    types: mediaTypes.join(","),
+  });
+
+  return fetchJson(
+    `/search?${params.toString()}`,
+    isCatalogSearchResponse,
+    "Unexpected search response",
+    { headers: getAuthHeaders(accessToken) },
+  );
+}
+
+export async function resolveCatalogItem(
+  accessToken: string | null,
+  result: CatalogSearchResult,
+): Promise<CatalogResolveResponse> {
+  return fetchJson(
+    "/catalog/resolve",
+    isCatalogResolveResponse,
+    "Unexpected resolve response",
+    {
+      body: JSON.stringify({
+        mediaType: result.mediaType,
+        provider: result.externalRef.provider,
+        providerId: result.externalRef.providerId,
+      }),
+      headers: {
+        ...getAuthHeaders(accessToken),
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+    },
+  );
+}
+
+export async function getCatalogDetail(
+  accessToken: string | null,
+  mediaType: MediaType,
+  id: string,
+): Promise<CatalogDetailResponse> {
+  if (mediaType === "show") {
+    const show = await fetchJson(
+      `/shows/${id}`,
+      isShowDetailResponse,
+      "Unexpected show detail response",
+      { headers: getAuthHeaders(accessToken) },
+    );
+
+    return { ...show, mediaType };
+  }
+
+  const movie = await fetchJson(
+    `/movies/${id}`,
+    isMovieDetailResponse,
+    "Unexpected movie detail response",
+    { headers: getAuthHeaders(accessToken) },
+  );
+
+  return { ...movie, mediaType };
+}
+
 async function fetchJson<T>(
   path: string,
   guard: (value: unknown) => value is T,
@@ -97,6 +232,14 @@ async function fetchJson<T>(
   }
 
   return body;
+}
+
+function getAuthHeaders(accessToken: string | null) {
+  if (!accessToken) {
+    throw new Error("Sign in required");
+  }
+
+  return { Authorization: `Bearer ${accessToken}` };
 }
 
 function isHealthResponse(value: unknown): value is HealthResponse {
@@ -141,6 +284,94 @@ function isLibraryResponse(value: unknown): value is LibraryResponse {
     value.continueWatching.every(isContinueWatchingShow) &&
     Array.isArray(value.recentlyWatched) &&
     value.recentlyWatched.every(isRecentlyWatchedItem)
+  );
+}
+
+function isCatalogSearchResponse(value: unknown): value is CatalogSearchResponse {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.query === "string" &&
+    typeof value.page === "number" &&
+    Array.isArray(value.results) &&
+    value.results.every(isCatalogSearchResult)
+  );
+}
+
+function isCatalogSearchResult(value: unknown): value is CatalogSearchResult {
+  if (!isRecord(value) || !isRecord(value.externalRef)) {
+    return false;
+  }
+
+  return (
+    isMediaType(value.mediaType) &&
+    typeof value.title === "string" &&
+    isNullableNumber(value.year) &&
+    typeof value.overview === "string" &&
+    isNullableString(value.posterPath) &&
+    isNullableString(value.tvloreId) &&
+    value.externalRef.provider === "tmdb" &&
+    typeof value.externalRef.providerId === "string"
+  );
+}
+
+function isCatalogResolveResponse(value: unknown): value is CatalogResolveResponse {
+  return isRecord(value) && typeof value.id === "string" && isMediaType(value.mediaType);
+}
+
+function isShowDetailResponse(value: unknown): value is Omit<ShowDetailResponse, "mediaType"> {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.id === "string" &&
+    typeof value.title === "string" &&
+    isNullableString(value.originalTitle) &&
+    typeof value.overview === "string" &&
+    isNullableString(value.posterPath) &&
+    isNullableString(value.backdropPath) &&
+    isNullableString(value.firstAirDate) &&
+    Array.isArray(value.seasons) &&
+    value.seasons.every(isShowSeasonSummary)
+  );
+}
+
+function isShowSeasonSummary(value: unknown): value is ShowSeasonSummary {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.id === "string" &&
+    typeof value.title === "string" &&
+    typeof value.overview === "string" &&
+    isNullableString(value.posterPath) &&
+    isNullableString(value.airDate) &&
+    typeof value.seasonNumber === "number" &&
+    typeof value.episodeCount === "number"
+  );
+}
+
+function isMovieDetailResponse(value: unknown): value is Omit<MovieDetailResponse, "mediaType"> {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.id === "string" &&
+    typeof value.title === "string" &&
+    isNullableString(value.originalTitle) &&
+    typeof value.overview === "string" &&
+    isNullableString(value.posterPath) &&
+    isNullableString(value.backdropPath) &&
+    isNullableString(value.releaseDate) &&
+    isNullableNumber(value.runtimeMinutes) &&
+    typeof value.watched === "boolean" &&
+    typeof value.watchCount === "number" &&
+    isNullableString(value.lastWatchedAt)
   );
 }
 
@@ -194,4 +425,12 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function isNullableString(value: unknown) {
   return value === null || typeof value === "string";
+}
+
+function isNullableNumber(value: unknown) {
+  return value === null || typeof value === "number";
+}
+
+function isMediaType(value: unknown): value is MediaType {
+  return value === "movie" || value === "show";
 }

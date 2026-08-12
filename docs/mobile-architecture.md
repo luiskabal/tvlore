@@ -87,7 +87,12 @@ The first mobile screen now follows this smaller version of the target shape:
 ```text
 app/
 |-- _layout.tsx
-`-- index.tsx
+|-- index.tsx
+|-- search.tsx
+|-- movies/
+|   `-- [id].tsx
+`-- shows/
+    `-- [id].tsx
 
 src/
 |-- api/
@@ -100,9 +105,18 @@ src/
 |-- config/
 |   `-- env.ts
 |
-`-- home/
-    |-- HomeScreen.tsx
-    `-- use-home-data.ts
+|-- catalog/
+|   |-- CatalogDetailScreen.tsx
+|   |-- posters.ts
+|   `-- use-catalog-detail.ts
+|
+|-- home/
+|   |-- HomeScreen.tsx
+|   `-- use-home-data.ts
+|
+`-- search/
+    |-- SearchScreen.tsx
+    `-- use-catalog-search.ts
 ```
 
 The rule is:
@@ -131,6 +145,22 @@ This is still intentionally a small first slice. The product screens will later
 move into Expo Router routes such as Search, Detail, Library, and Profile, but
 the current implementation already proves that mobile can render backend-owned
 library data using the Supabase session.
+
+Search and detail now follow the same boundary:
+
+```text
+SearchScreen
+  -> useCatalogSearch()
+  -> GET /search
+  -> POST /catalog/resolve
+  -> router.push(/shows/:id or /movies/:id)
+  -> CatalogDetailScreen
+  -> useCatalogDetail()
+  -> GET /shows/:id or GET /movies/:id
+```
+
+The app still does not calculate catalog identity, progress, or watched state.
+It asks the backend, then renders the response.
 
 ## Request Interceptors
 
