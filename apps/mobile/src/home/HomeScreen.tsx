@@ -46,7 +46,6 @@ export default function HomeScreen() {
         {homeData?.user ? (
           <LibraryOverview
             avatarUrl={auth.kind === "signedIn" ? auth.avatarUrl : null}
-            isRefreshing={home.kind === "refreshing"}
             library={homeData.library}
             onOpenMovie={openMovie}
             onOpenShowSeason={openShowSeason}

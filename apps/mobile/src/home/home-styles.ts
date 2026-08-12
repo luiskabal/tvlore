@@ -223,10 +223,6 @@ export const styles = StyleSheet.create({
   pressedListItem: {
     opacity: 0.72,
   },
-  refreshSkeletonRow: {
-    flexDirection: "row",
-    gap: 8,
-  },
   screen: {
     backgroundColor: "#f7f4ee",
     flex: 1,
@@ -291,10 +287,6 @@ export const styles = StyleSheet.create({
   skeletonStat: {
     flex: 1,
     height: 58,
-  },
-  skeletonTinyLine: {
-    height: 18,
-    width: 64,
   },
   statusDetail: {
     color: "#5f564d",

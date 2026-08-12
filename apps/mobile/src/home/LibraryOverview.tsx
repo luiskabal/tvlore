@@ -6,7 +6,6 @@ import { styles } from "./home-styles";
 
 type LibraryOverviewProps = {
   avatarUrl: string | null;
-  isRefreshing: boolean;
   library: LibraryResponse | null;
   onOpenMovie: (movieId: string) => void;
   onOpenShowSeason: (showId: string, seasonNumber: number) => void;
@@ -15,7 +14,6 @@ type LibraryOverviewProps = {
 
 export function LibraryOverview({
   avatarUrl,
-  isRefreshing,
   library,
   onOpenMovie,
   onOpenShowSeason,
@@ -38,12 +36,6 @@ export function LibraryOverview({
   return (
     <View style={styles.librarySection}>
       <HoloProfileCard avatarUrl={avatarUrl} library={library} userName={userName} />
-      {isRefreshing ? (
-        <View style={styles.refreshSkeletonRow}>
-          <View style={[styles.skeletonBlock, styles.skeletonTinyLine]} />
-          <View style={[styles.skeletonBlock, styles.skeletonShortLine]} />
-        </View>
-      ) : null}
 
       {isEmpty ? (
         <View style={styles.emptyPanel}>
