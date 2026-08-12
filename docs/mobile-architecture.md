@@ -127,7 +127,10 @@ src/
 |   `-- use-home-data.ts
 |
 `-- search/
+    |-- SearchControls.tsx
+    |-- SearchResults.tsx
     |-- SearchScreen.tsx
+    |-- search-styles.ts
     `-- use-catalog-search.ts
 ```
 
@@ -200,6 +203,11 @@ Search uses client-side prefetch:
 - `POST /catalog/resolve` is never prefetched because it writes catalog identity to the database.
 - Initial search loading renders skeleton result rows.
 - Typed-query refreshes keep previous results visible and show an updating indicator.
+
+`SearchScreen` owns only route/container behavior: input state, selected filter,
+debounce orchestration, resolve navigation, and hook wiring. `SearchControls`
+owns the input/filter/button UI. `SearchResults` owns result states, skeletons,
+and result rows. `search-styles.ts` owns the styling.
 
 Movie tracking uses the same boundary:
 

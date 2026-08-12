@@ -8,8 +8,9 @@ No active infrastructure tasks.
 
 ## Next
 
-- [ ] Clean up mobile screen files by splitting route/container logic, presentational rows/panels, and styles.
 - [ ] Promote the temporary mobile home into routed Library/Profile surfaces.
+- [ ] Add detail-screen skeletons for show, movie, and season routes.
+- [ ] Decide whether mobile server-state hooks should stay local or move to a query library after the next product slice.
 
 ## Notes
 
@@ -73,6 +74,7 @@ No active infrastructure tasks.
 - [x] Add profile/home skeletons and stable refresh behavior.
 - [x] Split mobile season detail presentation and styles out of `SeasonDetailScreen`.
 - [x] Split mobile catalog detail presentation and styles out of `CatalogDetailScreen`.
+- [x] Split mobile search controls, results, and styles out of `SearchScreen`.
 
 ## Deferred
 

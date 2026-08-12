@@ -656,6 +656,7 @@ Current behavior:
 - Stale search responses are ignored so older results cannot overwrite newer queries.
 - Search renders skeleton rows on initial loading and when filters change.
 - Search keeps previous results visible during typed-query refreshes to avoid UI flicker.
+- Search code is split into route/container, controls, results, hook, and styles modules.
 - Opening a search result resolves it into a TVLore ID before navigating.
 - Detail screens render backend-owned show/movie data.
 - Movie detail can mark a movie watched or unwatched.
