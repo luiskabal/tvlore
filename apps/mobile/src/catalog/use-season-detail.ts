@@ -4,6 +4,7 @@ import {
   getShowSeasonDetail,
   markEpisodeWatched,
   unmarkEpisodeWatched,
+  type EpisodeWatchResponse,
   type ShowProgressResponse,
   type ShowSeasonDetailResponse,
 } from "../api/tvlore-api";
@@ -17,7 +18,9 @@ export type SeasonDetailState =
 export type EpisodeWatchActionState =
   | { kind: "idle" }
   | { episodeId: string; kind: "loading" }
-  | { episodeId: string; kind: "error"; message: string };
+  | { episodeId: string; kind: "error"; message: string }
+  | { kind: "bulk-loading"; watched: boolean }
+  | { kind: "bulk-error"; message: string; watched: boolean };
 
 export function useSeasonDetail(showId: string | null, seasonNumber: number | null) {
   const [state, setState] = useState<SeasonDetailState>({ kind: "loading" });
@@ -86,9 +89,71 @@ export function useSeasonDetail(showId: string | null, seasonNumber: number | nu
     }
   }, []);
 
+  const setSeasonWatched = useCallback(async (watched: boolean) => {
+    if (state.kind !== "ready") {
+      return;
+    }
+
+    const targetEpisodes = state.detail.episodes.filter((episode) => episode.watched !== watched);
+
+    if (targetEpisodes.length === 0) {
+      return;
+    }
+
+    setWatchAction({ kind: "bulk-loading", watched });
+
+    try {
+      const token = await getSupabaseAccessToken();
+      const responses = new Map<string, EpisodeWatchResponse>();
+      let showProgress: ShowProgressResponse | null = null;
+
+      for (const episode of targetEpisodes) {
+        const response = watched
+          ? await markEpisodeWatched(token, episode.id)
+          : await unmarkEpisodeWatched(token, episode.id);
+
+        responses.set(episode.id, response);
+        showProgress = response.showProgress;
+      }
+
+      setState((current) => {
+        if (current.kind !== "ready") {
+          return current;
+        }
+
+        return {
+          detail: {
+            ...current.detail,
+            episodes: current.detail.episodes.map((episode) => {
+              const response = responses.get(episode.id);
+
+              return response
+                ? {
+                    ...episode,
+                    lastWatchedAt: response.lastWatchedAt,
+                    watchCount: response.watchCount,
+                    watched: response.watched,
+                  }
+                : episode;
+            }),
+          },
+          kind: "ready",
+          showProgress,
+        };
+      });
+      setWatchAction({ kind: "idle" });
+    } catch (error) {
+      setWatchAction({
+        kind: "bulk-error",
+        message: error instanceof Error ? error.message : "Season watch update failed",
+        watched,
+      });
+    }
+  }, [state]);
+
   useEffect(() => {
     void refresh();
   }, [refresh]);
 
-  return { refresh, setEpisodeWatched, state, watchAction };
+  return { refresh, setEpisodeWatched, setSeasonWatched, state, watchAction };
 }

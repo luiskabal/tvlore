@@ -24,6 +24,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Season detail screen with backend-owned episode IDs.
 - Movie watched/unwatched tracking.
 - Episode watched/unwatched tracking.
+- Season-level mark all watched/unwatched.
 - Library summary with watched show, movie, and episode counts.
 - Continue-watching and recently-watched data from the backend.
 - Postman collection and API smoke checks for local/Vercel validation.
@@ -38,6 +39,7 @@ Google login
 -> Mark movie watched
 -> Open show season
 -> Mark episode watched
+-> Mark all season episodes watched
 -> Refresh library summary
 ```
 
@@ -52,7 +54,6 @@ Use `corepack pnpm api:check` for local/Vercel HTTP smoke checks.
 
 ## Next Backlog Items
 
-- Season-level `Mark all watched` / `Mark all unwatched`.
 - Mobile code cleanup: split route/container logic, presentational components, and styles.
 - Auto-refresh library after returning from tracking screens.
 - Promote the temporary home into routed Library/Profile surfaces.

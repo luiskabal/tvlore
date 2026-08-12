@@ -8,7 +8,6 @@ No active infrastructure tasks.
 
 ## Next
 
-- [ ] Add a season-level `Mark all watched` / `Mark all unwatched` action.
 - [ ] Clean up mobile screen files by splitting route/container logic, presentational rows/panels, and styles.
 - [ ] Refresh the mobile library automatically after returning from tracking screens.
 - [ ] Promote the temporary mobile home into routed Library/Profile surfaces.
@@ -67,6 +66,7 @@ No active infrastructure tasks.
 - [x] Add mobile movie watch/unwatch control.
 - [x] Add mobile season episode list for show details.
 - [x] Add mobile watch/unwatch controls for episodes.
+- [x] Add a season-level `Mark all watched` / `Mark all unwatched` action.
 
 ## Deferred
 

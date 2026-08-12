@@ -10,7 +10,7 @@ export default function SeasonDetailScreen() {
   const params = useLocalSearchParams<{ id?: string | string[]; seasonNumber?: string | string[] }>();
   const showId = typeof params.id === "string" ? params.id : null;
   const seasonNumber = typeof params.seasonNumber === "string" ? parseSeasonNumber(params.seasonNumber) : null;
-  const { refresh, setEpisodeWatched, state, watchAction } = useSeasonDetail(showId, seasonNumber);
+  const { refresh, setEpisodeWatched, setSeasonWatched, state, watchAction } = useSeasonDetail(showId, seasonNumber);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -43,6 +43,7 @@ export default function SeasonDetailScreen() {
             showProgress={state.showProgress}
             watchAction={watchAction}
             onSetEpisodeWatched={setEpisodeWatched}
+            onSetSeasonWatched={setSeasonWatched}
           />
         ) : null}
       </ScrollView>
@@ -52,11 +53,13 @@ export default function SeasonDetailScreen() {
 
 function SeasonContent({
   onSetEpisodeWatched,
+  onSetSeasonWatched,
   season,
   showProgress,
   watchAction,
 }: {
   onSetEpisodeWatched: (episodeId: string, watched: boolean) => void;
+  onSetSeasonWatched: (watched: boolean) => void;
   season: ShowSeasonDetailResponse;
   showProgress: ShowProgressResponse | null;
   watchAction: EpisodeWatchActionState;
@@ -70,6 +73,8 @@ function SeasonContent({
       </View>
 
       {season.overview ? <Text style={styles.overview}>{season.overview}</Text> : null}
+
+      <SeasonBulkPanel season={season} watchAction={watchAction} onSetWatched={onSetSeasonWatched} />
 
       <View style={styles.episodeList}>
         <Text style={styles.sectionTitle}>Episodes</Text>
@@ -94,6 +99,55 @@ function SeasonContent({
   );
 }
 
+function SeasonBulkPanel({
+  onSetWatched,
+  season,
+  watchAction,
+}: {
+  onSetWatched: (watched: boolean) => void;
+  season: ShowSeasonDetailResponse;
+  watchAction: EpisodeWatchActionState;
+}) {
+  const watchedCount = season.episodes.filter((episode) => episode.watched).length;
+  const episodeCount = season.episodes.length;
+  const hasEpisodes = episodeCount > 0;
+  const isBulkSaving = watchAction.kind === "bulk-loading";
+  const isSaving = isBulkSaving || watchAction.kind === "loading";
+  const allWatched = hasEpisodes && watchedCount === episodeCount;
+  const noneWatched = watchedCount === 0;
+  const actionError = watchAction.kind === "bulk-error" ? watchAction.message : null;
+
+  return (
+    <View style={styles.statusPanel}>
+      <Text style={styles.statusTitle}>Season actions</Text>
+      <Text style={styles.mutedText}>{watchedCount}/{episodeCount} episodes watched</Text>
+      {actionError ? <Text style={styles.errorText}>{actionError}</Text> : null}
+
+      <View style={styles.bulkButtonRow}>
+        <Pressable
+          disabled={!hasEpisodes || allWatched || isSaving}
+          style={[styles.primaryButton, !hasEpisodes || allWatched || isSaving ? styles.disabledButton : null]}
+          onPress={() => onSetWatched(true)}
+        >
+          <Text style={styles.primaryButtonText}>
+            {isBulkSaving && watchAction.watched ? "Saving" : "Mark all watched"}
+          </Text>
+        </Pressable>
+
+        <Pressable
+          disabled={!hasEpisodes || noneWatched || isSaving}
+          style={[styles.secondaryButton, !hasEpisodes || noneWatched || isSaving ? styles.disabledButton : null]}
+          onPress={() => onSetWatched(false)}
+        >
+          <Text style={styles.secondaryButtonText}>
+            {isBulkSaving && !watchAction.watched ? "Saving" : "Mark all unwatched"}
+          </Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
 function EpisodeRow({
   episode,
   onSetWatched,
@@ -104,7 +158,7 @@ function EpisodeRow({
   watchAction: EpisodeWatchActionState;
 }) {
   const isSaving = watchAction.kind === "loading" && watchAction.episodeId === episode.id;
-  const isDisabled = watchAction.kind === "loading";
+  const isDisabled = watchAction.kind === "loading" || watchAction.kind === "bulk-loading";
   const actionError = watchAction.kind === "error" && watchAction.episodeId === episode.id
     ? watchAction.message
     : null;
@@ -188,6 +242,11 @@ const styles = StyleSheet.create({
     color: "#1f7a5c",
     fontSize: 16,
     fontWeight: "800",
+  },
+  bulkButtonRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
   },
   centerPanel: {
     alignItems: "center",

@@ -23,6 +23,7 @@ Implemented:
 - Mobile search resolves provider results and opens backend-owned show/movie detail screens.
 - Mobile show detail opens backend-owned season episode lists.
 - Mobile season detail can mark episodes watched or unwatched.
+- Mobile season detail can mark all loaded season episodes watched or unwatched.
 - Postman collection and local/Vercel environments.
 - Environment validation for local and Vercel.
 - Backend unit tests with Vitest.
@@ -655,6 +656,7 @@ Current behavior:
 - Show detail lists seasons and opens a season route.
 - Season detail loads backend-owned episode IDs and watched state.
 - Season detail can mark episodes watched or unwatched.
+- Season detail can mark all currently loaded episodes watched or unwatched.
 - Episode watch actions update the touched episode and display returned show progress.
 
 Why this shape matters:
@@ -700,6 +702,7 @@ Product foundation:
 - Mobile can resolve a provider result and open internal show/movie details by TVLore ID.
 - Mobile can mark movies watched/unwatched through backend tracking endpoints.
 - Mobile can open a show season, hydrate episode IDs, and mark episodes watched/unwatched through backend tracking endpoints.
+- Mobile can bulk-mark the loaded episodes in a season by orchestrating existing idempotent episode tracking endpoints.
 
 ## 13. Why This Backend Base Helps The Frontend
 
