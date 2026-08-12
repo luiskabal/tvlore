@@ -157,6 +157,9 @@ The home library summary is rendered through `LibraryOverview` and
 `HoloProfileCard`. The card uses Supabase Google avatar metadata when available
 and keeps the holo/tilt effect inside presentation code.
 
+Home library rows receive navigation callbacks from `HomeScreen`: movies route
+to movie detail and episode/show rows route to season detail.
+
 This is still intentionally a small first slice. The product screens will later
 move into Expo Router routes such as Search, Detail, Library, and Profile, but
 the current implementation already proves that mobile can render backend-owned

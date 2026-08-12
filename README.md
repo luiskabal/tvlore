@@ -28,6 +28,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Library summary with watched show, movie, and episode counts.
 - Holographic mobile profile summary card with Google avatar and library stats.
 - Continue-watching and recently-watched data from the backend.
+- Library rows navigate back into movie and show season detail screens.
 - Postman collection and API smoke checks for local/Vercel validation.
 
 ## Current MVP Flow

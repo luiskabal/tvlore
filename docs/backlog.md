@@ -70,6 +70,7 @@ No active infrastructure tasks.
 - [x] Refresh the mobile library automatically after returning from tracking screens.
 - [x] Split mobile home library UI and styles out of `HomeScreen`.
 - [x] Add mobile holo profile summary card.
+- [x] Add navigation from mobile library rows to detail screens.
 
 ## Deferred
 

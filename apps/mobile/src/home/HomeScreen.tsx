@@ -46,6 +46,8 @@ export default function HomeScreen() {
           <LibraryOverview
             avatarUrl={auth.kind === "signedIn" ? auth.avatarUrl : null}
             library={home.library}
+            onOpenMovie={openMovie}
+            onOpenShowSeason={openShowSeason}
             userName={home.user.displayName}
           />
         ) : null}
@@ -108,6 +110,17 @@ export default function HomeScreen() {
       </ScrollView>
     </SafeAreaView>
   );
+}
+
+function openMovie(id: string) {
+  router.push({ pathname: "/movies/[id]", params: { id } });
+}
+
+function openShowSeason(showId: string, seasonNumber: number) {
+  router.push({
+    pathname: "/shows/[id]/seasons/[seasonNumber]",
+    params: { id: showId, seasonNumber: String(seasonNumber) },
+  });
 }
 
 function getAuthStatus(auth: AuthState) {

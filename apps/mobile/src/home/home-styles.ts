@@ -220,6 +220,9 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "800",
   },
+  pressedListItem: {
+    opacity: 0.72,
+  },
   screen: {
     backgroundColor: "#f7f4ee",
     flex: 1,
