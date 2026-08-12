@@ -34,6 +34,24 @@ From the monorepo root:
 corepack pnpm test:run
 ```
 
+API test files live in `__tests__` folders next to the feature they validate:
+
+```text
+apps/api/src/
+|-- auth/
+|   `-- __tests__/
+|-- catalog/
+|   `-- __tests__/
+|-- tracking/
+|   `-- __tests__/
+|-- users/
+|   `-- __tests__/
+`-- __tests__/
+```
+
+Use feature-local `__tests__` folders for module rules and parsing tests. Use
+`src/__tests__` only for root-level shared helpers such as `progress.ts`.
+
 API contract checks use the real running API over HTTP:
 
 ```bash

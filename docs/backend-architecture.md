@@ -42,14 +42,16 @@ src/
 |-- auth/
 |   |-- bearer-token.ts
 |   |-- authenticated-user.ts
-|   `-- supabase-auth.service.ts
+|   |-- supabase-auth.service.ts
+|   `-- __tests__/
 |
 |-- users/
 |   |-- users.controller.ts
 |   |-- users.service.ts
 |   |-- users.repository.ts
 |   |-- users.types.ts
-|   `-- user-profile.ts
+|   |-- user-profile.ts
+|   `-- __tests__/
 |
 |-- catalog/
 |   |-- catalog.controller.ts
@@ -59,14 +61,16 @@ src/
 |   |-- catalog.service.ts
 |   |-- catalog-search.ts
 |   |-- catalog.types.ts
-|   `-- tmdb-client.ts
+|   |-- tmdb-client.ts
+|   `-- __tests__/
 |
 |-- tracking/
 |   |-- tracking.controller.ts
 |   |-- tracking-input.ts
 |   |-- tracking.repository.ts
 |   |-- tracking.service.ts
-|   `-- tracking.types.ts
+|   |-- tracking.types.ts
+|   `-- __tests__/
 |
 |-- library/
 |   |-- library.controller.ts
@@ -74,6 +78,7 @@ src/
 |   |-- library.service.ts
 |   `-- library.types.ts
 |
+|-- __tests__/
 |-- progress.ts
 |-- config.ts
 |-- prisma.service.ts

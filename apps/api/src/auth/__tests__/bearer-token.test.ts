@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getBearerToken } from "./bearer-token";
+import { getBearerToken } from "../bearer-token";
 
 describe("getBearerToken", () => {
   it("returns the token from a bearer authorization header", () => {

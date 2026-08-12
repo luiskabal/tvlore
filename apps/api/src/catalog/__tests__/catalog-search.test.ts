@@ -1,7 +1,7 @@
 import { BadRequestException } from "@nestjs/common";
 import { describe, expect, it } from "vitest";
 
-import { parseCatalogSearchInput, toCatalogSearchResult, toCatalogSearchResults } from "./catalog-search";
+import { parseCatalogSearchInput, toCatalogSearchResult, toCatalogSearchResults } from "../catalog-search";
 
 describe("parseCatalogSearchInput", () => {
   it("normalizes the search query", () => {

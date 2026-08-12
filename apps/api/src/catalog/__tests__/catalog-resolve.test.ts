@@ -1,7 +1,7 @@
 import { BadRequestException } from "@nestjs/common";
 import { describe, expect, it } from "vitest";
 
-import { parseCatalogResolveInput, toResolvedMovie, toResolvedShow } from "./catalog-resolve";
+import { parseCatalogResolveInput, toResolvedMovie, toResolvedShow } from "../catalog-resolve";
 
 describe("parseCatalogResolveInput", () => {
   it("accepts a TMDB show or movie ref", () => {

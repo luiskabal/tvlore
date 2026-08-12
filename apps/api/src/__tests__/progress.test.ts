@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { calculatePercentComplete } from "./progress";
+import { calculatePercentComplete } from "../progress";
 
 describe("calculatePercentComplete", () => {
   it("returns zero when there is no persisted denominator", () => {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { toAuthenticatedUser } from "./supabase-user";
+import { toAuthenticatedUser } from "../supabase-user";
 
 describe("toAuthenticatedUser", () => {
   it("maps a Supabase Auth user response", () => {

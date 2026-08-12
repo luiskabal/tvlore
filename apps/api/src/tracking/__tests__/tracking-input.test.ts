@@ -1,7 +1,7 @@
 import { BadRequestException } from "@nestjs/common";
 import { describe, expect, it } from "vitest";
 
-import { parseWatchInput } from "./tracking-input";
+import { parseWatchInput } from "../tracking-input";
 
 describe("parseWatchInput", () => {
   it("uses server time when body is empty", () => {

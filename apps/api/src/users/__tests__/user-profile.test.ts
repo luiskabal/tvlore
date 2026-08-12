@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getDisplayName } from "./user-profile";
+import { getDisplayName } from "../user-profile";
 
 describe("getDisplayName", () => {
   it("prefers provider metadata names", () => {
