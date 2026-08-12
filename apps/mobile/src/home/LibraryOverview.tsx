@@ -1,9 +1,18 @@
 import { Text, View } from "react-native";
 
 import type { ContinueWatchingShow, LibraryResponse, RecentlyWatchedItem } from "../api/tvlore-api";
+import { HoloProfileCard } from "./HoloProfileCard";
 import { styles } from "./home-styles";
 
-export function LibraryOverview({ library, userName }: { library: LibraryResponse | null; userName: string }) {
+export function LibraryOverview({
+  avatarUrl,
+  library,
+  userName,
+}: {
+  avatarUrl: string | null;
+  library: LibraryResponse | null;
+  userName: string;
+}) {
   if (!library) {
     return (
       <View style={styles.statusPanel}>
@@ -20,16 +29,7 @@ export function LibraryOverview({ library, userName }: { library: LibraryRespons
 
   return (
     <View style={styles.librarySection}>
-      <View>
-        <Text style={styles.sectionEyebrow}>Library</Text>
-        <Text style={styles.sectionTitle}>{userName}</Text>
-      </View>
-
-      <View style={styles.metricRow}>
-        <Metric label="Shows" value={library.summary.watchedShowCount} />
-        <Metric label="Movies" value={library.summary.watchedMovieCount} />
-        <Metric label="Episodes" value={library.summary.watchedEpisodeCount} />
-      </View>
+      <HoloProfileCard avatarUrl={avatarUrl} library={library} userName={userName} />
 
       {isEmpty ? (
         <View style={styles.emptyPanel}>
@@ -55,15 +55,6 @@ export function LibraryOverview({ library, userName }: { library: LibraryRespons
           ))}
         </View>
       ) : null}
-    </View>
-  );
-}
-
-function Metric({ label, value }: { label: string; value: number }) {
-  return (
-    <View style={styles.metricBox}>
-      <Text style={styles.metricValue}>{value}</Text>
-      <Text style={styles.metricLabel}>{label}</Text>
     </View>
   );
 }

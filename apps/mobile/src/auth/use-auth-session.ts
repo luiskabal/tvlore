@@ -12,7 +12,7 @@ export type AuthState =
   | { kind: "loading" }
   | { kind: "unconfigured" }
   | { kind: "signedOut" }
-  | { kind: "signedIn"; displayName: string | null; email: string; userId: string }
+  | { avatarUrl: string | null; kind: "signedIn"; displayName: string | null; email: string; userId: string }
   | { kind: "error"; message: string };
 
 export function useAuthSession(onSessionChange: () => void) {
@@ -104,6 +104,7 @@ function getAuthStateFromSession(session: Session | null): AuthState {
   }
 
   return {
+    avatarUrl: getStringMetadata(session, "avatar_url") ?? getStringMetadata(session, "picture"),
     displayName: getStringMetadata(session, "name") ?? getStringMetadata(session, "full_name"),
     email: session.user.email ?? "No email",
     kind: "signedIn",

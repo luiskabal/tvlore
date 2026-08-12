@@ -42,7 +42,13 @@ export default function HomeScreen() {
         <Text style={styles.title}>TVLore</Text>
         <Text style={styles.subtitle}>Track what you watch. Discover what you share.</Text>
 
-        {home.kind === "ready" && home.user ? <LibraryOverview library={home.library} userName={home.user.displayName} /> : null}
+        {home.kind === "ready" && home.user ? (
+          <LibraryOverview
+            avatarUrl={auth.kind === "signedIn" ? auth.avatarUrl : null}
+            library={home.library}
+            userName={home.user.displayName}
+          />
+        ) : null}
 
         {auth.kind === "signedIn" ? (
           <Pressable style={styles.button} onPress={() => router.push("/search")}>

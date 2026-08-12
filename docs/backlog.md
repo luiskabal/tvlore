@@ -9,6 +9,7 @@ No active infrastructure tasks.
 ## Next
 
 - [ ] Clean up mobile screen files by splitting route/container logic, presentational rows/panels, and styles.
+- [ ] Add profile/home skeletons for library refreshes.
 - [ ] Promote the temporary mobile home into routed Library/Profile surfaces.
 
 ## Notes
@@ -68,6 +69,7 @@ No active infrastructure tasks.
 - [x] Add a season-level `Mark all watched` / `Mark all unwatched` action.
 - [x] Refresh the mobile library automatically after returning from tracking screens.
 - [x] Split mobile home library UI and styles out of `HomeScreen`.
+- [x] Add mobile holo profile summary card.
 
 ## Deferred
 

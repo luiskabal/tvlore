@@ -26,6 +26,7 @@ Implemented:
 - Mobile season detail can mark all loaded season episodes watched or unwatched.
 - Mobile tracking mutations invalidate the home library data.
 - Mobile home refreshes authenticated library data after tracking changes or whenever navigation returns to `/`.
+- Mobile home renders a touch-driven holo profile card with Google avatar and library stats.
 - Postman collection and local/Vercel environments.
 - Environment validation for local and Vercel.
 - Backend unit tests with Vitest.
@@ -643,7 +644,8 @@ Current behavior:
 
 - Signed-out users can start Google login.
 - Signed-in users can refresh authenticated backend state.
-- The screen shows library counts for shows, movies, and episodes.
+- The screen shows library counts for shows, movies, and episodes in a holo profile card.
+- The profile card uses Google avatar metadata when available and initials as a fallback.
 - The screen shows continue-watching and recently watched rows when the backend has watched data.
 - Empty library state is expected after cleanup-oriented smoke checks.
 - Search supports all/show/movie filters.

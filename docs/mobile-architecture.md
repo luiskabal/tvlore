@@ -116,6 +116,7 @@ src/
 |   `-- use-catalog-detail.ts
 |
 |-- home/
+|   |-- HoloProfileCard.tsx
 |   |-- home-styles.ts
 |   |-- HomeScreen.tsx
 |   |-- LibraryOverview.tsx
@@ -151,6 +152,10 @@ HomeScreen
 `HomeScreen` refreshes this data when navigation returns to `/` and when tracking
 mutations invalidate the library, so watch changes made in movie or season detail
 screens are reflected when the user returns to the profile.
+
+The home library summary is rendered through `LibraryOverview` and
+`HoloProfileCard`. The card uses Supabase Google avatar metadata when available
+and keeps the holo/tilt effect inside presentation code.
 
 This is still intentionally a small first slice. The product screens will later
 move into Expo Router routes such as Search, Detail, Library, and Profile, but

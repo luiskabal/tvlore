@@ -26,6 +26,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Episode watched/unwatched tracking.
 - Season-level mark all watched/unwatched.
 - Library summary with watched show, movie, and episode counts.
+- Holographic mobile profile summary card with Google avatar and library stats.
 - Continue-watching and recently-watched data from the backend.
 - Postman collection and API smoke checks for local/Vercel validation.
 
@@ -56,6 +57,7 @@ Use `corepack pnpm api:check` for local/Vercel HTTP smoke checks.
 ## Next Backlog Items
 
 - Mobile code cleanup: split route/container logic, presentational components, and styles.
+- Add profile/home skeletons for library refreshes.
 - Promote the temporary home into routed Library/Profile surfaces.
 
 ## Workspace Layout
