@@ -170,6 +170,18 @@ Search uses client-side prefetch:
 - Older in-flight search responses are ignored if a newer query starts first.
 - `POST /catalog/resolve` is never prefetched because it writes catalog identity to the database.
 
+Movie tracking uses the same boundary:
+
+```text
+CatalogDetailScreen(movie)
+  -> useCatalogDetail()
+  -> POST /movies/:movieId/watches or DELETE /movies/:movieId/watches
+  -> Update local movie watched state from backend response
+```
+
+The app still does not calculate watched state. It renders the returned
+`watched`, `watchCount`, and `lastWatchedAt` values.
+
 ## Request Interceptors
 
 The API client may:

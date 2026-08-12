@@ -122,6 +122,13 @@ export type MovieDetailResponse = {
 
 export type CatalogDetailResponse = MovieDetailResponse | ShowDetailResponse;
 
+export type MovieWatchResponse = {
+  lastWatchedAt: string | null;
+  movieId: string;
+  watchCount: number;
+  watched: boolean;
+};
+
 export type HomeData = {
   health: HealthResponse;
   library: LibraryResponse | null;
@@ -216,6 +223,40 @@ export async function getCatalogDetail(
   );
 
   return { ...movie, mediaType };
+}
+
+export async function markMovieWatched(
+  accessToken: string | null,
+  movieId: string,
+): Promise<MovieWatchResponse> {
+  return fetchJson(
+    `/movies/${movieId}/watches`,
+    isMovieWatchResponse,
+    "Unexpected movie watch response",
+    {
+      body: JSON.stringify({ watchedAt: new Date().toISOString() }),
+      headers: {
+        ...getAuthHeaders(accessToken),
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+    },
+  );
+}
+
+export async function unmarkMovieWatched(
+  accessToken: string | null,
+  movieId: string,
+): Promise<MovieWatchResponse> {
+  return fetchJson(
+    `/movies/${movieId}/watches`,
+    isMovieWatchResponse,
+    "Unexpected movie unwatch response",
+    {
+      headers: getAuthHeaders(accessToken),
+      method: "DELETE",
+    },
+  );
 }
 
 async function fetchJson<T>(
@@ -369,6 +410,19 @@ function isMovieDetailResponse(value: unknown): value is Omit<MovieDetailRespons
     isNullableString(value.backdropPath) &&
     isNullableString(value.releaseDate) &&
     isNullableNumber(value.runtimeMinutes) &&
+    typeof value.watched === "boolean" &&
+    typeof value.watchCount === "number" &&
+    isNullableString(value.lastWatchedAt)
+  );
+}
+
+function isMovieWatchResponse(value: unknown): value is MovieWatchResponse {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.movieId === "string" &&
     typeof value.watched === "boolean" &&
     typeof value.watchCount === "number" &&
     isNullableString(value.lastWatchedAt)

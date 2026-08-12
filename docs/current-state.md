@@ -644,6 +644,8 @@ Current behavior:
 - Stale search responses are ignored so older results cannot overwrite newer queries.
 - Opening a search result resolves it into a TVLore ID before navigating.
 - Detail screens render backend-owned show/movie data.
+- Movie detail can mark a movie watched or unwatched.
+- Movie watch actions update local detail state from the backend mutation response.
 
 Why this shape matters:
 
@@ -686,6 +688,7 @@ Product foundation:
 - Mobile can search TMDB-backed catalog data without receiving TMDB credentials.
 - Mobile can prefetch search results without prefetching database writes.
 - Mobile can resolve a provider result and open internal show/movie details by TVLore ID.
+- Mobile can mark movies watched/unwatched through backend tracking endpoints.
 
 ## 13. Why This Backend Base Helps The Frontend
 
@@ -704,6 +707,7 @@ Search screen
 -> POST /catalog/resolve
 -> navigate to show/movie detail using TVLore ID
 -> detail screen loads backend-owned details
+-> movie detail can POST/DELETE /movies/:movieId/watches
 ```
 
 The remaining tracking flow is:
@@ -719,11 +723,12 @@ Show detail
 Add mobile tracking controls against the backend contract:
 
 ```text
-Detail -> Season episodes -> Watch/Unwatch -> Progress -> Library refresh
+Show detail -> Season episodes -> Episode Watch/Unwatch -> Progress -> Library refresh
 ```
 
 Why this is next:
 
 - Search, resolve, and detail are now wired in mobile.
+- Movie watch/unwatch is wired in mobile.
 - Tracking endpoints already exist and passed smoke checks.
-- Watch/unwatch will make the library screen show real user activity from the app itself.
+- Episode watch/unwatch will make show progress and continue-watching visible from the app itself.

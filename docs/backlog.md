@@ -8,8 +8,8 @@ No active infrastructure tasks.
 
 ## Next
 
-- [ ] Add mobile watch/unwatch controls for movies and episodes.
 - [ ] Add mobile season episode list for show details.
+- [ ] Add mobile watch/unwatch controls for episodes.
 - [ ] Promote the temporary mobile home into routed Library/Profile surfaces.
 
 ## Done
@@ -55,6 +55,7 @@ No active infrastructure tasks.
 - [x] Render authenticated library summary on the mobile home screen.
 - [x] Add mobile search, resolve, and show/movie detail flow.
 - [x] Add debounced mobile search prefetch with reactive filters.
+- [x] Add mobile movie watch/unwatch control.
 
 ## Deferred
 

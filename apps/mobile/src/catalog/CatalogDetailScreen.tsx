@@ -2,14 +2,14 @@ import { router, useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { ActivityIndicator, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 
-import type { CatalogDetailResponse, MediaType } from "../api/tvlore-api";
+import type { CatalogDetailResponse, MediaType, MovieDetailResponse } from "../api/tvlore-api";
 import { getTmdbPosterUrl } from "./posters";
-import { useCatalogDetail } from "./use-catalog-detail";
+import { type WatchActionState, useCatalogDetail } from "./use-catalog-detail";
 
 export default function CatalogDetailScreen({ mediaType }: { mediaType: MediaType }) {
   const params = useLocalSearchParams<{ id?: string | string[] }>();
   const id = typeof params.id === "string" ? params.id : null;
-  const { refresh, state } = useCatalogDetail(mediaType, id);
+  const { refresh, setMovieWatched, state, watchAction } = useCatalogDetail(mediaType, id);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -36,13 +36,27 @@ export default function CatalogDetailScreen({ mediaType }: { mediaType: MediaTyp
           </View>
         ) : null}
 
-        {state.kind === "ready" ? <DetailContent detail={state.detail} /> : null}
+        {state.kind === "ready" ? (
+          <DetailContent
+            detail={state.detail}
+            watchAction={watchAction}
+            onSetMovieWatched={setMovieWatched}
+          />
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-function DetailContent({ detail }: { detail: CatalogDetailResponse }) {
+function DetailContent({
+  detail,
+  onSetMovieWatched,
+  watchAction,
+}: {
+  detail: CatalogDetailResponse;
+  onSetMovieWatched: (movieId: string, watched: boolean) => void;
+  watchAction: WatchActionState;
+}) {
   return (
     <View style={styles.detail}>
       <View style={styles.hero}>
@@ -63,10 +77,47 @@ function DetailContent({ detail }: { detail: CatalogDetailResponse }) {
 
       <Text style={styles.overview}>{detail.overview || "No overview available."}</Text>
 
-      <View style={styles.statusPanel}>
-        <Text style={styles.statusTitle}>{detail.mediaType === "show" ? "Seasons" : "Watch state"}</Text>
-        <Text style={styles.mutedText}>{getStatusLine(detail)}</Text>
-      </View>
+      {detail.mediaType === "movie" ? (
+        <MovieWatchPanel movie={detail} watchAction={watchAction} onSetWatched={onSetMovieWatched} />
+      ) : (
+        <View style={styles.statusPanel}>
+          <Text style={styles.statusTitle}>Seasons</Text>
+          <Text style={styles.mutedText}>{getStatusLine(detail)}</Text>
+        </View>
+      )}
+    </View>
+  );
+}
+
+function MovieWatchPanel({
+  movie,
+  onSetWatched,
+  watchAction,
+}: {
+  movie: MovieDetailResponse;
+  onSetWatched: (movieId: string, watched: boolean) => void;
+  watchAction: WatchActionState;
+}) {
+  const isSaving = watchAction.kind === "loading";
+
+  return (
+    <View style={styles.statusPanel}>
+      <Text style={styles.statusTitle}>Watch state</Text>
+      <Text style={styles.mutedText}>{getStatusLine(movie)}</Text>
+      {movie.lastWatchedAt ? (
+        <Text style={styles.mutedText}>Last watched {formatDate(movie.lastWatchedAt)}</Text>
+      ) : null}
+      {watchAction.kind === "error" ? <Text style={styles.errorText}>{watchAction.message}</Text> : null}
+
+      <Pressable
+        disabled={isSaving}
+        style={[movie.watched ? styles.secondaryButton : styles.primaryButton, isSaving ? styles.disabledButton : null]}
+        onPress={() => onSetWatched(movie.id, !movie.watched)}
+      >
+        <Text style={movie.watched ? styles.secondaryButtonText : styles.primaryButtonText}>
+          {isSaving ? "Saving" : movie.watched ? "Mark unwatched" : "Mark watched"}
+        </Text>
+      </Pressable>
     </View>
   );
 }
@@ -85,7 +136,15 @@ function getStatusLine(detail: CatalogDetailResponse) {
     return `${detail.seasons.length} seasons available`;
   }
 
-  return detail.watched ? `Watched ${detail.watchCount} time(s)` : "Not watched yet";
+  return detail.watched ? `Watched ${formatCount(detail.watchCount, "time")}` : "Not watched yet";
+}
+
+function formatDate(value: string) {
+  return new Date(value).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+}
+
+function formatCount(value: number, label: string) {
+  return `${value} ${value === 1 ? label : `${label}s`}`;
 }
 
 const styles = StyleSheet.create({
@@ -105,6 +164,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     gap: 10,
     padding: 18,
+  },
+  disabledButton: {
+    opacity: 0.6,
+  },
+  errorText: {
+    color: "#9c2f23",
+    fontSize: 14,
+    lineHeight: 20,
   },
   content: {
     flexGrow: 1,
@@ -181,6 +248,20 @@ const styles = StyleSheet.create({
   screen: {
     backgroundColor: "#f7f4ee",
     flex: 1,
+  },
+  secondaryButton: {
+    alignItems: "center",
+    alignSelf: "flex-start",
+    backgroundColor: "#171412",
+    borderRadius: 8,
+    minWidth: 136,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  secondaryButtonText: {
+    color: "#ffffff",
+    fontSize: 14,
+    fontWeight: "800",
   },
   statusPanel: {
     borderColor: "#d8d0c5",
