@@ -55,6 +55,7 @@ No active infrastructure tasks.
 - [x] Render authenticated library summary on the mobile home screen.
 - [x] Add mobile search, resolve, and show/movie detail flow.
 - [x] Add debounced mobile search prefetch with reactive filters.
+- [x] Add mobile search loading indicators and skeleton rows.
 - [x] Add mobile movie watch/unwatch control.
 
 ## Deferred

@@ -22,6 +22,8 @@ export default function SearchScreen() {
   const canSearch = query.trim().length >= minSearchLength;
   const results = search.kind === "ready" || search.kind === "refreshing" ? search.results : [];
   const isSearching = search.kind === "loading" || search.kind === "refreshing";
+  const isInitialLoading = search.kind === "loading";
+  const isRefreshing = search.kind === "refreshing";
 
   useEffect(() => {
     if (!canSearch) {
@@ -84,7 +86,11 @@ export default function SearchScreen() {
             {filters.map((item) => (
               <Pressable
                 key={item.value}
-                style={[styles.filterButton, filter === item.value ? styles.activeFilterButton : null]}
+                style={[
+                  styles.filterButton,
+                  filter === item.value ? styles.activeFilterButton : null,
+                  isSearching && filter !== item.value ? styles.pendingFilterButton : null,
+                ]}
                 onPress={() => setFilter(item.value)}
               >
                 <Text style={[styles.filterText, filter === item.value ? styles.activeFilterText : null]}>
@@ -103,10 +109,10 @@ export default function SearchScreen() {
           </Pressable>
         </View>
 
-        {search.kind === "loading" ? (
-          <View style={styles.centerPanel}>
-            <ActivityIndicator color="#1f7a5c" />
-            <Text style={styles.mutedText}>Searching {search.query}</Text>
+        {isInitialLoading ? (
+          <View style={styles.resultsSection}>
+            <LoadingStrip label={`Searching ${search.query}`} />
+            <SearchSkeleton />
           </View>
         ) : null}
 
@@ -119,10 +125,13 @@ export default function SearchScreen() {
 
         {search.kind === "ready" || search.kind === "refreshing" ? (
           <View style={styles.resultsSection}>
-            <Text style={styles.sectionTitle}>
-              {results.length} results for {search.query}
-            </Text>
-            {search.kind === "refreshing" ? <Text style={styles.mutedText}>Updating</Text> : null}
+            <View style={styles.resultsHeader}>
+              <Text style={styles.sectionTitle}>
+                {results.length} results for {search.query}
+              </Text>
+              {isRefreshing ? <ActivityIndicator color="#1f7a5c" size="small" /> : null}
+            </View>
+            {isRefreshing ? <Text style={styles.mutedText}>Updating results</Text> : null}
 
             {results.length === 0 ? (
               <View style={styles.statusPanel}>
@@ -143,6 +152,33 @@ export default function SearchScreen() {
         ) : null}
       </ScrollView>
     </SafeAreaView>
+  );
+}
+
+function LoadingStrip({ label }: { label: string }) {
+  return (
+    <View style={styles.loadingStrip}>
+      <ActivityIndicator color="#1f7a5c" size="small" />
+      <Text style={styles.loadingText}>{label}</Text>
+    </View>
+  );
+}
+
+function SearchSkeleton() {
+  return (
+    <View style={styles.skeletonList}>
+      {[0, 1, 2].map((item) => (
+        <View key={item} style={styles.skeletonRow}>
+          <View style={styles.skeletonPoster} />
+          <View style={styles.skeletonBody}>
+            <View style={styles.skeletonTitle} />
+            <View style={styles.skeletonLine} />
+            <View style={styles.skeletonLineShort} />
+            <View style={styles.skeletonButton} />
+          </View>
+        </View>
+      ))}
+    </View>
   );
 }
 
@@ -226,13 +262,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "800",
   },
-  centerPanel: {
+  loadingStrip: {
     alignItems: "center",
     borderColor: "#d8d0c5",
     borderRadius: 8,
     borderWidth: 1,
+    flexDirection: "row",
     gap: 10,
-    padding: 18,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+  },
+  loadingText: {
+    color: "#5f564d",
+    fontSize: 14,
+    fontWeight: "700",
   },
   content: {
     flexGrow: 1,
@@ -299,6 +342,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     height: 112,
     width: 76,
+  },
+  pendingFilterButton: {
+    opacity: 0.72,
   },
   posterPlaceholder: {
     alignItems: "center",
@@ -375,6 +421,12 @@ const styles = StyleSheet.create({
   resultsSection: {
     gap: 12,
   },
+  resultsHeader: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 10,
+    justifyContent: "space-between",
+  },
   screen: {
     backgroundColor: "#f7f4ee",
     flex: 1,
@@ -384,8 +436,55 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: "#171412",
+    flex: 1,
     fontSize: 20,
     fontWeight: "800",
+  },
+  skeletonBody: {
+    flex: 1,
+    gap: 10,
+  },
+  skeletonButton: {
+    backgroundColor: "#d8d0c5",
+    borderRadius: 8,
+    height: 34,
+    width: 96,
+  },
+  skeletonLine: {
+    backgroundColor: "#e2dbd1",
+    borderRadius: 8,
+    height: 14,
+    width: "92%",
+  },
+  skeletonLineShort: {
+    backgroundColor: "#e2dbd1",
+    borderRadius: 8,
+    height: 14,
+    width: "62%",
+  },
+  skeletonList: {
+    gap: 12,
+  },
+  skeletonPoster: {
+    backgroundColor: "#d8d0c5",
+    borderRadius: 8,
+    height: 112,
+    width: 76,
+  },
+  skeletonRow: {
+    backgroundColor: "#fffdfa",
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: 14,
+    padding: 12,
+  },
+  skeletonTitle: {
+    backgroundColor: "#d8d0c5",
+    borderRadius: 8,
+    height: 20,
+    width: "72%",
   },
   statusPanel: {
     borderColor: "#d8d0c5",

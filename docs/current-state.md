@@ -642,6 +642,7 @@ Current behavior:
 - Search supports all/show/movie filters.
 - Search prefetches results with a debounce after the user enters at least three characters.
 - Stale search responses are ignored so older results cannot overwrite newer queries.
+- Search renders skeleton rows on initial loading and an updating indicator during filter refreshes.
 - Opening a search result resolves it into a TVLore ID before navigating.
 - Detail screens render backend-owned show/movie data.
 - Movie detail can mark a movie watched or unwatched.

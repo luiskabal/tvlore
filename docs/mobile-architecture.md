@@ -169,6 +169,8 @@ Search uses client-side prefetch:
 - The Search button still forces an immediate request.
 - Older in-flight search responses are ignored if a newer query starts first.
 - `POST /catalog/resolve` is never prefetched because it writes catalog identity to the database.
+- Initial search loading renders skeleton result rows.
+- Refreshing search keeps previous results visible and shows an updating indicator.
 
 Movie tracking uses the same boundary:
 
