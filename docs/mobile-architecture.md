@@ -115,6 +115,23 @@ Screen -> hook -> API/auth client -> external system
 home loading flow. `tvlore-api.ts` owns HTTP and response-shape validation.
 `supabase-auth.ts` owns Supabase session and OAuth behavior.
 
+The home screen now consumes real authenticated backend state:
+
+```text
+HomeScreen
+  -> useHomeData()
+  -> getSupabaseAccessToken()
+  -> getHomeData(accessToken)
+  -> GET /health
+  -> GET /users/me
+  -> GET /library
+```
+
+This is still intentionally a small first slice. The product screens will later
+move into Expo Router routes such as Search, Detail, Library, and Profile, but
+the current implementation already proves that mobile can render backend-owned
+library data using the Supabase session.
+
 ## Request Interceptors
 
 The API client may:

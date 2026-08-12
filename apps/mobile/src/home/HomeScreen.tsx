@@ -1,6 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 
+import type { ContinueWatchingShow, LibraryResponse, RecentlyWatchedItem } from "../api/tvlore-api";
 import {
   getAuthRedirectUrl,
   isSupabaseConfigured,
@@ -29,30 +30,7 @@ export default function HomeScreen() {
         <Text style={styles.title}>TVLore</Text>
         <Text style={styles.subtitle}>Track what you watch. Discover what you share.</Text>
 
-        <View style={styles.statusPanel}>
-          <Text style={styles.statusLabel}>{statusLabel}</Text>
-          <Text style={styles.statusDetail}>
-            {home.kind === "ready"
-              ? `${home.health.service} responded at ${new Date(home.health.time).toLocaleTimeString()}`
-              : home.kind === "offline"
-                ? home.message
-                : "Waiting for the backend"}
-          </Text>
-        </View>
-
-        {home.kind === "ready" && home.user ? (
-          <View style={styles.statusPanel}>
-            <Text style={styles.statusLabel}>{home.user.displayName}</Text>
-            <Text style={styles.statusDetail}>User ID: {home.user.id}</Text>
-          </View>
-        ) : null}
-
-        <View style={styles.statusPanel}>
-          <Text style={styles.statusLabel}>
-            {isSupabaseConfigured ? "Supabase configured" : "Supabase missing config"}
-          </Text>
-          <Text style={styles.statusDetail}>{supabaseProjectUrl}</Text>
-        </View>
+        {home.kind === "ready" && home.user ? <LibraryOverview library={home.library} userName={home.user.displayName} /> : null}
 
         <View style={styles.statusPanel}>
           <Text style={styles.statusLabel}>Google auth</Text>
@@ -89,9 +67,128 @@ export default function HomeScreen() {
         <Pressable style={styles.button} onPress={refreshHome}>
           <Text style={styles.buttonText}>Refresh</Text>
         </Pressable>
+
+        <View style={styles.statusPanel}>
+          <Text style={styles.statusLabel}>{statusLabel}</Text>
+          <Text style={styles.statusDetail}>
+            {home.kind === "ready"
+              ? `${home.health.service} responded at ${new Date(home.health.time).toLocaleTimeString()}`
+              : home.kind === "offline"
+                ? home.message
+                : "Waiting for the backend"}
+          </Text>
+          <Text style={styles.statusDetail}>
+            {isSupabaseConfigured ? `Supabase: ${supabaseProjectUrl}` : "Supabase missing config"}
+          </Text>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
+}
+
+function LibraryOverview({ library, userName }: { library: LibraryResponse | null; userName: string }) {
+  if (!library) {
+    return (
+      <View style={styles.statusPanel}>
+        <Text style={styles.statusLabel}>{userName}</Text>
+        <Text style={styles.statusDetail}>Sign in is active. Library data is not loaded yet.</Text>
+      </View>
+    );
+  }
+
+  const isEmpty =
+    library.summary.watchedEpisodeCount === 0 &&
+    library.summary.watchedMovieCount === 0 &&
+    library.summary.watchedShowCount === 0;
+
+  return (
+    <View style={styles.librarySection}>
+      <View>
+        <Text style={styles.sectionEyebrow}>Library</Text>
+        <Text style={styles.sectionTitle}>{userName}</Text>
+      </View>
+
+      <View style={styles.metricRow}>
+        <Metric label="Shows" value={library.summary.watchedShowCount} />
+        <Metric label="Movies" value={library.summary.watchedMovieCount} />
+        <Metric label="Episodes" value={library.summary.watchedEpisodeCount} />
+      </View>
+
+      {isEmpty ? (
+        <View style={styles.emptyPanel}>
+          <Text style={styles.statusLabel}>Your library is empty</Text>
+          <Text style={styles.statusDetail}>Watched titles will appear here after you mark them.</Text>
+        </View>
+      ) : null}
+
+      {library.continueWatching.length > 0 ? (
+        <View style={styles.listSection}>
+          <Text style={styles.listTitle}>Continue Watching</Text>
+          {library.continueWatching.map((show) => (
+            <ContinueWatchingItem key={show.id} show={show} />
+          ))}
+        </View>
+      ) : null}
+
+      {library.recentlyWatched.length > 0 ? (
+        <View style={styles.listSection}>
+          <Text style={styles.listTitle}>Recently Watched</Text>
+          {library.recentlyWatched.map((item) => (
+            <RecentlyWatchedRow key={`${item.mediaType}-${item.id}`} item={item} />
+          ))}
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
+function Metric({ label, value }: { label: string; value: number }) {
+  return (
+    <View style={styles.metricBox}>
+      <Text style={styles.metricValue}>{value}</Text>
+      <Text style={styles.metricLabel}>{label}</Text>
+    </View>
+  );
+}
+
+function ContinueWatchingItem({ show }: { show: ContinueWatchingShow }) {
+  return (
+    <View style={styles.listItem}>
+      <View style={styles.listText}>
+        <Text style={styles.itemTitle}>{show.title}</Text>
+        <Text style={styles.statusDetail}>
+          S{show.nextEpisode.seasonNumber} E{show.nextEpisode.episodeNumber} - {show.nextEpisode.title}
+        </Text>
+      </View>
+      <Text style={styles.progressText}>{show.percentComplete}%</Text>
+    </View>
+  );
+}
+
+function RecentlyWatchedRow({ item }: { item: RecentlyWatchedItem }) {
+  return (
+    <View style={styles.listItem}>
+      <View style={styles.listText}>
+        <Text style={styles.itemTitle}>{getRecentlyWatchedTitle(item)}</Text>
+        <Text style={styles.statusDetail}>{getRecentlyWatchedDetail(item)}</Text>
+      </View>
+      <Text style={styles.dateText}>{formatWatchedAt(item.watchedAt)}</Text>
+    </View>
+  );
+}
+
+function getRecentlyWatchedTitle(item: RecentlyWatchedItem) {
+  return item.mediaType === "movie" ? item.title : item.showTitle;
+}
+
+function getRecentlyWatchedDetail(item: RecentlyWatchedItem) {
+  return item.mediaType === "movie"
+    ? "Movie"
+    : `S${item.seasonNumber} E${item.episodeNumber} - ${item.title}`;
+}
+
+function formatWatchedAt(value: string) {
+  return new Date(value).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
 function getAuthStatus(auth: AuthState) {
@@ -128,8 +225,8 @@ const styles = StyleSheet.create({
   content: {
     flexGrow: 1,
     gap: 20,
-    justifyContent: "center",
     padding: 24,
+    paddingTop: 72,
   },
   disabledButton: {
     opacity: 0.6,
@@ -138,6 +235,18 @@ const styles = StyleSheet.create({
     color: "#9c2f23",
     fontSize: 14,
     lineHeight: 20,
+  },
+  dateText: {
+    color: "#7a7067",
+    fontSize: 12,
+    fontWeight: "700",
+  },
+  emptyPanel: {
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 8,
+    padding: 16,
   },
   googleButton: {
     alignItems: "center",
@@ -155,9 +264,77 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
   },
+  itemTitle: {
+    color: "#171412",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  librarySection: {
+    gap: 16,
+  },
+  listItem: {
+    alignItems: "center",
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: 12,
+    justifyContent: "space-between",
+    padding: 14,
+  },
+  listSection: {
+    gap: 10,
+  },
+  listText: {
+    flex: 1,
+    gap: 4,
+  },
+  listTitle: {
+    color: "#171412",
+    fontSize: 18,
+    fontWeight: "800",
+  },
+  metricBox: {
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    flex: 1,
+    gap: 4,
+    padding: 12,
+  },
+  metricLabel: {
+    color: "#5f564d",
+    fontSize: 12,
+    fontWeight: "700",
+  },
+  metricRow: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  metricValue: {
+    color: "#171412",
+    fontSize: 24,
+    fontWeight: "800",
+  },
+  progressText: {
+    color: "#1f7a5c",
+    fontSize: 14,
+    fontWeight: "800",
+  },
   screen: {
     backgroundColor: "#f7f4ee",
     flex: 1,
+  },
+  sectionEyebrow: {
+    color: "#1f7a5c",
+    fontSize: 12,
+    fontWeight: "800",
+    textTransform: "uppercase",
+  },
+  sectionTitle: {
+    color: "#171412",
+    fontSize: 26,
+    fontWeight: "800",
   },
   secondaryButton: {
     alignItems: "center",

@@ -19,6 +19,7 @@ Implemented:
 - Episode catalog persistence when a season is opened.
 - Authenticated watch/unwatch endpoints for episodes and movies.
 - Authenticated personal library and show progress read endpoints.
+- Mobile home screen reads the authenticated user and personal library summary from the API.
 - Postman collection and local/Vercel environments.
 - Environment validation for local and Vercel.
 - Backend unit tests with Vitest.
@@ -26,6 +27,7 @@ Implemented:
 
 Not implemented yet:
 
+- Mobile search/detail/tracking screens.
 - Social matching.
 
 ## 2. Current System Diagram
@@ -609,7 +611,35 @@ Expected behavior:
 - `DELETE /movies/:movieId/watches` marks that movie unwatched for the authenticated user.
 - `GET /movies/:movieId` returns movie detail with authenticated user's watched state.
 
-## 11. What We Proved
+## 11. Mobile Frontend Slice
+
+The current mobile app has one real product-facing screen:
+
+```text
+Home
+-> Supabase session
+-> TVLore API health
+-> GET /users/me
+-> GET /library
+-> Library summary, continue-watching, recently-watched
+```
+
+Current behavior:
+
+- Signed-out users can start Google login.
+- Signed-in users can refresh authenticated backend state.
+- The screen shows library counts for shows, movies, and episodes.
+- The screen shows continue-watching and recently watched rows when the backend has watched data.
+- Empty library state is expected after cleanup-oriented smoke checks.
+
+Why this shape matters:
+
+- The mobile app owns presentation only.
+- Supabase owns session storage and refresh.
+- The backend owns product reads, progress, and library calculations.
+- The frontend now has a proven contract before adding routed Search, Detail, and Tracking screens.
+
+## 12. What We Proved
 
 Infrastructure:
 
@@ -639,8 +669,9 @@ Product foundation:
 - TVLore owns internal catalog IDs.
 - TMDB IDs are external references only.
 - Watch tracking is stored against internal TVLore IDs and authenticated user IDs.
+- Mobile can render backend-owned library data through the same Supabase token used by Postman.
 
-## 12. Why This Backend Base Helps The Frontend
+## 13. Why This Backend Base Helps The Frontend
 
 The frontend can stay simple because the backend already owns the hard parts:
 
@@ -661,7 +692,7 @@ Search screen
 -> tracking buttons call backend-owned watch endpoints
 ```
 
-## 13. Recommended Next Step
+## 14. Recommended Next Step
 
 Build mobile screens against the backend contract:
 

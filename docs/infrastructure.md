@@ -41,13 +41,22 @@ GET /shows/:showId
 GET /shows/:showId/seasons
 GET /shows/:showId/seasons/:seasonNumber
 GET /movies/:movieId
+POST /episodes/:episodeId/watches
+DELETE /episodes/:episodeId/watches
+POST /movies/:movieId/watches
+DELETE /movies/:movieId/watches
+GET /shows/:showId/progress
+GET /library
 ```
 
 `GET /health/db` verifies runtime connectivity from Vercel to PostgreSQL. If Vercel has no `DATABASE_URL`, the API fails during startup.
 `GET /users/me` validates a Supabase Auth bearer token, upserts the matching `UserIdentity`, and returns the real TVLore user.
 `GET /search` validates a Supabase Auth bearer token and calls TMDB from the backend using server-side credentials.
 `POST /catalog/resolve` validates a Supabase Auth bearer token, fetches TMDB details, and upserts an internal show or movie ID.
-Show and movie detail endpoints read internal TVLore IDs. Season detail fetches and persists TMDB episodes for the requested season.
+Show and movie detail endpoints read internal TVLore IDs. Season detail fetches
+and persists TMDB episodes for the requested season. Watch endpoints store
+per-user watched state, and library/progress endpoints read the authenticated
+user's viewing state.
 
 ## Database
 
@@ -171,7 +180,14 @@ $env:EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY="YOUR_SUPABASE_PUBLISHABLE_KEY"
 corepack pnpm --filter @tvlore/mobile start -- --clear --port 8081
 ```
 
-Then open Expo Go with the LAN URL printed by Metro, currently:
+For OAuth testing with the installed development build, prefer:
+
+```powershell
+cd apps/mobile
+corepack pnpm exec expo start --dev-client --clear --host lan --port 8081
+```
+
+Then open the LAN URL printed by Metro, currently:
 
 ```text
 exp://192.168.100.6:8081
@@ -219,3 +235,5 @@ the selected Postman environment.
 - `POST /catalog/resolve` persists provider-backed shows/movies into TVLore IDs.
 - Show/movie detail endpoints read catalog records by internal TVLore IDs.
 - Season detail persists episode records for the requested season.
+- Watch/unwatch endpoints store authenticated movie and episode state.
+- `GET /library` feeds the mobile home library summary.

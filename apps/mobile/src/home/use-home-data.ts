@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { getHomeData, type HealthResponse, type UserResponse } from "../api/tvlore-api";
+import { getHomeData, type HealthResponse, type LibraryResponse, type UserResponse } from "../api/tvlore-api";
 import { getSupabaseAccessToken } from "../auth/supabase-auth";
 
 export type HomeState =
   | { kind: "loading" }
-  | { health: HealthResponse; kind: "ready"; user: UserResponse | null }
+  | { health: HealthResponse; kind: "ready"; library: LibraryResponse | null; user: UserResponse | null }
   | { kind: "offline"; message: string };
 
 export function useHomeData() {

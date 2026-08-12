@@ -9,7 +9,7 @@ No active infrastructure tasks.
 ## Next
 
 - [ ] Build mobile search/detail/tracking screens against the backend API.
-- [ ] Add progress/library views to the mobile app.
+- [ ] Promote the temporary mobile home into routed Library/Profile surfaces.
 
 ## Done
 
@@ -51,6 +51,7 @@ No active infrastructure tasks.
 - [x] Add episode/movie watch tracking.
 - [x] Add progress and personal library endpoints.
 - [x] Harden API smoke checks with contract assertions.
+- [x] Render authenticated library summary on the mobile home screen.
 
 ## Deferred
 
