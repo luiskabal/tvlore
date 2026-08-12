@@ -8,8 +8,16 @@ No active infrastructure tasks.
 
 ## Next
 
+- [ ] Add a season-level `Mark all watched` / `Mark all unwatched` action.
+- [ ] Clean up mobile screen files by splitting route/container logic, presentational rows/panels, and styles.
 - [ ] Refresh the mobile library automatically after returning from tracking screens.
 - [ ] Promote the temporary mobile home into routed Library/Profile surfaces.
+
+## Notes
+
+- Season bulk watched is needed because marking episodes one by one is too slow for real use.
+- Mobile cleanup should start with the largest screens: `SeasonDetailScreen`, `CatalogDetailScreen`, `SearchScreen`, then `HomeScreen`.
+- Keep the current screen -> hook -> API client boundary. The cleanup goal is readability, not a new state-management layer yet.
 
 ## Done
 
