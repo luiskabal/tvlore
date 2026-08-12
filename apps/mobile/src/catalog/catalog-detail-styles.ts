@@ -1,0 +1,171 @@
+import { StyleSheet } from "react-native";
+
+export const styles = StyleSheet.create({
+  backButton: {
+    alignSelf: "flex-start",
+    paddingVertical: 4,
+  },
+  backButtonText: {
+    color: "#1f7a5c",
+    fontSize: 16,
+    fontWeight: "800",
+  },
+  centerPanel: {
+    alignItems: "center",
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 10,
+    padding: 18,
+  },
+  disabledButton: {
+    opacity: 0.6,
+  },
+  errorText: {
+    color: "#9c2f23",
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  content: {
+    flexGrow: 1,
+    gap: 20,
+    padding: 24,
+    paddingTop: 48,
+  },
+  detail: {
+    gap: 20,
+  },
+  hero: {
+    flexDirection: "row",
+    gap: 16,
+  },
+  heroText: {
+    flex: 1,
+    gap: 8,
+    justifyContent: "center",
+  },
+  mediaPill: {
+    alignSelf: "flex-start",
+    backgroundColor: "#e4f1ea",
+    borderRadius: 8,
+    color: "#1f7a5c",
+    fontSize: 12,
+    fontWeight: "800",
+    overflow: "hidden",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  mutedText: {
+    color: "#5f564d",
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  openText: {
+    color: "#1f7a5c",
+    fontSize: 14,
+    fontWeight: "800",
+  },
+  overview: {
+    color: "#302b27",
+    fontSize: 16,
+    lineHeight: 23,
+  },
+  poster: {
+    backgroundColor: "#d8d0c5",
+    borderRadius: 8,
+    height: 168,
+    width: 114,
+  },
+  posterPlaceholder: {
+    alignItems: "center",
+    backgroundColor: "#e8e2d8",
+    borderRadius: 8,
+    height: 168,
+    justifyContent: "center",
+    width: 114,
+  },
+  posterPlaceholderText: {
+    color: "#5f564d",
+    fontSize: 22,
+    fontWeight: "800",
+  },
+  primaryButton: {
+    alignItems: "center",
+    alignSelf: "flex-start",
+    backgroundColor: "#1f7a5c",
+    borderRadius: 8,
+    minWidth: 108,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  primaryButtonText: {
+    color: "#ffffff",
+    fontSize: 14,
+    fontWeight: "800",
+  },
+  screen: {
+    backgroundColor: "#f7f4ee",
+    flex: 1,
+  },
+  seasonBody: {
+    flex: 1,
+    gap: 4,
+  },
+  seasonRow: {
+    alignItems: "center",
+    backgroundColor: "#fffdfa",
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: 12,
+    justifyContent: "space-between",
+    padding: 14,
+  },
+  seasonTitle: {
+    color: "#171412",
+    fontSize: 17,
+    fontWeight: "800",
+    lineHeight: 22,
+  },
+  seasonsSection: {
+    gap: 12,
+  },
+  secondaryButton: {
+    alignItems: "center",
+    alignSelf: "flex-start",
+    backgroundColor: "#171412",
+    borderRadius: 8,
+    minWidth: 136,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  secondaryButtonText: {
+    color: "#ffffff",
+    fontSize: 14,
+    fontWeight: "800",
+  },
+  sectionTitle: {
+    color: "#171412",
+    fontSize: 20,
+    fontWeight: "800",
+  },
+  statusPanel: {
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 8,
+    padding: 16,
+  },
+  statusTitle: {
+    color: "#171412",
+    fontSize: 18,
+    fontWeight: "800",
+  },
+  title: {
+    color: "#171412",
+    fontSize: 31,
+    fontWeight: "800",
+    lineHeight: 36,
+  },
+});

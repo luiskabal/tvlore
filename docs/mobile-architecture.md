@@ -109,7 +109,9 @@ src/
 |   `-- env.ts
 |
 |-- catalog/
+|   |-- CatalogDetailContent.tsx
 |   |-- CatalogDetailScreen.tsx
+|   |-- catalog-detail-styles.ts
 |   |-- posters.ts
 |   |-- SeasonContent.tsx
 |   |-- SeasonDetailScreen.tsx

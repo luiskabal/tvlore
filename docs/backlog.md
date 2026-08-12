@@ -72,6 +72,7 @@ No active infrastructure tasks.
 - [x] Add navigation from mobile library rows to detail screens.
 - [x] Add profile/home skeletons and stable refresh behavior.
 - [x] Split mobile season detail presentation and styles out of `SeasonDetailScreen`.
+- [x] Split mobile catalog detail presentation and styles out of `CatalogDetailScreen`.
 
 ## Deferred
 
