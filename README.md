@@ -41,6 +41,15 @@ Google login
 -> Refresh library summary
 ```
 
+## Verification
+
+```powershell
+corepack pnpm verify
+```
+
+Use `corepack pnpm verify:full` before larger merges or release-oriented changes.
+Use `corepack pnpm api:check` for local/Vercel HTTP smoke checks.
+
 ## Next Backlog Items
 
 - Season-level `Mark all watched` / `Mark all unwatched`.

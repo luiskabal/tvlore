@@ -14,6 +14,8 @@
     "db:stop": "docker compose down",
     "test:run": "corepack pnpm -r --if-present test:run",
     "typecheck": "corepack pnpm -r typecheck",
+    "verify": "corepack pnpm typecheck && corepack pnpm test:run",
+    "verify:full": "corepack pnpm verify && corepack pnpm build",
     "build": "corepack pnpm -r --if-present build"
   },
   "workspaces": [

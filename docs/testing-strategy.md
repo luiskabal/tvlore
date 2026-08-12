@@ -4,6 +4,24 @@ Tests should focus on TVLore behavior, not framework internals.
 
 ## Current Tooling
 
+Normal deterministic verification:
+
+```bash
+corepack pnpm verify
+```
+
+This runs workspace type checking and backend unit tests. It is the default
+inner-loop command for agents and local development.
+
+Full local verification:
+
+```bash
+corepack pnpm verify:full
+```
+
+This runs `verify` plus build checks. Use it before larger merges, releases, or
+changes that affect build output.
+
 Backend unit tests use Vitest:
 
 ```bash
@@ -21,6 +39,10 @@ API contract checks use the real running API over HTTP:
 ```bash
 corepack pnpm api:check
 ```
+
+This is a smoke/functional check, not the default CI check, because it targets a
+running API and authenticated product checks require a current Supabase access
+token.
 
 By default this targets production:
 
