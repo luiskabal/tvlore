@@ -160,6 +160,9 @@ and keeps the holo/tilt effect inside presentation code.
 Home library rows receive navigation callbacks from `HomeScreen`: movies route
 to movie detail and episode/show rows route to season detail.
 
+`useHomeData` preserves the last ready snapshot during refreshes. `HomeScreen`
+renders skeletons only when no home data has loaded yet.
+
 This is still intentionally a small first slice. The product screens will later
 move into Expo Router routes such as Search, Detail, Library, and Profile, but
 the current implementation already proves that mobile can render backend-owned

@@ -29,6 +29,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Holographic mobile profile summary card with Google avatar and library stats.
 - Continue-watching and recently-watched data from the backend.
 - Library rows navigate back into movie and show season detail screens.
+- Profile/home keeps prior data during refresh and shows skeletons on first load.
 - Postman collection and API smoke checks for local/Vercel validation.
 
 ## Current MVP Flow
@@ -58,7 +59,6 @@ Use `corepack pnpm api:check` for local/Vercel HTTP smoke checks.
 ## Next Backlog Items
 
 - Mobile code cleanup: split route/container logic, presentational components, and styles.
-- Add profile/home skeletons for library refreshes.
 - Promote the temporary home into routed Library/Profile surfaces.
 
 ## Workspace Layout

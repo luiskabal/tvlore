@@ -10,7 +10,7 @@ import {
 } from "../auth/supabase-auth";
 import { useAuthSession, type AuthState } from "../auth/use-auth-session";
 import { useLibraryRevision } from "../library/library-refresh";
-import { LibraryOverview } from "./LibraryOverview";
+import { LibraryOverview, LibraryOverviewSkeleton } from "./LibraryOverview";
 import { styles } from "./home-styles";
 import { useHomeData } from "./use-home-data";
 
@@ -26,8 +26,9 @@ export default function HomeScreen() {
     signOut,
   } = useAuthSession(refreshHome);
 
+  const homeData = home.kind === "ready" || home.kind === "refreshing" ? home : null;
   const statusLabel =
-    home.kind === "ready" ? "API online" : home.kind === "offline" ? "API offline" : "Checking API";
+    homeData ? "API online" : home.kind === "offline" ? "API offline" : "Checking API";
 
   useEffect(() => {
     if (pathname === "/" || libraryRevision > 0) {
@@ -42,15 +43,16 @@ export default function HomeScreen() {
         <Text style={styles.title}>TVLore</Text>
         <Text style={styles.subtitle}>Track what you watch. Discover what you share.</Text>
 
-        {home.kind === "ready" && home.user ? (
+        {homeData?.user ? (
           <LibraryOverview
             avatarUrl={auth.kind === "signedIn" ? auth.avatarUrl : null}
-            library={home.library}
+            isRefreshing={home.kind === "refreshing"}
+            library={homeData.library}
             onOpenMovie={openMovie}
             onOpenShowSeason={openShowSeason}
-            userName={home.user.displayName}
+            userName={homeData.user.displayName}
           />
-        ) : null}
+        ) : home.kind === "loading" ? <LibraryOverviewSkeleton /> : null}
 
         {auth.kind === "signedIn" ? (
           <Pressable style={styles.button} onPress={() => router.push("/search")}>
@@ -97,8 +99,8 @@ export default function HomeScreen() {
         <View style={styles.statusPanel}>
           <Text style={styles.statusLabel}>{statusLabel}</Text>
           <Text style={styles.statusDetail}>
-            {home.kind === "ready"
-              ? `${home.health.service} responded at ${new Date(home.health.time).toLocaleTimeString()}`
+            {homeData
+              ? `${homeData.health.service} responded at ${new Date(homeData.health.time).toLocaleTimeString()}`
               : home.kind === "offline"
                 ? home.message
                 : "Waiting for the backend"}

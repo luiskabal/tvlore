@@ -223,6 +223,10 @@ export const styles = StyleSheet.create({
   pressedListItem: {
     opacity: 0.72,
   },
+  refreshSkeletonRow: {
+    flexDirection: "row",
+    gap: 8,
+  },
   screen: {
     backgroundColor: "#f7f4ee",
     flex: 1,
@@ -251,6 +255,46 @@ export const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 16,
     fontWeight: "700",
+  },
+  skeletonBadge: {
+    borderRadius: 999,
+    height: 26,
+    width: 58,
+  },
+  skeletonBlock: {
+    backgroundColor: "#e3ddd3",
+    borderRadius: 8,
+  },
+  skeletonCard: {
+    backgroundColor: "#ece7dd",
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 14,
+    padding: 16,
+  },
+  skeletonCardHeader: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  skeletonListItem: {
+    height: 74,
+  },
+  skeletonPortrait: {
+    aspectRatio: 1.56,
+  },
+  skeletonShortLine: {
+    height: 18,
+    width: 150,
+  },
+  skeletonStat: {
+    flex: 1,
+    height: 58,
+  },
+  skeletonTinyLine: {
+    height: 18,
+    width: 64,
   },
   statusDetail: {
     color: "#5f564d",

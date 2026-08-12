@@ -28,6 +28,7 @@ Implemented:
 - Mobile home refreshes authenticated library data after tracking changes or whenever navigation returns to `/`.
 - Mobile home renders a touch-driven holo profile card with Google avatar and library stats.
 - Mobile library rows navigate back to movie detail or show season detail screens.
+- Mobile home keeps previous library data during refreshes and renders skeletons on initial load.
 - Postman collection and local/Vercel environments.
 - Environment validation for local and Vercel.
 - Backend unit tests with Vitest.
