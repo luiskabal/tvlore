@@ -116,7 +116,9 @@ src/
 |   `-- use-catalog-detail.ts
 |
 |-- home/
+|   |-- home-styles.ts
 |   |-- HomeScreen.tsx
+|   |-- LibraryOverview.tsx
 |   `-- use-home-data.ts
 |
 `-- search/

@@ -67,6 +67,7 @@ No active infrastructure tasks.
 - [x] Add mobile watch/unwatch controls for episodes.
 - [x] Add a season-level `Mark all watched` / `Mark all unwatched` action.
 - [x] Refresh the mobile library automatically after returning from tracking screens.
+- [x] Split mobile home library UI and styles out of `HomeScreen`.
 
 ## Deferred
 
