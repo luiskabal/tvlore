@@ -640,6 +640,8 @@ Current behavior:
 - The screen shows continue-watching and recently watched rows when the backend has watched data.
 - Empty library state is expected after cleanup-oriented smoke checks.
 - Search supports all/show/movie filters.
+- Search prefetches results with a debounce after the user enters at least three characters.
+- Stale search responses are ignored so older results cannot overwrite newer queries.
 - Opening a search result resolves it into a TVLore ID before navigating.
 - Detail screens render backend-owned show/movie data.
 
@@ -682,6 +684,7 @@ Product foundation:
 - Watch tracking is stored against internal TVLore IDs and authenticated user IDs.
 - Mobile can render backend-owned library data through the same Supabase token used by Postman.
 - Mobile can search TMDB-backed catalog data without receiving TMDB credentials.
+- Mobile can prefetch search results without prefetching database writes.
 - Mobile can resolve a provider result and open internal show/movie details by TVLore ID.
 
 ## 13. Why This Backend Base Helps The Frontend

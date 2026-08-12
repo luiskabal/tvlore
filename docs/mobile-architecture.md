@@ -162,6 +162,14 @@ SearchScreen
 The app still does not calculate catalog identity, progress, or watched state.
 It asks the backend, then renders the response.
 
+Search uses client-side prefetch:
+
+- `GET /search` runs after a short debounce once the query has at least three characters.
+- Changing the show/movie filter triggers the same debounced search flow.
+- The Search button still forces an immediate request.
+- Older in-flight search responses are ignored if a newer query starts first.
+- `POST /catalog/resolve` is never prefetched because it writes catalog identity to the database.
+
 ## Request Interceptors
 
 The API client may:

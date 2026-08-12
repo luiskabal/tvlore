@@ -1,11 +1,11 @@
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ActivityIndicator, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 import type { CatalogSearchResult, MediaType } from "../api/tvlore-api";
 import { getTmdbPosterUrl } from "../catalog/posters";
-import { getResultKey, type ResolveState, type SearchFilter, useCatalogSearch } from "./use-catalog-search";
+import { getResultKey, minSearchLength, type ResolveState, type SearchFilter, useCatalogSearch } from "./use-catalog-search";
 
 const filters: { label: string; value: SearchFilter }[] = [
   { label: "All", value: "all" },
@@ -13,10 +13,28 @@ const filters: { label: string; value: SearchFilter }[] = [
   { label: "Movies", value: "movie" },
 ];
 
+const searchDebounceMs = 600;
+
 export default function SearchScreen() {
   const [query, setQuery] = useState("dark");
   const [filter, setFilter] = useState<SearchFilter>("all");
   const { resolveResult, resolveState, runSearch, search } = useCatalogSearch();
+  const canSearch = query.trim().length >= minSearchLength;
+  const results = search.kind === "ready" || search.kind === "refreshing" ? search.results : [];
+  const isSearching = search.kind === "loading" || search.kind === "refreshing";
+
+  useEffect(() => {
+    if (!canSearch) {
+      void runSearch(query, filter);
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      void runSearch(query, filter);
+    }, searchDebounceMs);
+
+    return () => clearTimeout(timeout);
+  }, [canSearch, filter, query, runSearch]);
 
   const submitSearch = () => {
     void runSearch(query, filter);
@@ -76,8 +94,12 @@ export default function SearchScreen() {
             ))}
           </View>
 
-          <Pressable style={styles.primaryButton} onPress={submitSearch}>
-            <Text style={styles.primaryButtonText}>Search</Text>
+          <Pressable
+            disabled={!canSearch || isSearching}
+            style={[styles.primaryButton, !canSearch || isSearching ? styles.disabledButton : null]}
+            onPress={submitSearch}
+          >
+            <Text style={styles.primaryButtonText}>{isSearching ? "Searching" : "Search"}</Text>
           </Pressable>
         </View>
 
@@ -95,20 +117,21 @@ export default function SearchScreen() {
           </View>
         ) : null}
 
-        {search.kind === "ready" ? (
+        {search.kind === "ready" || search.kind === "refreshing" ? (
           <View style={styles.resultsSection}>
             <Text style={styles.sectionTitle}>
-              {search.results.length} results for {search.query}
+              {results.length} results for {search.query}
             </Text>
+            {search.kind === "refreshing" ? <Text style={styles.mutedText}>Updating</Text> : null}
 
-            {search.results.length === 0 ? (
+            {results.length === 0 ? (
               <View style={styles.statusPanel}>
                 <Text style={styles.statusTitle}>No results</Text>
                 <Text style={styles.mutedText}>Try another title or filter.</Text>
               </View>
             ) : null}
 
-            {search.results.map((result) => (
+            {results.map((result) => (
               <SearchResultRow
                 key={getResultKey(result)}
                 result={result}

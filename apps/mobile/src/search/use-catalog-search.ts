@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import {
   resolveCatalogItem,
@@ -14,8 +14,11 @@ export type SearchFilter = "all" | MediaType;
 export type SearchState =
   | { kind: "idle" }
   | { kind: "loading"; query: string }
+  | { kind: "refreshing"; query: string; results: CatalogSearchResult[] }
   | { kind: "ready"; query: string; results: CatalogSearchResult[] }
   | { kind: "error"; message: string };
+
+export const minSearchLength = 3;
 
 export type ResolveState =
   | { kind: "idle" }
@@ -26,23 +29,41 @@ export type ResolveState =
 export function useCatalogSearch() {
   const [search, setSearch] = useState<SearchState>({ kind: "idle" });
   const [resolveState, setResolveState] = useState<ResolveState>({ kind: "idle" });
+  const requestIdRef = useRef(0);
 
   const runSearch = useCallback(async (rawQuery: string, filter: SearchFilter) => {
     const query = rawQuery.trim();
+    const requestId = requestIdRef.current + 1;
+    requestIdRef.current = requestId;
 
-    if (!query) {
+    if (query.length < minSearchLength) {
       setSearch({ kind: "idle" });
       return;
     }
 
-    setSearch({ kind: "loading", query });
+    setSearch((current) => {
+      if ((current.kind === "ready" || current.kind === "refreshing") && current.results.length > 0) {
+        return { kind: "refreshing", query, results: current.results };
+      }
+
+      return { kind: "loading", query };
+    });
     setResolveState({ kind: "idle" });
 
     try {
       const token = await getSupabaseAccessToken();
       const response = await searchCatalog(token, query, getMediaTypes(filter));
+
+      if (requestIdRef.current !== requestId) {
+        return;
+      }
+
       setSearch({ kind: "ready", query: response.query, results: response.results });
     } catch (error) {
+      if (requestIdRef.current !== requestId) {
+        return;
+      }
+
       setSearch({
         kind: "error",
         message: error instanceof Error ? error.message : "Search failed",
