@@ -50,6 +50,7 @@ No active infrastructure tasks.
 - [x] Add season and episode catalog persistence.
 - [x] Add episode/movie watch tracking.
 - [x] Add progress and personal library endpoints.
+- [x] Harden API smoke checks with contract assertions.
 
 ## Deferred
 

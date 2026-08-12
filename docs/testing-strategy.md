@@ -16,6 +16,54 @@ From the monorepo root:
 corepack pnpm test:run
 ```
 
+API contract checks use the real running API over HTTP:
+
+```bash
+corepack pnpm api:check
+```
+
+By default this targets production:
+
+```text
+https://tvlore-api.vercel.app
+```
+
+To target local:
+
+```powershell
+$env:TVLORE_API_BASE_URL="http://localhost:3000"
+corepack pnpm api:check
+```
+
+Without `TVLORE_SUPABASE_ACCESS_TOKEN`, `api:check` verifies:
+
+- Public health responses.
+- Protected routes return the TVLore `UNAUTHORIZED` error contract.
+- New routes are registered and protected.
+
+With a current Supabase access token, `api:check` also verifies the real authenticated product flow:
+
+```powershell
+$env:TVLORE_API_BASE_URL="http://localhost:3000"
+$env:TVLORE_SUPABASE_ACCESS_TOKEN="<paste access_token from Postman OAuth callback>"
+corepack pnpm api:check
+```
+
+Authenticated `api:check` covers:
+
+- `/users/me` contract.
+- Search response shape.
+- Validation errors for bad search/resolve/watch inputs.
+- Not-found errors for missing show/movie/episode IDs.
+- Show resolve idempotency.
+- Movie resolve idempotency.
+- Search result `tvloreId` after resolve.
+- Show, season, episode detail contracts.
+- Episode watch/unwatch idempotency.
+- Movie watch/unwatch idempotency.
+- Progress after marking an episode watched.
+- Library summary and recently watched after marking episode/movie watched.
+
 The first tests cover pure authentication/user helpers:
 
 - Bearer-token parsing.
@@ -64,10 +112,10 @@ Test with PostgreSQL where practical:
 
 Test:
 
-- Authenticated routes reject missing tokens.
-- Contracts match documented shapes.
-- Validation errors return TVLore error contract.
-- Domain errors map to stable codes.
+- Authenticated routes reject missing tokens. Covered by `corepack pnpm api:check`.
+- Contracts match documented shapes. Covered by authenticated `corepack pnpm api:check` when `TVLORE_SUPABASE_ACCESS_TOKEN` is set.
+- Validation errors return TVLore error contract. Covered by authenticated `corepack pnpm api:check`.
+- Domain errors map to stable codes. Covered by authenticated `corepack pnpm api:check`.
 
 ### Authentication Tests
 

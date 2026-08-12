@@ -22,6 +22,7 @@ Implemented:
 - Postman collection and local/Vercel environments.
 - Environment validation for local and Vercel.
 - Backend unit tests with Vitest.
+- HTTP contract smoke checks through `corepack pnpm api:check`.
 
 Not implemented yet:
 
@@ -630,6 +631,7 @@ Backend architecture:
 - Tracking persistence is isolated in `TrackingRepository`.
 - Library/progress reads are isolated in `LibraryRepository`.
 - Search/resolve/detail parsing and mapping are pure functions with unit tests.
+- `api:check` validates public health, protected-route errors, and authenticated product contracts when a Supabase token is supplied.
 
 Product foundation:
 
