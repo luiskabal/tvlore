@@ -146,6 +146,10 @@ HomeScreen
   -> GET /library
 ```
 
+`HomeScreen` refreshes this data when navigation returns to `/` and when tracking
+mutations invalidate the library, so watch changes made in movie or season detail
+screens are reflected when the user returns to the profile.
+
 This is still intentionally a small first slice. The product screens will later
 move into Expo Router routes such as Search, Detail, Library, and Profile, but
 the current implementation already proves that mobile can render backend-owned
@@ -201,6 +205,11 @@ SeasonDetailScreen
 
 The app still does not calculate watched state. It renders the returned
 `watched`, `watchCount`, and `lastWatchedAt` values.
+
+After tracking mutations, related detail screens update their local response
+state immediately and notify the local library invalidator. The home/profile
+screen subscribes to that invalidator instead of receiving mutation callbacks
+from child routes.
 
 ## Request Interceptors
 

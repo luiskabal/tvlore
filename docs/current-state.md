@@ -24,6 +24,8 @@ Implemented:
 - Mobile show detail opens backend-owned season episode lists.
 - Mobile season detail can mark episodes watched or unwatched.
 - Mobile season detail can mark all loaded season episodes watched or unwatched.
+- Mobile tracking mutations invalidate the home library data.
+- Mobile home refreshes authenticated library data after tracking changes or whenever navigation returns to `/`.
 - Postman collection and local/Vercel environments.
 - Environment validation for local and Vercel.
 - Backend unit tests with Vitest.
@@ -657,6 +659,7 @@ Current behavior:
 - Season detail loads backend-owned episode IDs and watched state.
 - Season detail can mark episodes watched or unwatched.
 - Season detail can mark all currently loaded episodes watched or unwatched.
+- Tracking mutations invalidate `GET /library`, so recent watch changes appear without pressing Refresh when the user returns home.
 - Episode watch actions update the touched episode and display returned show progress.
 
 Why this shape matters:
@@ -664,7 +667,7 @@ Why this shape matters:
 - The mobile app owns presentation only.
 - Supabase owns session storage and refresh.
 - The backend owns product reads, progress, and library calculations.
-- The frontend now has a proven contract before adding watch/unwatch controls.
+- The frontend now has a proven contract for authenticated library and tracking flows.
 
 ## 12. What We Proved
 
@@ -730,7 +733,6 @@ The remaining frontend product flow is:
 
 ```text
 Library/Profile routes
--> automatic refresh after tracking changes
 -> richer navigation from library rows back into detail screens
 ```
 
@@ -739,7 +741,7 @@ Library/Profile routes
 Promote the temporary mobile home into clearer app surfaces:
 
 ```text
-Home -> Library route -> Profile route -> refresh on focus
+Home -> Library route -> Profile route
 ```
 
 Why this is next:

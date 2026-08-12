@@ -8,6 +8,7 @@ import {
   type MediaType,
 } from "../api/tvlore-api";
 import { getSupabaseAccessToken } from "../auth/supabase-auth";
+import { notifyLibraryChanged } from "../library/library-refresh";
 
 export type CatalogDetailState =
   | { kind: "loading" }
@@ -68,6 +69,7 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
           kind: "ready",
         };
       });
+      notifyLibraryChanged();
       setWatchAction({ kind: "idle" });
     } catch (error) {
       setWatchAction({

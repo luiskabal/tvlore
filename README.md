@@ -40,7 +40,8 @@ Google login
 -> Open show season
 -> Mark episode watched
 -> Mark all season episodes watched
--> Refresh library summary
+-> Return to profile
+-> Library summary auto-refreshes
 ```
 
 ## Verification
@@ -55,7 +56,6 @@ Use `corepack pnpm api:check` for local/Vercel HTTP smoke checks.
 ## Next Backlog Items
 
 - Mobile code cleanup: split route/container logic, presentational components, and styles.
-- Auto-refresh library after returning from tracking screens.
 - Promote the temporary home into routed Library/Profile surfaces.
 
 ## Workspace Layout

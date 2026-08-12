@@ -1,5 +1,6 @@
-import { router } from "expo-router";
+import { router, usePathname } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { useEffect } from "react";
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import type { ContinueWatchingShow, LibraryResponse, RecentlyWatchedItem } from "../api/tvlore-api";
@@ -9,10 +10,13 @@ import {
   supabaseProjectUrl,
 } from "../auth/supabase-auth";
 import { useAuthSession, type AuthState } from "../auth/use-auth-session";
+import { useLibraryRevision } from "../library/library-refresh";
 import { useHomeData } from "./use-home-data";
 
 export default function HomeScreen() {
   const { home, refreshHome } = useHomeData();
+  const libraryRevision = useLibraryRevision();
+  const pathname = usePathname();
   const {
     auth,
     authActionMessage,
@@ -23,6 +27,12 @@ export default function HomeScreen() {
 
   const statusLabel =
     home.kind === "ready" ? "API online" : home.kind === "offline" ? "API offline" : "Checking API";
+
+  useEffect(() => {
+    if (pathname === "/" || libraryRevision > 0) {
+      void refreshHome();
+    }
+  }, [libraryRevision, pathname, refreshHome]);
 
   return (
     <SafeAreaView style={styles.screen}>

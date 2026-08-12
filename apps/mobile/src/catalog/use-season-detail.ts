@@ -9,6 +9,7 @@ import {
   type ShowSeasonDetailResponse,
 } from "../api/tvlore-api";
 import { getSupabaseAccessToken } from "../auth/supabase-auth";
+import { notifyLibraryChanged } from "../library/library-refresh";
 
 export type SeasonDetailState =
   | { kind: "loading" }
@@ -79,6 +80,7 @@ export function useSeasonDetail(showId: string | null, seasonNumber: number | nu
           showProgress: response.showProgress,
         };
       });
+      notifyLibraryChanged();
       setWatchAction({ kind: "idle" });
     } catch (error) {
       setWatchAction({
@@ -141,6 +143,7 @@ export function useSeasonDetail(showId: string | null, seasonNumber: number | nu
           showProgress,
         };
       });
+      notifyLibraryChanged();
       setWatchAction({ kind: "idle" });
     } catch (error) {
       setWatchAction({

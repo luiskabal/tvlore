@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 import { getHomeData, type HealthResponse, type LibraryResponse, type UserResponse } from "../api/tvlore-api";
 import { getSupabaseAccessToken } from "../auth/supabase-auth";
@@ -26,10 +26,6 @@ export function useHomeData() {
       });
     }
   }, []);
-
-  useEffect(() => {
-    void refreshHome();
-  }, [refreshHome]);
 
   return { home, refreshHome };
 }
