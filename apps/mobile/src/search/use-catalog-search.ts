@@ -26,15 +26,20 @@ export type ResolveState =
   | { item: CatalogResolveResponse; kind: "resolved"; resultKey: string; title: string }
   | { kind: "error"; message: string; resultKey: string };
 
+type RunSearchOptions = {
+  keepResults?: boolean;
+};
+
 export function useCatalogSearch() {
   const [search, setSearch] = useState<SearchState>({ kind: "idle" });
   const [resolveState, setResolveState] = useState<ResolveState>({ kind: "idle" });
   const requestIdRef = useRef(0);
 
-  const runSearch = useCallback(async (rawQuery: string, filter: SearchFilter) => {
+  const runSearch = useCallback(async (rawQuery: string, filter: SearchFilter, options: RunSearchOptions = {}) => {
     const query = rawQuery.trim();
     const requestId = requestIdRef.current + 1;
     requestIdRef.current = requestId;
+    const keepResults = options.keepResults ?? true;
 
     if (query.length < minSearchLength) {
       setSearch({ kind: "idle" });
@@ -42,7 +47,7 @@ export function useCatalogSearch() {
     }
 
     setSearch((current) => {
-      if ((current.kind === "ready" || current.kind === "refreshing") && current.results.length > 0) {
+      if (keepResults && (current.kind === "ready" || current.kind === "refreshing") && current.results.length > 0) {
         return { kind: "refreshing", query, results: current.results };
       }
 

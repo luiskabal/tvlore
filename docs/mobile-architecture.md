@@ -165,12 +165,12 @@ It asks the backend, then renders the response.
 Search uses client-side prefetch:
 
 - `GET /search` runs after a short debounce once the query has at least three characters.
-- Changing the show/movie filter triggers the same debounced search flow.
+- Changing the show/movie filter triggers an immediate request and clears stale results into skeleton rows.
 - The Search button still forces an immediate request.
 - Older in-flight search responses are ignored if a newer query starts first.
 - `POST /catalog/resolve` is never prefetched because it writes catalog identity to the database.
 - Initial search loading renders skeleton result rows.
-- Refreshing search keeps previous results visible and shows an updating indicator.
+- Typed-query refreshes keep previous results visible and show an updating indicator.
 
 Movie tracking uses the same boundary:
 

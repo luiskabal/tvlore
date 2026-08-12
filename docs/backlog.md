@@ -56,6 +56,7 @@ No active infrastructure tasks.
 - [x] Add mobile search, resolve, and show/movie detail flow.
 - [x] Add debounced mobile search prefetch with reactive filters.
 - [x] Add mobile search loading indicators and skeleton rows.
+- [x] Make mobile search filters trigger immediate loading feedback.
 - [x] Add mobile movie watch/unwatch control.
 
 ## Deferred

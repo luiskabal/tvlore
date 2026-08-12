@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 import type { CatalogSearchResult, MediaType } from "../api/tvlore-api";
@@ -19,6 +19,7 @@ export default function SearchScreen() {
   const [query, setQuery] = useState("dark");
   const [filter, setFilter] = useState<SearchFilter>("all");
   const { resolveResult, resolveState, runSearch, search } = useCatalogSearch();
+  const skipNextDebouncedSearchRef = useRef(false);
   const canSearch = query.trim().length >= minSearchLength;
   const results = search.kind === "ready" || search.kind === "refreshing" ? search.results : [];
   const isSearching = search.kind === "loading" || search.kind === "refreshing";
@@ -26,6 +27,11 @@ export default function SearchScreen() {
   const isRefreshing = search.kind === "refreshing";
 
   useEffect(() => {
+    if (skipNextDebouncedSearchRef.current) {
+      skipNextDebouncedSearchRef.current = false;
+      return;
+    }
+
     if (!canSearch) {
       void runSearch(query, filter);
       return;
@@ -40,6 +46,19 @@ export default function SearchScreen() {
 
   const submitSearch = () => {
     void runSearch(query, filter);
+  };
+
+  const selectFilter = (nextFilter: SearchFilter) => {
+    if (nextFilter === filter) {
+      return;
+    }
+
+    setFilter(nextFilter);
+
+    if (canSearch) {
+      skipNextDebouncedSearchRef.current = true;
+      void runSearch(query, nextFilter, { keepResults: false });
+    }
   };
 
   const openResult = async (result: CatalogSearchResult) => {
@@ -91,7 +110,7 @@ export default function SearchScreen() {
                   filter === item.value ? styles.activeFilterButton : null,
                   isSearching && filter !== item.value ? styles.pendingFilterButton : null,
                 ]}
-                onPress={() => setFilter(item.value)}
+                onPress={() => selectFilter(item.value)}
               >
                 <Text style={[styles.filterText, filter === item.value ? styles.activeFilterText : null]}>
                   {item.label}
