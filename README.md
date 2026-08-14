@@ -28,6 +28,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Season-level mark all watched/unwatched.
 - Personal show/movie watchlist.
 - Library summary with watched show, movie, episode, and watchlist counts.
+- Segmented Library views for watching, watchlist, and history.
 - Holographic mobile profile summary card with Google avatar and library stats.
 - Continue-watching and recently-watched data from the backend.
 - Library rows navigate back into movie and show season detail screens.
@@ -66,7 +67,7 @@ Use `corepack pnpm api:check` for local/Vercel HTTP smoke checks.
 ## Next Backlog Items
 
 - Validate the watchlist UX on iPhone and Postman after Vercel deploy.
-- Refine Library organization now that watched history and saved intent both exist.
+- Add richer removal/actions from Library rows after the segmented UX settles.
 
 ## Workspace Layout
 

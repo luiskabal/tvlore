@@ -1,7 +1,17 @@
+import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
 import type { ContinueWatchingShow, LibraryResponse, LibraryWatchlistItem, RecentlyWatchedItem } from "../api/tvlore-api";
 import { styles } from "./home-styles";
+
+type LibrarySectionFilter = "all" | "history" | "watching" | "watchlist";
+
+const librarySections: Array<{ label: string; value: LibrarySectionFilter }> = [
+  { label: "All", value: "all" },
+  { label: "Watching", value: "watching" },
+  { label: "Watchlist", value: "watchlist" },
+  { label: "History", value: "history" },
+];
 
 type LibraryOverviewProps = {
   library: LibraryResponse | null;
@@ -16,6 +26,8 @@ export function LibraryOverview({
   onOpenShow,
   onOpenShowSeason,
 }: LibraryOverviewProps) {
+  const [activeSection, setActiveSection] = useState<LibrarySectionFilter>("all");
+
   if (!library) {
     return (
       <View style={styles.statusPanel}>
@@ -30,6 +42,12 @@ export function LibraryOverview({
     library.summary.watchedEpisodeCount === 0 &&
     library.summary.watchedMovieCount === 0 &&
     library.summary.watchedShowCount === 0;
+  const hasContinueWatching = library.continueWatching.length > 0;
+  const hasRecentlyWatched = library.recentlyWatched.length > 0;
+  const hasWatchlist = library.watchlist.length > 0;
+  const shouldShowWatchlist = activeSection === "all" || activeSection === "watchlist";
+  const shouldShowContinueWatching = activeSection === "all" || activeSection === "watching";
+  const shouldShowHistory = activeSection === "all" || activeSection === "history";
 
   return (
     <View style={styles.librarySection}>
@@ -47,7 +65,24 @@ export function LibraryOverview({
         </View>
       ) : null}
 
-      {library.watchlist.length > 0 ? (
+      {!isEmpty ? (
+        <LibrarySectionTabs activeSection={activeSection} onSelect={setActiveSection} />
+      ) : null}
+
+      {!isEmpty && activeSection !== "all" && !hasItemsForSection(activeSection, library) ? (
+        <EmptySection activeSection={activeSection} />
+      ) : null}
+
+      {shouldShowContinueWatching && hasContinueWatching ? (
+        <View style={styles.listSection}>
+          <Text style={styles.listTitle}>Continue Watching</Text>
+          {library.continueWatching.map((show) => (
+            <ContinueWatchingItem key={show.id} onOpenShowSeason={onOpenShowSeason} show={show} />
+          ))}
+        </View>
+      ) : null}
+
+      {shouldShowWatchlist && hasWatchlist ? (
         <View style={styles.listSection}>
           <Text style={styles.listTitle}>Watchlist</Text>
           {library.watchlist.map((item) => (
@@ -61,16 +96,7 @@ export function LibraryOverview({
         </View>
       ) : null}
 
-      {library.continueWatching.length > 0 ? (
-        <View style={styles.listSection}>
-          <Text style={styles.listTitle}>Continue Watching</Text>
-          {library.continueWatching.map((show) => (
-            <ContinueWatchingItem key={show.id} onOpenShowSeason={onOpenShowSeason} show={show} />
-          ))}
-        </View>
-      ) : null}
-
-      {library.recentlyWatched.length > 0 ? (
+      {shouldShowHistory && hasRecentlyWatched ? (
         <View style={styles.listSection}>
           <Text style={styles.listTitle}>Recently Watched</Text>
           {library.recentlyWatched.map((item) => (
@@ -85,6 +111,60 @@ export function LibraryOverview({
       ) : null}
     </View>
   );
+}
+
+function LibrarySectionTabs({
+  activeSection,
+  onSelect,
+}: {
+  activeSection: LibrarySectionFilter;
+  onSelect: (section: LibrarySectionFilter) => void;
+}) {
+  return (
+    <View style={styles.sectionTabs}>
+      {librarySections.map((section) => {
+        const isActive = activeSection === section.value;
+
+        return (
+          <Pressable
+            accessibilityRole="button"
+            key={section.value}
+            onPress={() => onSelect(section.value)}
+            style={[styles.sectionTab, isActive ? styles.sectionTabActive : null]}
+          >
+            <Text style={[styles.sectionTabText, isActive ? styles.sectionTabTextActive : null]}>
+              {section.label}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
+function EmptySection({ activeSection }: { activeSection: LibrarySectionFilter }) {
+  return (
+    <View style={styles.emptyPanel}>
+      <Text style={styles.statusLabel}>{getEmptySectionTitle(activeSection)}</Text>
+      <Text style={styles.statusDetail}>{getEmptySectionDetail(activeSection)}</Text>
+    </View>
+  );
+}
+
+function hasItemsForSection(activeSection: LibrarySectionFilter, library: LibraryResponse) {
+  if (activeSection === "watching") {
+    return library.continueWatching.length > 0;
+  }
+
+  if (activeSection === "watchlist") {
+    return library.watchlist.length > 0;
+  }
+
+  if (activeSection === "history") {
+    return library.recentlyWatched.length > 0;
+  }
+
+  return true;
 }
 
 export function LibraryOverviewSkeleton() {
@@ -209,6 +289,30 @@ function getRecentlyWatchedDetail(item: RecentlyWatchedItem) {
   return item.mediaType === "movie"
     ? "Movie"
     : `S${item.seasonNumber} E${item.episodeNumber} - ${item.title}`;
+}
+
+function getEmptySectionTitle(activeSection: LibrarySectionFilter) {
+  if (activeSection === "watching") {
+    return "Nothing in progress";
+  }
+
+  if (activeSection === "watchlist") {
+    return "No saved titles";
+  }
+
+  return "No watch history";
+}
+
+function getEmptySectionDetail(activeSection: LibrarySectionFilter) {
+  if (activeSection === "watching") {
+    return "Shows appear here after you mark at least one episode watched.";
+  }
+
+  if (activeSection === "watchlist") {
+    return "Saved shows and movies will appear here.";
+  }
+
+  return "Watched movies and episodes will appear here.";
 }
 
 function formatShortDate(value: string) {

@@ -31,6 +31,7 @@ Implemented:
 - Mobile watchlist mutations invalidate the local library data.
 - Mobile Library/Profile refresh authenticated library data after tracking changes.
 - Mobile Library shows watchlist titles separately from watched history.
+- Mobile Library has segmented views for all activity, continuing shows, watchlist, and history.
 - Mobile Profile renders a touch-driven holo profile card with Google avatar and library stats.
 - Mobile library rows navigate back to movie detail or show season detail screens.
 - Mobile Library/Profile keep previous library data during refreshes and render skeletons on initial load.
@@ -701,6 +702,7 @@ Current behavior:
 - The profile card uses Google avatar metadata when available and initials as a fallback.
 - Library shows continue-watching and recently watched rows when the backend has watched data.
 - Library shows saved watchlist rows when the backend has watchlist data.
+- Library can filter between all rows, continuing shows, saved titles, and watch history.
 - Continue-watching rows open the next season, recently watched movies open movie detail, and recently watched episodes open the matching season.
 - Bottom app navigation connects Library, Search, and Profile.
 - Empty library state is expected after cleanup-oriented smoke checks.

@@ -263,6 +263,33 @@ export const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: "800",
   },
+  sectionTab: {
+    alignItems: "center",
+    backgroundColor: "#fffdfa",
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    minWidth: 78,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+  },
+  sectionTabActive: {
+    backgroundColor: "#171412",
+    borderColor: "#171412",
+  },
+  sectionTabText: {
+    color: "#5f564d",
+    fontSize: 13,
+    fontWeight: "800",
+  },
+  sectionTabTextActive: {
+    color: "#ffffff",
+  },
+  sectionTabs: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
   secondaryButton: {
     alignItems: "center",
     alignSelf: "flex-start",

@@ -188,6 +188,8 @@ and keeps the holo/tilt effect inside presentation code.
 
 Library rows receive navigation callbacks from `LibraryScreen`: movies route
 to movie detail and episode/show rows route to season detail.
+`LibraryOverview` owns only local section-filter UI state for switching between
+all rows, continuing shows, watchlist, and watch history.
 
 `useHomeData` preserves the last ready snapshot during refreshes. Library and
 Profile render skeletons only when no home data has loaded yet.
