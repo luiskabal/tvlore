@@ -17,51 +17,63 @@ export default function LibraryScreen() {
     homeData,
     isAuthActionRunning,
   } = useHomeModel();
+  const isSignedIn = auth.kind === "signedIn";
 
   return (
     <SafeAreaView style={styles.screen}>
       <StatusBar style="dark" />
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.headerRow}>
-          <View style={styles.headerText}>
-            <Text style={styles.title}>Library</Text>
-            <Text style={styles.subtitle}>Pick up where you left off.</Text>
-          </View>
-          {auth.kind === "signedIn" ? (
-            <Pressable style={styles.iconButton} onPress={() => router.push("/search")}>
-              <Text style={styles.iconButtonText}>+</Text>
-            </Pressable>
-          ) : null}
-        </View>
-
-        {homeData?.user ? (
+      {homeData?.user ? (
+        <View style={styles.fixedContent}>
+          <LibraryHeader showSearchButton={isSignedIn} />
           <LibraryOverview
             library={homeData.library}
             onOpenMovie={openMovie}
             onOpenShow={openShow}
             onOpenShowSeason={openShowSeason}
           />
-        ) : home.kind === "loading" ? (
-          <LibraryOverviewSkeleton />
-        ) : (
-          <View style={styles.statusPanel}>
-            <Text style={styles.statusLabel}>Build your TVLore</Text>
-            <Text style={styles.statusDetail}>Sign in to track movies, shows, and episodes.</Text>
-            {authActionMessage ? <Text style={styles.errorText}>{authActionMessage}</Text> : null}
-            <Pressable
-              disabled={!isSupabaseConfigured || isAuthActionRunning}
-              style={[styles.googleButton, !isSupabaseConfigured || isAuthActionRunning ? styles.disabledButton : null]}
-              onPress={continueWithGoogle}
-            >
-              <Text style={styles.googleButtonText}>
-                {isAuthActionRunning ? "Opening Google" : "Continue with Google"}
-              </Text>
-            </Pressable>
-          </View>
-        )}
-      </ScrollView>
+        </View>
+      ) : (
+        <ScrollView contentContainerStyle={styles.content}>
+          <LibraryHeader showSearchButton={isSignedIn} />
+
+          {home.kind === "loading" ? (
+            <LibraryOverviewSkeleton />
+          ) : (
+            <View style={styles.statusPanel}>
+              <Text style={styles.statusLabel}>Build your TVLore</Text>
+              <Text style={styles.statusDetail}>Sign in to track movies, shows, and episodes.</Text>
+              {authActionMessage ? <Text style={styles.errorText}>{authActionMessage}</Text> : null}
+              <Pressable
+                disabled={!isSupabaseConfigured || isAuthActionRunning}
+                style={[styles.googleButton, !isSupabaseConfigured || isAuthActionRunning ? styles.disabledButton : null]}
+                onPress={continueWithGoogle}
+              >
+                <Text style={styles.googleButtonText}>
+                  {isAuthActionRunning ? "Opening Google" : "Continue with Google"}
+                </Text>
+              </Pressable>
+            </View>
+          )}
+        </ScrollView>
+      )}
       <AppTabBar active="library" />
     </SafeAreaView>
+  );
+}
+
+function LibraryHeader({ showSearchButton }: { showSearchButton: boolean }) {
+  return (
+    <View style={styles.headerRow}>
+      <View style={styles.headerText}>
+        <Text style={styles.title}>Library</Text>
+        <Text style={styles.subtitle}>Pick up where you left off.</Text>
+      </View>
+      {showSearchButton ? (
+        <Pressable style={styles.iconButton} onPress={() => router.push("/search")}>
+          <Text style={styles.iconButtonText}>+</Text>
+        </Pressable>
+      ) : null}
+    </View>
   );
 }
 

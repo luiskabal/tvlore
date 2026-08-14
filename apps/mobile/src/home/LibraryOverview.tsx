@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 
 import type { ContinueWatchingShow, LibraryResponse, LibraryWatchlistItem, RecentlyWatchedItem } from "../api/tvlore-api";
 import { styles } from "./home-styles";
@@ -51,7 +51,7 @@ export function LibraryOverview({
   const shouldShowHistory = activeSection === "all" || activeSection === "history";
 
   return (
-    <View style={styles.librarySection}>
+    <View style={styles.librarySectionFixed}>
       <View style={styles.summaryGrid}>
         <SummaryStat label="Shows" value={library.summary.watchedShowCount} />
         <SummaryStat label="Movies" value={library.summary.watchedMovieCount} />
@@ -70,46 +70,52 @@ export function LibraryOverview({
         <LibrarySectionTabs activeSection={activeSection} onSelect={setSelectedSection} />
       ) : null}
 
-      {!isEmpty && activeSection !== "all" && !hasItemsForSection(activeSection, library) ? (
-        <EmptySection activeSection={activeSection} />
-      ) : null}
+      <ScrollView
+        contentContainerStyle={styles.libraryListContent}
+        showsVerticalScrollIndicator={false}
+        style={styles.libraryListScroll}
+      >
+        {!isEmpty && activeSection !== "all" && !hasItemsForSection(activeSection, library) ? (
+          <EmptySection activeSection={activeSection} />
+        ) : null}
 
-      {shouldShowContinueWatching && hasContinueWatching ? (
-        <View style={styles.listSection}>
-          <Text style={styles.listTitle}>Continue Watching</Text>
-          {library.continueWatching.map((show) => (
-            <ContinueWatchingItem key={show.id} onOpenShowSeason={onOpenShowSeason} show={show} />
-          ))}
-        </View>
-      ) : null}
+        {shouldShowContinueWatching && hasContinueWatching ? (
+          <View style={styles.listSection}>
+            <Text style={styles.listTitle}>Continue Watching</Text>
+            {library.continueWatching.map((show) => (
+              <ContinueWatchingItem key={show.id} onOpenShowSeason={onOpenShowSeason} show={show} />
+            ))}
+          </View>
+        ) : null}
 
-      {shouldShowWatchlist && hasWatchlist ? (
-        <View style={styles.listSection}>
-          <Text style={styles.listTitle}>Watchlist</Text>
-          {library.watchlist.map((item) => (
-            <WatchlistRow
-              item={item}
-              key={`${item.mediaType}-${item.id}`}
-              onOpenMovie={onOpenMovie}
-              onOpenShow={onOpenShow}
-            />
-          ))}
-        </View>
-      ) : null}
+        {shouldShowWatchlist && hasWatchlist ? (
+          <View style={styles.listSection}>
+            <Text style={styles.listTitle}>Watchlist</Text>
+            {library.watchlist.map((item) => (
+              <WatchlistRow
+                item={item}
+                key={`${item.mediaType}-${item.id}`}
+                onOpenMovie={onOpenMovie}
+                onOpenShow={onOpenShow}
+              />
+            ))}
+          </View>
+        ) : null}
 
-      {shouldShowHistory && hasRecentlyWatched ? (
-        <View style={styles.listSection}>
-          <Text style={styles.listTitle}>Recently Watched</Text>
-          {library.recentlyWatched.map((item) => (
-            <RecentlyWatchedRow
-              item={item}
-              key={`${item.mediaType}-${item.id}`}
-              onOpenMovie={onOpenMovie}
-              onOpenShowSeason={onOpenShowSeason}
-            />
-          ))}
-        </View>
-      ) : null}
+        {shouldShowHistory && hasRecentlyWatched ? (
+          <View style={styles.listSection}>
+            <Text style={styles.listTitle}>Recently Watched</Text>
+            {library.recentlyWatched.map((item) => (
+              <RecentlyWatchedRow
+                item={item}
+                key={`${item.mediaType}-${item.id}`}
+                onOpenMovie={onOpenMovie}
+                onOpenShowSeason={onOpenShowSeason}
+              />
+            ))}
+          </View>
+        ) : null}
+      </ScrollView>
     </View>
   );
 }

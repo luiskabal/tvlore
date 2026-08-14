@@ -30,6 +30,13 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
   },
+  fixedContent: {
+    flex: 1,
+    gap: 20,
+    padding: 24,
+    paddingBottom: 16,
+    paddingTop: 72,
+  },
   dateText: {
     color: "#7a7067",
     fontSize: 12,
@@ -217,6 +224,17 @@ export const styles = StyleSheet.create({
   },
   librarySection: {
     gap: 16,
+  },
+  librarySectionFixed: {
+    flex: 1,
+    gap: 16,
+  },
+  libraryListContent: {
+    gap: 16,
+    paddingBottom: 8,
+  },
+  libraryListScroll: {
+    flex: 1,
   },
   listItem: {
     alignItems: "center",
