@@ -6,6 +6,10 @@ Keep MVP observability simple.
 
 Use structured JSON logs.
 
+The API emits one request log when each HTTP response finishes. The log includes
+the correlation ID returned to the client and `latencyMs` for endpoint-level
+timing.
+
 Include:
 
 - Timestamp.
@@ -64,4 +68,3 @@ Possible future metrics:
 - Refresh failure count.
 - Search volume.
 - Watch mutation volume.
-

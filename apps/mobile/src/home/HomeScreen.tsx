@@ -12,7 +12,7 @@ import { useAuthSession, type AuthState } from "../auth/use-auth-session";
 import { useLibraryRevision } from "../library/library-refresh";
 import { LibraryOverview, LibraryOverviewSkeleton } from "./LibraryOverview";
 import { styles } from "./home-styles";
-import { useHomeData } from "./use-home-data";
+import { useHomeData, type HomeState } from "./use-home-data";
 
 export default function HomeScreen() {
   const { home, refreshHome } = useHomeData();
@@ -27,8 +27,7 @@ export default function HomeScreen() {
   } = useAuthSession(refreshHome);
 
   const homeData = home.kind === "ready" || home.kind === "refreshing" ? home : null;
-  const statusLabel =
-    homeData ? "API online" : home.kind === "offline" ? "API offline" : "Checking API";
+  const backendStatus = getBackendStatus(home, auth);
 
   useEffect(() => {
     if (pathname === "/" || libraryRevision > 0) {
@@ -96,14 +95,8 @@ export default function HomeScreen() {
         </Pressable>
 
         <View style={styles.statusPanel}>
-          <Text style={styles.statusLabel}>{statusLabel}</Text>
-          <Text style={styles.statusDetail}>
-            {homeData
-              ? `${homeData.health.service} responded at ${new Date(homeData.health.time).toLocaleTimeString()}`
-              : home.kind === "offline"
-                ? home.message
-                : "Waiting for the backend"}
-          </Text>
+          <Text style={styles.statusLabel}>{backendStatus.label}</Text>
+          <Text style={styles.statusDetail}>{backendStatus.detail}</Text>
           <Text style={styles.statusDetail}>
             {isSupabaseConfigured ? `Supabase: ${supabaseProjectUrl}` : "Supabase missing config"}
           </Text>
@@ -138,4 +131,30 @@ function getAuthStatus(auth: AuthState) {
   }
 
   return auth.kind === "unconfigured" ? "Missing Supabase config" : auth.message;
+}
+
+function getBackendStatus(home: HomeState, auth: AuthState) {
+  if (home.kind === "offline") {
+    return { detail: home.message, label: "API offline" };
+  }
+
+  if (auth.kind === "loading") {
+    return { detail: "Waiting for Supabase session", label: "Backend pending" };
+  }
+
+  if (auth.kind === "signedOut") {
+    return { detail: "Sign in to load your TVLore profile", label: "Backend idle" };
+  }
+
+  if (auth.kind === "unconfigured") {
+    return { detail: "Configure Supabase to load backend data", label: "Backend idle" };
+  }
+
+  if (home.kind === "ready" || home.kind === "refreshing") {
+    return home.user
+      ? { detail: "Loaded your profile and library", label: "Backend ready" }
+      : { detail: "Waiting for authenticated backend data", label: "Backend pending" };
+  }
+
+  return { detail: "Loading your TVLore profile", label: "Backend loading" };
 }

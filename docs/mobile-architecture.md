@@ -151,10 +151,12 @@ HomeScreen
   -> useHomeData()
   -> getSupabaseAccessToken()
   -> getHomeData(accessToken)
-  -> GET /health
-  -> GET /users/me
-  -> GET /library
+  -> GET /users/me and GET /library in parallel
 ```
+
+The mobile home does not call `GET /health` during normal refreshes. Health
+checks remain available for deployment and smoke checks, but product UI should
+avoid extra roundtrips that do not change the user's screen.
 
 `HomeScreen` refreshes this data when navigation returns to `/` and when tracking
 mutations invalidate the library, so watch changes made in movie or season detail

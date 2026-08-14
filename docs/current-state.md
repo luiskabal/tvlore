@@ -627,9 +627,7 @@ The current mobile app has these product-facing slices:
 ```text
 Home
 -> Supabase session
--> TVLore API health
--> GET /users/me
--> GET /library
+-> GET /users/me and GET /library in parallel
 -> Library summary, continue-watching, recently-watched
 
 Search
@@ -646,6 +644,7 @@ Current behavior:
 
 - Signed-out users can start Google login.
 - Signed-in users can refresh authenticated backend state.
+- Home refresh avoids the public health check and loads only authenticated product data.
 - The screen shows library counts for shows, movies, and episodes in a holo profile card.
 - The profile card uses Google avatar metadata when available and initials as a fallback.
 - The screen shows continue-watching and recently watched rows when the backend has watched data.
@@ -690,6 +689,7 @@ Backend architecture:
 
 - Config is centralized and validated at startup.
 - Errors use a consistent envelope with `code`, `message`, `details`, and `correlationId`.
+- Requests emit JSON logs with method, route, status code, correlation ID, and latency in milliseconds.
 - Auth token validation is isolated in `SupabaseAuthService`.
 - User persistence is isolated in `UsersRepository`.
 - TMDB HTTP and provider errors are isolated in `TmdbClient`.

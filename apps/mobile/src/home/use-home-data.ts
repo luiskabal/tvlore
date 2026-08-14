@@ -1,10 +1,9 @@
 import { useCallback, useState } from "react";
 
-import { getHomeData, type HealthResponse, type LibraryResponse, type UserResponse } from "../api/tvlore-api";
+import { getHomeData, type LibraryResponse, type UserResponse } from "../api/tvlore-api";
 import { getSupabaseAccessToken } from "../auth/supabase-auth";
 
 export type HomeReadyState = {
-  health: HealthResponse;
   kind: "ready";
   library: LibraryResponse | null;
   user: UserResponse | null;
@@ -13,7 +12,7 @@ export type HomeReadyState = {
 export type HomeState =
   | { kind: "loading" }
   | HomeReadyState
-  | { health: HealthResponse; kind: "refreshing"; library: LibraryResponse | null; user: UserResponse | null }
+  | { kind: "refreshing"; library: LibraryResponse | null; user: UserResponse | null }
   | { kind: "offline"; message: string };
 
 export function useHomeData() {
