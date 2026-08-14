@@ -35,7 +35,7 @@ Implemented:
 - Mobile Profile renders a touch-driven holo profile card with Google avatar and library stats.
 - Mobile library rows navigate back to movie detail or show season detail screens.
 - Mobile Library/Profile keep previous library data during refreshes and render skeletons on initial load.
-- Mobile has routed Library, Search, and Profile surfaces with bottom app navigation.
+- Mobile has routed Library, Search, and Profile surfaces with persistent bottom app navigation.
 - Postman collection and local/Vercel environments.
 - Environment validation for local and Vercel.
 - Backend unit tests with Vitest.
@@ -704,7 +704,7 @@ Current behavior:
 - Library shows saved watchlist rows when the backend has watchlist data.
 - Library can filter between all rows, continuing shows, saved titles, and watch history.
 - Continue-watching rows open the next season, recently watched movies open movie detail, and recently watched episodes open the matching season.
-- Bottom app navigation connects Library, Search, and Profile.
+- Bottom app navigation connects Library, Search, and Profile from the root layout, so the tab bar stays stable while route content changes.
 - Empty library state is expected after cleanup-oriented smoke checks.
 - Search supports all/show/movie filters.
 - Search prefetches results with a debounce after the user enters at least three characters.

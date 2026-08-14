@@ -6,7 +6,6 @@ import { HoloProfileCard } from "../home/HoloProfileCard";
 import { LibraryOverviewSkeleton } from "../home/LibraryOverview";
 import { styles } from "../home/home-styles";
 import { useHomeModel } from "../home/use-home-model";
-import { AppTabBar } from "../navigation/AppTabBar";
 
 export default function ProfileScreen() {
   const {
@@ -74,7 +73,6 @@ export default function ProfileScreen() {
           </Pressable>
         ) : null}
       </ScrollView>
-      <AppTabBar active="profile" />
     </SafeAreaView>
   );
 }

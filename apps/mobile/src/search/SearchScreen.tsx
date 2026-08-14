@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { SafeAreaView, ScrollView } from "react-native";
 
 import type { CatalogSearchResult, MediaType } from "../api/tvlore-api";
-import { AppTabBar } from "../navigation/AppTabBar";
 import { SearchControls } from "./SearchControls";
 import { SearchResults } from "./SearchResults";
 import { styles } from "./search-styles";
@@ -90,7 +89,6 @@ export default function SearchScreen() {
           search={search}
         />
       </ScrollView>
-      <AppTabBar active="search" />
     </SafeAreaView>
   );
 }

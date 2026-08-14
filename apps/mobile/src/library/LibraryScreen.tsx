@@ -3,7 +3,6 @@ import { StatusBar } from "expo-status-bar";
 import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
 
 import { isSupabaseConfigured } from "../auth/supabase-auth";
-import { AppTabBar } from "../navigation/AppTabBar";
 import { LibraryOverview, LibraryOverviewSkeleton } from "../home/LibraryOverview";
 import { styles } from "../home/home-styles";
 import { useHomeModel } from "../home/use-home-model";
@@ -56,7 +55,6 @@ export default function LibraryScreen() {
           )}
         </ScrollView>
       )}
-      <AppTabBar active="library" />
     </SafeAreaView>
   );
 }

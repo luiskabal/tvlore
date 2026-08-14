@@ -7,6 +7,13 @@ export const styles = StyleSheet.create({
   activeTabText: {
     color: "#ffffff",
   },
+  rootShell: {
+    backgroundColor: "#f7f4ee",
+    flex: 1,
+  },
+  stackShell: {
+    flex: 1,
+  },
   tabBar: {
     backgroundColor: "#f7f4ee",
     borderColor: "#d8d0c5",
@@ -25,5 +32,8 @@ export const styles = StyleSheet.create({
     color: "#5f564d",
     fontSize: 13,
     fontWeight: "800",
+  },
+  tabSafeArea: {
+    backgroundColor: "#f7f4ee",
   },
 });

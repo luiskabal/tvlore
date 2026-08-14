@@ -26,10 +26,10 @@ This structure is a starting point, not a permanent requirement.
 
 ## Navigation
 
-- Root layout owns the stack shell.
+- Root layout owns the stack shell and persistent primary tab bar.
 - `/` redirects to `/library`.
 - Library, Search, and Profile are primary user surfaces.
-- Detail routes are stack screens above tabs.
+- Detail routes are stack screens above tabs and do not render the primary tab bar.
 - Protected routes require an authenticated TVLore session.
 - Deep links should route through backend validation where private data is involved.
 
@@ -197,6 +197,10 @@ Profile render skeletons only when no home data has loaded yet.
 `HomeScreen` remains as a compatibility export to the Library route while `/`
 redirects to `/library`. The primary product surfaces are now route-level
 screens: Library, Search, and Profile.
+
+`AppTabBar` is mounted once in `app/_layout.tsx`, not inside Library, Search, or
+Profile screens. This keeps primary navigation stable while route content
+changes underneath it.
 
 Search and detail now follow the same boundary:
 
