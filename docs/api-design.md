@@ -383,7 +383,7 @@ Errors: `CATALOG_ITEM_NOT_FOUND`, `CATALOG_PROVIDER_UNAVAILABLE`, `VALIDATION_FA
 
 Purpose: return TVLore show details by internal ID.
 
-Current MVP status: implemented. `progress` remains `null`; per-user progress is currently returned by watch mutations.
+Current MVP status: implemented with authenticated user's progress, watchlist state, and rating preference.
 
 Auth: required.
 
@@ -391,9 +391,7 @@ Route parameters:
 
 - `showId` UUID.
 
-Query parameters:
-
-- `includeProgress` optional boolean.
+Query parameters: none.
 
 Request: none.
 
@@ -406,13 +404,31 @@ Response:
   "overview": "A family saga with a supernatural twist.",
   "posterPath": "/path.jpg",
   "firstAirDate": "2017-12-01",
+  "inWatchlist": true,
+  "rating": 5,
   "seasons": [
     {
+      "id": "uuid",
       "seasonNumber": 1,
+      "title": "Season 1",
       "episodeCount": 10
     }
   ],
-  "progress": null
+  "progress": {
+    "showId": "uuid",
+    "watchedEpisodeCount": 3,
+    "totalEpisodeCount": 10,
+    "percentComplete": 30,
+    "status": "watching",
+    "isComplete": false,
+    "nextEpisode": {
+      "id": "uuid",
+      "seasonNumber": 1,
+      "episodeNumber": 4,
+      "title": "Double Lives"
+    },
+    "seasons": []
+  }
 }
 ```
 
@@ -428,13 +444,12 @@ Authorization: authenticated users may read catalog details.
 Transport validation:
 
 - `showId` UUID.
-- `includeProgress` boolean if present.
 
 Business validation:
 
 - Show exists.
 - Provider refresh may occur if metadata is stale.
-- Progress, if requested, is calculated for authenticated user.
+- Progress, watchlist state, and rating preference are calculated for authenticated user.
 
 Errors: `SHOW_NOT_FOUND`, `VALIDATION_FAILED`, `CATALOG_PROVIDER_UNAVAILABLE`.
 
@@ -553,9 +568,9 @@ Errors: `SHOW_NOT_FOUND`, `SEASON_NOT_FOUND`, `VALIDATION_FAILED`.
 
 ### `GET /movies/:movieId`
 
-Purpose: return movie details and authenticated user's watch state.
+Purpose: return movie details and authenticated user's watch state, watchlist state, and rating preference.
 
-Current MVP status: implemented with authenticated user's watched state.
+Current MVP status: implemented with authenticated user's watched state, watchlist state, and rating preference.
 
 Auth: required.
 
@@ -577,6 +592,8 @@ Response:
   "posterPath": "/path.jpg",
   "releaseDate": "2016-11-11",
   "runtimeMinutes": 116,
+  "inWatchlist": true,
+  "rating": 4,
   "watched": true,
   "watchCount": 1,
   "lastWatchedAt": "2026-08-09T00:00:00.000Z"
@@ -602,6 +619,126 @@ Business validation:
 - Provider refresh may occur if metadata is stale.
 
 Errors: `MOVIE_NOT_FOUND`, `VALIDATION_FAILED`, `CATALOG_PROVIDER_UNAVAILABLE`.
+
+### `PUT /shows/:showId/preference`
+
+Purpose: set a 1-5 rating preference for a show for the authenticated user.
+
+Auth: required.
+
+Route parameters:
+
+- `showId` UUID.
+
+Request:
+
+```json
+{
+  "rating": 5
+}
+```
+
+Response:
+
+```json
+{
+  "id": "uuid",
+  "mediaType": "show",
+  "rating": 5,
+  "updatedAt": "2026-08-14T00:00:00.000Z"
+}
+```
+
+Status codes: `200 OK`, `400 BAD_REQUEST`, `401 UNAUTHORIZED`, `404 NOT_FOUND`.
+
+Validation: `rating` must be an integer from 1 to 5. Repeated calls update the same user/show preference row.
+
+Errors: `SHOW_NOT_FOUND`, `VALIDATION_FAILED`, `UNAUTHORIZED`.
+
+### `DELETE /shows/:showId/preference`
+
+Purpose: clear a show rating preference for the authenticated user.
+
+Auth: required.
+
+Route parameters:
+
+- `showId` UUID.
+
+Response:
+
+```json
+{
+  "id": "uuid",
+  "mediaType": "show",
+  "rating": null,
+  "updatedAt": null
+}
+```
+
+Status codes: `200 OK`, `400 BAD_REQUEST`, `401 UNAUTHORIZED`, `404 NOT_FOUND`.
+
+Errors: `SHOW_NOT_FOUND`, `VALIDATION_FAILED`, `UNAUTHORIZED`.
+
+### `PUT /movies/:movieId/preference`
+
+Purpose: set a 1-5 rating preference for a movie for the authenticated user.
+
+Auth: required.
+
+Route parameters:
+
+- `movieId` UUID.
+
+Request:
+
+```json
+{
+  "rating": 4
+}
+```
+
+Response:
+
+```json
+{
+  "id": "uuid",
+  "mediaType": "movie",
+  "rating": 4,
+  "updatedAt": "2026-08-14T00:00:00.000Z"
+}
+```
+
+Status codes: `200 OK`, `400 BAD_REQUEST`, `401 UNAUTHORIZED`, `404 NOT_FOUND`.
+
+Validation: `rating` must be an integer from 1 to 5. Repeated calls update the same user/movie preference row.
+
+Errors: `MOVIE_NOT_FOUND`, `VALIDATION_FAILED`, `UNAUTHORIZED`.
+
+### `DELETE /movies/:movieId/preference`
+
+Purpose: clear a movie rating preference for the authenticated user.
+
+Auth: required.
+
+Route parameters:
+
+- `movieId` UUID.
+
+Response:
+
+```json
+{
+  "id": "uuid",
+  "mediaType": "movie",
+  "rating": null,
+  "updatedAt": null
+}
+```
+
+Status codes: `200 OK`, `400 BAD_REQUEST`, `401 UNAUTHORIZED`, `404 NOT_FOUND`.
+
+Errors: `MOVIE_NOT_FOUND`, `VALIDATION_FAILED`, `UNAUTHORIZED`.
 
 ### `POST /episodes/:episodeId/watches`
 

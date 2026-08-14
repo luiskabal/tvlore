@@ -97,6 +97,7 @@ export type ShowDetailResponseDto = {
   overview: string;
   posterPath: string | null;
   progress: ShowProgressResponseDto;
+  rating: number | null;
   seasons: ShowSeasonSummaryDto[];
   title: string;
 };
@@ -109,6 +110,7 @@ export type MovieDetailResponseDto = {
   originalTitle: string | null;
   overview: string;
   posterPath: string | null;
+  rating: number | null;
   releaseDate: string | null;
   runtimeMinutes: number | null;
   title: string;

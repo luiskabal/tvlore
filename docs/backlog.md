@@ -8,13 +8,15 @@ No active infrastructure tasks.
 
 ## Next
 
-- [ ] Decide the next product-domain increment: ratings/preferences foundation or first social matching slice.
+- [ ] Validate rating preferences on iPhone after Vercel deploy.
+- [ ] Start first recommendation/social matching slice from stored ratings.
 
 ## Notes
 
 - Season bulk watched is needed because marking episodes one by one is too slow for real use.
 - Mobile cleanup should start with the largest screens: `SeasonDetailScreen`, `CatalogDetailScreen`, `SearchScreen`, then `HomeScreen`.
 - Keep the current screen -> hook -> API client boundary. The cleanup goal is readability, not a new state-management layer yet.
+- Ratings are explicit preference signals. Keep them separate from watched state so recommendations can use both later.
 
 ## Done
 
@@ -80,6 +82,7 @@ No active infrastructure tasks.
 - [x] Refine Library organization now that watched history and saved intent both exist.
 - [x] Add richer removal/actions from Library rows after the segmented UX settles.
 - [x] Add compact poster thumbnails to mobile Library rows.
+- [x] Add personal show/movie rating preferences.
 
 ## Deferred
 

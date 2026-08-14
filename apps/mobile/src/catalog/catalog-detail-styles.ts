@@ -10,6 +10,21 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "800",
   },
+  clearButton: {
+    alignItems: "center",
+    alignSelf: "flex-start",
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    minWidth: 104,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+  },
+  clearButtonText: {
+    color: "#5f564d",
+    fontSize: 14,
+    fontWeight: "800",
+  },
   disabledButton: {
     opacity: 0.6,
   },
@@ -94,6 +109,32 @@ export const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 14,
     fontWeight: "800",
+  },
+  ratingButton: {
+    alignItems: "center",
+    backgroundColor: "#fffdfa",
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    height: 42,
+    justifyContent: "center",
+    width: 42,
+  },
+  ratingButtonSelected: {
+    backgroundColor: "#1f7a5c",
+    borderColor: "#1f7a5c",
+  },
+  ratingButtonText: {
+    color: "#302b27",
+    fontSize: 16,
+    fontWeight: "800",
+  },
+  ratingButtonTextSelected: {
+    color: "#ffffff",
+  },
+  ratingRow: {
+    flexDirection: "row",
+    gap: 8,
   },
   screen: {
     backgroundColor: "#f7f4ee",

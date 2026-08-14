@@ -9,15 +9,17 @@ datasource db {
 }
 
 model User {
-  id              String           @id @default(uuid()) @db.Uuid
-  displayName     String           @map("display_name")
-  createdAt       DateTime         @default(now()) @map("created_at")
-  updatedAt       DateTime         @updatedAt @map("updated_at")
-  episodeWatches  EpisodeWatch[]
-  identities      UserIdentity[]
+  id                  String               @id @default(uuid()) @db.Uuid
+  displayName         String               @map("display_name")
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
+  episodeWatches      EpisodeWatch[]
+  identities          UserIdentity[]
+  moviePreferences    MoviePreference[]
   movieWatchlistItems MovieWatchlistItem[]
-  movieWatches    MovieWatch[]
-  refreshSessions RefreshSession[]
+  movieWatches        MovieWatch[]
+  refreshSessions     RefreshSession[]
+  showPreferences     ShowPreference[]
   showWatchlistItems  ShowWatchlistItem[]
 
   @@map("users")
@@ -56,33 +58,35 @@ model RefreshSession {
 }
 
 model Show {
-  id            String    @id @default(uuid()) @db.Uuid
-  title         String
-  originalTitle String?   @map("original_title")
-  overview      String
-  posterPath    String?   @map("poster_path")
-  backdropPath  String?   @map("backdrop_path")
-  firstAirDate  DateTime? @map("first_air_date") @db.Date
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
-  episodes      Episode[]
-  seasons       Season[]
+  id             String              @id @default(uuid()) @db.Uuid
+  title          String
+  originalTitle  String?             @map("original_title")
+  overview       String
+  posterPath     String?             @map("poster_path")
+  backdropPath   String?             @map("backdrop_path")
+  firstAirDate   DateTime?           @map("first_air_date") @db.Date
+  createdAt      DateTime            @default(now()) @map("created_at")
+  updatedAt      DateTime            @updatedAt @map("updated_at")
+  episodes       Episode[]
+  preferences    ShowPreference[]
+  seasons        Season[]
   watchlistItems ShowWatchlistItem[]
 
   @@map("shows")
 }
 
 model Movie {
-  id             String   @id @default(uuid()) @db.Uuid
+  id             String               @id @default(uuid()) @db.Uuid
   title          String
-  originalTitle  String?  @map("original_title")
+  originalTitle  String?              @map("original_title")
   overview       String
-  posterPath     String?  @map("poster_path")
-  backdropPath   String?  @map("backdrop_path")
-  releaseDate    DateTime? @map("release_date") @db.Date
-  runtimeMinutes Int?     @map("runtime_minutes")
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
+  posterPath     String?              @map("poster_path")
+  backdropPath   String?              @map("backdrop_path")
+  releaseDate    DateTime?            @map("release_date") @db.Date
+  runtimeMinutes Int?                 @map("runtime_minutes")
+  createdAt      DateTime             @default(now()) @map("created_at")
+  updatedAt      DateTime             @updatedAt @map("updated_at")
+  preferences    MoviePreference[]
   watchlistItems MovieWatchlistItem[]
   watches        MovieWatch[]
 
@@ -90,12 +94,12 @@ model Movie {
 }
 
 model ExternalIdentifier {
-  id           String   @id @default(uuid()) @db.Uuid
-  entityType   String   @map("entity_type")
-  entityId     String   @map("entity_id") @db.Uuid
-  provider     String
-  providerId   String   @map("provider_id")
-  createdAt    DateTime @default(now()) @map("created_at")
+  id         String   @id @default(uuid()) @db.Uuid
+  entityType String   @map("entity_type")
+  entityId   String   @map("entity_id") @db.Uuid
+  provider   String
+  providerId String   @map("provider_id")
+  createdAt  DateTime @default(now()) @map("created_at")
 
   @@unique([entityType, provider, providerId])
   @@index([entityType, entityId])
@@ -103,18 +107,18 @@ model ExternalIdentifier {
 }
 
 model Season {
-  id            String    @id @default(uuid()) @db.Uuid
-  showId        String    @map("show_id") @db.Uuid
-  seasonNumber  Int       @map("season_number")
-  title         String
-  overview      String
-  posterPath    String?   @map("poster_path")
-  airDate       DateTime? @map("air_date") @db.Date
-  episodeCount  Int       @default(0) @map("episode_count")
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
-  episodes      Episode[]
-  show          Show      @relation(fields: [showId], references: [id], onDelete: Cascade)
+  id           String    @id @default(uuid()) @db.Uuid
+  showId       String    @map("show_id") @db.Uuid
+  seasonNumber Int       @map("season_number")
+  title        String
+  overview     String
+  posterPath   String?   @map("poster_path")
+  airDate      DateTime? @map("air_date") @db.Date
+  episodeCount Int       @default(0) @map("episode_count")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  episodes     Episode[]
+  show         Show      @relation(fields: [showId], references: [id], onDelete: Cascade)
 
   @@unique([showId, seasonNumber])
   @@index([showId])
@@ -122,20 +126,20 @@ model Season {
 }
 
 model Episode {
-  id             String    @id @default(uuid()) @db.Uuid
-  showId         String    @map("show_id") @db.Uuid
-  seasonId       String    @map("season_id") @db.Uuid
-  seasonNumber   Int       @map("season_number")
-  episodeNumber  Int       @map("episode_number")
+  id             String         @id @default(uuid()) @db.Uuid
+  showId         String         @map("show_id") @db.Uuid
+  seasonId       String         @map("season_id") @db.Uuid
+  seasonNumber   Int            @map("season_number")
+  episodeNumber  Int            @map("episode_number")
   title          String
   overview       String
-  stillPath      String?   @map("still_path")
-  airDate        DateTime? @map("air_date") @db.Date
-  runtimeMinutes Int?      @map("runtime_minutes")
-  createdAt      DateTime  @default(now()) @map("created_at")
-  updatedAt      DateTime  @updatedAt @map("updated_at")
-  season         Season    @relation(fields: [seasonId], references: [id], onDelete: Cascade)
-  show           Show      @relation(fields: [showId], references: [id], onDelete: Cascade)
+  stillPath      String?        @map("still_path")
+  airDate        DateTime?      @map("air_date") @db.Date
+  runtimeMinutes Int?           @map("runtime_minutes")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+  season         Season         @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  show           Show           @relation(fields: [showId], references: [id], onDelete: Cascade)
   watches        EpisodeWatch[]
 
   @@unique([showId, seasonNumber, episodeNumber])
@@ -200,4 +204,36 @@ model MovieWatchlistItem {
   @@index([movieId])
   @@index([userId])
   @@map("movie_watchlist_items")
+}
+
+model ShowPreference {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  showId    String   @map("show_id") @db.Uuid
+  rating    Int
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  show      Show     @relation(fields: [showId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, showId])
+  @@index([showId])
+  @@index([userId])
+  @@map("show_preferences")
+}
+
+model MoviePreference {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  movieId   String   @map("movie_id") @db.Uuid
+  rating    Int
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, movieId])
+  @@index([movieId])
+  @@index([userId])
+  @@map("movie_preferences")
 }

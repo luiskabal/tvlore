@@ -19,6 +19,7 @@ Implemented:
 - Episode catalog persistence when a season is opened.
 - Authenticated watch/unwatch endpoints for episodes and movies.
 - Authenticated watchlist endpoints for shows and movies.
+- Authenticated rating preference endpoints for shows and movies.
 - Authenticated personal library and show progress read endpoints.
 - Mobile Library/Profile routes read the authenticated user and personal library summary from the API.
 - Mobile search resolves provider results and opens backend-owned show/movie detail screens.
@@ -27,6 +28,7 @@ Implemented:
 - Mobile season detail can mark episodes watched or unwatched.
 - Mobile season detail can mark all loaded season episodes watched or unwatched.
 - Mobile show/movie detail can add or remove a title from the watchlist.
+- Mobile show/movie detail can rate or clear a rating preference for a title.
 - Mobile tracking mutations invalidate the local library data.
 - Mobile watchlist mutations invalidate the local library data.
 - Mobile Library/Profile refresh authenticated library data after tracking changes.
@@ -47,6 +49,7 @@ Implemented:
 Not implemented yet:
 
 - Social matching.
+- Recommendation ranking from rating preferences.
 
 ## 2. Current System Diagram
 
@@ -158,6 +161,7 @@ Current backend modules:
 - `auth`: validates bearer tokens against Supabase.
 - `users`: resolves the authenticated Supabase user into a TVLore user.
 - `catalog`: searches TMDB, resolves TMDB items, and persists TVLore catalog IDs.
+- `preferences`: stores explicit per-user ratings for shows and movies.
 - `health`: verifies API and database availability.
 - `config`: loads and validates environment variables at startup.
 
@@ -399,6 +403,10 @@ POST /shows/:showId/watchlist
 DELETE /shows/:showId/watchlist
 POST /movies/:movieId/watchlist
 DELETE /movies/:movieId/watchlist
+PUT /shows/:showId/preference
+DELETE /shows/:showId/preference
+PUT /movies/:movieId/preference
+DELETE /movies/:movieId/preference
 GET /shows/:showId/progress
 GET /library
 ```
@@ -409,9 +417,10 @@ Current watched-state behavior:
 - Episodes return `watched`, `watchCount`, and `lastWatchedAt` for the authenticated user.
 - Mark watched/unwatched is idempotent in the MVP: one active row per user/movie or user/episode.
 - Add/remove watchlist is idempotent in the MVP: one active row per user/show or user/movie.
+- Rating preferences are explicit and separate from watched state: one active row per user/show or user/movie, with `rating` from 1 to 5.
 - Show progress returned by show detail, episode watch mutations, and `GET /shows/:showId/progress` is based on episodes currently persisted in TVLore. Opening a season hydrates its episode rows.
 - Show detail returns `progress.status` as `not_started`, `watching`, or `completed`.
-- Show and movie detail responses return `inWatchlist` for the authenticated user.
+- Show and movie detail responses return `inWatchlist` and nullable `rating` for the authenticated user.
 - `GET /library` returns summary counts, continue-watching shows, recent movie/episode activity, and watchlist titles for the authenticated user.
 
 Why season detail fetches TMDB:
@@ -430,13 +439,17 @@ erDiagram
   USER ||--o{ MOVIE_WATCH : marks
   USER ||--o{ SHOW_WATCHLIST_ITEM : saves
   USER ||--o{ MOVIE_WATCHLIST_ITEM : saves
+  USER ||--o{ SHOW_PREFERENCE : rates
+  USER ||--o{ MOVIE_PREFERENCE : rates
   SHOW ||--o{ SEASON : has
   SHOW ||--o{ EPISODE : has
   SHOW ||--o{ SHOW_WATCHLIST_ITEM : saved
+  SHOW ||--o{ SHOW_PREFERENCE : rated
   SEASON ||--o{ EPISODE : contains
   EPISODE ||--o{ EPISODE_WATCH : watched
   MOVIE ||--o{ MOVIE_WATCH : watched
   MOVIE ||--o{ MOVIE_WATCHLIST_ITEM : saved
+  MOVIE ||--o{ MOVIE_PREFERENCE : rated
   SHOW ||--o{ EXTERNAL_IDENTIFIER : maps
   MOVIE ||--o{ EXTERNAL_IDENTIFIER : maps
 
@@ -559,6 +572,24 @@ erDiagram
     uuid movieId FK
     datetime createdAt
   }
+
+  SHOW_PREFERENCE {
+    uuid id PK
+    uuid userId FK
+    uuid showId FK
+    int rating
+    datetime createdAt
+    datetime updatedAt
+  }
+
+  MOVIE_PREFERENCE {
+    uuid id PK
+    uuid userId FK
+    uuid movieId FK
+    int rating
+    datetime createdAt
+    datetime updatedAt
+  }
 ```
 
 Current tables:
@@ -575,6 +606,8 @@ Current tables:
 - `movie_watches`: per-user watched marker for a movie.
 - `show_watchlist_items`: per-user saved-intent marker for a show.
 - `movie_watchlist_items`: per-user saved-intent marker for a movie.
+- `show_preferences`: per-user 1-5 rating preference for a show.
+- `movie_preferences`: per-user 1-5 rating preference for a movie.
 
 Important constraint:
 
@@ -584,6 +617,8 @@ episode_watches(user_id, episode_id) is unique
 movie_watches(user_id, movie_id) is unique
 show_watchlist_items(user_id, show_id) is unique
 movie_watchlist_items(user_id, movie_id) is unique
+show_preferences(user_id, show_id) is unique
+movie_preferences(user_id, movie_id) is unique
 ```
 
 Why:
@@ -594,6 +629,8 @@ Why:
 - Repeated mark-watched calls stay idempotent.
 - Watchlist tracking references stable TVLore UUIDs.
 - Repeated add-to-watchlist calls stay idempotent.
+- Rating preferences reference stable TVLore UUIDs.
+- Repeated rating calls update the same preference row.
 - Watched state belongs to a user, not to the catalog row.
 
 Implementation note:
@@ -621,7 +658,9 @@ flowchart TB
   Movie[Catalog / GET /movies/:movieId]
   MovieWatch[Tracking / POST /movies/:movieId/watches]
   ShowWatchlist[Watchlist / POST /shows/:showId/watchlist]
+  ShowRating[Preferences / PUT /shows/:showId/preference]
   MovieWatchlist[Watchlist / POST /movies/:movieId/watchlist]
+  MovieRating[Preferences / PUT /movies/:movieId/preference]
   Library[Library / GET /library]
   MovieUnwatch[Tracking / DELETE /movies/:movieId/watches]
 
@@ -633,7 +672,8 @@ flowchart TB
   Search --> ResolveShow
   ResolveShow --> Show
   Show --> ShowWatchlist
-  ShowWatchlist --> Seasons
+  ShowWatchlist --> ShowRating
+  ShowRating --> Seasons
   Seasons --> Season
   Season --> EpisodeWatch
   EpisodeWatch --> Progress
@@ -641,7 +681,8 @@ flowchart TB
   EpisodeUnwatch --> ResolveMovie
   ResolveMovie --> Movie
   Movie --> MovieWatchlist
-  MovieWatchlist --> MovieWatch
+  MovieWatchlist --> MovieRating
+  MovieRating --> MovieWatch
   MovieWatch --> Library
   Library --> MovieUnwatch
 ```
@@ -664,6 +705,10 @@ Expected behavior:
 - `DELETE /shows/:showId/watchlist` removes that saved show for the authenticated user.
 - `POST /movies/:movieId/watchlist` saves a movie for later for the authenticated user.
 - `DELETE /movies/:movieId/watchlist` removes that saved movie for the authenticated user.
+- `PUT /shows/:showId/preference` stores a 1-5 show rating for the authenticated user.
+- `DELETE /shows/:showId/preference` clears that show rating for the authenticated user.
+- `PUT /movies/:movieId/preference` stores a 1-5 movie rating for the authenticated user.
+- `DELETE /movies/:movieId/preference` clears that movie rating for the authenticated user.
 - `GET /library` returns personal summary, continue-watching, and recently watched activity.
 - `DELETE /movies/:movieId/watches` marks that movie unwatched for the authenticated user.
 - `GET /movies/:movieId` returns movie detail with authenticated user's watched state.
@@ -690,6 +735,7 @@ Search
 -> GET /shows/:id or GET /movies/:id
 -> Show detail progress state
 -> Show/movie watchlist add/remove
+-> Show/movie rating set/clear
 -> Show season route
 -> GET /shows/:id/seasons/:seasonNumber
 -> Episode watch/unwatch
@@ -725,6 +771,8 @@ Current behavior:
 - Movie watch actions update local detail state optimistically, then reconcile from the backend mutation response.
 - Show and movie detail can add or remove the title from the watchlist.
 - Watchlist actions update local detail state optimistically, then reconcile from the backend mutation response.
+- Show and movie detail can set or clear a 1-5 rating preference.
+- Rating actions update local detail state optimistically, then reconcile from the backend mutation response.
 - Show detail lists seasons and opens a season route.
 - Season detail loads backend-owned episode IDs and watched state.
 - Season detail can mark episodes watched or unwatched.
@@ -772,6 +820,7 @@ Product foundation:
 - TMDB IDs are external references only.
 - Watch tracking is stored against internal TVLore IDs and authenticated user IDs.
 - Watchlist intent is stored against internal TVLore IDs and authenticated user IDs.
+- Rating preferences are stored against internal TVLore IDs and authenticated user IDs.
 - Show progress status is calculated by the backend from persisted episode watches.
 - Mobile can render backend-owned library data through the same Supabase token used by Postman.
 - Mobile can search TMDB-backed catalog data without receiving TMDB credentials.
@@ -779,6 +828,7 @@ Product foundation:
 - Mobile can resolve a provider result and open internal show/movie details by TVLore ID.
 - Mobile can mark movies watched/unwatched through backend tracking endpoints.
 - Mobile can add/remove shows and movies from the watchlist through backend watchlist endpoints.
+- Mobile can rate shows and movies through backend preference endpoints.
 - Mobile can remove watchlist/history rows immediately after swipe confirmation backed by existing backend watchlist and tracking endpoints.
 - Mobile can render library thumbnails from existing poster data without extra API calls.
 - Mobile can open a show season, hydrate episode IDs, and mark episodes watched/unwatched through backend tracking endpoints.

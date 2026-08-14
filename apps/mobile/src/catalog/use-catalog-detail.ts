@@ -2,9 +2,11 @@ import { useCallback, useEffect, useState, type Dispatch, type SetStateAction } 
 
 import {
   addToWatchlist,
+  clearPreferenceRating,
   getCatalogDetail,
   markMovieWatched,
   removeFromWatchlist,
+  setPreferenceRating,
   unmarkMovieWatched,
   type CatalogDetailResponse,
   type MediaType,
@@ -27,10 +29,16 @@ export type WatchlistActionState =
   | { kind: "loading" }
   | { kind: "error"; message: string };
 
+export type PreferenceActionState =
+  | { kind: "idle" }
+  | { kind: "loading" }
+  | { kind: "error"; message: string };
+
 export function useCatalogDetail(mediaType: MediaType, id: string | null) {
   const [state, setState] = useState<CatalogDetailState>({ kind: "loading" });
   const [watchAction, setWatchAction] = useState<WatchActionState>({ kind: "idle" });
   const [watchlistAction, setWatchlistAction] = useState<WatchlistActionState>({ kind: "idle" });
+  const [preferenceAction, setPreferenceAction] = useState<PreferenceActionState>({ kind: "idle" });
 
   const refresh = useCallback(async () => {
     if (!id) {
@@ -46,6 +54,7 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
       setState({ detail, kind: "ready" });
       setWatchAction({ kind: "idle" });
       setWatchlistAction({ kind: "idle" });
+      setPreferenceAction({ kind: "idle" });
     } catch (error) {
       setState({
         kind: "error",
@@ -162,11 +171,64 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
     }
   }, [state]);
 
+  const setRating = useCallback(async (targetMediaType: MediaType, targetId: string, rating: number | null) => {
+    const previousDetail = state.kind === "ready" && state.detail.id === targetId && state.detail.mediaType === targetMediaType
+      ? state.detail
+      : null;
+
+    setPreferenceAction({ kind: "loading" });
+    setState((current) => {
+      if (current.kind !== "ready" || current.detail.id !== targetId || current.detail.mediaType !== targetMediaType) {
+        return current;
+      }
+
+      return {
+        detail: {
+          ...current.detail,
+          rating,
+        },
+        kind: "ready",
+      };
+    });
+
+    try {
+      const token = await getSupabaseAccessToken();
+      const response = rating === null
+        ? await clearPreferenceRating(token, targetMediaType, targetId)
+        : await setPreferenceRating(token, targetMediaType, targetId, rating);
+
+      setState((current) => {
+        if (
+          current.kind !== "ready" ||
+          current.detail.id !== response.id ||
+          current.detail.mediaType !== response.mediaType
+        ) {
+          return current;
+        }
+
+        return {
+          detail: {
+            ...current.detail,
+            rating: response.rating,
+          },
+          kind: "ready",
+        };
+      });
+      setPreferenceAction({ kind: "idle" });
+    } catch (error) {
+      rollbackDetail(previousDetail, setState);
+      setPreferenceAction({
+        kind: "error",
+        message: error instanceof Error ? error.message : "Rating update failed",
+      });
+    }
+  }, [state]);
+
   useEffect(() => {
     void refresh();
   }, [refresh]);
 
-  return { refresh, setInWatchlist, setMovieWatched, state, watchAction, watchlistAction };
+  return { preferenceAction, refresh, setInWatchlist, setMovieWatched, setRating, state, watchAction, watchlistAction };
 }
 
 function getOptimisticWatchCount(currentCount: number, currentWatched: boolean, nextWatched: boolean) {

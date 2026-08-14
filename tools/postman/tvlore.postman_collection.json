@@ -685,6 +685,7 @@
                   "  var body = pm.response.json();",
                   "  pm.expect(body.id).to.eql(pm.environment.get('resolvedShowId'));",
                   "  pm.expect(body.inWatchlist).to.be.a('boolean');",
+                  "  pm.expect(body.rating === null || (Number.isInteger(body.rating) && body.rating >= 1 && body.rating <= 5)).to.eql(true);",
                   "  pm.expect(body.title).to.be.a('string');",
                   "  pm.expect(body.progress).to.be.an('object');",
                   "  pm.expect(body.progress.showId).to.eql(pm.environment.get('resolvedShowId'));",
@@ -743,6 +744,125 @@
                   "  pm.expect(body.id).to.eql(pm.environment.get('resolvedShowId'));",
                   "  pm.expect(body.mediaType).to.eql('show');",
                   "  pm.expect(body.inWatchlist).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT /shows/:showId/preference",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "{{correlationId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shows/{{resolvedShowId}}/preference",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shows",
+                "{{resolvedShowId}}",
+                "preference"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('show rating is saved', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.id).to.eql(pm.environment.get('resolvedShowId'));",
+                  "  pm.expect(body.mediaType).to.eql('show');",
+                  "  pm.expect(body.rating).to.eql(5);",
+                  "  pm.expect(body.updatedAt === null || typeof body.updatedAt === 'string').to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE /shows/:showId/preference",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "{{correlationId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shows/{{resolvedShowId}}/preference",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shows",
+                "{{resolvedShowId}}",
+                "preference"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('show rating is cleared', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.id).to.eql(pm.environment.get('resolvedShowId'));",
+                  "  pm.expect(body.mediaType).to.eql('show');",
+                  "  pm.expect(body.rating).to.eql(null);",
+                  "  pm.expect(body.updatedAt === null || typeof body.updatedAt === 'string').to.eql(true);",
                   "});"
                 ]
               }
@@ -1184,6 +1304,7 @@
                   "  var body = pm.response.json();",
                   "  pm.expect(body.id).to.eql(pm.environment.get('resolvedMovieId'));",
                   "  pm.expect(body.inWatchlist).to.be.a('boolean');",
+                  "  pm.expect(body.rating === null || (Number.isInteger(body.rating) && body.rating >= 1 && body.rating <= 5)).to.eql(true);",
                   "  pm.expect(body.title).to.be.a('string');",
                   "  pm.expect(body.watched).to.be.a('boolean');",
                   "  pm.expect(body.watchCount).to.be.a('number');",
@@ -1239,6 +1360,125 @@
                   "  pm.expect(body.id).to.eql(pm.environment.get('resolvedMovieId'));",
                   "  pm.expect(body.mediaType).to.eql('movie');",
                   "  pm.expect(body.inWatchlist).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT /movies/:movieId/preference",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "{{correlationId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/{{resolvedMovieId}}/preference",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "{{resolvedMovieId}}",
+                "preference"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 4\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('movie rating is saved', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.id).to.eql(pm.environment.get('resolvedMovieId'));",
+                  "  pm.expect(body.mediaType).to.eql('movie');",
+                  "  pm.expect(body.rating).to.eql(4);",
+                  "  pm.expect(body.updatedAt === null || typeof body.updatedAt === 'string').to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE /movies/:movieId/preference",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "{{correlationId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/{{resolvedMovieId}}/preference",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "{{resolvedMovieId}}",
+                "preference"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('movie rating is cleared', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.id).to.eql(pm.environment.get('resolvedMovieId'));",
+                  "  pm.expect(body.mediaType).to.eql('movie');",
+                  "  pm.expect(body.rating).to.eql(null);",
+                  "  pm.expect(body.updatedAt === null || typeof body.updatedAt === 'string').to.eql(true);",
                   "});"
                 ]
               }

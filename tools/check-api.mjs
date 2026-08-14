@@ -56,9 +56,21 @@ async function checkUnauthorizedRoutes() {
   await checkUnauthorized(`/shows/${missingUuid}/progress`);
   await checkUnauthorized(`/shows/${missingUuid}/watchlist`, { method: "POST" });
   await checkUnauthorized(`/shows/${missingUuid}/watchlist`, { method: "DELETE" });
+  await checkUnauthorized(`/shows/${missingUuid}/preference`, {
+    body: JSON.stringify({ rating: 5 }),
+    headers: { "content-type": "application/json" },
+    method: "PUT",
+  });
+  await checkUnauthorized(`/shows/${missingUuid}/preference`, { method: "DELETE" });
   await checkUnauthorized(`/movies/${missingUuid}`);
   await checkUnauthorized(`/movies/${missingUuid}/watchlist`, { method: "POST" });
   await checkUnauthorized(`/movies/${missingUuid}/watchlist`, { method: "DELETE" });
+  await checkUnauthorized(`/movies/${missingUuid}/preference`, {
+    body: JSON.stringify({ rating: 4 }),
+    headers: { "content-type": "application/json" },
+    method: "PUT",
+  });
+  await checkUnauthorized(`/movies/${missingUuid}/preference`, { method: "DELETE" });
   await checkUnauthorized("/library");
   await checkUnauthorized(`/episodes/${missingUuid}/watches`, { method: "POST" });
   await checkUnauthorized(`/episodes/${missingUuid}/watches`, { method: "DELETE" });
@@ -113,6 +125,13 @@ async function checkAuthenticatedProductFlow(token) {
     headers: authHeaders,
     method: "POST",
   });
+  await check("/shows/not-a-uuid/preference", {
+    assert: assertValidationError,
+    body: JSON.stringify({ rating: 5 }),
+    expectedStatus: 400,
+    headers: jsonAuthHeaders,
+    method: "PUT",
+  });
   await check(`/shows/${missingUuid}/progress`, {
     assert: (body) => assertError(body, "SHOW_NOT_FOUND"),
     expectedStatus: 404,
@@ -124,6 +143,13 @@ async function checkAuthenticatedProductFlow(token) {
     headers: authHeaders,
     method: "POST",
   });
+  await check(`/shows/${missingUuid}/preference`, {
+    assert: (body) => assertError(body, "SHOW_NOT_FOUND"),
+    body: JSON.stringify({ rating: 5 }),
+    expectedStatus: 404,
+    headers: jsonAuthHeaders,
+    method: "PUT",
+  });
   await check(`/movies/${missingUuid}`, {
     assert: (body) => assertError(body, "MOVIE_NOT_FOUND"),
     expectedStatus: 404,
@@ -134,6 +160,13 @@ async function checkAuthenticatedProductFlow(token) {
     expectedStatus: 404,
     headers: authHeaders,
     method: "POST",
+  });
+  await check(`/movies/${missingUuid}/preference`, {
+    assert: (body) => assertError(body, "MOVIE_NOT_FOUND"),
+    body: JSON.stringify({ rating: 4 }),
+    expectedStatus: 404,
+    headers: jsonAuthHeaders,
+    method: "PUT",
   });
   await check(`/episodes/${missingUuid}/watches`, {
     assert: (body) => assertError(body, "EPISODE_NOT_FOUND"),
@@ -195,8 +228,28 @@ async function checkAuthenticatedProductFlow(token) {
     headers: authHeaders,
     method: "POST",
   });
+  await check(`/shows/${resolvedShow.id}/preference`, {
+    assert: (body) => assertPreferenceResponse(body, resolvedShow.id, "show", null),
+    expectedStatus: 200,
+    headers: authHeaders,
+    method: "DELETE",
+  });
+  await check(`/shows/${resolvedShow.id}/preference`, {
+    assert: assertValidationError,
+    body: JSON.stringify({ rating: 6 }),
+    expectedStatus: 400,
+    headers: jsonAuthHeaders,
+    method: "PUT",
+  });
+  await check(`/shows/${resolvedShow.id}/preference`, {
+    assert: (body) => assertPreferenceResponse(body, resolvedShow.id, "show", 5),
+    body: JSON.stringify({ rating: 5 }),
+    expectedStatus: 200,
+    headers: jsonAuthHeaders,
+    method: "PUT",
+  });
   await check(`/shows/${resolvedShow.id}`, {
-    assert: (body) => assertShowDetail(body, resolvedShow.id, true),
+    assert: (body) => assertShowDetail(body, resolvedShow.id, true, 5),
     expectedStatus: 200,
     headers: authHeaders,
   });
@@ -278,10 +331,23 @@ async function checkAuthenticatedProductFlow(token) {
     headers: authHeaders,
     method: "DELETE",
   });
-  await check(`/movies/${resolvedMovie.id}`, {
-    assert: (body) => assertMovieDetail(body, resolvedMovie.id, false, false),
+  await check(`/movies/${resolvedMovie.id}/preference`, {
+    assert: (body) => assertPreferenceResponse(body, resolvedMovie.id, "movie", null),
     expectedStatus: 200,
     headers: authHeaders,
+    method: "DELETE",
+  });
+  await check(`/movies/${resolvedMovie.id}`, {
+    assert: (body) => assertMovieDetail(body, resolvedMovie.id, false, false, null),
+    expectedStatus: 200,
+    headers: authHeaders,
+  });
+  await check(`/movies/${resolvedMovie.id}/preference`, {
+    assert: (body) => assertPreferenceResponse(body, resolvedMovie.id, "movie", 4),
+    body: JSON.stringify({ rating: 4 }),
+    expectedStatus: 200,
+    headers: jsonAuthHeaders,
+    method: "PUT",
   });
   await check(`/movies/${resolvedMovie.id}/watchlist`, {
     assert: (body) => assertWatchlistResponse(body, resolvedMovie.id, "movie", true),
@@ -296,7 +362,7 @@ async function checkAuthenticatedProductFlow(token) {
     method: "POST",
   });
   await check(`/movies/${resolvedMovie.id}`, {
-    assert: (body) => assertMovieDetail(body, resolvedMovie.id, false, true),
+    assert: (body) => assertMovieDetail(body, resolvedMovie.id, false, true, 4),
     expectedStatus: 200,
     headers: authHeaders,
   });
@@ -307,7 +373,7 @@ async function checkAuthenticatedProductFlow(token) {
     method: "DELETE",
   });
   await check(`/movies/${resolvedMovie.id}`, {
-    assert: (body) => assertMovieDetail(body, resolvedMovie.id, false, true),
+    assert: (body) => assertMovieDetail(body, resolvedMovie.id, false, true, 4),
     expectedStatus: 200,
     headers: authHeaders,
   });
@@ -326,7 +392,7 @@ async function checkAuthenticatedProductFlow(token) {
     method: "POST",
   });
   await check(`/movies/${resolvedMovie.id}`, {
-    assert: (body) => assertMovieDetail(body, resolvedMovie.id, true, true),
+    assert: (body) => assertMovieDetail(body, resolvedMovie.id, true, true, 4),
     expectedStatus: 200,
     headers: authHeaders,
   });
@@ -371,7 +437,7 @@ async function checkAuthenticatedProductFlow(token) {
     method: "DELETE",
   });
   await check(`/movies/${resolvedMovie.id}`, {
-    assert: (body) => assertMovieDetail(body, resolvedMovie.id, false, true),
+    assert: (body) => assertMovieDetail(body, resolvedMovie.id, false, true, 4),
     expectedStatus: 200,
     headers: authHeaders,
   });
@@ -383,6 +449,18 @@ async function checkAuthenticatedProductFlow(token) {
   });
   await check(`/movies/${resolvedMovie.id}/watchlist`, {
     assert: (body) => assertWatchlistResponse(body, resolvedMovie.id, "movie", false),
+    expectedStatus: 200,
+    headers: authHeaders,
+    method: "DELETE",
+  });
+  await check(`/shows/${resolvedShow.id}/preference`, {
+    assert: (body) => assertPreferenceResponse(body, resolvedShow.id, "show", null),
+    expectedStatus: 200,
+    headers: authHeaders,
+    method: "DELETE",
+  });
+  await check(`/movies/${resolvedMovie.id}/preference`, {
+    assert: (body) => assertPreferenceResponse(body, resolvedMovie.id, "movie", null),
     expectedStatus: 200,
     headers: authHeaders,
     method: "DELETE",
@@ -452,10 +530,11 @@ function assertResolveResponse(body, mediaType) {
   expectEqual(body.mediaType, mediaType, "resolve.mediaType");
 }
 
-function assertShowDetail(body, showId, inWatchlist) {
+function assertShowDetail(body, showId, inWatchlist, rating) {
   expectRecord(body, "show detail");
   expectEqual(body.id, showId, "show.id");
   expectEqual(body.inWatchlist, inWatchlist, "show.inWatchlist");
+  expectEqual(body.rating, rating, "show.rating");
   expectString(body.title, "show.title");
   expectString(body.overview, "show.overview");
   expectArray(body.seasons, "show.seasons");
@@ -517,10 +596,11 @@ function assertShowProgress(body, showId) {
   }
 }
 
-function assertMovieDetail(body, movieId, watched, inWatchlist) {
+function assertMovieDetail(body, movieId, watched, inWatchlist, rating) {
   expectRecord(body, "movie detail");
   expectEqual(body.id, movieId, "movie.id");
   expectEqual(body.inWatchlist, inWatchlist, "movie.inWatchlist");
+  expectEqual(body.rating, rating, "movie.rating");
   expectString(body.title, "movie.title");
   expectString(body.overview, "movie.overview");
   expectEqual(body.watched, watched, "movie.watched");
@@ -541,6 +621,14 @@ function assertWatchlistResponse(body, id, mediaType, inWatchlist) {
   expectEqual(body.id, id, "watchlist.id");
   expectEqual(body.mediaType, mediaType, "watchlist.mediaType");
   expectEqual(body.inWatchlist, inWatchlist, "watchlist.inWatchlist");
+}
+
+function assertPreferenceResponse(body, id, mediaType, rating) {
+  expectRecord(body, "preference response");
+  expectEqual(body.id, id, "preference.id");
+  expectEqual(body.mediaType, mediaType, "preference.mediaType");
+  expectEqual(body.rating, rating, "preference.rating");
+  expect(body.updatedAt === null || isIsoString(body.updatedAt), "preference.updatedAt should be null or ISO string");
 }
 
 function assertLibrary(body) {

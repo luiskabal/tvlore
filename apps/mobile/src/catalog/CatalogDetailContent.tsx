@@ -3,13 +3,15 @@ import { Image, Pressable, Text, View } from "react-native";
 import type { CatalogDetailResponse, MediaType, MovieDetailResponse, ShowDetailResponse, ShowSeasonSummary } from "../api/tvlore-api";
 import { styles } from "./catalog-detail-styles";
 import { getTmdbPosterUrl } from "./posters";
-import type { WatchActionState, WatchlistActionState } from "./use-catalog-detail";
+import type { PreferenceActionState, WatchActionState, WatchlistActionState } from "./use-catalog-detail";
 
 export function CatalogDetailContent({
   detail,
   onOpenShowSeason,
   onSetInWatchlist,
   onSetMovieWatched,
+  onSetRating,
+  preferenceAction,
   watchAction,
   watchlistAction,
 }: {
@@ -17,6 +19,8 @@ export function CatalogDetailContent({
   onOpenShowSeason: (showId: string, seasonNumber: number) => void;
   onSetInWatchlist: (mediaType: MediaType, id: string, inWatchlist: boolean) => void;
   onSetMovieWatched: (movieId: string, watched: boolean) => void;
+  onSetRating: (mediaType: MediaType, id: string, rating: number | null) => void;
+  preferenceAction: PreferenceActionState;
   watchAction: WatchActionState;
   watchlistAction: WatchlistActionState;
 }) {
@@ -41,6 +45,7 @@ export function CatalogDetailContent({
       <Text style={styles.overview}>{detail.overview || "No overview available."}</Text>
 
       <WatchlistPanel detail={detail} onSetInWatchlist={onSetInWatchlist} watchlistAction={watchlistAction} />
+      <PreferencePanel detail={detail} onSetRating={onSetRating} preferenceAction={preferenceAction} />
 
       {detail.mediaType === "movie" ? (
         <MovieWatchPanel movie={detail} watchAction={watchAction} onSetWatched={onSetMovieWatched} />
@@ -86,6 +91,59 @@ function WatchlistPanel({
   );
 }
 
+function PreferencePanel({
+  detail,
+  onSetRating,
+  preferenceAction,
+}: {
+  detail: CatalogDetailResponse;
+  onSetRating: (mediaType: MediaType, id: string, rating: number | null) => void;
+  preferenceAction: PreferenceActionState;
+}) {
+  const isSaving = preferenceAction.kind === "loading";
+
+  return (
+    <View style={styles.statusPanel}>
+      <Text style={styles.statusTitle}>Your rating</Text>
+      <Text style={styles.mutedText}>{detail.rating ? `Rated ${detail.rating}/5.` : "Rate this title for future recommendations."}</Text>
+      {preferenceAction.kind === "error" ? <Text style={styles.errorText}>{preferenceAction.message}</Text> : null}
+
+      <View style={styles.ratingRow}>
+        {[1, 2, 3, 4, 5].map((rating) => {
+          const isSelected = detail.rating === rating;
+
+          return (
+            <Pressable
+              key={rating}
+              disabled={isSaving}
+              style={[
+                styles.ratingButton,
+                isSelected ? styles.ratingButtonSelected : null,
+                isSaving ? styles.disabledButton : null,
+              ]}
+              onPress={() => onSetRating(detail.mediaType, detail.id, rating)}
+            >
+              <Text style={[styles.ratingButtonText, isSelected ? styles.ratingButtonTextSelected : null]}>
+                {rating}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+
+      {detail.rating ? (
+        <Pressable
+          disabled={isSaving}
+          style={[styles.clearButton, isSaving ? styles.disabledButton : null]}
+          onPress={() => onSetRating(detail.mediaType, detail.id, null)}
+        >
+          <Text style={styles.clearButtonText}>{isSaving ? "Saving" : "Clear rating"}</Text>
+        </Pressable>
+      ) : null}
+    </View>
+  );
+}
+
 export function CatalogDetailSkeleton({ mediaType }: { mediaType: MediaType }) {
   return (
     <View style={styles.detail}>
@@ -104,6 +162,7 @@ export function CatalogDetailSkeleton({ mediaType }: { mediaType: MediaType }) {
         <View style={styles.skeletonLineMedium} />
       </View>
 
+      <ActionPanelSkeleton />
       <ActionPanelSkeleton />
 
       {mediaType === "movie" ? (

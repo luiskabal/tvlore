@@ -11,6 +11,9 @@ import { HealthController } from "./health.controller";
 import { LibraryController, ShowProgressController } from "./library/library.controller";
 import { LibraryRepository } from "./library/library.repository";
 import { LibraryService } from "./library/library.service";
+import { MoviePreferencesController, ShowPreferencesController } from "./preferences/preferences.controller";
+import { PreferencesRepository } from "./preferences/preferences.repository";
+import { PreferencesService } from "./preferences/preferences.service";
 import { PrismaService } from "./prisma.service";
 import { RootController } from "./root.controller";
 import { EpisodeTrackingController, MovieTrackingController } from "./tracking/tracking.controller";
@@ -36,6 +39,8 @@ import { WatchlistService } from "./watchlist/watchlist.service";
     MovieTrackingController,
     ShowWatchlistController,
     MovieWatchlistController,
+    ShowPreferencesController,
+    MoviePreferencesController,
     LibraryController,
     ShowProgressController,
   ],
@@ -46,11 +51,13 @@ import { WatchlistService } from "./watchlist/watchlist.service";
     CatalogRepository,
     TrackingRepository,
     WatchlistRepository,
+    PreferencesRepository,
     LibraryRepository,
     TmdbClient,
     CatalogService,
     TrackingService,
     WatchlistService,
+    PreferencesService,
     LibraryService,
     UsersRepository,
     UsersService,

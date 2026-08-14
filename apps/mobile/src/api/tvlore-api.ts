@@ -134,6 +134,7 @@ export type ShowDetailResponse = {
   overview: string;
   posterPath: string | null;
   progress: ShowProgressResponse;
+  rating: number | null;
   seasons: ShowSeasonSummary[];
   title: string;
 };
@@ -147,6 +148,7 @@ export type MovieDetailResponse = {
   originalTitle: string | null;
   overview: string;
   posterPath: string | null;
+  rating: number | null;
   releaseDate: string | null;
   runtimeMinutes: number | null;
   title: string;
@@ -196,6 +198,13 @@ export type WatchlistMutationResponse = {
   id: string;
   inWatchlist: boolean;
   mediaType: MediaType;
+};
+
+export type PreferenceMutationResponse = {
+  id: string;
+  mediaType: MediaType;
+  rating: number | null;
+  updatedAt: string | null;
 };
 
 export type HomeData = {
@@ -408,6 +417,43 @@ export async function removeFromWatchlist(
   );
 }
 
+export async function setPreferenceRating(
+  accessToken: string | null,
+  mediaType: MediaType,
+  id: string,
+  rating: number,
+): Promise<PreferenceMutationResponse> {
+  return fetchJson(
+    `/${getMediaPath(mediaType, id)}/preference`,
+    isPreferenceMutationResponse,
+    "Unexpected preference response",
+    {
+      body: JSON.stringify({ rating }),
+      headers: {
+        ...getAuthHeaders(accessToken),
+        "Content-Type": "application/json",
+      },
+      method: "PUT",
+    },
+  );
+}
+
+export async function clearPreferenceRating(
+  accessToken: string | null,
+  mediaType: MediaType,
+  id: string,
+): Promise<PreferenceMutationResponse> {
+  return fetchJson(
+    `/${getMediaPath(mediaType, id)}/preference`,
+    isPreferenceMutationResponse,
+    "Unexpected preference response",
+    {
+      headers: getAuthHeaders(accessToken),
+      method: "DELETE",
+    },
+  );
+}
+
 async function fetchJson<T>(
   path: string,
   guard: (value: unknown) => value is T,
@@ -519,6 +565,7 @@ function isShowDetailResponse(value: unknown): value is Omit<ShowDetailResponse,
     isNullableString(value.backdropPath) &&
     isNullableString(value.firstAirDate) &&
     isShowProgressResponse(value.progress) &&
+    isRating(value.rating) &&
     Array.isArray(value.seasons) &&
     value.seasons.every(isShowSeasonSummary)
   );
@@ -588,6 +635,7 @@ function isMovieDetailResponse(value: unknown): value is Omit<MovieDetailRespons
     isNullableString(value.backdropPath) &&
     isNullableString(value.releaseDate) &&
     isNullableNumber(value.runtimeMinutes) &&
+    isRating(value.rating) &&
     typeof value.watched === "boolean" &&
     typeof value.watchCount === "number" &&
     isNullableString(value.lastWatchedAt)
@@ -675,6 +723,19 @@ function isWatchlistMutationResponse(value: unknown): value is WatchlistMutation
   );
 }
 
+function isPreferenceMutationResponse(value: unknown): value is PreferenceMutationResponse {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.id === "string" &&
+    isMediaType(value.mediaType) &&
+    isRating(value.rating) &&
+    isNullableString(value.updatedAt)
+  );
+}
+
 function isContinueWatchingShow(value: unknown): value is ContinueWatchingShow {
   if (!isRecord(value) || !isRecord(value.nextEpisode)) {
     return false;
@@ -743,6 +804,10 @@ function isNullableString(value: unknown) {
 
 function isNullableNumber(value: unknown) {
   return value === null || typeof value === "number";
+}
+
+function isRating(value: unknown) {
+  return value === null || (typeof value === "number" && Number.isInteger(value) && value >= 1 && value <= 5);
 }
 
 function isMediaType(value: unknown): value is MediaType {

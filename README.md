@@ -27,6 +27,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Show detail progress state: not started, watching, or completed.
 - Season-level mark all watched/unwatched.
 - Personal show/movie watchlist.
+- Personal show/movie rating preferences.
 - Library summary with watched show, movie, episode, and watchlist counts.
 - Segmented Library views for watching, watchlist, and history.
 - Holographic mobile profile summary card with Google avatar and library stats.
@@ -46,6 +47,7 @@ Google login
 -> Open show or movie
 -> Resolve catalog item
 -> Save show or movie to watchlist
+-> Rate show or movie
 -> Mark movie watched
 -> Open show season
 -> Mark episode watched
@@ -66,8 +68,8 @@ Use `corepack pnpm api:check` for local/Vercel HTTP smoke checks.
 
 ## Next Backlog Items
 
-- Validate the watchlist UX on iPhone and Postman after Vercel deploy.
-- Add richer removal/actions from Library rows after the segmented UX settles.
+- Validate rating preferences on iPhone and Postman after Vercel deploy.
+- Start the first recommendation/social matching slice from stored preferences.
 
 ## Workspace Layout
 

@@ -56,6 +56,11 @@ export class CatalogRepository {
   async findShowDetail(showId: string, userId: string): Promise<ShowDetailResponseDto | null> {
     const show = await this.prismaService.getClient().show.findUnique({
       include: {
+        preferences: {
+          select: { rating: true },
+          take: 1,
+          where: { userId },
+        },
         seasons: {
           include: {
             episodes: {
@@ -90,6 +95,11 @@ export class CatalogRepository {
   async findMovieDetail(movieId: string, userId: string): Promise<MovieDetailResponseDto | null> {
     const movie = await this.prismaService.getClient().movie.findUnique({
       include: {
+        preferences: {
+          select: { rating: true },
+          take: 1,
+          where: { userId },
+        },
         watchlistItems: {
           select: { createdAt: true },
           take: 1,
@@ -358,6 +368,7 @@ function toShowDetailResponse(show: {
   originalTitle: string | null;
   overview: string;
   posterPath: string | null;
+  preferences: Array<{ rating: number }>;
   seasons: Array<Parameters<typeof toSeasonSummaryResponse>[0] & { episodes: ProgressEpisode[] }>;
   title: string;
   watchlistItems: Array<{ createdAt: Date }>;
@@ -371,6 +382,7 @@ function toShowDetailResponse(show: {
     overview: show.overview,
     posterPath: show.posterPath,
     progress: toShowProgress(show),
+    rating: show.preferences[0]?.rating ?? null,
     seasons: show.seasons.map(toSeasonSummaryResponse),
     title: show.title,
   };
@@ -382,6 +394,7 @@ function toMovieDetailResponse(movie: {
   originalTitle: string | null;
   overview: string;
   posterPath: string | null;
+  preferences: Array<{ rating: number }>;
   releaseDate: Date | null;
   runtimeMinutes: number | null;
   title: string;
@@ -398,6 +411,7 @@ function toMovieDetailResponse(movie: {
     originalTitle: movie.originalTitle,
     overview: movie.overview,
     posterPath: movie.posterPath,
+    rating: movie.preferences[0]?.rating ?? null,
     releaseDate: toDateString(movie.releaseDate),
     runtimeMinutes: movie.runtimeMinutes,
     title: movie.title,
