@@ -222,8 +222,8 @@ Library rows receive navigation callbacks from `LibraryScreen`: movies route
 to movie detail and episode/show rows route to season detail.
 `LibraryOverview` owns only local section-filter UI state for switching between
 all rows, continuing shows, recently watched movies, recently watched episodes,
-watchlist, rated titles, and watch history. Summary stat cards reuse the same
-filter state as tappable shortcuts. It also owns the swipe presentation
+watchlist, and rated titles. Summary stat cards reuse the same filter state as
+the only section selector. Watch history still appears inside All. It also owns the swipe presentation
 affordance for removable Library rows and compact poster thumbnail rendering
 from existing API data.
 

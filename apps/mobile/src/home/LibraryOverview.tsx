@@ -21,17 +21,8 @@ import { styles } from "./home-styles";
 import { RecommendationsPanel } from "./RecommendationsPanel";
 import type { RecommendationActionState } from "./use-recommendation-actions";
 
-type LibrarySectionFilter = "all" | "episodes" | "history" | "movies" | "rated" | "watching" | "watchlist";
+type LibrarySectionFilter = "all" | "episodes" | "movies" | "rated" | "watching" | "watchlist";
 
-const librarySections: Array<{ label: string; value: LibrarySectionFilter }> = [
-  { label: "All", value: "all" },
-  { label: "Watching", value: "watching" },
-  { label: "Movies", value: "movies" },
-  { label: "Episodes", value: "episodes" },
-  { label: "Watchlist", value: "watchlist" },
-  { label: "Rated", value: "rated" },
-  { label: "History", value: "history" },
-];
 const swipeConfirmWindowMs = 4000;
 
 type LibraryOverviewProps = {
@@ -119,7 +110,14 @@ export function LibraryOverview({
   const hasRecentlyWatchedMovies = recentlyWatchedMovies.length > 0;
   const hasWatchlist = visibleLibrary.watchlist.length > 0;
   const activeSection = selectedSection ?? getDefaultSection(visibleLibrary);
+  const summaryTotal =
+    visibleLibrary.summary.watchedShowCount +
+    visibleLibrary.summary.watchedMovieCount +
+    visibleLibrary.summary.watchedEpisodeCount +
+    visibleLibrary.summary.watchlistItemCount +
+    visibleLibrary.summary.ratedTitleCount;
   const summaryStats: Array<{ label: string; section: LibrarySectionFilter; value: number }> = [
+    { label: "All", section: "all", value: summaryTotal },
     { label: "Shows", section: "watching", value: visibleLibrary.summary.watchedShowCount },
     { label: "Movies", section: "movies", value: visibleLibrary.summary.watchedMovieCount },
     { label: "Episodes", section: "episodes", value: visibleLibrary.summary.watchedEpisodeCount },
@@ -129,7 +127,7 @@ export function LibraryOverview({
   const shouldShowWatchlist = activeSection === "all" || activeSection === "watchlist";
   const shouldShowContinueWatching = activeSection === "all" || activeSection === "watching";
   const shouldShowRated = activeSection === "all" || activeSection === "rated";
-  const shouldShowHistory = activeSection === "all" || activeSection === "history";
+  const shouldShowHistory = activeSection === "all";
   const shouldShowMovies = activeSection === "movies";
   const shouldShowEpisodes = activeSection === "episodes";
   const hideLibraryAction = (actionKey: string) => {
@@ -155,10 +153,6 @@ export function LibraryOverview({
           <Text style={styles.statusLabel}>Your library is empty</Text>
           <Text style={styles.statusDetail}>Saved and watched titles will appear here.</Text>
         </View>
-      ) : null}
-
-      {!isEmpty ? (
-        <LibrarySectionTabs activeSection={activeSection} onSelect={setSelectedSection} />
       ) : null}
 
       <ScrollView
@@ -286,35 +280,6 @@ export function LibraryOverviewSkeleton() {
       </View>
       <View style={[styles.skeletonBlock, styles.skeletonListItem]} />
       <View style={[styles.skeletonBlock, styles.skeletonListItem]} />
-    </View>
-  );
-}
-
-function LibrarySectionTabs({
-  activeSection,
-  onSelect,
-}: {
-  activeSection: LibrarySectionFilter;
-  onSelect: (section: LibrarySectionFilter) => void;
-}) {
-  return (
-    <View style={styles.sectionTabs}>
-      {librarySections.map((section) => {
-        const isActive = activeSection === section.value;
-
-        return (
-          <Pressable
-            accessibilityRole="button"
-            key={section.value}
-            onPress={() => onSelect(section.value)}
-            style={[styles.sectionTab, isActive ? styles.sectionTabActive : null]}
-          >
-            <Text style={[styles.sectionTabText, isActive ? styles.sectionTabTextActive : null]}>
-              {section.label}
-            </Text>
-          </Pressable>
-        );
-      })}
     </View>
   );
 }
@@ -660,10 +625,6 @@ function hasItemsForSection(activeSection: LibrarySectionFilter, library: Librar
     return library.ratedTitles.length > 0;
   }
 
-  if (activeSection === "history") {
-    return library.recentlyWatched.length > 0;
-  }
-
   return true;
 }
 
@@ -754,7 +715,7 @@ function getEmptySectionTitle(activeSection: LibrarySectionFilter) {
     return "No rated titles";
   }
 
-  return "No watch history";
+  return "No activity";
 }
 
 function getEmptySectionDetail(activeSection: LibrarySectionFilter) {
@@ -778,7 +739,7 @@ function getEmptySectionDetail(activeSection: LibrarySectionFilter) {
     return "Rated shows and movies will appear here.";
   }
 
-  return "Watched movies and episodes will appear here.";
+  return "Library activity will appear here.";
 }
 
 function formatShortDate(value: string) {
