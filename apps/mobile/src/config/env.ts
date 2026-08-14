@@ -1,6 +1,14 @@
 import Constants from "expo-constants";
 import { Platform } from "react-native";
 
+declare const process: {
+  env: {
+    EXPO_PUBLIC_TVLORE_API_BASE_URL?: string;
+    EXPO_PUBLIC_SUPABASE_URL?: string;
+    EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY?: string;
+  };
+};
+
 export const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
 export const supabasePublishableKey = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 export const supabaseProjectUrl = supabaseUrl ?? "Not configured";
