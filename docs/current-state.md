@@ -19,16 +19,17 @@ Implemented:
 - Episode catalog persistence when a season is opened.
 - Authenticated watch/unwatch endpoints for episodes and movies.
 - Authenticated personal library and show progress read endpoints.
-- Mobile home screen reads the authenticated user and personal library summary from the API.
+- Mobile Library/Profile routes read the authenticated user and personal library summary from the API.
 - Mobile search resolves provider results and opens backend-owned show/movie detail screens.
 - Mobile show detail opens backend-owned season episode lists.
 - Mobile season detail can mark episodes watched or unwatched.
 - Mobile season detail can mark all loaded season episodes watched or unwatched.
-- Mobile tracking mutations invalidate the home library data.
-- Mobile home refreshes authenticated library data after tracking changes or whenever navigation returns to `/`.
-- Mobile home renders a touch-driven holo profile card with Google avatar and library stats.
+- Mobile tracking mutations invalidate the local library data.
+- Mobile Library/Profile refresh authenticated library data after tracking changes.
+- Mobile Profile renders a touch-driven holo profile card with Google avatar and library stats.
 - Mobile library rows navigate back to movie detail or show season detail screens.
-- Mobile home keeps previous library data during refreshes and renders skeletons on initial load.
+- Mobile Library/Profile keep previous library data during refreshes and render skeletons on initial load.
+- Mobile has routed Library, Search, and Profile surfaces with bottom app navigation.
 - Postman collection and local/Vercel environments.
 - Environment validation for local and Vercel.
 - Backend unit tests with Vitest.
@@ -36,7 +37,7 @@ Implemented:
 
 Not implemented yet:
 
-- Dedicated Library/Profile mobile routes.
+- Watchlist / want-to-watch state.
 - Social matching.
 
 ## 2. Current System Diagram
@@ -625,10 +626,15 @@ Expected behavior:
 The current mobile app has these product-facing slices:
 
 ```text
-Home
+Library
 -> Supabase session
 -> GET /users/me and GET /library in parallel
 -> Library summary, continue-watching, recently-watched
+
+Profile
+-> Supabase session
+-> GET /users/me and GET /library in parallel
+-> Holo profile card, account state, sign out
 
 Search
 -> GET /search
@@ -644,11 +650,13 @@ Current behavior:
 
 - Signed-out users can start Google login.
 - Signed-in users can refresh authenticated backend state.
-- Home refresh avoids the public health check and loads only authenticated product data.
-- The screen shows library counts for shows, movies, and episodes in a holo profile card.
+- Library/Profile refresh avoids the public health check and loads only authenticated product data.
+- Library shows watched counts for shows, movies, and episodes.
+- Profile shows library counts for shows, movies, and episodes in a holo profile card.
 - The profile card uses Google avatar metadata when available and initials as a fallback.
-- The screen shows continue-watching and recently watched rows when the backend has watched data.
+- Library shows continue-watching and recently watched rows when the backend has watched data.
 - Continue-watching rows open the next season, recently watched movies open movie detail, and recently watched episodes open the matching season.
+- Bottom app navigation connects Library, Search, and Profile.
 - Empty library state is expected after cleanup-oriented smoke checks.
 - Search supports all/show/movie filters.
 - Search prefetches results with a debounce after the user enters at least three characters.
@@ -664,7 +672,7 @@ Current behavior:
 - Season detail loads backend-owned episode IDs and watched state.
 - Season detail can mark episodes watched or unwatched.
 - Season detail can mark all currently loaded episodes watched or unwatched.
-- Tracking mutations invalidate `GET /library`, so recent watch changes appear without pressing Refresh when the user returns home.
+- Tracking mutations invalidate `GET /library`, so recent watch changes appear without pressing Refresh when the user returns to Library or Profile.
 - Episode watch actions update the touched episode and display returned show progress.
 
 Why this shape matters:
@@ -712,6 +720,7 @@ Product foundation:
 - Mobile can mark movies watched/unwatched through backend tracking endpoints.
 - Mobile can open a show season, hydrate episode IDs, and mark episodes watched/unwatched through backend tracking endpoints.
 - Mobile can bulk-mark the loaded episodes in a season by orchestrating existing idempotent episode tracking endpoints.
+- Mobile has primary Library, Search, and Profile routes over the same authenticated API session.
 
 ## 13. Why This Backend Base Helps The Frontend
 
@@ -735,23 +744,27 @@ Search screen
 -> season detail can POST/DELETE /episodes/:episodeId/watches
 ```
 
-The remaining frontend product flow is:
+The remaining near-term frontend product flow is:
 
 ```text
-Library/Profile routes
--> richer navigation from library rows back into detail screens
+Detail-screen skeletons
+-> watchlist / want-to-watch state
+-> richer library organization
 ```
 
 ## 14. Recommended Next Step
 
-Promote the temporary mobile home into clearer app surfaces:
+Add detail-screen skeletons for show, movie, and season routes:
 
 ```text
-Home -> Library route -> Profile route
+Detail route opens
+-> stable skeleton appears immediately
+-> backend response replaces skeleton
 ```
 
 Why this is next:
 
-- Search, resolve, detail, movie tracking, and episode tracking are now wired in mobile.
-- Library data already exists in the backend.
-- The app needs cleaner navigation and automatic refresh before adding social features.
+- Library, Search, and Profile now exist as primary routes.
+- Search already gives immediate loading feedback.
+- Detail screens still feel slower than they are because they wait on backend/provider data without a polished placeholder.
+- Improving perceived loading here reduces repeated taps and makes the existing backend work feel much more solid before adding new states.

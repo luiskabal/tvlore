@@ -1,1 +1,5 @@
-export { default } from "../src/home/HomeScreen";
+import { Redirect } from "expo-router";
+
+export default function IndexRoute() {
+  return <Redirect href="/library" />;
+}

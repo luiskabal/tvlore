@@ -7,18 +7,16 @@ TVLore mobile uses Expo Router, React Native, TypeScript, Supabase Auth, SecureS
 ```text
 app/
 |-- _layout.tsx
-|
-|-- (auth)/
-|   `-- login.tsx
-|
-|-- (tabs)/
-|   |-- index.tsx
-|   |-- search.tsx
-|   |-- library.tsx
-|   `-- profile.tsx
+|-- index.tsx
+|-- library.tsx
+|-- search.tsx
+|-- profile.tsx
 |
 |-- shows/
-|   `-- [id].tsx
+|   |-- [id].tsx
+|   `-- [id]/
+|       `-- seasons/
+|           `-- [seasonNumber].tsx
 |
 `-- movies/
     `-- [id].tsx
@@ -28,9 +26,9 @@ This structure is a starting point, not a permanent requirement.
 
 ## Navigation
 
-- Root layout bootstraps providers and auth state.
-- Auth routes contain login/onboarding.
-- Tabs contain primary user surfaces.
+- Root layout owns the stack shell.
+- `/` redirects to `/library`.
+- Library, Search, and Profile are primary user surfaces.
 - Detail routes are stack screens above tabs.
 - Protected routes require an authenticated TVLore session.
 - Deep links should route through backend validation where private data is involved.
@@ -82,13 +80,15 @@ Query hooks are client infrastructure. They must not implement backend business 
 
 ## Current Implemented Layout
 
-The first mobile screen now follows this smaller version of the target shape:
+The mobile app now follows this smaller version of the target shape:
 
 ```text
 app/
 |-- _layout.tsx
 |-- index.tsx
 |-- search.tsx
+|-- library.tsx
+|-- profile.tsx
 |-- movies/
 |   `-- [id].tsx
 `-- shows/
@@ -108,6 +108,10 @@ src/
 |-- config/
 |   `-- env.ts
 |
+|-- navigation/
+|   |-- AppTabBar.tsx
+|   `-- app-tab-bar-styles.ts
+|
 |-- catalog/
 |   |-- CatalogDetailContent.tsx
 |   |-- CatalogDetailScreen.tsx
@@ -124,7 +128,15 @@ src/
 |   |-- home-styles.ts
 |   |-- HomeScreen.tsx
 |   |-- LibraryOverview.tsx
+|   |-- use-home-model.ts
 |   `-- use-home-data.ts
+|
+|-- library/
+|   |-- LibraryScreen.tsx
+|   `-- library-refresh.ts
+|
+|-- profile/
+|   `-- ProfileScreen.tsx
 |
 `-- search/
     |-- SearchControls.tsx
@@ -140,42 +152,43 @@ The rule is:
 Screen -> hook -> API/auth client -> external system
 ```
 
-`HomeScreen` renders state and handles button wiring. `useHomeData` owns the
-home loading flow. `tvlore-api.ts` owns HTTP and response-shape validation.
-`supabase-auth.ts` owns Supabase session and OAuth behavior.
+Route screens render state and handle button wiring. `useHomeData` owns the
+authenticated library loading flow. `tvlore-api.ts` owns HTTP and response-shape
+validation. `supabase-auth.ts` owns Supabase session and OAuth behavior.
 
-The home screen now consumes real authenticated backend state:
+`LibraryScreen` and `ProfileScreen` consume shared authenticated backend state
+through `useHomeModel`:
 
 ```text
-HomeScreen
+LibraryScreen/ProfileScreen
+  -> useHomeModel()
   -> useHomeData()
   -> getSupabaseAccessToken()
   -> getHomeData(accessToken)
   -> GET /users/me and GET /library in parallel
 ```
 
-The mobile home does not call `GET /health` during normal refreshes. Health
+The mobile app does not call `GET /health` during normal product refreshes. Health
 checks remain available for deployment and smoke checks, but product UI should
 avoid extra roundtrips that do not change the user's screen.
 
-`HomeScreen` refreshes this data when navigation returns to `/` and when tracking
-mutations invalidate the library, so watch changes made in movie or season detail
-screens are reflected when the user returns to the profile.
+`useHomeModel` refreshes this data when tracking mutations invalidate the
+library, so watch changes made in movie or season detail screens are reflected
+when the user returns to Library or Profile.
 
-The home library summary is rendered through `LibraryOverview` and
+The Library route renders `LibraryOverview`. The Profile route renders
 `HoloProfileCard`. The card uses Supabase Google avatar metadata when available
 and keeps the holo/tilt effect inside presentation code.
 
-Home library rows receive navigation callbacks from `HomeScreen`: movies route
+Library rows receive navigation callbacks from `LibraryScreen`: movies route
 to movie detail and episode/show rows route to season detail.
 
-`useHomeData` preserves the last ready snapshot during refreshes. `HomeScreen`
-renders skeletons only when no home data has loaded yet.
+`useHomeData` preserves the last ready snapshot during refreshes. Library and
+Profile render skeletons only when no home data has loaded yet.
 
-This is still intentionally a small first slice. The product screens will later
-move into Expo Router routes such as Search, Detail, Library, and Profile, but
-the current implementation already proves that mobile can render backend-owned
-library data using the Supabase session.
+`HomeScreen` remains as a compatibility export to the Library route while `/`
+redirects to `/library`. The primary product surfaces are now route-level
+screens: Library, Search, and Profile.
 
 Search and detail now follow the same boundary:
 
@@ -234,9 +247,9 @@ The app still does not calculate watched state. It renders the returned
 `watched`, `watchCount`, and `lastWatchedAt` values.
 
 After tracking mutations, related detail screens update their local response
-state immediately and notify the local library invalidator. The home/profile
-screen subscribes to that invalidator instead of receiving mutation callbacks
-from child routes.
+state immediately and notify the local library invalidator. Library and Profile
+subscribe to that invalidator instead of receiving mutation callbacks from child
+routes.
 
 ## Request Interceptors
 

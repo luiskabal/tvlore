@@ -8,8 +8,8 @@ No active infrastructure tasks.
 
 ## Next
 
-- [ ] Promote the temporary mobile home into routed Library/Profile surfaces.
 - [ ] Add detail-screen skeletons for show, movie, and season routes.
+- [ ] Add a watchlist / want-to-watch state before social features.
 - [ ] Decide whether mobile server-state hooks should stay local or move to a query library after the next product slice.
 
 ## Notes
@@ -75,6 +75,7 @@ No active infrastructure tasks.
 - [x] Split mobile season detail presentation and styles out of `SeasonDetailScreen`.
 - [x] Split mobile catalog detail presentation and styles out of `CatalogDetailScreen`.
 - [x] Split mobile search controls, results, and styles out of `SearchScreen`.
+- [x] Promote the temporary mobile home into routed Library, Search, and Profile surfaces.
 
 ## Deferred
 

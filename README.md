@@ -29,8 +29,9 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Holographic mobile profile summary card with Google avatar and library stats.
 - Continue-watching and recently-watched data from the backend.
 - Library rows navigate back into movie and show season detail screens.
-- Profile/home keeps prior data during refresh and shows skeletons on first load.
-- Mobile home, search, and detail screens follow a route/container, hook, presentation, and styles split.
+- Library/Profile keeps prior data during refresh and shows skeletons on first load.
+- Routed Library, Search, and Profile mobile surfaces with bottom app navigation.
+- Mobile library, profile, search, and detail screens follow a route/container, hook, presentation, and styles split.
 - Postman collection and API smoke checks for local/Vercel validation.
 
 ## Current MVP Flow
@@ -46,6 +47,7 @@ Google login
 -> Mark all season episodes watched
 -> Return to profile
 -> Library summary auto-refreshes
+-> Switch between Library, Search, and Profile
 ```
 
 ## Verification
@@ -59,8 +61,8 @@ Use `corepack pnpm api:check` for local/Vercel HTTP smoke checks.
 
 ## Next Backlog Items
 
-- Promote the temporary home into routed Library/Profile surfaces.
 - Add detail-screen skeletons for show, movie, and season routes.
+- Add watchlist / want-to-watch state before social features.
 
 ## Workspace Layout
 

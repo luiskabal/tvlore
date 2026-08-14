@@ -19,6 +19,7 @@ export const styles = StyleSheet.create({
     flexGrow: 1,
     gap: 20,
     padding: 24,
+    paddingBottom: 32,
     paddingTop: 72,
   },
   disabledButton: {
@@ -185,6 +186,30 @@ export const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "900",
   },
+  headerRow: {
+    alignItems: "flex-start",
+    flexDirection: "row",
+    gap: 14,
+    justifyContent: "space-between",
+  },
+  headerText: {
+    flex: 1,
+    gap: 8,
+  },
+  iconButton: {
+    alignItems: "center",
+    backgroundColor: "#1f7a5c",
+    borderRadius: 8,
+    height: 44,
+    justifyContent: "center",
+    width: 44,
+  },
+  iconButtonText: {
+    color: "#ffffff",
+    fontSize: 26,
+    fontWeight: "900",
+    lineHeight: 28,
+  },
   itemTitle: {
     color: "#171412",
     fontSize: 16,
@@ -304,6 +329,29 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     gap: 8,
     padding: 16,
+  },
+  summaryCard: {
+    backgroundColor: "#fffdfa",
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    flex: 1,
+    gap: 4,
+    padding: 14,
+  },
+  summaryGrid: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  summaryLabel: {
+    color: "#5f564d",
+    fontSize: 12,
+    fontWeight: "800",
+  },
+  summaryValue: {
+    color: "#171412",
+    fontSize: 24,
+    fontWeight: "900",
   },
   subtitle: {
     color: "#4f4740",

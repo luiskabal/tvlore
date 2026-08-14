@@ -1,28 +1,23 @@
 import { Pressable, Text, View } from "react-native";
 
 import type { ContinueWatchingShow, LibraryResponse, RecentlyWatchedItem } from "../api/tvlore-api";
-import { HoloProfileCard } from "./HoloProfileCard";
 import { styles } from "./home-styles";
 
 type LibraryOverviewProps = {
-  avatarUrl: string | null;
   library: LibraryResponse | null;
   onOpenMovie: (movieId: string) => void;
   onOpenShowSeason: (showId: string, seasonNumber: number) => void;
-  userName: string;
 };
 
 export function LibraryOverview({
-  avatarUrl,
   library,
   onOpenMovie,
   onOpenShowSeason,
-  userName,
 }: LibraryOverviewProps) {
   if (!library) {
     return (
       <View style={styles.statusPanel}>
-        <Text style={styles.statusLabel}>{userName}</Text>
+        <Text style={styles.statusLabel}>Library unavailable</Text>
         <Text style={styles.statusDetail}>Sign in is active. Library data is not loaded yet.</Text>
       </View>
     );
@@ -35,7 +30,11 @@ export function LibraryOverview({
 
   return (
     <View style={styles.librarySection}>
-      <HoloProfileCard avatarUrl={avatarUrl} library={library} userName={userName} />
+      <View style={styles.summaryGrid}>
+        <SummaryStat label="Shows" value={library.summary.watchedShowCount} />
+        <SummaryStat label="Movies" value={library.summary.watchedMovieCount} />
+        <SummaryStat label="Episodes" value={library.summary.watchedEpisodeCount} />
+      </View>
 
       {isEmpty ? (
         <View style={styles.emptyPanel}>
@@ -73,19 +72,22 @@ export function LibraryOverview({
 export function LibraryOverviewSkeleton() {
   return (
     <View style={styles.librarySection}>
-      <View style={styles.skeletonCard}>
-        <View style={styles.skeletonCardHeader}>
-          <View style={[styles.skeletonBlock, styles.skeletonShortLine]} />
-          <View style={[styles.skeletonBlock, styles.skeletonBadge]} />
-        </View>
-        <View style={[styles.skeletonBlock, styles.skeletonPortrait]} />
-        <View style={styles.holoStatsRow}>
-          <View style={[styles.skeletonBlock, styles.skeletonStat]} />
-          <View style={[styles.skeletonBlock, styles.skeletonStat]} />
-          <View style={[styles.skeletonBlock, styles.skeletonStat]} />
-        </View>
+      <View style={styles.summaryGrid}>
+        <View style={[styles.skeletonBlock, styles.skeletonStat]} />
+        <View style={[styles.skeletonBlock, styles.skeletonStat]} />
+        <View style={[styles.skeletonBlock, styles.skeletonStat]} />
       </View>
       <View style={[styles.skeletonBlock, styles.skeletonListItem]} />
+      <View style={[styles.skeletonBlock, styles.skeletonListItem]} />
+    </View>
+  );
+}
+
+function SummaryStat({ label, value }: { label: string; value: number }) {
+  return (
+    <View style={styles.summaryCard}>
+      <Text style={styles.summaryValue}>{value}</Text>
+      <Text style={styles.summaryLabel}>{label}</Text>
     </View>
   );
 }

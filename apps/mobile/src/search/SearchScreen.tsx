@@ -1,9 +1,10 @@
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useRef, useState } from "react";
-import { Pressable, SafeAreaView, ScrollView, Text } from "react-native";
+import { SafeAreaView, ScrollView } from "react-native";
 
 import type { CatalogSearchResult, MediaType } from "../api/tvlore-api";
+import { AppTabBar } from "../navigation/AppTabBar";
 import { SearchControls } from "./SearchControls";
 import { SearchResults } from "./SearchResults";
 import { styles } from "./search-styles";
@@ -73,10 +74,6 @@ export default function SearchScreen() {
     <SafeAreaView style={styles.screen}>
       <StatusBar style="dark" />
       <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
-        <Pressable style={styles.backButton} onPress={() => router.back()}>
-          <Text style={styles.backButtonText}>Back</Text>
-        </Pressable>
-
         <SearchControls
           canSearch={canSearch}
           filter={filter}
@@ -93,6 +90,7 @@ export default function SearchScreen() {
           search={search}
         />
       </ScrollView>
+      <AppTabBar active="search" />
     </SafeAreaView>
   );
 }

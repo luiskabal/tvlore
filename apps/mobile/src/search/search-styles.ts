@@ -8,20 +8,12 @@ export const styles = StyleSheet.create({
   activeFilterText: {
     color: "#ffffff",
   },
-  backButton: {
-    alignSelf: "flex-start",
-    paddingVertical: 4,
-  },
-  backButtonText: {
-    color: "#1f7a5c",
-    fontSize: 16,
-    fontWeight: "800",
-  },
   content: {
     flexGrow: 1,
     gap: 20,
     padding: 24,
-    paddingTop: 48,
+    paddingBottom: 32,
+    paddingTop: 64,
   },
   disabledButton: {
     opacity: 0.6,
