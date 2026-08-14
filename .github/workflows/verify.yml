@@ -1,10 +1,36 @@
 name: Verify
 
 on:
+  workflow_dispatch:
   pull_request:
+    paths:
+      - ".github/workflows/verify.yml"
+      - "apps/**"
+      - "packages/**"
+      - "tools/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "tsconfig*.json"
   push:
     branches:
       - main
+    paths:
+      - ".github/workflows/verify.yml"
+      - "apps/**"
+      - "packages/**"
+      - "tools/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "tsconfig*.json"
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   verify:
