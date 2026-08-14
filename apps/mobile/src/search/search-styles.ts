@@ -118,19 +118,8 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "800",
   },
-  resolveButton: {
-    alignItems: "center",
-    alignSelf: "flex-start",
-    backgroundColor: "#171412",
-    borderRadius: 8,
-    minWidth: 108,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-  },
-  resolveButtonText: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "800",
+  pressedResultRow: {
+    opacity: 0.72,
   },
   resultBody: {
     flex: 1,
@@ -190,12 +179,6 @@ export const styles = StyleSheet.create({
   skeletonBody: {
     flex: 1,
     gap: 10,
-  },
-  skeletonButton: {
-    backgroundColor: "#d8d0c5",
-    borderRadius: 8,
-    height: 34,
-    width: 96,
   },
   skeletonLine: {
     backgroundColor: "#e2dbd1",

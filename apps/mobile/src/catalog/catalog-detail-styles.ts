@@ -67,11 +67,6 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
   },
-  openText: {
-    color: "#1f7a5c",
-    fontSize: 14,
-    fontWeight: "800",
-  },
   overview: {
     color: "#302b27",
     fontSize: 16,
@@ -95,6 +90,9 @@ export const styles = StyleSheet.create({
     color: "#5f564d",
     fontSize: 22,
     fontWeight: "800",
+  },
+  pressedSeasonRow: {
+    opacity: 0.72,
   },
   primaryButton: {
     alignItems: "center",
@@ -217,12 +215,6 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     height: 14,
     width: "54%",
-  },
-  skeletonOpenText: {
-    backgroundColor: "#d8d0c5",
-    borderRadius: 8,
-    height: 15,
-    width: 42,
   },
   skeletonOverview: {
     gap: 10,

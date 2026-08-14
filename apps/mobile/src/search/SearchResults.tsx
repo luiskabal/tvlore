@@ -86,7 +86,6 @@ function SearchSkeleton() {
             <View style={styles.skeletonTitle} />
             <View style={styles.skeletonLine} />
             <View style={styles.skeletonLineShort} />
-            <View style={styles.skeletonButton} />
           </View>
         </View>
       ))}
@@ -113,7 +112,16 @@ function SearchResultRow({
     : null;
 
   return (
-    <View style={styles.resultRow}>
+    <Pressable
+      accessibilityRole="button"
+      disabled={isResolving}
+      onPress={() => onResolve(result)}
+      style={({ pressed }) => [
+        styles.resultRow,
+        pressed ? styles.pressedResultRow : null,
+        isResolving ? styles.disabledButton : null,
+      ]}
+    >
       {result.posterPath ? (
         <Image source={{ uri: getTmdbPosterUrl(result.posterPath) }} style={styles.poster} />
       ) : (
@@ -132,16 +140,9 @@ function SearchResultRow({
 
         {result.tvloreId ? <Text style={styles.tvloreText}>Already in TVLore</Text> : null}
         {resolved ? <Text style={styles.tvloreText}>Ready</Text> : null}
+        {isResolving ? <ActivityIndicator color="#1f7a5c" size="small" /> : null}
         {resolveError ? <Text style={styles.errorText}>{resolveError}</Text> : null}
-
-        <Pressable
-          disabled={isResolving}
-          style={[styles.resolveButton, isResolving ? styles.disabledButton : null]}
-          onPress={() => onResolve(result)}
-        >
-          <Text style={styles.resolveButtonText}>{isResolving ? "Opening" : "Open"}</Text>
-        </Pressable>
       </View>
-    </View>
+    </Pressable>
   );
 }

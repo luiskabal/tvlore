@@ -25,6 +25,7 @@ Implemented:
 - Mobile Library/Profile routes read the authenticated user and personal library summary from the API.
 - Mobile search resolves provider results and opens backend-owned show/movie detail screens.
 - Mobile show detail opens backend-owned season episode lists.
+- Mobile search result rows and show season rows navigate by tapping the full row.
 - Mobile show detail displays backend-owned progress state for persisted episodes.
 - Mobile season detail can mark episodes watched or unwatched.
 - Mobile season detail can mark all loaded season episodes watched or unwatched.

@@ -222,7 +222,6 @@ function ShowSeasonsSkeleton() {
             <View style={styles.skeletonLineMedium} />
             <View style={styles.skeletonLineShort} />
           </View>
-          <View style={styles.skeletonOpenText} />
         </View>
       ))}
     </View>
@@ -240,8 +239,8 @@ function SeasonRow({
 }) {
   return (
     <Pressable
-      style={styles.seasonRow}
       onPress={() => onOpenShowSeason(showId, season.seasonNumber)}
+      style={({ pressed }) => [styles.seasonRow, pressed ? styles.pressedSeasonRow : null]}
     >
       <View style={styles.seasonBody}>
         <Text style={styles.seasonTitle}>{season.title}</Text>
@@ -250,7 +249,6 @@ function SeasonRow({
         </Text>
         {season.airDate ? <Text style={styles.mutedText}>{formatDate(season.airDate)}</Text> : null}
       </View>
-      <Text style={styles.openText}>Open</Text>
     </Pressable>
   );
 }
@@ -314,7 +312,7 @@ function getStatusLine(detail: CatalogDetailResponse) {
 
 function getShowProgressLine(show: ShowDetailResponse) {
   if (show.progress.totalEpisodeCount === 0) {
-    return "Open a season to load episodes and start tracking.";
+    return "Choose a season to load episodes and start tracking.";
   }
 
   const countText = `${show.progress.watchedEpisodeCount}/${show.progress.totalEpisodeCount} episodes`;
