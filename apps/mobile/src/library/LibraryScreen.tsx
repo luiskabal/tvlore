@@ -38,6 +38,7 @@ export default function LibraryScreen() {
           <LibraryOverview
             library={homeData.library}
             onOpenMovie={openMovie}
+            onOpenShow={openShow}
             onOpenShowSeason={openShowSeason}
           />
         ) : home.kind === "loading" ? (
@@ -66,6 +67,10 @@ export default function LibraryScreen() {
 
 function openMovie(id: string) {
   router.push({ pathname: "/movies/[id]", params: { id } });
+}
+
+function openShow(id: string) {
+  router.push({ pathname: "/shows/[id]", params: { id } });
 }
 
 function openShowSeason(showId: string, seasonNumber: number) {

@@ -74,6 +74,8 @@ Example hooks:
 - `useMarkEpisodeUnwatched()`
 - `useMarkMovieWatched()`
 - `useMarkMovieUnwatched()`
+- `useAddToWatchlist()`
+- `useRemoveFromWatchlist()`
 - `useLibrary()`
 
 Query hooks are client infrastructure. They must not implement backend business decisions.
@@ -250,14 +252,27 @@ SeasonDetailScreen
 The app still does not calculate watched state. It renders the returned
 `watched`, `watchCount`, and `lastWatchedAt` values.
 
+Watchlist uses the same boundary:
+
+```text
+CatalogDetailScreen(show/movie)
+  -> useCatalogDetail()
+  -> POST or DELETE /shows/:showId/watchlist
+  -> POST or DELETE /movies/:movieId/watchlist
+  -> Update local inWatchlist state from backend response
+```
+
+The app does not infer saved intent from local lists. It renders the
+`inWatchlist` value returned by detail endpoints and watchlist mutations.
+
 Catalog and season detail routes render content-shaped skeletons while their
 initial API requests are pending. This keeps detail screens visually stable
 when Vercel, Supabase, or TMDB respond slowly.
 
-After tracking mutations, related detail screens update their local response
-state immediately and notify the local library invalidator. Library and Profile
-subscribe to that invalidator instead of receiving mutation callbacks from child
-routes.
+After tracking or watchlist mutations, related detail screens update their local
+response state immediately and notify the local library invalidator. Library and
+Profile subscribe to that invalidator instead of receiving mutation callbacks
+from child routes.
 
 ## Request Interceptors
 

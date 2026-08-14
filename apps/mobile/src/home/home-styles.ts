@@ -335,12 +335,14 @@ export const styles = StyleSheet.create({
     borderColor: "#d8d0c5",
     borderRadius: 8,
     borderWidth: 1,
-    flex: 1,
+    flexBasis: "47%",
+    flexGrow: 1,
     gap: 4,
     padding: 14,
   },
   summaryGrid: {
     flexDirection: "row",
+    flexWrap: "wrap",
     gap: 10,
   },
   summaryLabel: {

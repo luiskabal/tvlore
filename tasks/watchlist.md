@@ -1,6 +1,6 @@
 # Watchlist / Want To Watch
 
-Status: Planned - waiting for migration approval
+Status: Implemented - pending authenticated smoke check with a fresh Supabase token
 
 ## Goal
 
@@ -28,7 +28,7 @@ Current persistence only has:
 So this feature requires new database tables before backend or mobile behavior
 can safely ship.
 
-## Proposed Minimal Shape
+## Implemented Shape
 
 Use two explicit tables:
 
@@ -42,7 +42,7 @@ Why not one polymorphic table:
 - The API can still expose one product concept: watchlist.
 - This avoids raw partial indexes/check constraints in the MVP.
 
-## Proposed API
+## API
 
 ```text
 POST /shows/:showId/watchlist
@@ -96,15 +96,16 @@ Show/movie detail responses should include:
 
 ## Acceptance Criteria
 
-- User can add a resolved show to watchlist.
-- User can remove a resolved show from watchlist.
-- User can add a resolved movie to watchlist.
-- User can remove a resolved movie from watchlist.
-- Detail screens show current watchlist state.
-- Library shows saved watchlist titles separately from watched history.
-- Existing watched/unwatched behavior remains unchanged.
-- `corepack pnpm verify` passes.
-- `corepack pnpm api:check` passes after the migration is applied.
+- [x] User can add a resolved show to watchlist.
+- [x] User can remove a resolved show from watchlist.
+- [x] User can add a resolved movie to watchlist.
+- [x] User can remove a resolved movie from watchlist.
+- [x] Detail screens show current watchlist state.
+- [x] Library shows saved watchlist titles separately from watched history.
+- [x] Existing watched/unwatched behavior remains unchanged.
+- [x] `corepack pnpm verify` passes.
+- [x] Prisma migration is applied to Supabase.
+- [ ] `corepack pnpm api:check` authenticated product path passes with a fresh Supabase token after Vercel deploy.
 
 ## Verification
 
@@ -136,5 +137,5 @@ Manual validation:
 
 ## Human Gates
 
-- Approval required before creating/applying the Prisma migration.
-- Approval required before deploying code that depends on the new tables.
+- Migration was approved in chat and applied to Supabase.
+- Deployment should happen through the normal GitHub -> Vercel flow.

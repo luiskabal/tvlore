@@ -54,7 +54,11 @@ async function checkUnauthorizedRoutes() {
   await checkUnauthorized(`/shows/${missingUuid}/seasons`);
   await checkUnauthorized(`/shows/${missingUuid}/seasons/1`);
   await checkUnauthorized(`/shows/${missingUuid}/progress`);
+  await checkUnauthorized(`/shows/${missingUuid}/watchlist`, { method: "POST" });
+  await checkUnauthorized(`/shows/${missingUuid}/watchlist`, { method: "DELETE" });
   await checkUnauthorized(`/movies/${missingUuid}`);
+  await checkUnauthorized(`/movies/${missingUuid}/watchlist`, { method: "POST" });
+  await checkUnauthorized(`/movies/${missingUuid}/watchlist`, { method: "DELETE" });
   await checkUnauthorized("/library");
   await checkUnauthorized(`/episodes/${missingUuid}/watches`, { method: "POST" });
   await checkUnauthorized(`/episodes/${missingUuid}/watches`, { method: "DELETE" });
@@ -103,15 +107,33 @@ async function checkAuthenticatedProductFlow(token) {
     expectedStatus: 400,
     headers: authHeaders,
   });
+  await check("/shows/not-a-uuid/watchlist", {
+    assert: assertValidationError,
+    expectedStatus: 400,
+    headers: authHeaders,
+    method: "POST",
+  });
   await check(`/shows/${missingUuid}/progress`, {
     assert: (body) => assertError(body, "SHOW_NOT_FOUND"),
     expectedStatus: 404,
     headers: authHeaders,
   });
+  await check(`/shows/${missingUuid}/watchlist`, {
+    assert: (body) => assertError(body, "SHOW_NOT_FOUND"),
+    expectedStatus: 404,
+    headers: authHeaders,
+    method: "POST",
+  });
   await check(`/movies/${missingUuid}`, {
     assert: (body) => assertError(body, "MOVIE_NOT_FOUND"),
     expectedStatus: 404,
     headers: authHeaders,
+  });
+  await check(`/movies/${missingUuid}/watchlist`, {
+    assert: (body) => assertError(body, "MOVIE_NOT_FOUND"),
+    expectedStatus: 404,
+    headers: authHeaders,
+    method: "POST",
   });
   await check(`/episodes/${missingUuid}/watches`, {
     assert: (body) => assertError(body, "EPISODE_NOT_FOUND"),
@@ -155,8 +177,26 @@ async function checkAuthenticatedProductFlow(token) {
     expectedStatus: 200,
     headers: authHeaders,
   });
+  await check(`/shows/${resolvedShow.id}/watchlist`, {
+    assert: (body) => assertWatchlistResponse(body, resolvedShow.id, "show", false),
+    expectedStatus: 200,
+    headers: authHeaders,
+    method: "DELETE",
+  });
+  await check(`/shows/${resolvedShow.id}/watchlist`, {
+    assert: (body) => assertWatchlistResponse(body, resolvedShow.id, "show", true),
+    expectedStatus: 200,
+    headers: authHeaders,
+    method: "POST",
+  });
+  await check(`/shows/${resolvedShow.id}/watchlist`, {
+    assert: (body) => assertWatchlistResponse(body, resolvedShow.id, "show", true),
+    expectedStatus: 200,
+    headers: authHeaders,
+    method: "POST",
+  });
   await check(`/shows/${resolvedShow.id}`, {
-    assert: (body) => assertShowDetail(body, resolvedShow.id),
+    assert: (body) => assertShowDetail(body, resolvedShow.id, true),
     expectedStatus: 200,
     headers: authHeaders,
   });
@@ -232,6 +272,34 @@ async function checkAuthenticatedProductFlow(token) {
 
   expectEqual(resolvedMovieAgain.id, resolvedMovie.id, "movie resolve idempotency");
 
+  await check(`/movies/${resolvedMovie.id}/watchlist`, {
+    assert: (body) => assertWatchlistResponse(body, resolvedMovie.id, "movie", false),
+    expectedStatus: 200,
+    headers: authHeaders,
+    method: "DELETE",
+  });
+  await check(`/movies/${resolvedMovie.id}`, {
+    assert: (body) => assertMovieDetail(body, resolvedMovie.id, false, false),
+    expectedStatus: 200,
+    headers: authHeaders,
+  });
+  await check(`/movies/${resolvedMovie.id}/watchlist`, {
+    assert: (body) => assertWatchlistResponse(body, resolvedMovie.id, "movie", true),
+    expectedStatus: 200,
+    headers: authHeaders,
+    method: "POST",
+  });
+  await check(`/movies/${resolvedMovie.id}/watchlist`, {
+    assert: (body) => assertWatchlistResponse(body, resolvedMovie.id, "movie", true),
+    expectedStatus: 200,
+    headers: authHeaders,
+    method: "POST",
+  });
+  await check(`/movies/${resolvedMovie.id}`, {
+    assert: (body) => assertMovieDetail(body, resolvedMovie.id, false, true),
+    expectedStatus: 200,
+    headers: authHeaders,
+  });
   await check(`/movies/${resolvedMovie.id}/watches`, {
     assert: (body) => assertMovieWatchResponse(body, resolvedMovie.id, false),
     expectedStatus: 200,
@@ -239,7 +307,7 @@ async function checkAuthenticatedProductFlow(token) {
     method: "DELETE",
   });
   await check(`/movies/${resolvedMovie.id}`, {
-    assert: (body) => assertMovieDetail(body, resolvedMovie.id, false),
+    assert: (body) => assertMovieDetail(body, resolvedMovie.id, false, true),
     expectedStatus: 200,
     headers: authHeaders,
   });
@@ -258,13 +326,14 @@ async function checkAuthenticatedProductFlow(token) {
     method: "POST",
   });
   await check(`/movies/${resolvedMovie.id}`, {
-    assert: (body) => assertMovieDetail(body, resolvedMovie.id, true),
+    assert: (body) => assertMovieDetail(body, resolvedMovie.id, true, true),
     expectedStatus: 200,
     headers: authHeaders,
   });
   await check("/library", {
     assert: (body) => {
       assertLibrary(body);
+      expect(body.summary.watchlistItemCount >= 2, "library should count watchlist items");
       expect(body.summary.watchedEpisodeCount >= 1, "library should count watched episode");
       expect(body.summary.watchedMovieCount >= 1, "library should count watched movie");
       expect(body.summary.watchedShowCount >= 1, "library should count watched show");
@@ -275,6 +344,14 @@ async function checkAuthenticatedProductFlow(token) {
       expect(
         body.recentlyWatched.some((item) => item.id === resolvedMovie.id),
         "library should include recently watched movie",
+      );
+      expect(
+        body.watchlist.some((item) => item.id === resolvedShow.id && item.mediaType === "show"),
+        "library should include watchlisted show",
+      );
+      expect(
+        body.watchlist.some((item) => item.id === resolvedMovie.id && item.mediaType === "movie"),
+        "library should include watchlisted movie",
       );
     },
     expectedStatus: 200,
@@ -294,9 +371,21 @@ async function checkAuthenticatedProductFlow(token) {
     method: "DELETE",
   });
   await check(`/movies/${resolvedMovie.id}`, {
-    assert: (body) => assertMovieDetail(body, resolvedMovie.id, false),
+    assert: (body) => assertMovieDetail(body, resolvedMovie.id, false, true),
     expectedStatus: 200,
     headers: authHeaders,
+  });
+  await check(`/shows/${resolvedShow.id}/watchlist`, {
+    assert: (body) => assertWatchlistResponse(body, resolvedShow.id, "show", false),
+    expectedStatus: 200,
+    headers: authHeaders,
+    method: "DELETE",
+  });
+  await check(`/movies/${resolvedMovie.id}/watchlist`, {
+    assert: (body) => assertWatchlistResponse(body, resolvedMovie.id, "movie", false),
+    expectedStatus: 200,
+    headers: authHeaders,
+    method: "DELETE",
   });
 }
 
@@ -363,9 +452,10 @@ function assertResolveResponse(body, mediaType) {
   expectEqual(body.mediaType, mediaType, "resolve.mediaType");
 }
 
-function assertShowDetail(body, showId) {
+function assertShowDetail(body, showId, inWatchlist) {
   expectRecord(body, "show detail");
   expectEqual(body.id, showId, "show.id");
+  expectEqual(body.inWatchlist, inWatchlist, "show.inWatchlist");
   expectString(body.title, "show.title");
   expectString(body.overview, "show.overview");
   expectArray(body.seasons, "show.seasons");
@@ -426,9 +516,10 @@ function assertShowProgress(body, showId) {
   }
 }
 
-function assertMovieDetail(body, movieId, watched) {
+function assertMovieDetail(body, movieId, watched, inWatchlist) {
   expectRecord(body, "movie detail");
   expectEqual(body.id, movieId, "movie.id");
+  expectEqual(body.inWatchlist, inWatchlist, "movie.inWatchlist");
   expectString(body.title, "movie.title");
   expectString(body.overview, "movie.overview");
   expectEqual(body.watched, watched, "movie.watched");
@@ -444,20 +535,37 @@ function assertMovieWatchResponse(body, movieId, watched) {
   expect(body.lastWatchedAt === null || isIsoString(body.lastWatchedAt), "movie watch.lastWatchedAt should be null or ISO string");
 }
 
+function assertWatchlistResponse(body, id, mediaType, inWatchlist) {
+  expectRecord(body, "watchlist response");
+  expectEqual(body.id, id, "watchlist.id");
+  expectEqual(body.mediaType, mediaType, "watchlist.mediaType");
+  expectEqual(body.inWatchlist, inWatchlist, "watchlist.inWatchlist");
+}
+
 function assertLibrary(body) {
   expectRecord(body, "library");
   expectRecord(body.summary, "library.summary");
+  expectInteger(body.summary.watchlistItemCount, "library.summary.watchlistItemCount");
   expectInteger(body.summary.watchedEpisodeCount, "library.summary.watchedEpisodeCount");
   expectInteger(body.summary.watchedMovieCount, "library.summary.watchedMovieCount");
   expectInteger(body.summary.watchedShowCount, "library.summary.watchedShowCount");
   expectArray(body.continueWatching, "library.continueWatching");
   expectArray(body.recentlyWatched, "library.recentlyWatched");
+  expectArray(body.watchlist, "library.watchlist");
 
   for (const item of body.recentlyWatched) {
     expectRecord(item, "library.recentlyWatched item");
     expect(["movie", "episode"].includes(item.mediaType), "library recentlyWatched mediaType");
     expectUuid(item.id, "library recentlyWatched.id");
     expectIsoString(item.watchedAt, "library recentlyWatched.watchedAt");
+  }
+
+  for (const item of body.watchlist) {
+    expectRecord(item, "library.watchlist item");
+    expect(["movie", "show"].includes(item.mediaType), "library watchlist mediaType");
+    expectUuid(item.id, "library watchlist.id");
+    expectString(item.title, "library watchlist.title");
+    expectIsoString(item.createdAt, "library watchlist.createdAt");
   }
 }
 

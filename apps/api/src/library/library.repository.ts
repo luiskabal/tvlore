@@ -7,6 +7,7 @@ import type {
   LibraryNextEpisodeDto,
   LibraryRecentlyWatchedItemDto,
   LibraryResponseDto,
+  LibraryWatchlistItemDto,
   ShowProgressResponseDto,
 } from "./library.types";
 
@@ -16,7 +17,7 @@ export class LibraryRepository {
 
   async getLibrary(userId: string): Promise<LibraryResponseDto> {
     const client = this.prismaService.getClient();
-    const [episodeWatches, movieWatches] = await Promise.all([
+    const [episodeWatches, movieWatches, showWatchlistItems, movieWatchlistItems] = await Promise.all([
       client.episodeWatch.findMany({
         include: {
           episode: {
@@ -37,6 +38,20 @@ export class LibraryRepository {
           movie: { select: { id: true, posterPath: true, title: true } },
         },
         orderBy: { watchedAt: "desc" },
+        where: { userId },
+      }),
+      client.showWatchlistItem.findMany({
+        include: {
+          show: { select: { id: true, posterPath: true, title: true } },
+        },
+        orderBy: { createdAt: "desc" },
+        where: { userId },
+      }),
+      client.movieWatchlistItem.findMany({
+        include: {
+          movie: { select: { id: true, posterPath: true, title: true } },
+        },
+        orderBy: { createdAt: "desc" },
         where: { userId },
       }),
     ]);
@@ -80,10 +95,12 @@ export class LibraryRepository {
         .sort((left, right) => compareIsoDates(latestWatchedAtByShowId.get(right.id), latestWatchedAtByShowId.get(left.id))),
       recentlyWatched: toRecentlyWatched(episodeWatches, movieWatches),
       summary: {
+        watchlistItemCount: showWatchlistItems.length + movieWatchlistItems.length,
         watchedEpisodeCount: episodeWatches.length,
         watchedMovieCount: movieWatches.length,
         watchedShowCount: watchedShowIds.length,
       },
+      watchlist: toWatchlist(showWatchlistItems, movieWatchlistItems),
     };
   }
 
@@ -210,6 +227,34 @@ function toRecentlyWatched(
       watchedAt: watch.watchedAt.toISOString(),
     })),
   ].sort((left, right) => compareIsoDates(right.watchedAt, left.watchedAt)).slice(0, 10);
+}
+
+function toWatchlist(
+  showItems: Array<{
+    createdAt: Date;
+    show: { id: string; posterPath: string | null; title: string };
+  }>,
+  movieItems: Array<{
+    createdAt: Date;
+    movie: { id: string; posterPath: string | null; title: string };
+  }>,
+): LibraryWatchlistItemDto[] {
+  return [
+    ...showItems.map((item) => ({
+      createdAt: item.createdAt.toISOString(),
+      id: item.show.id,
+      mediaType: "show" as const,
+      posterPath: item.show.posterPath,
+      title: item.show.title,
+    })),
+    ...movieItems.map((item) => ({
+      createdAt: item.createdAt.toISOString(),
+      id: item.movie.id,
+      mediaType: "movie" as const,
+      posterPath: item.movie.posterPath,
+      title: item.movie.title,
+    })),
+  ].sort((left, right) => compareIsoDates(right.createdAt, left.createdAt));
 }
 
 function countWatched(episodes: WatchedEpisode[]) {

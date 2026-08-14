@@ -15,8 +15,10 @@ model User {
   updatedAt       DateTime         @updatedAt @map("updated_at")
   episodeWatches  EpisodeWatch[]
   identities      UserIdentity[]
+  movieWatchlistItems MovieWatchlistItem[]
   movieWatches    MovieWatch[]
   refreshSessions RefreshSession[]
+  showWatchlistItems  ShowWatchlistItem[]
 
   @@map("users")
 }
@@ -65,6 +67,7 @@ model Show {
   updatedAt     DateTime  @updatedAt @map("updated_at")
   episodes      Episode[]
   seasons       Season[]
+  watchlistItems ShowWatchlistItem[]
 
   @@map("shows")
 }
@@ -80,6 +83,7 @@ model Movie {
   runtimeMinutes Int?     @map("runtime_minutes")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
+  watchlistItems MovieWatchlistItem[]
   watches        MovieWatch[]
 
   @@map("movies")
@@ -168,4 +172,32 @@ model MovieWatch {
   @@index([movieId])
   @@index([userId])
   @@map("movie_watches")
+}
+
+model ShowWatchlistItem {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  showId    String   @map("show_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+  show      Show     @relation(fields: [showId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, showId])
+  @@index([showId])
+  @@index([userId])
+  @@map("show_watchlist_items")
+}
+
+model MovieWatchlistItem {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  movieId   String   @map("movie_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+  movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, movieId])
+  @@index([movieId])
+  @@index([userId])
+  @@map("movie_watchlist_items")
 }

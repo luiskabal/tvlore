@@ -12,10 +12,12 @@ export type LibraryResponse = {
   continueWatching: ContinueWatchingShow[];
   recentlyWatched: RecentlyWatchedItem[];
   summary: {
+    watchlistItemCount: number;
     watchedEpisodeCount: number;
     watchedMovieCount: number;
     watchedShowCount: number;
   };
+  watchlist: LibraryWatchlistItem[];
 };
 
 export type ContinueWatchingShow = {
@@ -49,6 +51,22 @@ export type RecentlyWatchedItem =
       showTitle: string;
       title: string;
       watchedAt: string;
+    };
+
+export type LibraryWatchlistItem =
+  | {
+      createdAt: string;
+      id: string;
+      mediaType: "show";
+      posterPath: string | null;
+      title: string;
+    }
+  | {
+      createdAt: string;
+      id: string;
+      mediaType: "movie";
+      posterPath: string | null;
+      title: string;
     };
 
 export type CatalogExternalRef = {
@@ -110,6 +128,7 @@ export type ShowDetailResponse = {
   backdropPath: string | null;
   firstAirDate: string | null;
   id: string;
+  inWatchlist: boolean;
   mediaType: "show";
   originalTitle: string | null;
   overview: string;
@@ -121,6 +140,7 @@ export type ShowDetailResponse = {
 export type MovieDetailResponse = {
   backdropPath: string | null;
   id: string;
+  inWatchlist: boolean;
   lastWatchedAt: string | null;
   mediaType: "movie";
   originalTitle: string | null;
@@ -155,6 +175,12 @@ export type MovieWatchResponse = {
   movieId: string;
   watchCount: number;
   watched: boolean;
+};
+
+export type WatchlistMutationResponse = {
+  id: string;
+  inWatchlist: boolean;
+  mediaType: MediaType;
 };
 
 export type HomeData = {
@@ -335,6 +361,38 @@ export async function unmarkMovieWatched(
   );
 }
 
+export async function addToWatchlist(
+  accessToken: string | null,
+  mediaType: MediaType,
+  id: string,
+): Promise<WatchlistMutationResponse> {
+  return fetchJson(
+    `/${getMediaPath(mediaType, id)}/watchlist`,
+    isWatchlistMutationResponse,
+    "Unexpected watchlist response",
+    {
+      headers: getAuthHeaders(accessToken),
+      method: "POST",
+    },
+  );
+}
+
+export async function removeFromWatchlist(
+  accessToken: string | null,
+  mediaType: MediaType,
+  id: string,
+): Promise<WatchlistMutationResponse> {
+  return fetchJson(
+    `/${getMediaPath(mediaType, id)}/watchlist`,
+    isWatchlistMutationResponse,
+    "Unexpected watchlist response",
+    {
+      headers: getAuthHeaders(accessToken),
+      method: "DELETE",
+    },
+  );
+}
+
 async function fetchJson<T>(
   path: string,
   guard: (value: unknown) => value is T,
@@ -359,6 +417,10 @@ function getAuthHeaders(accessToken: string | null) {
   return { Authorization: `Bearer ${accessToken}` };
 }
 
+function getMediaPath(mediaType: MediaType, id: string) {
+  return mediaType === "show" ? `shows/${id}` : `movies/${id}`;
+}
+
 function isUserResponse(value: unknown): value is UserResponse {
   if (!value || typeof value !== "object") {
     return false;
@@ -380,13 +442,16 @@ function isLibraryResponse(value: unknown): value is LibraryResponse {
 
   return (
     isRecord(value.summary) &&
+    typeof value.summary.watchlistItemCount === "number" &&
     typeof value.summary.watchedEpisodeCount === "number" &&
     typeof value.summary.watchedMovieCount === "number" &&
     typeof value.summary.watchedShowCount === "number" &&
     Array.isArray(value.continueWatching) &&
     value.continueWatching.every(isContinueWatchingShow) &&
     Array.isArray(value.recentlyWatched) &&
-    value.recentlyWatched.every(isRecentlyWatchedItem)
+    value.recentlyWatched.every(isRecentlyWatchedItem) &&
+    Array.isArray(value.watchlist) &&
+    value.watchlist.every(isLibraryWatchlistItem)
   );
 }
 
@@ -431,6 +496,7 @@ function isShowDetailResponse(value: unknown): value is Omit<ShowDetailResponse,
 
   return (
     typeof value.id === "string" &&
+    typeof value.inWatchlist === "boolean" &&
     typeof value.title === "string" &&
     isNullableString(value.originalTitle) &&
     typeof value.overview === "string" &&
@@ -449,6 +515,7 @@ function isShowSeasonSummary(value: unknown): value is ShowSeasonSummary {
 
   return (
     typeof value.id === "string" &&
+    typeof value.inWatchlist === "boolean" &&
     typeof value.title === "string" &&
     typeof value.overview === "string" &&
     isNullableString(value.posterPath) &&
@@ -552,6 +619,18 @@ function isMovieWatchResponse(value: unknown): value is MovieWatchResponse {
   );
 }
 
+function isWatchlistMutationResponse(value: unknown): value is WatchlistMutationResponse {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.id === "string" &&
+    typeof value.inWatchlist === "boolean" &&
+    isMediaType(value.mediaType)
+  );
+}
+
 function isContinueWatchingShow(value: unknown): value is ContinueWatchingShow {
   if (!isRecord(value) || !isRecord(value.nextEpisode)) {
     return false;
@@ -593,6 +672,20 @@ function isRecentlyWatchedItem(value: unknown): value is RecentlyWatchedItem {
     typeof value.seasonNumber === "number" &&
     typeof value.episodeNumber === "number" &&
     typeof value.watchedAt === "string"
+  );
+}
+
+function isLibraryWatchlistItem(value: unknown): value is LibraryWatchlistItem {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    (value.mediaType === "show" || value.mediaType === "movie") &&
+    typeof value.id === "string" &&
+    typeof value.title === "string" &&
+    isNullableString(value.posterPath) &&
+    typeof value.createdAt === "string"
   );
 }
 

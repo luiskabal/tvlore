@@ -10,7 +10,7 @@ import { useCatalogDetail } from "./use-catalog-detail";
 export default function CatalogDetailScreen({ mediaType }: { mediaType: MediaType }) {
   const params = useLocalSearchParams<{ id?: string | string[] }>();
   const id = typeof params.id === "string" ? params.id : null;
-  const { refresh, setMovieWatched, state, watchAction } = useCatalogDetail(mediaType, id);
+  const { refresh, setInWatchlist, setMovieWatched, state, watchAction, watchlistAction } = useCatalogDetail(mediaType, id);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -38,8 +38,10 @@ export default function CatalogDetailScreen({ mediaType }: { mediaType: MediaTyp
           <CatalogDetailContent
             detail={state.detail}
             onOpenShowSeason={openShowSeason}
+            onSetInWatchlist={setInWatchlist}
             onSetMovieWatched={setMovieWatched}
             watchAction={watchAction}
+            watchlistAction={watchlistAction}
           />
         ) : null}
       </ScrollView>

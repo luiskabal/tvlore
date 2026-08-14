@@ -90,6 +90,7 @@ export type ShowDetailResponseDto = {
   backdropPath: string | null;
   firstAirDate: string | null;
   id: string;
+  inWatchlist: boolean;
   originalTitle: string | null;
   overview: string;
   posterPath: string | null;
@@ -101,6 +102,7 @@ export type ShowDetailResponseDto = {
 export type MovieDetailResponseDto = {
   backdropPath: string | null;
   id: string;
+  inWatchlist: boolean;
   lastWatchedAt: string | null;
   originalTitle: string | null;
   overview: string;

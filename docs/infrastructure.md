@@ -45,6 +45,10 @@ POST /episodes/:episodeId/watches
 DELETE /episodes/:episodeId/watches
 POST /movies/:movieId/watches
 DELETE /movies/:movieId/watches
+POST /shows/:showId/watchlist
+DELETE /shows/:showId/watchlist
+POST /movies/:movieId/watchlist
+DELETE /movies/:movieId/watchlist
 GET /shows/:showId/progress
 GET /library
 ```
@@ -55,8 +59,8 @@ GET /library
 `POST /catalog/resolve` validates a Supabase Auth bearer token, fetches TMDB details, and upserts an internal show or movie ID.
 Show and movie detail endpoints read internal TVLore IDs. Season detail fetches
 and persists TMDB episodes for the requested season. Watch endpoints store
-per-user watched state, and library/progress endpoints read the authenticated
-user's viewing state.
+per-user watched state, watchlist endpoints store saved intent, and
+library/progress endpoints read the authenticated user's viewing state.
 
 ## Database
 
@@ -66,8 +70,8 @@ user's viewing state.
 - ORM: Prisma.
 - Prisma schema: `apps/api/prisma/schema.prisma`
 - Initial migration: `apps/api/prisma/migrations/20260810162500_init_user/migration.sql`
-- Applied migrations: `20260810162500_init_user`, `20260810211300_add_auth_tables`, `20260811144000_add_catalog_tables`, `20260811151500_add_seasons_and_episodes`, `20260811165000_add_watch_tables`
-- Current database tables: `_prisma_migrations`, `users`, `user_identities`, `refresh_sessions`, `shows`, `movies`, `seasons`, `episodes`, `external_identifiers`, `episode_watches`, `movie_watches`
+- Applied migrations: `20260810162500_init_user`, `20260810211300_add_auth_tables`, `20260811144000_add_catalog_tables`, `20260811151500_add_seasons_and_episodes`, `20260811165000_add_watch_tables`, `20260813220500_add_watchlist_tables`
+- Current database tables: `_prisma_migrations`, `users`, `user_identities`, `refresh_sessions`, `shows`, `movies`, `seasons`, `episodes`, `external_identifiers`, `episode_watches`, `movie_watches`, `show_watchlist_items`, `movie_watchlist_items`
 
 Vercel environment variables:
 
@@ -236,4 +240,5 @@ the selected Postman environment.
 - Show/movie detail endpoints read catalog records by internal TVLore IDs.
 - Season detail persists episode records for the requested season.
 - Watch/unwatch endpoints store authenticated movie and episode state.
+- Watchlist endpoints store authenticated show/movie saved intent.
 - `GET /library` feeds the mobile home library summary.

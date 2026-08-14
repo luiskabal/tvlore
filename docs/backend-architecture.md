@@ -72,6 +72,13 @@ src/
 |   |-- tracking.types.ts
 |   `-- __tests__/
 |
+|-- watchlist/
+|   |-- watchlist.controller.ts
+|   |-- watchlist.repository.ts
+|   |-- watchlist.service.ts
+|   |-- watchlist.types.ts
+|   `-- __tests__/
+|
 |-- library/
 |   |-- library.controller.ts
 |   |-- library.repository.ts
@@ -108,6 +115,12 @@ For example, `GET /users/me` is split as:
 - `catalog-search.ts`: pure query/result normalization with unit tests.
 - `catalog-resolve.ts`: pure resolve input/detail normalization with unit tests.
 - `catalog-detail.ts`: pure route/detail normalization with unit tests.
+
+Watchlist follows the same shape:
+
+- `ShowWatchlistController` and `MovieWatchlistController`: HTTP routes for saved intent.
+- `WatchlistService`: resolves the authenticated TVLore user and validates route IDs.
+- `WatchlistRepository`: owns idempotent Prisma writes for show/movie watchlist rows.
 
 ## Layer Separation
 

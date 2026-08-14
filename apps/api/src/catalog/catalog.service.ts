@@ -57,10 +57,10 @@ export class CatalogService {
     authorizationHeader: string | undefined,
     showId: string | undefined,
   ): Promise<ShowDetailResponseDto> {
-    await this.usersService.getMe(authorizationHeader);
+    const user = await this.usersService.getMe(authorizationHeader);
 
     const parsedShowId = parseTvloreId(showId, "showId");
-    const show = await this.catalogRepository.findShowDetail(parsedShowId);
+    const show = await this.catalogRepository.findShowDetail(parsedShowId, user.id);
 
     if (!show) {
       throwNotFound("SHOW_NOT_FOUND", "Show was not found");

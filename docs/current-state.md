@@ -18,14 +18,18 @@ Implemented:
 - Season list and season detail endpoints for shows.
 - Episode catalog persistence when a season is opened.
 - Authenticated watch/unwatch endpoints for episodes and movies.
+- Authenticated watchlist endpoints for shows and movies.
 - Authenticated personal library and show progress read endpoints.
 - Mobile Library/Profile routes read the authenticated user and personal library summary from the API.
 - Mobile search resolves provider results and opens backend-owned show/movie detail screens.
 - Mobile show detail opens backend-owned season episode lists.
 - Mobile season detail can mark episodes watched or unwatched.
 - Mobile season detail can mark all loaded season episodes watched or unwatched.
+- Mobile show/movie detail can add or remove a title from the watchlist.
 - Mobile tracking mutations invalidate the local library data.
+- Mobile watchlist mutations invalidate the local library data.
 - Mobile Library/Profile refresh authenticated library data after tracking changes.
+- Mobile Library shows watchlist titles separately from watched history.
 - Mobile Profile renders a touch-driven holo profile card with Google avatar and library stats.
 - Mobile library rows navigate back to movie detail or show season detail screens.
 - Mobile Library/Profile keep previous library data during refreshes and render skeletons on initial load.
@@ -37,7 +41,6 @@ Implemented:
 
 Not implemented yet:
 
-- Watchlist / want-to-watch state.
 - Social matching.
 
 ## 2. Current System Diagram
@@ -387,6 +390,10 @@ POST /episodes/:episodeId/watches
 DELETE /episodes/:episodeId/watches
 POST /movies/:movieId/watches
 DELETE /movies/:movieId/watches
+POST /shows/:showId/watchlist
+DELETE /shows/:showId/watchlist
+POST /movies/:movieId/watchlist
+DELETE /movies/:movieId/watchlist
 GET /shows/:showId/progress
 GET /library
 ```
@@ -396,8 +403,10 @@ Current watched-state behavior:
 - Movies return `watched`, `watchCount`, and `lastWatchedAt` for the authenticated user.
 - Episodes return `watched`, `watchCount`, and `lastWatchedAt` for the authenticated user.
 - Mark watched/unwatched is idempotent in the MVP: one active row per user/movie or user/episode.
+- Add/remove watchlist is idempotent in the MVP: one active row per user/show or user/movie.
 - Show progress returned by episode watch mutations and `GET /shows/:showId/progress` is based on episodes currently persisted in TVLore. Opening a season hydrates its episode rows.
-- `GET /library` returns summary counts, continue-watching shows, and recent movie/episode activity for the authenticated user.
+- Show and movie detail responses return `inWatchlist` for the authenticated user.
+- `GET /library` returns summary counts, continue-watching shows, recent movie/episode activity, and watchlist titles for the authenticated user.
 
 Why season detail fetches TMDB:
 
@@ -413,11 +422,15 @@ erDiagram
   USER ||--o{ REFRESH_SESSION : has
   USER ||--o{ EPISODE_WATCH : marks
   USER ||--o{ MOVIE_WATCH : marks
+  USER ||--o{ SHOW_WATCHLIST_ITEM : saves
+  USER ||--o{ MOVIE_WATCHLIST_ITEM : saves
   SHOW ||--o{ SEASON : has
   SHOW ||--o{ EPISODE : has
+  SHOW ||--o{ SHOW_WATCHLIST_ITEM : saved
   SEASON ||--o{ EPISODE : contains
   EPISODE ||--o{ EPISODE_WATCH : watched
   MOVIE ||--o{ MOVIE_WATCH : watched
+  MOVIE ||--o{ MOVIE_WATCHLIST_ITEM : saved
   SHOW ||--o{ EXTERNAL_IDENTIFIER : maps
   MOVIE ||--o{ EXTERNAL_IDENTIFIER : maps
 
@@ -526,6 +539,20 @@ erDiagram
     datetime watchedAt
     datetime createdAt
   }
+
+  SHOW_WATCHLIST_ITEM {
+    uuid id PK
+    uuid userId FK
+    uuid showId FK
+    datetime createdAt
+  }
+
+  MOVIE_WATCHLIST_ITEM {
+    uuid id PK
+    uuid userId FK
+    uuid movieId FK
+    datetime createdAt
+  }
 ```
 
 Current tables:
@@ -540,6 +567,8 @@ Current tables:
 - `external_identifiers`: maps TVLore IDs to provider refs like `tmdb:70523`.
 - `episode_watches`: per-user watched marker for an episode.
 - `movie_watches`: per-user watched marker for a movie.
+- `show_watchlist_items`: per-user saved-intent marker for a show.
+- `movie_watchlist_items`: per-user saved-intent marker for a movie.
 
 Important constraint:
 
@@ -547,6 +576,8 @@ Important constraint:
 external_identifiers(entity_type, provider, provider_id) is unique
 episode_watches(user_id, episode_id) is unique
 movie_watches(user_id, movie_id) is unique
+show_watchlist_items(user_id, show_id) is unique
+movie_watchlist_items(user_id, movie_id) is unique
 ```
 
 Why:
@@ -555,6 +586,8 @@ Why:
 - Repeated resolve calls stay idempotent.
 - Watch tracking references stable TVLore UUIDs.
 - Repeated mark-watched calls stay idempotent.
+- Watchlist tracking references stable TVLore UUIDs.
+- Repeated add-to-watchlist calls stay idempotent.
 - Watched state belongs to a user, not to the catalog row.
 
 Implementation note:
@@ -581,6 +614,8 @@ flowchart TB
   ResolveMovie[Catalog / POST /catalog/resolve movie]
   Movie[Catalog / GET /movies/:movieId]
   MovieWatch[Tracking / POST /movies/:movieId/watches]
+  ShowWatchlist[Watchlist / POST /shows/:showId/watchlist]
+  MovieWatchlist[Watchlist / POST /movies/:movieId/watchlist]
   Library[Library / GET /library]
   MovieUnwatch[Tracking / DELETE /movies/:movieId/watches]
 
@@ -591,14 +626,16 @@ flowchart TB
   Me --> Search
   Search --> ResolveShow
   ResolveShow --> Show
-  Show --> Seasons
+  Show --> ShowWatchlist
+  ShowWatchlist --> Seasons
   Seasons --> Season
   Season --> EpisodeWatch
   EpisodeWatch --> Progress
   Progress --> EpisodeUnwatch
   EpisodeUnwatch --> ResolveMovie
   ResolveMovie --> Movie
-  Movie --> MovieWatch
+  Movie --> MovieWatchlist
+  MovieWatchlist --> MovieWatch
   MovieWatch --> Library
   Library --> MovieUnwatch
 ```
@@ -617,6 +654,10 @@ Expected behavior:
 - `GET /shows/:showId/progress` returns show/season progress for the authenticated user.
 - `DELETE /episodes/:episodeId/watches` marks that episode unwatched for the authenticated user.
 - `POST /movies/:movieId/watches` marks a movie watched for the authenticated user.
+- `POST /shows/:showId/watchlist` saves a show for later for the authenticated user.
+- `DELETE /shows/:showId/watchlist` removes that saved show for the authenticated user.
+- `POST /movies/:movieId/watchlist` saves a movie for later for the authenticated user.
+- `DELETE /movies/:movieId/watchlist` removes that saved movie for the authenticated user.
 - `GET /library` returns personal summary, continue-watching, and recently watched activity.
 - `DELETE /movies/:movieId/watches` marks that movie unwatched for the authenticated user.
 - `GET /movies/:movieId` returns movie detail with authenticated user's watched state.
@@ -629,7 +670,7 @@ The current mobile app has these product-facing slices:
 Library
 -> Supabase session
 -> GET /users/me and GET /library in parallel
--> Library summary, continue-watching, recently-watched
+-> Library summary, watchlist, continue-watching, recently-watched
 
 Profile
 -> Supabase session
@@ -641,6 +682,7 @@ Search
 -> POST /catalog/resolve
 -> Show or movie detail route
 -> GET /shows/:id or GET /movies/:id
+-> Show/movie watchlist add/remove
 -> Show season route
 -> GET /shows/:id/seasons/:seasonNumber
 -> Episode watch/unwatch
@@ -651,10 +693,11 @@ Current behavior:
 - Signed-out users can start Google login.
 - Signed-in users can refresh authenticated backend state.
 - Library/Profile refresh avoids the public health check and loads only authenticated product data.
-- Library shows watched counts for shows, movies, and episodes.
-- Profile shows library counts for shows, movies, and episodes in a holo profile card.
+- Library shows watched counts for shows, movies, episodes, and watchlist items.
+- Profile shows library counts for shows, movies, episodes, and watchlist items in a holo profile card.
 - The profile card uses Google avatar metadata when available and initials as a fallback.
 - Library shows continue-watching and recently watched rows when the backend has watched data.
+- Library shows saved watchlist rows when the backend has watchlist data.
 - Continue-watching rows open the next season, recently watched movies open movie detail, and recently watched episodes open the matching season.
 - Bottom app navigation connects Library, Search, and Profile.
 - Empty library state is expected after cleanup-oriented smoke checks.
@@ -669,11 +712,13 @@ Current behavior:
 - Detail screens render content-shaped skeletons while show, movie, or season data loads.
 - Movie detail can mark a movie watched or unwatched.
 - Movie watch actions update local detail state from the backend mutation response.
+- Show and movie detail can add or remove the title from the watchlist.
+- Watchlist actions update local detail state from the backend mutation response.
 - Show detail lists seasons and opens a season route.
 - Season detail loads backend-owned episode IDs and watched state.
 - Season detail can mark episodes watched or unwatched.
 - Season detail can mark all currently loaded episodes watched or unwatched.
-- Tracking mutations invalidate `GET /library`, so recent watch changes appear without pressing Refresh when the user returns to Library or Profile.
+- Tracking and watchlist mutations invalidate `GET /library`, so recent watch changes and saved intent appear without pressing Refresh when the user returns to Library or Profile.
 - Episode watch actions update the touched episode and display returned show progress.
 
 Why this shape matters:
@@ -704,6 +749,7 @@ Backend architecture:
 - TMDB HTTP and provider errors are isolated in `TmdbClient`.
 - Catalog persistence is isolated in `CatalogRepository`.
 - Tracking persistence is isolated in `TrackingRepository`.
+- Watchlist persistence is isolated in `WatchlistRepository`.
 - Library/progress reads are isolated in `LibraryRepository`.
 - Search/resolve/detail parsing and mapping are pure functions with unit tests.
 - `api:check` validates public health, protected-route errors, and authenticated product contracts when a Supabase token is supplied.
@@ -714,11 +760,13 @@ Product foundation:
 - TVLore owns internal catalog IDs.
 - TMDB IDs are external references only.
 - Watch tracking is stored against internal TVLore IDs and authenticated user IDs.
+- Watchlist intent is stored against internal TVLore IDs and authenticated user IDs.
 - Mobile can render backend-owned library data through the same Supabase token used by Postman.
 - Mobile can search TMDB-backed catalog data without receiving TMDB credentials.
 - Mobile can prefetch search results without prefetching database writes.
 - Mobile can resolve a provider result and open internal show/movie details by TVLore ID.
 - Mobile can mark movies watched/unwatched through backend tracking endpoints.
+- Mobile can add/remove shows and movies from the watchlist through backend watchlist endpoints.
 - Mobile can open a show season, hydrate episode IDs, and mark episodes watched/unwatched through backend tracking endpoints.
 - Mobile can bulk-mark the loaded episodes in a season by orchestrating existing idempotent episode tracking endpoints.
 - Mobile has primary Library, Search, and Profile routes over the same authenticated API session.
@@ -740,6 +788,7 @@ Search screen
 -> POST /catalog/resolve
 -> navigate to show/movie detail using TVLore ID
 -> detail screen loads backend-owned details
+-> detail screen can POST/DELETE watchlist state
 -> movie detail can POST/DELETE /movies/:movieId/watches
 -> show detail can navigate to a season
 -> season detail can POST/DELETE /episodes/:episodeId/watches
@@ -748,14 +797,14 @@ Search screen
 The remaining near-term frontend product flow is:
 
 ```text
-Detail-screen skeletons
--> watchlist / want-to-watch state
+Watchlist UX validation
 -> richer library organization
+-> tighter loading states around slow API responses
 ```
 
 ## 14. Recommended Next Step
 
-Add watchlist / want-to-watch state before social features:
+Validate watchlist UX, then refine Library organization:
 
 ```text
 Search result or detail title
@@ -766,6 +815,6 @@ Search result or detail title
 Why this is next:
 
 - Watched history now works for movies and episodes.
-- A tracker app needs a place for intent, not only completed watching.
-- Watchlist is still personal/private MVP scope, so it adds product value before social complexity.
-- It will shape the library UX before we invest in public profiles or matching.
+- Watchlist now works as personal/private intent.
+- The Library screen has both completed watching and planned watching.
+- The next product question is how to make those states easier to scan before adding social complexity.

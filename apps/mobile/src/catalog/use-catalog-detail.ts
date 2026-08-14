@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 
 import {
+  addToWatchlist,
   getCatalogDetail,
   markMovieWatched,
+  removeFromWatchlist,
   unmarkMovieWatched,
   type CatalogDetailResponse,
   type MediaType,
@@ -20,9 +22,15 @@ export type WatchActionState =
   | { kind: "loading" }
   | { kind: "error"; message: string };
 
+export type WatchlistActionState =
+  | { kind: "idle" }
+  | { kind: "loading" }
+  | { kind: "error"; message: string };
+
 export function useCatalogDetail(mediaType: MediaType, id: string | null) {
   const [state, setState] = useState<CatalogDetailState>({ kind: "loading" });
   const [watchAction, setWatchAction] = useState<WatchActionState>({ kind: "idle" });
+  const [watchlistAction, setWatchlistAction] = useState<WatchlistActionState>({ kind: "idle" });
 
   const refresh = useCallback(async () => {
     if (!id) {
@@ -37,6 +45,7 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
       const detail = await getCatalogDetail(token, mediaType, id);
       setState({ detail, kind: "ready" });
       setWatchAction({ kind: "idle" });
+      setWatchlistAction({ kind: "idle" });
     } catch (error) {
       setState({
         kind: "error",
@@ -79,9 +88,45 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
     }
   }, []);
 
+  const setInWatchlist = useCallback(async (targetMediaType: MediaType, targetId: string, inWatchlist: boolean) => {
+    setWatchlistAction({ kind: "loading" });
+
+    try {
+      const token = await getSupabaseAccessToken();
+      const response = inWatchlist
+        ? await addToWatchlist(token, targetMediaType, targetId)
+        : await removeFromWatchlist(token, targetMediaType, targetId);
+
+      setState((current) => {
+        if (
+          current.kind !== "ready" ||
+          current.detail.id !== response.id ||
+          current.detail.mediaType !== response.mediaType
+        ) {
+          return current;
+        }
+
+        return {
+          detail: {
+            ...current.detail,
+            inWatchlist: response.inWatchlist,
+          },
+          kind: "ready",
+        };
+      });
+      notifyLibraryChanged();
+      setWatchlistAction({ kind: "idle" });
+    } catch (error) {
+      setWatchlistAction({
+        kind: "error",
+        message: error instanceof Error ? error.message : "Watchlist update failed",
+      });
+    }
+  }, []);
+
   useEffect(() => {
     void refresh();
   }, [refresh]);
 
-  return { refresh, setMovieWatched, state, watchAction };
+  return { refresh, setInWatchlist, setMovieWatched, state, watchAction, watchlistAction };
 }

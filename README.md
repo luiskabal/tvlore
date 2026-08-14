@@ -25,7 +25,8 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Movie watched/unwatched tracking.
 - Episode watched/unwatched tracking.
 - Season-level mark all watched/unwatched.
-- Library summary with watched show, movie, and episode counts.
+- Personal show/movie watchlist.
+- Library summary with watched show, movie, episode, and watchlist counts.
 - Holographic mobile profile summary card with Google avatar and library stats.
 - Continue-watching and recently-watched data from the backend.
 - Library rows navigate back into movie and show season detail screens.
@@ -42,6 +43,7 @@ Google login
 -> Search catalog
 -> Open show or movie
 -> Resolve catalog item
+-> Save show or movie to watchlist
 -> Mark movie watched
 -> Open show season
 -> Mark episode watched
@@ -62,7 +64,8 @@ Use `corepack pnpm api:check` for local/Vercel HTTP smoke checks.
 
 ## Next Backlog Items
 
-- Add watchlist / want-to-watch state before social features.
+- Validate the watchlist UX on iPhone and Postman after Vercel deploy.
+- Refine Library organization now that watched history and saved intent both exist.
 
 ## Workspace Layout
 

@@ -1,17 +1,19 @@
 import { Pressable, Text, View } from "react-native";
 
-import type { ContinueWatchingShow, LibraryResponse, RecentlyWatchedItem } from "../api/tvlore-api";
+import type { ContinueWatchingShow, LibraryResponse, LibraryWatchlistItem, RecentlyWatchedItem } from "../api/tvlore-api";
 import { styles } from "./home-styles";
 
 type LibraryOverviewProps = {
   library: LibraryResponse | null;
   onOpenMovie: (movieId: string) => void;
+  onOpenShow: (showId: string) => void;
   onOpenShowSeason: (showId: string, seasonNumber: number) => void;
 };
 
 export function LibraryOverview({
   library,
   onOpenMovie,
+  onOpenShow,
   onOpenShowSeason,
 }: LibraryOverviewProps) {
   if (!library) {
@@ -24,6 +26,7 @@ export function LibraryOverview({
   }
 
   const isEmpty =
+    library.summary.watchlistItemCount === 0 &&
     library.summary.watchedEpisodeCount === 0 &&
     library.summary.watchedMovieCount === 0 &&
     library.summary.watchedShowCount === 0;
@@ -34,12 +37,27 @@ export function LibraryOverview({
         <SummaryStat label="Shows" value={library.summary.watchedShowCount} />
         <SummaryStat label="Movies" value={library.summary.watchedMovieCount} />
         <SummaryStat label="Episodes" value={library.summary.watchedEpisodeCount} />
+        <SummaryStat label="Watchlist" value={library.summary.watchlistItemCount} />
       </View>
 
       {isEmpty ? (
         <View style={styles.emptyPanel}>
           <Text style={styles.statusLabel}>Your library is empty</Text>
-          <Text style={styles.statusDetail}>Watched titles will appear here after you mark them.</Text>
+          <Text style={styles.statusDetail}>Saved and watched titles will appear here.</Text>
+        </View>
+      ) : null}
+
+      {library.watchlist.length > 0 ? (
+        <View style={styles.listSection}>
+          <Text style={styles.listTitle}>Watchlist</Text>
+          {library.watchlist.map((item) => (
+            <WatchlistRow
+              item={item}
+              key={`${item.mediaType}-${item.id}`}
+              onOpenMovie={onOpenMovie}
+              onOpenShow={onOpenShow}
+            />
+          ))}
         </View>
       ) : null}
 
@@ -76,10 +94,44 @@ export function LibraryOverviewSkeleton() {
         <View style={[styles.skeletonBlock, styles.skeletonStat]} />
         <View style={[styles.skeletonBlock, styles.skeletonStat]} />
         <View style={[styles.skeletonBlock, styles.skeletonStat]} />
+        <View style={[styles.skeletonBlock, styles.skeletonStat]} />
       </View>
       <View style={[styles.skeletonBlock, styles.skeletonListItem]} />
       <View style={[styles.skeletonBlock, styles.skeletonListItem]} />
     </View>
+  );
+}
+
+function WatchlistRow({
+  item,
+  onOpenMovie,
+  onOpenShow,
+}: {
+  item: LibraryWatchlistItem;
+  onOpenMovie: (movieId: string) => void;
+  onOpenShow: (showId: string) => void;
+}) {
+  const openItem = () => {
+    if (item.mediaType === "movie") {
+      onOpenMovie(item.id);
+      return;
+    }
+
+    onOpenShow(item.id);
+  };
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={openItem}
+      style={({ pressed }) => [styles.listItem, pressed ? styles.pressedListItem : null]}
+    >
+      <View style={styles.listText}>
+        <Text style={styles.itemTitle}>{item.title}</Text>
+        <Text style={styles.statusDetail}>{item.mediaType === "movie" ? "Movie" : "Show"}</Text>
+      </View>
+      <Text style={styles.dateText}>{formatShortDate(item.createdAt)}</Text>
+    </Pressable>
   );
 }
 
@@ -144,7 +196,7 @@ function RecentlyWatchedRow({
         <Text style={styles.itemTitle}>{getRecentlyWatchedTitle(item)}</Text>
         <Text style={styles.statusDetail}>{getRecentlyWatchedDetail(item)}</Text>
       </View>
-      <Text style={styles.dateText}>{formatWatchedAt(item.watchedAt)}</Text>
+      <Text style={styles.dateText}>{formatShortDate(item.watchedAt)}</Text>
     </Pressable>
   );
 }
@@ -159,6 +211,6 @@ function getRecentlyWatchedDetail(item: RecentlyWatchedItem) {
     : `S${item.seasonNumber} E${item.episodeNumber} - ${item.title}`;
 }
 
-function formatWatchedAt(value: string) {
+function formatShortDate(value: string) {
   return new Date(value).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }

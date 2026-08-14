@@ -8,7 +8,8 @@ No active infrastructure tasks.
 
 ## Next
 
-- [ ] Add a watchlist / want-to-watch state before social features.
+- [ ] Validate the watchlist UX on iPhone and Postman after Vercel deploy.
+- [ ] Refine Library organization now that watched history and saved intent both exist.
 
 ## Notes
 
@@ -76,6 +77,7 @@ No active infrastructure tasks.
 - [x] Promote the temporary mobile home into routed Library, Search, and Profile surfaces.
 - [x] Add detail-screen skeletons for show, movie, and season routes.
 - [x] Decide to keep mobile server-state hooks local until watchlist proves more cache complexity.
+- [x] Add a watchlist / want-to-watch state before social features.
 
 ## Deferred
 

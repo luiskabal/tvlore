@@ -19,6 +19,9 @@ import { TrackingService } from "./tracking/tracking.service";
 import { UsersController } from "./users/users.controller";
 import { UsersRepository } from "./users/users.repository";
 import { UsersService } from "./users/users.service";
+import { MovieWatchlistController, ShowWatchlistController } from "./watchlist/watchlist.controller";
+import { WatchlistRepository } from "./watchlist/watchlist.repository";
+import { WatchlistService } from "./watchlist/watchlist.service";
 
 @Module({
   controllers: [
@@ -31,6 +34,8 @@ import { UsersService } from "./users/users.service";
     MoviesController,
     EpisodeTrackingController,
     MovieTrackingController,
+    ShowWatchlistController,
+    MovieWatchlistController,
     LibraryController,
     ShowProgressController,
   ],
@@ -40,10 +45,12 @@ import { UsersService } from "./users/users.service";
     SupabaseAuthService,
     CatalogRepository,
     TrackingRepository,
+    WatchlistRepository,
     LibraryRepository,
     TmdbClient,
     CatalogService,
     TrackingService,
+    WatchlistService,
     LibraryService,
     UsersRepository,
     UsersService,

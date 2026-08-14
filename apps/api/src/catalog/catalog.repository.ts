@@ -52,10 +52,15 @@ export class CatalogRepository {
     }));
   }
 
-  async findShowDetail(showId: string): Promise<ShowDetailResponseDto | null> {
+  async findShowDetail(showId: string, userId: string): Promise<ShowDetailResponseDto | null> {
     const show = await this.prismaService.getClient().show.findUnique({
       include: {
         seasons: { orderBy: { seasonNumber: "asc" } },
+        watchlistItems: {
+          select: { createdAt: true },
+          take: 1,
+          where: { userId },
+        },
       },
       where: { id: showId },
     });
@@ -66,6 +71,11 @@ export class CatalogRepository {
   async findMovieDetail(movieId: string, userId: string): Promise<MovieDetailResponseDto | null> {
     const movie = await this.prismaService.getClient().movie.findUnique({
       include: {
+        watchlistItems: {
+          select: { createdAt: true },
+          take: 1,
+          where: { userId },
+        },
         watches: {
           orderBy: { watchedAt: "desc" },
           take: 1,
@@ -331,11 +341,13 @@ function toShowDetailResponse(show: {
   posterPath: string | null;
   seasons: Array<Parameters<typeof toSeasonSummaryResponse>[0]>;
   title: string;
+  watchlistItems: Array<{ createdAt: Date }>;
 }): ShowDetailResponseDto {
   return {
     backdropPath: show.backdropPath,
     firstAirDate: toDateString(show.firstAirDate),
     id: show.id,
+    inWatchlist: show.watchlistItems.length > 0,
     originalTitle: show.originalTitle,
     overview: show.overview,
     posterPath: show.posterPath,
@@ -354,6 +366,7 @@ function toMovieDetailResponse(movie: {
   releaseDate: Date | null;
   runtimeMinutes: number | null;
   title: string;
+  watchlistItems: Array<{ createdAt: Date }>;
   watches: Array<{ watchedAt: Date }>;
 }): MovieDetailResponseDto {
   const watch = movie.watches[0];
@@ -361,6 +374,7 @@ function toMovieDetailResponse(movie: {
   return {
     backdropPath: movie.backdropPath,
     id: movie.id,
+    inWatchlist: movie.watchlistItems.length > 0,
     lastWatchedAt: watch ? watch.watchedAt.toISOString() : null,
     originalTitle: movie.originalTitle,
     overview: movie.overview,

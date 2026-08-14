@@ -3,18 +3,22 @@ import { Image, Pressable, Text, View } from "react-native";
 import type { CatalogDetailResponse, MediaType, MovieDetailResponse, ShowDetailResponse, ShowSeasonSummary } from "../api/tvlore-api";
 import { styles } from "./catalog-detail-styles";
 import { getTmdbPosterUrl } from "./posters";
-import type { WatchActionState } from "./use-catalog-detail";
+import type { WatchActionState, WatchlistActionState } from "./use-catalog-detail";
 
 export function CatalogDetailContent({
   detail,
   onOpenShowSeason,
+  onSetInWatchlist,
   onSetMovieWatched,
   watchAction,
+  watchlistAction,
 }: {
   detail: CatalogDetailResponse;
   onOpenShowSeason: (showId: string, seasonNumber: number) => void;
+  onSetInWatchlist: (mediaType: MediaType, id: string, inWatchlist: boolean) => void;
   onSetMovieWatched: (movieId: string, watched: boolean) => void;
   watchAction: WatchActionState;
+  watchlistAction: WatchlistActionState;
 }) {
   return (
     <View style={styles.detail}>
@@ -36,11 +40,45 @@ export function CatalogDetailContent({
 
       <Text style={styles.overview}>{detail.overview || "No overview available."}</Text>
 
+      <WatchlistPanel detail={detail} onSetInWatchlist={onSetInWatchlist} watchlistAction={watchlistAction} />
+
       {detail.mediaType === "movie" ? (
         <MovieWatchPanel movie={detail} watchAction={watchAction} onSetWatched={onSetMovieWatched} />
       ) : (
         <ShowSeasonsPanel onOpenShowSeason={onOpenShowSeason} show={detail} />
       )}
+    </View>
+  );
+}
+
+function WatchlistPanel({
+  detail,
+  onSetInWatchlist,
+  watchlistAction,
+}: {
+  detail: CatalogDetailResponse;
+  onSetInWatchlist: (mediaType: MediaType, id: string, inWatchlist: boolean) => void;
+  watchlistAction: WatchlistActionState;
+}) {
+  const isSaving = watchlistAction.kind === "loading";
+
+  return (
+    <View style={styles.statusPanel}>
+      <Text style={styles.statusTitle}>Watchlist</Text>
+      <Text style={styles.mutedText}>
+        {detail.inWatchlist ? "Saved for later." : "Save this title to watch later."}
+      </Text>
+      {watchlistAction.kind === "error" ? <Text style={styles.errorText}>{watchlistAction.message}</Text> : null}
+
+      <Pressable
+        disabled={isSaving}
+        style={[detail.inWatchlist ? styles.secondaryButton : styles.primaryButton, isSaving ? styles.disabledButton : null]}
+        onPress={() => onSetInWatchlist(detail.mediaType, detail.id, !detail.inWatchlist)}
+      >
+        <Text style={detail.inWatchlist ? styles.secondaryButtonText : styles.primaryButtonText}>
+          {isSaving ? "Saving" : detail.inWatchlist ? "Remove from watchlist" : "Add to watchlist"}
+        </Text>
+      </Pressable>
     </View>
   );
 }
@@ -63,7 +101,9 @@ export function CatalogDetailSkeleton({ mediaType }: { mediaType: MediaType }) {
         <View style={styles.skeletonLineMedium} />
       </View>
 
-      {mediaType === "movie" ? <MovieWatchSkeleton /> : <ShowSeasonsSkeleton />}
+      <ActionPanelSkeleton />
+
+      {mediaType === "movie" ? <ActionPanelSkeleton /> : <ShowSeasonsSkeleton />}
     </View>
   );
 }
@@ -137,7 +177,7 @@ function SeasonRow({
   );
 }
 
-function MovieWatchSkeleton() {
+function ActionPanelSkeleton() {
   return (
     <View style={styles.skeletonPanel}>
       <View style={styles.skeletonSectionTitle} />

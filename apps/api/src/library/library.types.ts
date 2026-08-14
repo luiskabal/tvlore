@@ -1,4 +1,5 @@
 export type LibrarySummaryDto = {
+  watchlistItemCount: number;
   watchedEpisodeCount: number;
   watchedMovieCount: number;
   watchedShowCount: number;
@@ -39,10 +40,27 @@ export type LibraryRecentlyWatchedItemDto =
       watchedAt: string;
     };
 
+export type LibraryWatchlistItemDto =
+  | {
+      createdAt: string;
+      id: string;
+      mediaType: "show";
+      posterPath: string | null;
+      title: string;
+    }
+  | {
+      createdAt: string;
+      id: string;
+      mediaType: "movie";
+      posterPath: string | null;
+      title: string;
+    };
+
 export type LibraryResponseDto = {
   continueWatching: LibraryContinueWatchingShowDto[];
   recentlyWatched: LibraryRecentlyWatchedItemDto[];
   summary: LibrarySummaryDto;
+  watchlist: LibraryWatchlistItemDto[];
 };
 
 export type ShowProgressSeasonDto = {
