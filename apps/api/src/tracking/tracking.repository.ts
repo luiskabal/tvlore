@@ -1,8 +1,9 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { PrismaService } from "../prisma.service";
-import { calculatePercentComplete } from "../progress";
-import type { EpisodeWatchResponseDto, MovieWatchResponseDto, ShowProgressDto } from "./tracking.types";
+import { toShowProgress } from "../progress";
+import type { ShowProgressResponseDto } from "../progress";
+import type { EpisodeWatchResponseDto, MovieWatchResponseDto } from "./tracking.types";
 
 @Injectable()
 export class TrackingRepository {
@@ -106,24 +107,40 @@ export class TrackingRepository {
     };
   }
 
-  private async getShowProgress(userId: string, showId: string): Promise<ShowProgressDto> {
+  private async getShowProgress(userId: string, showId: string): Promise<ShowProgressResponseDto> {
     const client = this.prismaService.getClient();
-    const [totalEpisodeCount, watchedEpisodeCount] = await Promise.all([
-      client.episode.count({ where: { showId } }),
-      client.episodeWatch.count({
-        where: {
-          episode: { showId },
-          userId,
+    const show = await client.show.findUnique({
+      select: {
+        id: true,
+        seasons: {
+          orderBy: { seasonNumber: "asc" },
+          select: {
+            episodes: {
+              orderBy: { episodeNumber: "asc" },
+              select: {
+                episodeNumber: true,
+                id: true,
+                seasonNumber: true,
+                title: true,
+                watches: {
+                  select: { watchedAt: true },
+                  take: 1,
+                  where: { userId },
+                },
+              },
+            },
+            seasonNumber: true,
+          },
         },
-      }),
-    ]);
+      },
+      where: { id: showId },
+    });
 
-    return {
-      percentComplete: calculatePercentComplete(watchedEpisodeCount, totalEpisodeCount),
-      showId,
-      totalEpisodeCount,
-      watchedEpisodeCount,
-    };
+    if (!show) {
+      throwNotFound("SHOW_NOT_FOUND", "Show was not found");
+    }
+
+    return toShowProgress(show);
   }
 }
 

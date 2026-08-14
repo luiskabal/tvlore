@@ -601,11 +601,22 @@ function assertShowProgress(body, showId) {
   expectInteger(body.percentComplete, "show progress.percentComplete");
   expect(body.percentComplete >= 0 && body.percentComplete <= 100, "show progress.percentComplete range");
   expect(["completed", "not_started", "watching"].includes(body.status), "show progress.status");
+  expectBoolean(body.isComplete, "show progress.isComplete");
+  expect(body.nextEpisode === null || isRecord(body.nextEpisode), "show progress.nextEpisode should be null or object");
+  expectArray(body.seasons, "show progress.seasons");
 
-  if ("isComplete" in body) {
-    expectBoolean(body.isComplete, "show progress.isComplete");
-    expect(body.nextEpisode === null || isRecord(body.nextEpisode), "show progress.nextEpisode should be null or object");
-    expectArray(body.seasons, "show progress.seasons");
+  if (body.nextEpisode) {
+    expectUuid(body.nextEpisode.id, "show progress.nextEpisode.id");
+    expectPositiveInteger(body.nextEpisode.seasonNumber, "show progress.nextEpisode.seasonNumber");
+    expectPositiveInteger(body.nextEpisode.episodeNumber, "show progress.nextEpisode.episodeNumber");
+    expectString(body.nextEpisode.title, "show progress.nextEpisode.title");
+  }
+
+  for (const season of body.seasons) {
+    expectInteger(season.seasonNumber, "show progress season.seasonNumber");
+    expectInteger(season.percentComplete, "show progress season.percentComplete");
+    expectInteger(season.totalEpisodeCount, "show progress season.totalEpisodeCount");
+    expectInteger(season.watchedEpisodeCount, "show progress season.watchedEpisodeCount");
   }
 }
 

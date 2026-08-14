@@ -1,18 +1,13 @@
+import type { ShowProgressResponseDto } from "../progress";
+
 export type WatchInput = {
   watchedAt: Date;
-};
-
-export type ShowProgressDto = {
-  percentComplete: number;
-  showId: string;
-  totalEpisodeCount: number;
-  watchedEpisodeCount: number;
 };
 
 export type EpisodeWatchResponseDto = {
   episodeId: string;
   lastWatchedAt: string | null;
-  showProgress: ShowProgressDto;
+  showProgress: ShowProgressResponseDto;
   watchCount: number;
   watched: boolean;
 };

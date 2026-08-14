@@ -771,7 +771,23 @@ Response:
   "watchCount": 1,
   "lastWatchedAt": "2026-08-09T00:00:00.000Z",
   "showProgress": {
+    "isComplete": false,
+    "nextEpisode": {
+      "id": "uuid",
+      "seasonNumber": 1,
+      "episodeNumber": 2,
+      "title": "Episode 2"
+    },
     "showId": "uuid",
+    "status": "watching",
+    "seasons": [
+      {
+        "seasonNumber": 1,
+        "watchedEpisodeCount": 1,
+        "totalEpisodeCount": 10,
+        "percentComplete": 10
+      }
+    ],
     "watchedEpisodeCount": 1,
     "totalEpisodeCount": 10,
     "percentComplete": 10
@@ -825,7 +841,23 @@ Response:
   "watchCount": 0,
   "lastWatchedAt": null,
   "showProgress": {
+    "isComplete": false,
+    "nextEpisode": {
+      "id": "uuid",
+      "seasonNumber": 1,
+      "episodeNumber": 1,
+      "title": "Episode 1"
+    },
     "showId": "uuid",
+    "status": "not_started",
+    "seasons": [
+      {
+        "seasonNumber": 1,
+        "watchedEpisodeCount": 0,
+        "totalEpisodeCount": 10,
+        "percentComplete": 0
+      }
+    ],
     "watchedEpisodeCount": 0,
     "totalEpisodeCount": 10,
     "percentComplete": 0
