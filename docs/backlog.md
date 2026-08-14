@@ -17,6 +17,7 @@ No active infrastructure tasks.
 - Keep the current screen -> hook -> API client boundary. The cleanup goal is readability, not a new state-management layer yet.
 - Ratings are explicit preference signals. Keep them separate from watched state so recommendations can use both later.
 - First recommendations intentionally use only hydrated catalog data and ratings. Improve quality only after storing stronger content signals.
+- Recommendations belong in Library while it acts as the app home. Profile should stay focused on identity, stats, and account controls.
 
 ## Done
 
@@ -86,6 +87,7 @@ No active infrastructure tasks.
 - [x] Surface rated shows and movies in Library/Profile.
 - [x] Start first recommendation slice from stored ratings.
 - [x] Let recommendation rows save directly to watchlist.
+- [x] Keep recommendations out of Profile and scoped to Library.
 
 ## Deferred
 

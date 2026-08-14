@@ -16,8 +16,9 @@ export type HomeState =
   | { kind: "refreshing"; library: LibraryResponse | null; recommendations: RecommendationsResponse | null; user: UserResponse | null }
   | { kind: "offline"; message: string };
 
-export function useHomeData() {
+export function useHomeData(options: { includeRecommendations?: boolean } = {}) {
   const [home, setHome] = useState<HomeState>({ kind: "loading" });
+  const includeRecommendations = options.includeRecommendations ?? true;
 
   const refreshHome = useCallback(async () => {
     setHome((current) => (
@@ -28,7 +29,7 @@ export function useHomeData() {
 
     try {
       const token = await getSupabaseAccessToken();
-      const homeData = await getHomeData(token);
+      const homeData = await getHomeData(token, { includeRecommendations });
 
       setHome({ kind: "ready", ...homeData });
     } catch (error) {
@@ -37,7 +38,7 @@ export function useHomeData() {
         message: error instanceof Error ? error.message : "Unknown API error",
       });
     }
-  }, []);
+  }, [includeRecommendations]);
 
   return { home, refreshHome };
 }

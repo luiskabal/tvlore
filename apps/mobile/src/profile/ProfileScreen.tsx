@@ -1,17 +1,13 @@
-import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
 
 import { isSupabaseConfigured } from "../auth/supabase-auth";
 import { HoloProfileCard } from "../home/HoloProfileCard";
 import { LibraryOverviewSkeleton } from "../home/LibraryOverview";
-import { RecommendationsPanel } from "../home/RecommendationsPanel";
 import { styles } from "../home/home-styles";
 import { useHomeModel } from "../home/use-home-model";
-import { useRecommendationActions } from "../home/use-recommendation-actions";
 
 export default function ProfileScreen() {
-  const { recommendationAction, saveRecommendation } = useRecommendationActions();
   const {
     auth,
     authActionMessage,
@@ -21,7 +17,7 @@ export default function ProfileScreen() {
     homeData,
     isAuthActionRunning,
     signOut,
-  } = useHomeModel();
+  } = useHomeModel({ includeRecommendations: false });
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -57,16 +53,6 @@ export default function ProfileScreen() {
           </View>
         )}
 
-        {homeData?.user ? (
-          <RecommendationsPanel
-            onOpenMovie={openMovie}
-            onOpenShow={openShow}
-            onSaveToWatchlist={saveRecommendation}
-            recommendationAction={recommendationAction}
-            recommendations={homeData.recommendations}
-          />
-        ) : null}
-
         {auth.kind === "signedIn" ? (
           <View style={styles.statusPanel}>
             <Text style={styles.statusLabel}>Account</Text>
@@ -89,12 +75,4 @@ export default function ProfileScreen() {
       </ScrollView>
     </SafeAreaView>
   );
-}
-
-function openMovie(id: string) {
-  router.push({ pathname: "/movies/[id]", params: { id } });
-}
-
-function openShow(id: string) {
-  router.push({ pathname: "/shows/[id]", params: { id } });
 }

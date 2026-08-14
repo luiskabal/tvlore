@@ -33,7 +33,7 @@ Implemented:
 - Mobile tracking mutations invalidate the local library data.
 - Mobile watchlist mutations invalidate the local library data.
 - Mobile Library/Profile refresh authenticated library data after tracking changes.
-- Mobile Library/Profile can show backend-owned recommendation candidates.
+- Mobile Library can show backend-owned recommendation candidates.
 - Mobile recommendation rows can save titles directly to the watchlist with optimistic feedback.
 - Mobile Library shows watchlist titles and rated titles separately from watched history.
 - Mobile Library has segmented views for all activity, continuing shows, watchlist, rated titles, and history.
@@ -732,8 +732,8 @@ Library
 
 Profile
 -> Supabase session
--> GET /users/me, GET /library, and GET /recommendations in parallel
--> Holo profile card, recommendations, account state, sign out
+-> GET /users/me and GET /library in parallel
+-> Holo profile card, library stats, account state, sign out
 
 Search
 -> GET /search
@@ -759,7 +759,7 @@ Current behavior:
 - Library shows continue-watching and recently watched rows when the backend has watched data.
 - Library shows saved watchlist rows when the backend has watchlist data.
 - Library shows rated show/movie rows when the backend has rating preference data.
-- Library and Profile show recommendation rows when the backend has eligible catalog candidates.
+- Library shows recommendation rows when the backend has eligible catalog candidates.
 - Recommendation rows open the matching show or movie detail screen.
 - Recommendation rows can save the title to watchlist immediately, then reconcile through the existing library refresh invalidator.
 - Library can filter between all rows, continuing shows, saved titles, rated titles, and watch history.

@@ -4,8 +4,8 @@ import { useAuthSession, type AuthState } from "../auth/use-auth-session";
 import { useLibraryRevision } from "../library/library-refresh";
 import { useHomeData, type HomeState } from "./use-home-data";
 
-export function useHomeModel() {
-  const { home, refreshHome } = useHomeData();
+export function useHomeModel(options: { includeRecommendations?: boolean } = {}) {
+  const { home, refreshHome } = useHomeData(options);
   const libraryRevision = useLibraryRevision();
   const authSession = useAuthSession(refreshHome);
   const homeData = home.kind === "ready" || home.kind === "refreshing" ? home : null;

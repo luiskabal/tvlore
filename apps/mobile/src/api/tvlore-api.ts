@@ -252,11 +252,15 @@ export type HomeData = {
   user: UserResponse | null;
 };
 
-export async function getHomeData(accessToken: string | null): Promise<HomeData> {
+export async function getHomeData(
+  accessToken: string | null,
+  options: { includeRecommendations?: boolean } = {},
+): Promise<HomeData> {
   if (!accessToken) {
     return { library: null, recommendations: null, user: null };
   }
 
+  const includeRecommendations = options.includeRecommendations ?? true;
   const authOptions = { headers: getAuthHeaders(accessToken) };
   const [user, library, recommendations] = await Promise.all([
     fetchJson(
@@ -271,12 +275,14 @@ export async function getHomeData(accessToken: string | null): Promise<HomeData>
       "Unexpected library response",
       authOptions,
     ),
-    fetchJson(
-      "/recommendations",
-      isRecommendationsResponse,
-      "Unexpected recommendations response",
-      authOptions,
-    ),
+    includeRecommendations
+      ? fetchJson(
+        "/recommendations",
+        isRecommendationsResponse,
+        "Unexpected recommendations response",
+        authOptions,
+      )
+      : Promise.resolve(null),
   ]);
 
   return { library, recommendations, user };

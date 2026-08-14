@@ -166,15 +166,22 @@ authenticated library loading flow. `tvlore-api.ts` owns HTTP and response-shape
 validation. `supabase-auth.ts` owns Supabase session and OAuth behavior.
 
 `LibraryScreen` and `ProfileScreen` consume shared authenticated backend state
-through `useHomeModel`:
+through `useHomeModel`, but each screen opts into only the data it renders:
 
 ```text
-LibraryScreen/ProfileScreen
+LibraryScreen
   -> useHomeModel()
   -> useHomeData()
   -> getSupabaseAccessToken()
   -> getHomeData(accessToken)
   -> GET /users/me, GET /library, and GET /recommendations in parallel
+
+ProfileScreen
+  -> useHomeModel({ includeRecommendations: false })
+  -> useHomeData()
+  -> getSupabaseAccessToken()
+  -> getHomeData(accessToken, { includeRecommendations: false })
+  -> GET /users/me and GET /library in parallel
 ```
 
 The mobile app does not call `GET /health` during normal product refreshes. Health
@@ -189,9 +196,10 @@ The Library route renders `LibraryOverview`. The Profile route renders
 `HoloProfileCard`. The card uses Supabase Google avatar metadata when available
 and keeps the holo/tilt effect inside presentation code.
 
-`RecommendationsPanel` is presentation-only and is reused by Library and
-Profile. `useHomeData` loads the recommendation response alongside the user and
-library payloads, while `tvlore-api.ts` owns the response-shape validation.
+`RecommendationsPanel` is presentation-only and currently belongs to Library,
+which acts as the app home. `useHomeData` loads the recommendation response
+alongside the user and library payloads only when the screen asks for it, while
+`tvlore-api.ts` owns the response-shape validation.
 Recommendation rows receive navigation and save-to-watchlist callbacks from the
 route screen. `useRecommendationActions` reuses the existing watchlist endpoint,
 then notifies the local library invalidator. The panel owns only local optimistic

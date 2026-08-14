@@ -244,4 +244,4 @@ the selected Postman environment.
 - Watch/unwatch endpoints store authenticated movie and episode state.
 - Watchlist endpoints store authenticated show/movie saved intent.
 - `GET /library` feeds the mobile home library summary.
-- `GET /recommendations` feeds Library/Profile suggestion rows from stored ratings and hydrated catalog rows.
+- `GET /recommendations` feeds Library suggestion rows from stored ratings and hydrated catalog rows.
