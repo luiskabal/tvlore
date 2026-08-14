@@ -127,6 +127,7 @@ export function HoloProfileCard({ avatarUrl, library, userName }: HoloProfileCar
         <HoloStat label="Shows" value={library.summary.watchedShowCount} />
         <HoloStat label="Movies" value={library.summary.watchedMovieCount} />
         <HoloStat label="Episodes" value={library.summary.watchedEpisodeCount} />
+        <HoloStat label="Rated" value={library.summary.ratedTitleCount} />
       </View>
     </Animated.View>
   );

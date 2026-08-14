@@ -2,7 +2,13 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 
-import type { ContinueWatchingShow, LibraryResponse, LibraryWatchlistItem, RecentlyWatchedItem } from "../api/tvlore-api";
+import type {
+  ContinueWatchingShow,
+  LibraryRatedTitle,
+  LibraryResponse,
+  LibraryWatchlistItem,
+  RecentlyWatchedItem,
+} from "../api/tvlore-api";
 import { getTmdbPosterUrl } from "../catalog/posters";
 import {
   getHistoryActionKey,
@@ -11,12 +17,13 @@ import {
 } from "../library/use-library-actions";
 import { styles } from "./home-styles";
 
-type LibrarySectionFilter = "all" | "history" | "watching" | "watchlist";
+type LibrarySectionFilter = "all" | "history" | "rated" | "watching" | "watchlist";
 
 const librarySections: Array<{ label: string; value: LibrarySectionFilter }> = [
   { label: "All", value: "all" },
   { label: "Watching", value: "watching" },
   { label: "Watchlist", value: "watchlist" },
+  { label: "Rated", value: "rated" },
   { label: "History", value: "history" },
 ];
 const swipeConfirmWindowMs = 4000;
@@ -86,16 +93,19 @@ export function LibraryOverview({
 
   const visibleLibrary = getOptimisticLibrary(library, optimisticRemovedKeys);
   const isEmpty =
+    visibleLibrary.summary.ratedTitleCount === 0 &&
     visibleLibrary.summary.watchlistItemCount === 0 &&
     visibleLibrary.summary.watchedEpisodeCount === 0 &&
     visibleLibrary.summary.watchedMovieCount === 0 &&
     visibleLibrary.summary.watchedShowCount === 0;
   const hasContinueWatching = visibleLibrary.continueWatching.length > 0;
+  const hasRatedTitles = visibleLibrary.ratedTitles.length > 0;
   const hasRecentlyWatched = visibleLibrary.recentlyWatched.length > 0;
   const hasWatchlist = visibleLibrary.watchlist.length > 0;
   const activeSection = selectedSection ?? getDefaultSection(visibleLibrary);
   const shouldShowWatchlist = activeSection === "all" || activeSection === "watchlist";
   const shouldShowContinueWatching = activeSection === "all" || activeSection === "watching";
+  const shouldShowRated = activeSection === "all" || activeSection === "rated";
   const shouldShowHistory = activeSection === "all" || activeSection === "history";
   const hideLibraryAction = (actionKey: string) => {
     setOptimisticRemovedKeys((current) => addSetValue(current, actionKey));
@@ -108,6 +118,7 @@ export function LibraryOverview({
         <SummaryStat label="Movies" value={visibleLibrary.summary.watchedMovieCount} />
         <SummaryStat label="Episodes" value={visibleLibrary.summary.watchedEpisodeCount} />
         <SummaryStat label="Watchlist" value={visibleLibrary.summary.watchlistItemCount} />
+        <SummaryStat label="Rated" value={visibleLibrary.summary.ratedTitleCount} />
       </View>
 
       {isEmpty ? (
@@ -151,6 +162,20 @@ export function LibraryOverview({
                 onOpenMovie={onOpenMovie}
                 onOpenShow={onOpenShow}
                 onRemove={onRemoveWatchlistItem}
+              />
+            ))}
+          </View>
+        ) : null}
+
+        {shouldShowRated && hasRatedTitles ? (
+          <View style={styles.listSection}>
+            <Text style={styles.listTitle}>Rated</Text>
+            {visibleLibrary.ratedTitles.map((item) => (
+              <RatedTitleRow
+                item={item}
+                key={`${item.mediaType}-${item.id}`}
+                onOpenMovie={onOpenMovie}
+                onOpenShow={onOpenShow}
               />
             ))}
           </View>
@@ -380,6 +405,42 @@ function RecentlyWatchedRow({
   );
 }
 
+function RatedTitleRow({
+  item,
+  onOpenMovie,
+  onOpenShow,
+}: {
+  item: LibraryRatedTitle;
+  onOpenMovie: (movieId: string) => void;
+  onOpenShow: (showId: string) => void;
+}) {
+  const openItem = () => {
+    if (item.mediaType === "movie") {
+      onOpenMovie(item.id);
+      return;
+    }
+
+    onOpenShow(item.id);
+  };
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={openItem}
+      style={({ pressed }) => [styles.listItem, pressed ? styles.pressedListItem : null]}
+    >
+      <LibraryPoster label={item.mediaType === "movie" ? "M" : "TV"} posterPath={item.posterPath} />
+      <View style={styles.listText}>
+        <Text style={styles.itemTitle}>{item.title}</Text>
+        <Text style={styles.statusDetail}>
+          {item.mediaType === "movie" ? "Movie" : "Show"} - Updated {formatShortDate(item.updatedAt)}
+        </Text>
+      </View>
+      <Text style={styles.progressText}>{item.rating}/5</Text>
+    </Pressable>
+  );
+}
+
 function LibraryPoster({ label, posterPath }: { label: string; posterPath: string | null }) {
   if (posterPath) {
     return <Image source={{ uri: getTmdbPosterUrl(posterPath) }} style={styles.libraryPoster} />;
@@ -494,6 +555,10 @@ function hasItemsForSection(activeSection: LibrarySectionFilter, library: Librar
     return library.watchlist.length > 0;
   }
 
+  if (activeSection === "rated") {
+    return library.ratedTitles.length > 0;
+  }
+
   if (activeSection === "history") {
     return library.recentlyWatched.length > 0;
   }
@@ -576,6 +641,10 @@ function getEmptySectionTitle(activeSection: LibrarySectionFilter) {
     return "No saved titles";
   }
 
+  if (activeSection === "rated") {
+    return "No rated titles";
+  }
+
   return "No watch history";
 }
 
@@ -586,6 +655,10 @@ function getEmptySectionDetail(activeSection: LibrarySectionFilter) {
 
   if (activeSection === "watchlist") {
     return "Saved shows and movies will appear here.";
+  }
+
+  if (activeSection === "rated") {
+    return "Rated shows and movies will appear here.";
   }
 
   return "Watched movies and episodes will appear here.";

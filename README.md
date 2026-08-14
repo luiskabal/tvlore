@@ -28,10 +28,11 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Season-level mark all watched/unwatched.
 - Personal show/movie watchlist.
 - Personal show/movie rating preferences.
-- Library summary with watched show, movie, episode, and watchlist counts.
-- Segmented Library views for watching, watchlist, and history.
+- Library summary with watched show, movie, episode, watchlist, and rated-title counts.
+- Segmented Library views for watching, watchlist, rated titles, and history.
 - Holographic mobile profile summary card with Google avatar and library stats.
 - Continue-watching and recently-watched data from the backend.
+- Rated show/movie list from the backend.
 - Library rows navigate back into movie and show season detail screens.
 - Library/Profile keeps prior data during refresh and shows skeletons on first load.
 - Routed Library, Search, and Profile mobile surfaces with bottom app navigation.
@@ -68,7 +69,6 @@ Use `corepack pnpm api:check` for local/Vercel HTTP smoke checks.
 
 ## Next Backlog Items
 
-- Validate rating preferences on iPhone and Postman after Vercel deploy.
 - Start the first recommendation/social matching slice from stored preferences.
 
 ## Workspace Layout

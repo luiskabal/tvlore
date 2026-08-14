@@ -5,6 +5,7 @@ import { calculatePercentComplete, toShowProgress } from "../progress";
 import type {
   LibraryContinueWatchingShowDto,
   LibraryNextEpisodeDto,
+  LibraryRatedTitleDto,
   LibraryRecentlyWatchedItemDto,
   LibraryResponseDto,
   LibraryWatchlistItemDto,
@@ -17,7 +18,14 @@ export class LibraryRepository {
 
   async getLibrary(userId: string): Promise<LibraryResponseDto> {
     const client = this.prismaService.getClient();
-    const [episodeWatches, movieWatches, showWatchlistItems, movieWatchlistItems] = await Promise.all([
+    const [
+      episodeWatches,
+      movieWatches,
+      showWatchlistItems,
+      movieWatchlistItems,
+      showPreferences,
+      moviePreferences,
+    ] = await Promise.all([
       client.episodeWatch.findMany({
         include: {
           episode: {
@@ -54,6 +62,20 @@ export class LibraryRepository {
         orderBy: { createdAt: "desc" },
         where: { userId },
       }),
+      client.showPreference.findMany({
+        include: {
+          show: { select: { id: true, posterPath: true, title: true } },
+        },
+        orderBy: { updatedAt: "desc" },
+        where: { userId },
+      }),
+      client.moviePreference.findMany({
+        include: {
+          movie: { select: { id: true, posterPath: true, title: true } },
+        },
+        orderBy: { updatedAt: "desc" },
+        where: { userId },
+      }),
     ]);
     const watchedShowIds = [...new Set(episodeWatches.map((watch) => watch.episode.show.id))];
     const shows = watchedShowIds.length === 0
@@ -88,13 +110,18 @@ export class LibraryRepository {
       }
     }
 
+    const ratedTitles = toRatedTitles(showPreferences, moviePreferences);
+
     return {
       continueWatching: shows
         .map((show) => toContinueWatchingShow(show))
         .filter((show): show is LibraryContinueWatchingShowDto => Boolean(show))
         .sort((left, right) => compareIsoDates(latestWatchedAtByShowId.get(right.id), latestWatchedAtByShowId.get(left.id))),
+      ratedTitles,
       recentlyWatched: toRecentlyWatched(episodeWatches, movieWatches),
       summary: {
+        averageRating: getAverageRating(ratedTitles),
+        ratedTitleCount: ratedTitles.length,
         watchlistItemCount: showWatchlistItems.length + movieWatchlistItems.length,
         watchedEpisodeCount: episodeWatches.length,
         watchedMovieCount: movieWatches.length,
@@ -223,6 +250,48 @@ function toWatchlist(
       title: item.movie.title,
     })),
   ].sort((left, right) => compareIsoDates(right.createdAt, left.createdAt));
+}
+
+function toRatedTitles(
+  showPreferences: Array<{
+    rating: number;
+    show: { id: string; posterPath: string | null; title: string };
+    updatedAt: Date;
+  }>,
+  moviePreferences: Array<{
+    movie: { id: string; posterPath: string | null; title: string };
+    rating: number;
+    updatedAt: Date;
+  }>,
+): LibraryRatedTitleDto[] {
+  return [
+    ...showPreferences.map((item) => ({
+      id: item.show.id,
+      mediaType: "show" as const,
+      posterPath: item.show.posterPath,
+      rating: item.rating,
+      title: item.show.title,
+      updatedAt: item.updatedAt.toISOString(),
+    })),
+    ...moviePreferences.map((item) => ({
+      id: item.movie.id,
+      mediaType: "movie" as const,
+      posterPath: item.movie.posterPath,
+      rating: item.rating,
+      title: item.movie.title,
+      updatedAt: item.updatedAt.toISOString(),
+    })),
+  ].sort((left, right) => compareIsoDates(right.updatedAt, left.updatedAt));
+}
+
+function getAverageRating(items: LibraryRatedTitleDto[]) {
+  if (items.length === 0) {
+    return null;
+  }
+
+  const total = items.reduce((sum, item) => sum + item.rating, 0);
+
+  return Math.round((total / items.length) * 10) / 10;
 }
 
 function countWatched(episodes: WatchedEpisode[]) {

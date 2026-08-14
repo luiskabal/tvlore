@@ -403,6 +403,11 @@ async function checkAuthenticatedProductFlow(token) {
       expect(body.summary.watchedEpisodeCount >= 1, "library should count watched episode");
       expect(body.summary.watchedMovieCount >= 1, "library should count watched movie");
       expect(body.summary.watchedShowCount >= 1, "library should count watched show");
+      expect(body.summary.ratedTitleCount >= 2, "library should count rated titles");
+      expect(
+        body.summary.averageRating === null || (body.summary.averageRating >= 1 && body.summary.averageRating <= 5),
+        "library average rating should be null or within rating range",
+      );
       expect(
         body.recentlyWatched.some((item) => item.id === firstEpisodeId),
         "library should include recently watched episode",
@@ -418,6 +423,14 @@ async function checkAuthenticatedProductFlow(token) {
       expect(
         body.watchlist.some((item) => item.id === resolvedMovie.id && item.mediaType === "movie"),
         "library should include watchlisted movie",
+      );
+      expect(
+        body.ratedTitles.some((item) => item.id === resolvedShow.id && item.mediaType === "show" && item.rating === 5),
+        "library should include rated show",
+      );
+      expect(
+        body.ratedTitles.some((item) => item.id === resolvedMovie.id && item.mediaType === "movie" && item.rating === 4),
+        "library should include rated movie",
       );
     },
     expectedStatus: 200,
@@ -638,9 +651,23 @@ function assertLibrary(body) {
   expectInteger(body.summary.watchedEpisodeCount, "library.summary.watchedEpisodeCount");
   expectInteger(body.summary.watchedMovieCount, "library.summary.watchedMovieCount");
   expectInteger(body.summary.watchedShowCount, "library.summary.watchedShowCount");
+  expectInteger(body.summary.ratedTitleCount, "library.summary.ratedTitleCount");
+  expectNullableNumber(body.summary.averageRating, "library.summary.averageRating");
   expectArray(body.continueWatching, "library.continueWatching");
+  expectArray(body.ratedTitles, "library.ratedTitles");
   expectArray(body.recentlyWatched, "library.recentlyWatched");
   expectArray(body.watchlist, "library.watchlist");
+
+  for (const item of body.ratedTitles) {
+    expectRecord(item, "library.ratedTitles item");
+    expect(["movie", "show"].includes(item.mediaType), "library ratedTitles mediaType");
+    expectUuid(item.id, "library ratedTitles.id");
+    expectString(item.title, "library ratedTitles.title");
+    expectNullableString(item.posterPath, "library ratedTitles.posterPath");
+    expectInteger(item.rating, "library ratedTitles.rating");
+    expect(item.rating >= 1 && item.rating <= 5, "library ratedTitles.rating range");
+    expectIsoString(item.updatedAt, "library ratedTitles.updatedAt");
+  }
 
   for (const item of body.recentlyWatched) {
     expectRecord(item, "library.recentlyWatched item");

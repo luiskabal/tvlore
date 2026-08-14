@@ -817,111 +817,6 @@
           ]
         },
         {
-          "name": "DELETE /shows/:showId/preference",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{supabaseAccessToken}}"
-              },
-              {
-                "key": "x-correlation-id",
-                "value": "{{correlationId}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/shows/{{resolvedShowId}}/preference",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "shows",
-                "{{resolvedShowId}}",
-                "preference"
-              ]
-            }
-          },
-          "response": [],
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('status is 200', function () {",
-                  "  pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('show rating is cleared', function () {",
-                  "  var body = pm.response.json();",
-                  "  pm.expect(body.id).to.eql(pm.environment.get('resolvedShowId'));",
-                  "  pm.expect(body.mediaType).to.eql('show');",
-                  "  pm.expect(body.rating).to.eql(null);",
-                  "  pm.expect(body.updatedAt === null || typeof body.updatedAt === 'string').to.eql(true);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "DELETE /shows/:showId/watchlist",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{supabaseAccessToken}}"
-              },
-              {
-                "key": "x-correlation-id",
-                "value": "postman-{{$guid}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/shows/{{resolvedShowId}}/watchlist",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "shows",
-                "{{resolvedShowId}}",
-                "watchlist"
-              ]
-            }
-          },
-          "response": [],
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('status is 200', function () {",
-                  "  pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('show is removed from watchlist', function () {",
-                  "  var body = pm.response.json();",
-                  "  pm.expect(body.id).to.eql(pm.environment.get('resolvedShowId'));",
-                  "  pm.expect(body.mediaType).to.eql('show');",
-                  "  pm.expect(body.inWatchlist).to.eql(false);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
           "name": "GET /shows/:showId/seasons",
           "request": {
             "method": "GET",
@@ -1141,60 +1036,6 @@
                   "  pm.expect(body.totalEpisodeCount).to.be.a('number');",
                   "  pm.expect(body.percentComplete).to.be.a('number');",
                   "  pm.expect(body.seasons).to.be.an('array');",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "DELETE /episodes/:episodeId/watches",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{supabaseAccessToken}}"
-              },
-              {
-                "key": "x-correlation-id",
-                "value": "postman-{{$guid}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/episodes/{{resolvedEpisodeId}}/watches",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "episodes",
-                "{{resolvedEpisodeId}}",
-                "watches"
-              ]
-            }
-          },
-          "response": [],
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('status is 200', function () {",
-                  "  pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('episode is unwatched', function () {",
-                  "  var body = pm.response.json();",
-                  "  pm.expect(body.episodeId).to.eql(pm.environment.get('resolvedEpisodeId'));",
-                  "  pm.expect(body.watched).to.eql(false);",
-                  "  pm.expect(body.watchCount).to.eql(0);",
-                  "  pm.expect(body.lastWatchedAt).to.eql(null);",
-                  "  pm.expect(body.showProgress.showId).to.eql(pm.environment.get('resolvedShowId'));",
                   "});"
                 ]
               }
@@ -1433,111 +1274,6 @@
           ]
         },
         {
-          "name": "DELETE /movies/:movieId/preference",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{supabaseAccessToken}}"
-              },
-              {
-                "key": "x-correlation-id",
-                "value": "{{correlationId}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/movies/{{resolvedMovieId}}/preference",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "movies",
-                "{{resolvedMovieId}}",
-                "preference"
-              ]
-            }
-          },
-          "response": [],
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('status is 200', function () {",
-                  "  pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('movie rating is cleared', function () {",
-                  "  var body = pm.response.json();",
-                  "  pm.expect(body.id).to.eql(pm.environment.get('resolvedMovieId'));",
-                  "  pm.expect(body.mediaType).to.eql('movie');",
-                  "  pm.expect(body.rating).to.eql(null);",
-                  "  pm.expect(body.updatedAt === null || typeof body.updatedAt === 'string').to.eql(true);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "DELETE /movies/:movieId/watchlist",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{supabaseAccessToken}}"
-              },
-              {
-                "key": "x-correlation-id",
-                "value": "postman-{{$guid}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/movies/{{resolvedMovieId}}/watchlist",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "movies",
-                "{{resolvedMovieId}}",
-                "watchlist"
-              ]
-            }
-          },
-          "response": [],
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('status is 200', function () {",
-                  "  pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "pm.test('movie is removed from watchlist', function () {",
-                  "  var body = pm.response.json();",
-                  "  pm.expect(body.id).to.eql(pm.environment.get('resolvedMovieId'));",
-                  "  pm.expect(body.mediaType).to.eql('movie');",
-                  "  pm.expect(body.inWatchlist).to.eql(false);",
-                  "});"
-                ]
-              }
-            }
-          ]
-        },
-        {
           "name": "POST /movies/:movieId/watches",
           "request": {
             "method": "POST",
@@ -1643,9 +1379,76 @@
                   "  pm.expect(body.summary.watchedEpisodeCount).to.be.a('number');",
                   "  pm.expect(body.summary.watchedMovieCount).to.be.a('number');",
                   "  pm.expect(body.summary.watchedShowCount).to.be.a('number');",
+                  "  pm.expect(body.summary.ratedTitleCount).to.be.a('number');",
+                  "  pm.expect(body.summary.averageRating === null || typeof body.summary.averageRating === 'number').to.eql(true);",
                   "  pm.expect(body.continueWatching).to.be.an('array');",
+                  "  pm.expect(body.ratedTitles).to.be.an('array');",
                   "  pm.expect(body.recentlyWatched).to.be.an('array');",
                   "  pm.expect(body.watchlist).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test('library includes current watchlist, watched and rated state', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.watchlist.some(function (item) { return item.id === pm.environment.get('resolvedShowId') && item.mediaType === 'show'; })).to.eql(true);",
+                  "  pm.expect(body.watchlist.some(function (item) { return item.id === pm.environment.get('resolvedMovieId') && item.mediaType === 'movie'; })).to.eql(true);",
+                  "  pm.expect(body.recentlyWatched.some(function (item) { return item.id === pm.environment.get('resolvedEpisodeId'); })).to.eql(true);",
+                  "  pm.expect(body.recentlyWatched.some(function (item) { return item.id === pm.environment.get('resolvedMovieId'); })).to.eql(true);",
+                  "  pm.expect(body.ratedTitles.some(function (item) { return item.id === pm.environment.get('resolvedShowId') && item.mediaType === 'show' && item.rating === 5; })).to.eql(true);",
+                  "  pm.expect(body.ratedTitles.some(function (item) { return item.id === pm.environment.get('resolvedMovieId') && item.mediaType === 'movie' && item.rating === 4; })).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE /episodes/:episodeId/watches",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "postman-{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/episodes/{{resolvedEpisodeId}}/watches",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "episodes",
+                "{{resolvedEpisodeId}}",
+                "watches"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('episode is unwatched', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.episodeId).to.eql(pm.environment.get('resolvedEpisodeId'));",
+                  "  pm.expect(body.watched).to.eql(false);",
+                  "  pm.expect(body.watchCount).to.eql(0);",
+                  "  pm.expect(body.lastWatchedAt).to.eql(null);",
+                  "  pm.expect(body.showProgress.showId).to.eql(pm.environment.get('resolvedShowId'));",
                   "});"
                 ]
               }
@@ -1699,6 +1502,216 @@
                   "  pm.expect(body.watched).to.eql(false);",
                   "  pm.expect(body.watchCount).to.eql(0);",
                   "  pm.expect(body.lastWatchedAt).to.eql(null);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE /shows/:showId/preference",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "{{correlationId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shows/{{resolvedShowId}}/preference",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shows",
+                "{{resolvedShowId}}",
+                "preference"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('show rating is cleared', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.id).to.eql(pm.environment.get('resolvedShowId'));",
+                  "  pm.expect(body.mediaType).to.eql('show');",
+                  "  pm.expect(body.rating).to.eql(null);",
+                  "  pm.expect(body.updatedAt === null || typeof body.updatedAt === 'string').to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE /movies/:movieId/preference",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "{{correlationId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/{{resolvedMovieId}}/preference",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "{{resolvedMovieId}}",
+                "preference"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('movie rating is cleared', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.id).to.eql(pm.environment.get('resolvedMovieId'));",
+                  "  pm.expect(body.mediaType).to.eql('movie');",
+                  "  pm.expect(body.rating).to.eql(null);",
+                  "  pm.expect(body.updatedAt === null || typeof body.updatedAt === 'string').to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE /shows/:showId/watchlist",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "postman-{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shows/{{resolvedShowId}}/watchlist",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shows",
+                "{{resolvedShowId}}",
+                "watchlist"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('show is removed from watchlist', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.id).to.eql(pm.environment.get('resolvedShowId'));",
+                  "  pm.expect(body.mediaType).to.eql('show');",
+                  "  pm.expect(body.inWatchlist).to.eql(false);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE /movies/:movieId/watchlist",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "postman-{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/{{resolvedMovieId}}/watchlist",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "{{resolvedMovieId}}",
+                "watchlist"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('movie is removed from watchlist', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.id).to.eql(pm.environment.get('resolvedMovieId'));",
+                  "  pm.expect(body.mediaType).to.eql('movie');",
+                  "  pm.expect(body.inWatchlist).to.eql(false);",
                   "});"
                 ]
               }

@@ -32,8 +32,8 @@ Implemented:
 - Mobile tracking mutations invalidate the local library data.
 - Mobile watchlist mutations invalidate the local library data.
 - Mobile Library/Profile refresh authenticated library data after tracking changes.
-- Mobile Library shows watchlist titles separately from watched history.
-- Mobile Library has segmented views for all activity, continuing shows, watchlist, and history.
+- Mobile Library shows watchlist titles and rated titles separately from watched history.
+- Mobile Library has segmented views for all activity, continuing shows, watchlist, rated titles, and history.
 - Mobile Library rows render catalog poster thumbnails when available, with stable placeholders otherwise.
 - Mobile Profile renders a touch-driven holo profile card with Google avatar and library stats.
 - Mobile library rows navigate back to movie detail or show season detail screens.
@@ -421,7 +421,7 @@ Current watched-state behavior:
 - Show progress returned by show detail, episode watch mutations, and `GET /shows/:showId/progress` is based on episodes currently persisted in TVLore. Opening a season hydrates its episode rows.
 - Show detail returns `progress.status` as `not_started`, `watching`, or `completed`.
 - Show and movie detail responses return `inWatchlist` and nullable `rating` for the authenticated user.
-- `GET /library` returns summary counts, continue-watching shows, recent movie/episode activity, and watchlist titles for the authenticated user.
+- `GET /library` returns summary counts, continue-watching shows, rated titles, recent movie/episode activity, and watchlist titles for the authenticated user.
 
 Why season detail fetches TMDB:
 
@@ -709,7 +709,7 @@ Expected behavior:
 - `DELETE /shows/:showId/preference` clears that show rating for the authenticated user.
 - `PUT /movies/:movieId/preference` stores a 1-5 movie rating for the authenticated user.
 - `DELETE /movies/:movieId/preference` clears that movie rating for the authenticated user.
-- `GET /library` returns personal summary, continue-watching, and recently watched activity.
+- `GET /library` returns personal summary, rated titles, continue-watching, watchlist, and recently watched activity.
 - `DELETE /movies/:movieId/watches` marks that movie unwatched for the authenticated user.
 - `GET /movies/:movieId` returns movie detail with authenticated user's watched state.
 
@@ -721,7 +721,7 @@ The current mobile app has these product-facing slices:
 Library
 -> Supabase session
 -> GET /users/me and GET /library in parallel
--> Library summary, watchlist, continue-watching, recently-watched
+-> Library summary, watchlist, rated titles, continue-watching, recently-watched
 
 Profile
 -> Supabase session
@@ -746,12 +746,13 @@ Current behavior:
 - Signed-out users can start Google login.
 - Signed-in users can refresh authenticated backend state.
 - Library/Profile refresh avoids the public health check and loads only authenticated product data.
-- Library shows watched counts for shows, movies, episodes, and watchlist items.
-- Profile shows library counts for shows, movies, episodes, and watchlist items in a holo profile card.
+- Library shows watched counts for shows, movies, episodes, watchlist items, and rated titles.
+- Profile shows library counts for shows, movies, episodes, and rated titles in a holo profile card.
 - The profile card uses Google avatar metadata when available and initials as a fallback.
 - Library shows continue-watching and recently watched rows when the backend has watched data.
 - Library shows saved watchlist rows when the backend has watchlist data.
-- Library can filter between all rows, continuing shows, saved titles, and watch history.
+- Library shows rated show/movie rows when the backend has rating preference data.
+- Library can filter between all rows, continuing shows, saved titles, rated titles, and watch history.
 - Library rows include compact poster thumbnails for quicker visual scanning.
 - Continue-watching rows open the next season, recently watched movies open movie detail, and recently watched episodes open the matching season.
 - Watchlist rows can remove saved titles through confirmable swipe actions, and recently watched rows can undo the underlying movie or episode watched marker through confirmable swipe actions.
@@ -777,7 +778,7 @@ Current behavior:
 - Season detail loads backend-owned episode IDs and watched state.
 - Season detail can mark episodes watched or unwatched.
 - Season detail can mark all currently loaded episodes watched or unwatched.
-- Tracking and watchlist mutations invalidate `GET /library`, so recent watch changes and saved intent appear without pressing Refresh when the user returns to Library or Profile.
+- Tracking, watchlist, and rating mutations invalidate `GET /library`, so recent watch changes, saved intent, and rated titles appear without pressing Refresh when the user returns to Library or Profile.
 - Episode watch actions update the touched episode and display returned show progress.
 
 Why this shape matters:

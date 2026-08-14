@@ -1019,7 +1019,7 @@ Errors: `SHOW_NOT_FOUND`, `VALIDATION_FAILED`.
 
 Purpose: return personal library/profile summary for authenticated user.
 
-Current MVP status: implemented with summary, continue-watching shows, and recent movie/episode activity.
+Current MVP status: implemented with summary, continue-watching shows, rated titles, watchlist titles, and recent movie/episode activity.
 
 Auth: required.
 
@@ -1043,7 +1043,10 @@ Response:
   "summary": {
     "watchedShowCount": 12,
     "watchedMovieCount": 34,
-    "watchedEpisodeCount": 183
+    "watchedEpisodeCount": 183,
+    "watchlistItemCount": 8,
+    "ratedTitleCount": 6,
+    "averageRating": 4.2
   },
   "continueWatching": [
     {
@@ -1055,8 +1058,27 @@ Response:
       "nextEpisode": {
         "id": "uuid",
         "seasonNumber": 1,
-        "episodeNumber": 5
+        "episodeNumber": 5,
+        "title": "The Grim Barbarity of Optics and Design"
       }
+    }
+  ],
+  "ratedTitles": [
+    {
+      "mediaType": "movie",
+      "id": "uuid",
+      "title": "Arrival",
+      "posterPath": "/path.jpg",
+      "rating": 5,
+      "updatedAt": "2026-08-09T00:00:00.000Z"
+    },
+    {
+      "mediaType": "show",
+      "id": "uuid",
+      "title": "Dark",
+      "posterPath": "/path.jpg",
+      "rating": 4,
+      "updatedAt": "2026-08-09T00:00:00.000Z"
     }
   ],
   "recentlyWatched": [
@@ -1077,6 +1099,15 @@ Response:
       "title": "Secrets",
       "watchedAt": "2026-08-09T00:00:00.000Z"
     }
+  ],
+  "watchlist": [
+    {
+      "mediaType": "show",
+      "id": "uuid",
+      "title": "Severance",
+      "posterPath": "/path.jpg",
+      "createdAt": "2026-08-09T00:00:00.000Z"
+    }
   ]
 }
 ```
@@ -1095,6 +1126,7 @@ Business validation:
 
 - Summary and progress are calculated by backend.
 - Results include only authenticated user's data.
+- Ratings are explicit preferences and are returned separately from watched history.
 
 Errors: `VALIDATION_FAILED`, `UNAUTHORIZED`.
 

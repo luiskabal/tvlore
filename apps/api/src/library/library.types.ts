@@ -1,6 +1,8 @@
 import type { ShowProgressResponseDto } from "../progress";
 
 export type LibrarySummaryDto = {
+  averageRating: number | null;
+  ratedTitleCount: number;
   watchlistItemCount: number;
   watchedEpisodeCount: number;
   watchedMovieCount: number;
@@ -58,8 +60,27 @@ export type LibraryWatchlistItemDto =
       title: string;
     };
 
+export type LibraryRatedTitleDto =
+  | {
+      id: string;
+      mediaType: "show";
+      posterPath: string | null;
+      rating: number;
+      title: string;
+      updatedAt: string;
+    }
+  | {
+      id: string;
+      mediaType: "movie";
+      posterPath: string | null;
+      rating: number;
+      title: string;
+      updatedAt: string;
+    };
+
 export type LibraryResponseDto = {
   continueWatching: LibraryContinueWatchingShowDto[];
+  ratedTitles: LibraryRatedTitleDto[];
   recentlyWatched: LibraryRecentlyWatchedItemDto[];
   summary: LibrarySummaryDto;
   watchlist: LibraryWatchlistItemDto[];

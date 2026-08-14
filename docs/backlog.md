@@ -8,7 +8,6 @@ No active infrastructure tasks.
 
 ## Next
 
-- [ ] Validate rating preferences on iPhone after Vercel deploy.
 - [ ] Start first recommendation/social matching slice from stored ratings.
 
 ## Notes
@@ -83,6 +82,7 @@ No active infrastructure tasks.
 - [x] Add richer removal/actions from Library rows after the segmented UX settles.
 - [x] Add compact poster thumbnails to mobile Library rows.
 - [x] Add personal show/movie rating preferences.
+- [x] Surface rated shows and movies in Library/Profile.
 
 ## Deferred
 

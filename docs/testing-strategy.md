@@ -102,7 +102,7 @@ Authenticated `api:check` covers:
 - Episode watch/unwatch idempotency.
 - Movie watch/unwatch idempotency.
 - Progress after marking an episode watched.
-- Library summary and recently watched after marking episode/movie watched.
+- Library summary, recently watched, watchlist, and rated titles after marking watched items and setting ratings.
 
 The first tests cover pure authentication/user helpers:
 
@@ -136,7 +136,7 @@ Test:
 - Catalog resolve.
 - Mark episode watched.
 - Mark movie watched.
-- Library summary.
+- Library summary and rated-title projection.
 
 ### Repository Integration Tests
 

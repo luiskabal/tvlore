@@ -190,7 +190,7 @@ and keeps the holo/tilt effect inside presentation code.
 Library rows receive navigation callbacks from `LibraryScreen`: movies route
 to movie detail and episode/show rows route to season detail.
 `LibraryOverview` owns only local section-filter UI state for switching between
-all rows, continuing shows, watchlist, and watch history. It also owns the
+all rows, continuing shows, watchlist, rated titles, and watch history. It also owns the
 swipe presentation affordance for removable Library rows and compact poster
 thumbnail rendering from existing API data.
 

@@ -10,8 +10,11 @@ export type UserResponse = {
 
 export type LibraryResponse = {
   continueWatching: ContinueWatchingShow[];
+  ratedTitles: LibraryRatedTitle[];
   recentlyWatched: RecentlyWatchedItem[];
   summary: {
+    averageRating: number | null;
+    ratedTitleCount: number;
     watchlistItemCount: number;
     watchedEpisodeCount: number;
     watchedMovieCount: number;
@@ -67,6 +70,24 @@ export type LibraryWatchlistItem =
       mediaType: "movie";
       posterPath: string | null;
       title: string;
+    };
+
+export type LibraryRatedTitle =
+  | {
+      id: string;
+      mediaType: "show";
+      posterPath: string | null;
+      rating: number;
+      title: string;
+      updatedAt: string;
+    }
+  | {
+      id: string;
+      mediaType: "movie";
+      posterPath: string | null;
+      rating: number;
+      title: string;
+      updatedAt: string;
     };
 
 export type CatalogExternalRef = {
@@ -503,12 +524,16 @@ function isLibraryResponse(value: unknown): value is LibraryResponse {
 
   return (
     isRecord(value.summary) &&
+    isNullableNumber(value.summary.averageRating) &&
+    typeof value.summary.ratedTitleCount === "number" &&
     typeof value.summary.watchlistItemCount === "number" &&
     typeof value.summary.watchedEpisodeCount === "number" &&
     typeof value.summary.watchedMovieCount === "number" &&
     typeof value.summary.watchedShowCount === "number" &&
     Array.isArray(value.continueWatching) &&
     value.continueWatching.every(isContinueWatchingShow) &&
+    Array.isArray(value.ratedTitles) &&
+    value.ratedTitles.every(isLibraryRatedTitle) &&
     Array.isArray(value.recentlyWatched) &&
     value.recentlyWatched.every(isRecentlyWatchedItem) &&
     Array.isArray(value.watchlist) &&
@@ -791,6 +816,24 @@ function isLibraryWatchlistItem(value: unknown): value is LibraryWatchlistItem {
     typeof value.title === "string" &&
     isNullableString(value.posterPath) &&
     typeof value.createdAt === "string"
+  );
+}
+
+function isLibraryRatedTitle(value: unknown): value is LibraryRatedTitle {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    isMediaType(value.mediaType) &&
+    typeof value.id === "string" &&
+    typeof value.title === "string" &&
+    isNullableString(value.posterPath) &&
+    typeof value.rating === "number" &&
+    Number.isInteger(value.rating) &&
+    value.rating >= 1 &&
+    value.rating <= 5 &&
+    typeof value.updatedAt === "string"
   );
 }
 
