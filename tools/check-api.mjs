@@ -54,6 +54,8 @@ async function checkUnauthorizedRoutes() {
   await checkUnauthorized(`/shows/${missingUuid}/seasons`);
   await checkUnauthorized(`/shows/${missingUuid}/seasons/1`);
   await checkUnauthorized(`/shows/${missingUuid}/progress`);
+  await checkUnauthorized(`/shows/${missingUuid}/watches`, { method: "POST" });
+  await checkUnauthorized(`/shows/${missingUuid}/watches`, { method: "DELETE" });
   await checkUnauthorized(`/shows/${missingUuid}/watchlist`, { method: "POST" });
   await checkUnauthorized(`/shows/${missingUuid}/watchlist`, { method: "DELETE" });
   await checkUnauthorized(`/shows/${missingUuid}/preference`, {
@@ -86,6 +88,7 @@ async function checkAuthenticatedProductFlow(token) {
     "content-type": "application/json",
   };
   const episodeWatchedAt = new Date().toISOString();
+  const showWatchedAt = new Date(Date.now() + 500).toISOString();
   const movieWatchedAt = new Date(Date.now() + 1000).toISOString();
 
   await check("/users/me", {
@@ -126,6 +129,13 @@ async function checkAuthenticatedProductFlow(token) {
     headers: authHeaders,
     method: "POST",
   });
+  await check("/shows/not-a-uuid/watches", {
+    assert: assertValidationError,
+    body: JSON.stringify({ watchedAt: showWatchedAt }),
+    expectedStatus: 400,
+    headers: jsonAuthHeaders,
+    method: "POST",
+  });
   await check("/shows/not-a-uuid/preference", {
     assert: assertValidationError,
     body: JSON.stringify({ rating: 5 }),
@@ -143,6 +153,19 @@ async function checkAuthenticatedProductFlow(token) {
     expectedStatus: 404,
     headers: authHeaders,
     method: "POST",
+  });
+  await check(`/shows/${missingUuid}/watches`, {
+    assert: (body) => assertError(body, "SHOW_NOT_FOUND"),
+    body: JSON.stringify({ watchedAt: showWatchedAt }),
+    expectedStatus: 404,
+    headers: jsonAuthHeaders,
+    method: "POST",
+  });
+  await check(`/shows/${missingUuid}/watches`, {
+    assert: (body) => assertError(body, "SHOW_NOT_FOUND"),
+    expectedStatus: 404,
+    headers: authHeaders,
+    method: "DELETE",
   });
   await check(`/shows/${missingUuid}/preference`, {
     assert: (body) => assertError(body, "SHOW_NOT_FOUND"),
@@ -441,6 +464,30 @@ async function checkAuthenticatedProductFlow(token) {
     assert: assertRecommendations,
     expectedStatus: 200,
     headers: authHeaders,
+  });
+  await check(`/shows/${resolvedShow.id}/watches`, {
+    assert: (body) => {
+      assertShowProgress(body, resolvedShow.id);
+      expectEqual(body.isComplete, true, "show bulk watch complete");
+      expectEqual(body.nextEpisode, null, "show bulk watch nextEpisode");
+      expectEqual(body.status, "completed", "show bulk watch status");
+      expectEqual(body.watchedEpisodeCount, body.totalEpisodeCount, "show bulk watch counts");
+      expect(body.totalEpisodeCount > 0, "show bulk watch should hydrate persisted episodes");
+    },
+    body: JSON.stringify({ watchedAt: showWatchedAt }),
+    expectedStatus: 200,
+    headers: jsonAuthHeaders,
+    method: "POST",
+  });
+  await check(`/shows/${resolvedShow.id}/watches`, {
+    assert: (body) => {
+      assertShowProgress(body, resolvedShow.id);
+      expectEqual(body.watchedEpisodeCount, 0, "show bulk unwatch count");
+      expectEqual(body.status, "not_started", "show bulk unwatch status");
+    },
+    expectedStatus: 200,
+    headers: authHeaders,
+    method: "DELETE",
   });
 
   await check(`/episodes/${firstEpisodeId}/watches`, {

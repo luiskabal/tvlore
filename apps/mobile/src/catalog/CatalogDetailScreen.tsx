@@ -10,7 +10,17 @@ import { useCatalogDetail } from "./use-catalog-detail";
 export default function CatalogDetailScreen({ mediaType }: { mediaType: MediaType }) {
   const params = useLocalSearchParams<{ id?: string | string[] }>();
   const id = typeof params.id === "string" ? params.id : null;
-  const { preferenceAction, refresh, setInWatchlist, setMovieWatched, setRating, state, watchAction, watchlistAction } = useCatalogDetail(mediaType, id);
+  const {
+    preferenceAction,
+    refresh,
+    setInWatchlist,
+    setMovieWatched,
+    setRating,
+    setShowWatched,
+    state,
+    watchAction,
+    watchlistAction,
+  } = useCatalogDetail(mediaType, id);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -41,6 +51,7 @@ export default function CatalogDetailScreen({ mediaType }: { mediaType: MediaTyp
             onSetInWatchlist={setInWatchlist}
             onSetMovieWatched={setMovieWatched}
             onSetRating={setRating}
+            onSetShowWatched={setShowWatched}
             preferenceAction={preferenceAction}
             watchAction={watchAction}
             watchlistAction={watchlistAction}

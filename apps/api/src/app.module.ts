@@ -19,7 +19,7 @@ import { RecommendationsController } from "./recommendations/recommendations.con
 import { RecommendationsRepository } from "./recommendations/recommendations.repository";
 import { RecommendationsService } from "./recommendations/recommendations.service";
 import { RootController } from "./root.controller";
-import { EpisodeTrackingController, MovieTrackingController } from "./tracking/tracking.controller";
+import { EpisodeTrackingController, MovieTrackingController, ShowTrackingController } from "./tracking/tracking.controller";
 import { TrackingRepository } from "./tracking/tracking.repository";
 import { TrackingService } from "./tracking/tracking.service";
 import { UsersController } from "./users/users.controller";
@@ -40,6 +40,7 @@ import { WatchlistService } from "./watchlist/watchlist.service";
     MoviesController,
     EpisodeTrackingController,
     MovieTrackingController,
+    ShowTrackingController,
     ShowWatchlistController,
     MovieWatchlistController,
     ShowPreferencesController,

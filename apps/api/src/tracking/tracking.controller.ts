@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Headers, HttpCode, HttpStatus, Param, Post } from "@nestjs/common";
 
 import { TrackingService } from "./tracking.service";
-import type { EpisodeWatchResponseDto, MovieWatchResponseDto } from "./tracking.types";
+import type { EpisodeWatchResponseDto, MovieWatchResponseDto, ShowWatchResponseDto } from "./tracking.types";
 
 @Controller("episodes")
 export class EpisodeTrackingController {
@@ -48,5 +48,29 @@ export class MovieTrackingController {
     @Param("movieId") movieId: string | undefined,
   ): Promise<MovieWatchResponseDto> {
     return this.trackingService.unmarkMovieWatched(authorizationHeader, movieId);
+  }
+}
+
+@Controller("shows")
+export class ShowTrackingController {
+  constructor(private readonly trackingService: TrackingService) {}
+
+  @Post(":showId/watches")
+  @HttpCode(HttpStatus.OK)
+  markWatched(
+    @Headers("authorization") authorizationHeader: string | undefined,
+    @Param("showId") showId: string | undefined,
+    @Body() body: unknown,
+  ): Promise<ShowWatchResponseDto> {
+    return this.trackingService.markShowWatched(authorizationHeader, showId, body);
+  }
+
+  @Delete(":showId/watches")
+  @HttpCode(HttpStatus.OK)
+  unmarkWatched(
+    @Headers("authorization") authorizationHeader: string | undefined,
+    @Param("showId") showId: string | undefined,
+  ): Promise<ShowWatchResponseDto> {
+    return this.trackingService.unmarkShowWatched(authorizationHeader, showId);
   }
 }

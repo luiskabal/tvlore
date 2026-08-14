@@ -18,3 +18,5 @@ export type MovieWatchResponseDto = {
   watchCount: number;
   watched: boolean;
 };
+
+export type ShowWatchResponseDto = ShowProgressResponseDto;

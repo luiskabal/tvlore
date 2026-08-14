@@ -11,6 +11,7 @@ export function CatalogDetailContent({
   onSetInWatchlist,
   onSetMovieWatched,
   onSetRating,
+  onSetShowWatched,
   preferenceAction,
   watchAction,
   watchlistAction,
@@ -20,6 +21,7 @@ export function CatalogDetailContent({
   onSetInWatchlist: (mediaType: MediaType, id: string, inWatchlist: boolean) => void;
   onSetMovieWatched: (movieId: string, watched: boolean) => void;
   onSetRating: (mediaType: MediaType, id: string, rating: number | null) => void;
+  onSetShowWatched: (showId: string, watched: boolean) => void;
   preferenceAction: PreferenceActionState;
   watchAction: WatchActionState;
   watchlistAction: WatchlistActionState;
@@ -51,7 +53,7 @@ export function CatalogDetailContent({
         <MovieWatchPanel movie={detail} watchAction={watchAction} onSetWatched={onSetMovieWatched} />
       ) : (
         <>
-          <ShowProgressPanel show={detail} />
+          <ShowProgressPanel show={detail} watchAction={watchAction} onSetWatched={onSetShowWatched} />
           <ShowSeasonsPanel onOpenShowSeason={onOpenShowSeason} show={detail} />
         </>
       )}
@@ -172,7 +174,18 @@ export function CatalogDetailSkeleton({ mediaType }: { mediaType: MediaType }) {
   );
 }
 
-function ShowProgressPanel({ show }: { show: ShowDetailResponse }) {
+function ShowProgressPanel({
+  onSetWatched,
+  show,
+  watchAction,
+}: {
+  onSetWatched: (showId: string, watched: boolean) => void;
+  show: ShowDetailResponse;
+  watchAction: WatchActionState;
+}) {
+  const isSaving = watchAction.kind === "loading";
+  const canUnwatch = show.progress.watchedEpisodeCount > 0;
+
   return (
     <View style={styles.statusPanel}>
       <Text style={styles.statusTitle}>Progress</Text>
@@ -182,6 +195,25 @@ function ShowProgressPanel({ show }: { show: ShowDetailResponse }) {
           Next S{show.progress.nextEpisode.seasonNumber} E{show.progress.nextEpisode.episodeNumber} - {show.progress.nextEpisode.title}
         </Text>
       ) : null}
+      {watchAction.kind === "error" ? <Text style={styles.errorText}>{watchAction.message}</Text> : null}
+
+      <View style={styles.actionRow}>
+        <Pressable
+          disabled={isSaving || show.progress.isComplete}
+          style={[styles.primaryButton, isSaving || show.progress.isComplete ? styles.disabledButton : null]}
+          onPress={() => onSetWatched(show.id, true)}
+        >
+          <Text style={styles.primaryButtonText}>{isSaving ? "Saving" : "Mark watched"}</Text>
+        </Pressable>
+
+        <Pressable
+          disabled={isSaving || !canUnwatch}
+          style={[styles.secondaryButton, isSaving || !canUnwatch ? styles.disabledButton : null]}
+          onPress={() => onSetWatched(show.id, false)}
+        >
+          <Text style={styles.secondaryButtonText}>{isSaving ? "Saving" : "Mark unwatched"}</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }

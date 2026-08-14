@@ -9,12 +9,11 @@ No active infrastructure tasks.
 ## Next
 
 - [ ] Persist richer catalog signals, such as genres, before improving recommendation quality.
-- [ ] Add backend-owned show-level `mark all watched` after defining how to hydrate every season safely.
 
 ## Notes
 
 - Season bulk watched is needed because marking episodes one by one is too slow for real use.
-- Season-level bulk watched already exists in season detail; show-level bulk needs a backend use case so mobile does not fire hundreds of episode mutations.
+- Season-level bulk watched exists in season detail, and show-level bulk now has a backend use case so mobile does not fire hundreds of episode mutations.
 - Mobile cleanup should start with the largest screens: `SeasonDetailScreen`, `CatalogDetailScreen`, `SearchScreen`, then `HomeScreen`.
 - Keep the current screen -> hook -> API client boundary. The cleanup goal is readability, not a new state-management layer yet.
 - Ratings are explicit preference signals. Keep them separate from watched state so recommendations can use both later.
@@ -90,6 +89,7 @@ No active infrastructure tasks.
 - [x] Start first recommendation slice from stored ratings.
 - [x] Let recommendation rows save directly to watchlist.
 - [x] Keep recommendations out of Profile and scoped to Library.
+- [x] Add backend-owned show-level mark all watched/unwatched.
 
 ## Deferred
 

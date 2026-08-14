@@ -74,6 +74,8 @@ Example hooks:
 - `useMarkEpisodeUnwatched()`
 - `useMarkMovieWatched()`
 - `useMarkMovieUnwatched()`
+- `useMarkShowWatched()`
+- `useMarkShowUnwatched()`
 - `useAddToWatchlist()`
 - `useRemoveFromWatchlist()`
 - `useLibrary()`
@@ -277,6 +279,19 @@ CatalogDetailScreen(movie)
   -> Optimistically update local watched state
   -> Reconcile local movie watched state from backend response
 ```
+
+Show tracking uses the same boundary:
+
+```text
+CatalogDetailScreen(show)
+  -> useCatalogDetail()
+  -> POST /shows/:showId/watches or DELETE /shows/:showId/watches
+  -> Reconcile local show progress from backend response
+```
+
+The app does not issue one request per episode for full-show actions. It sends
+the user's intent once, and the backend hydrates seasons and recalculates
+progress.
 
 Episode tracking uses the same boundary:
 

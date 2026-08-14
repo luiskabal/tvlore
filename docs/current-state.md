@@ -18,6 +18,7 @@ Implemented:
 - Season list and season detail endpoints for shows.
 - Episode catalog persistence when a season is opened.
 - Authenticated watch/unwatch endpoints for episodes and movies.
+- Authenticated show-level watch/unwatch endpoint that hydrates seasons and updates all episode watches for the show.
 - Authenticated watchlist endpoints for shows and movies.
 - Authenticated rating preference endpoints for shows and movies.
 - Authenticated personal library and show progress read endpoints.
@@ -29,6 +30,7 @@ Implemented:
 - Mobile show detail displays backend-owned progress state for persisted episodes.
 - Mobile season detail can mark episodes watched or unwatched.
 - Mobile season detail can mark all loaded season episodes watched or unwatched.
+- Mobile show detail can mark the full show watched or unwatched through one backend-owned bulk action.
 - Mobile show/movie detail can add or remove a title from the watchlist.
 - Mobile show/movie detail can rate or clear a rating preference for a title.
 - Mobile tracking mutations invalidate the local library data.
@@ -401,6 +403,8 @@ GET /shows/:showId/seasons/:seasonNumber
 GET /movies/:movieId
 POST /episodes/:episodeId/watches
 DELETE /episodes/:episodeId/watches
+POST /shows/:showId/watches
+DELETE /shows/:showId/watches
 POST /movies/:movieId/watches
 DELETE /movies/:movieId/watches
 POST /shows/:showId/watchlist
@@ -421,6 +425,7 @@ Current watched-state behavior:
 - Movies return `watched`, `watchCount`, and `lastWatchedAt` for the authenticated user.
 - Episodes return `watched`, `watchCount`, and `lastWatchedAt` for the authenticated user.
 - Mark watched/unwatched is idempotent in the MVP: one active row per user/movie or user/episode.
+- Show-level mark watched/unwatched is a backend-owned bulk action. Mark watched hydrates all non-empty seasons first, then upserts one watch row per episode for the authenticated user.
 - Add/remove watchlist is idempotent in the MVP: one active row per user/show or user/movie.
 - Rating preferences are explicit and separate from watched state: one active row per user/show or user/movie, with `rating` from 1 to 5.
 - Show progress returned by show detail, episode watch mutations, and `GET /shows/:showId/progress` is based on episodes currently persisted in TVLore. Opening a season hydrates its episode rows.
@@ -668,6 +673,8 @@ flowchart TB
   MovieRating[Preferences / PUT /movies/:movieId/preference]
   Library[Library / GET /library]
   Recommendations[Recommendations / GET /recommendations]
+  ShowBulkWatch[Tracking / POST /shows/:showId/watches]
+  ShowBulkUnwatch[Tracking / DELETE /shows/:showId/watches]
   MovieUnwatch[Tracking / DELETE /movies/:movieId/watches]
 
   Env --> Login
@@ -691,7 +698,9 @@ flowchart TB
   MovieRating --> MovieWatch
   MovieWatch --> Library
   Library --> Recommendations
-  Recommendations --> MovieUnwatch
+  Recommendations --> ShowBulkWatch
+  ShowBulkWatch --> ShowBulkUnwatch
+  ShowBulkUnwatch --> MovieUnwatch
 ```
 
 Expected behavior:
@@ -718,6 +727,8 @@ Expected behavior:
 - `DELETE /movies/:movieId/preference` clears that movie rating for the authenticated user.
 - `GET /library` returns personal summary, rated titles, continue-watching, watchlist, and recently watched activity.
 - `GET /recommendations` returns unrated, unwatched, unsaved catalog candidates ordered by the user's stronger rated media type.
+- `POST /shows/:showId/watches` hydrates the show seasons, marks every episode watched, and returns completed show progress.
+- `DELETE /shows/:showId/watches` removes every episode watch marker for that show and returns not-started show progress.
 - `DELETE /movies/:movieId/watches` marks that movie unwatched for the authenticated user.
 - `GET /movies/:movieId` returns movie detail with authenticated user's watched state.
 
@@ -744,6 +755,7 @@ Search
 -> Show detail progress state
 -> Show/movie watchlist add/remove
 -> Show/movie rating set/clear
+-> Show-level watched/unwatched
 -> Show season route
 -> GET /shows/:id/seasons/:seasonNumber
 -> Episode watch/unwatch
@@ -781,6 +793,7 @@ Current behavior:
 - Show detail displays backend-owned progress state: not started, watching, or completed.
 - Movie detail can mark a movie watched or unwatched.
 - Movie watch actions update local detail state optimistically, then reconcile from the backend mutation response.
+- Show detail can mark the full show watched or unwatched with one backend request and then reconcile progress from the backend mutation response.
 - Show and movie detail can add or remove the title from the watchlist.
 - Watchlist actions update local detail state optimistically, then reconcile from the backend mutation response.
 - Show and movie detail can set or clear a 1-5 rating preference.
@@ -845,6 +858,7 @@ Product foundation:
 - Mobile can render library thumbnails from existing poster data without extra API calls.
 - Mobile can open a show season, hydrate episode IDs, and mark episodes watched/unwatched through backend tracking endpoints.
 - Mobile can bulk-mark the loaded episodes in a season by orchestrating existing idempotent episode tracking endpoints.
+- Mobile can bulk-mark a full show through a backend-owned tracking endpoint instead of issuing one request per episode.
 - Mobile has primary Library, Search, and Profile routes over the same authenticated API session.
 
 ## 13. Why This Backend Base Helps The Frontend
@@ -867,6 +881,7 @@ Search screen
 -> show detail displays backend-owned progress status
 -> detail screen can POST/DELETE watchlist state
 -> movie detail can POST/DELETE /movies/:movieId/watches
+-> show detail can POST/DELETE /shows/:showId/watches
 -> show detail can navigate to a season
 -> season detail can POST/DELETE /episodes/:episodeId/watches
 ```
@@ -874,24 +889,23 @@ Search screen
 The remaining near-term frontend product flow is:
 
 ```text
-Watchlist UX validation
--> richer library organization
--> tighter loading states around slow API responses
+Richer loading and mutation feedback
+-> recommendation quality once catalog signals improve
+-> social matching after the personal library loop stays stable
 ```
 
 ## 14. Recommended Next Step
 
-Validate watchlist UX, then refine Library organization:
+Improve recommendation quality by persisting richer catalog signals:
 
 ```text
-Search result or detail title
--> save to watchlist
--> Library shows planned titles separately from watched history
+Resolve show or movie
+-> persist genres/provider signals
+-> use ratings plus content metadata for recommendations
 ```
 
 Why this is next:
 
-- Watched history now works for movies and episodes.
-- Watchlist now works as personal/private intent.
-- The Library screen has both completed watching and planned watching.
-- The next product question is how to make those states easier to scan before adding social complexity.
+- Watched history, watchlist, ratings, and bulk tracking now cover the core personal-library loop.
+- Recommendations currently use only hydrated catalog rows and explicit ratings.
+- Stronger catalog metadata will improve suggestions without adding social complexity yet.

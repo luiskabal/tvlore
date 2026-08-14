@@ -76,4 +76,74 @@ describe("TrackingRepository", () => {
       watched: true,
     });
   });
+
+  it("marks every show episode watched", async () => {
+    const watchedAt = new Date("2026-08-14T00:00:00.000Z");
+    const episodeWatch = {
+      upsert: vi.fn().mockResolvedValue({ watchedAt }),
+    };
+    const client = {
+      $transaction: vi.fn(async (callback: (transaction: { episodeWatch: typeof episodeWatch }) => Promise<void>) => {
+        await callback({ episodeWatch });
+      }),
+      episode: {
+        findMany: vi.fn().mockResolvedValue([{ id: firstEpisodeId }, { id: secondEpisodeId }]),
+      },
+      episodeWatch,
+      show: {
+        findUnique: vi.fn()
+          .mockResolvedValueOnce({ id: showId })
+          .mockResolvedValueOnce({
+            id: showId,
+            seasons: [
+              {
+                episodes: [
+                  {
+                    episodeNumber: 1,
+                    id: firstEpisodeId,
+                    seasonNumber: 1,
+                    title: "Pilot",
+                    watches: [{ watchedAt }],
+                  },
+                  {
+                    episodeNumber: 2,
+                    id: secondEpisodeId,
+                    seasonNumber: 1,
+                    title: "Second",
+                    watches: [{ watchedAt }],
+                  },
+                ],
+                seasonNumber: 1,
+              },
+            ],
+          }),
+      },
+    };
+    const repository = new TrackingRepository({ getClient: () => client } as unknown as PrismaService);
+
+    await expect(repository.markShowWatched(userId, showId, watchedAt)).resolves.toEqual({
+      isComplete: true,
+      nextEpisode: null,
+      percentComplete: 100,
+      seasons: [
+        {
+          percentComplete: 100,
+          seasonNumber: 1,
+          totalEpisodeCount: 2,
+          watchedEpisodeCount: 2,
+        },
+      ],
+      showId,
+      status: "completed",
+      totalEpisodeCount: 2,
+      watchedEpisodeCount: 2,
+    });
+    expect(client.episodeWatch.upsert).toHaveBeenCalledTimes(2);
+    expect(client.episodeWatch.upsert).toHaveBeenCalledWith(expect.objectContaining({
+      where: { userId_episodeId: { episodeId: firstEpisodeId, userId } },
+    }));
+    expect(client.episodeWatch.upsert).toHaveBeenCalledWith(expect.objectContaining({
+      where: { userId_episodeId: { episodeId: secondEpisodeId, userId } },
+    }));
+  });
 });

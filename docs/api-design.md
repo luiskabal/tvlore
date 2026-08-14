@@ -887,6 +887,96 @@ Business validation:
 
 Errors: `EPISODE_NOT_FOUND`, `VALIDATION_FAILED`, `UNAUTHORIZED`.
 
+### `POST /shows/:showId/watches`
+
+Purpose: mark every episode in a show watched for the authenticated user.
+
+Current MVP status: implemented as a backend-owned bulk action. The backend hydrates every provider-backed season before writing episode watch rows.
+
+Auth: required.
+
+Route parameters:
+
+- `showId` UUID.
+
+Query parameters: none.
+
+Request:
+
+```json
+{
+  "watchedAt": "2026-08-09T00:00:00.000Z"
+}
+```
+
+`watchedAt` is optional. If omitted, the backend uses server time.
+
+Response: `ShowProgressResponse`.
+
+Status codes:
+
+- `200 OK` if already watched and endpoint is idempotent
+- `400 BAD_REQUEST`
+- `401 UNAUTHORIZED`
+- `404 NOT_FOUND`
+- `502 BAD_GATEWAY`
+
+Authorization: authenticated user may only create their own episode watch records.
+
+Transport validation:
+
+- `showId` UUID.
+- `watchedAt` ISO datetime if present.
+
+Business validation:
+
+- Show exists.
+- Backend resolves the show's catalog provider ID.
+- Backend hydrates all non-empty seasons before writing watches.
+- One active watch row per user/episode is upserted.
+- Progress is recalculated server-side from persisted episode rows.
+
+Errors: `SHOW_NOT_FOUND`, `CATALOG_PROVIDER_UNAVAILABLE`, `VALIDATION_FAILED`, `UNAUTHORIZED`.
+
+### `DELETE /shows/:showId/watches`
+
+Purpose: mark every episode in a show unwatched for the authenticated user.
+
+Current MVP status: implemented as a backend-owned bulk action.
+
+Auth: required.
+
+Route parameters:
+
+- `showId` UUID.
+
+Query parameters: none.
+
+Request: none.
+
+Response: `ShowProgressResponse`.
+
+Status codes:
+
+- `200 OK`
+- `400 BAD_REQUEST`
+- `401 UNAUTHORIZED`
+- `404 NOT_FOUND`
+
+Authorization: authenticated user may only remove their own episode watch records.
+
+Transport validation:
+
+- `showId` UUID.
+
+Business validation:
+
+- Show exists.
+- All authenticated user's episode watch rows for that show are removed.
+- Progress is recalculated server-side from persisted episode rows.
+
+Errors: `SHOW_NOT_FOUND`, `VALIDATION_FAILED`, `UNAUTHORIZED`.
+
 ### `POST /movies/:movieId/watches`
 
 Purpose: mark a movie watched for the authenticated user.

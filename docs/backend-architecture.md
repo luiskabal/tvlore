@@ -127,6 +127,12 @@ Watchlist follows the same shape:
 - `WatchlistService`: resolves the authenticated TVLore user and validates route IDs.
 - `WatchlistRepository`: owns idempotent Prisma writes for show/movie watchlist rows.
 
+Tracking follows the same shape:
+
+- `EpisodeTrackingController`, `MovieTrackingController`, and `ShowTrackingController`: HTTP routes for watched state.
+- `TrackingService`: resolves the authenticated TVLore user, validates IDs, and coordinates catalog hydration for full-show actions.
+- `TrackingRepository`: owns idempotent Prisma writes for episode/movie watches and recalculates show progress after mutations.
+
 Recommendations follow the same shape:
 
 - `RecommendationsController`: HTTP route only.

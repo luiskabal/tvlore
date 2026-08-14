@@ -5,9 +5,11 @@ import {
   clearPreferenceRating,
   getCatalogDetail,
   markMovieWatched,
+  markShowWatched,
   removeFromWatchlist,
   setPreferenceRating,
   unmarkMovieWatched,
+  unmarkShowWatched,
   type CatalogDetailResponse,
   type MediaType,
 } from "../api/tvlore-api";
@@ -122,6 +124,43 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
         return;
       }
 
+      rollbackDetail(previousDetail, setState);
+      setWatchAction({
+        kind: "error",
+        message: error instanceof Error ? error.message : "Watch update failed",
+      });
+    }
+  }, [state]);
+
+  const setShowWatched = useCallback(async (showId: string, watched: boolean) => {
+    const previousDetail = state.kind === "ready" && state.detail.mediaType === "show" && state.detail.id === showId
+      ? state.detail
+      : null;
+
+    setWatchAction({ kind: "loading" });
+
+    try {
+      const token = await getSupabaseAccessToken();
+      const progress = watched
+        ? await markShowWatched(token, showId)
+        : await unmarkShowWatched(token, showId);
+
+      setState((current) => {
+        if (current.kind !== "ready" || current.detail.mediaType !== "show" || current.detail.id !== showId) {
+          return current;
+        }
+
+        return {
+          detail: {
+            ...current.detail,
+            progress,
+          },
+          kind: "ready",
+        };
+      });
+      notifyLibraryChanged();
+      setWatchAction({ kind: "idle" });
+    } catch (error) {
       rollbackDetail(previousDetail, setState);
       setWatchAction({
         kind: "error",
@@ -252,7 +291,7 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
     void refresh();
   }, [refresh]);
 
-  return { preferenceAction, refresh, setInWatchlist, setMovieWatched, setRating, state, watchAction, watchlistAction };
+  return { preferenceAction, refresh, setInWatchlist, setMovieWatched, setRating, setShowWatched, state, watchAction, watchlistAction };
 }
 
 function getOptimisticWatchCount(currentCount: number, currentWatched: boolean, nextWatched: boolean) {

@@ -1,6 +1,9 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 
+import { CatalogRepository } from "../catalog/catalog.repository";
 import { parseTvloreId } from "../catalog/catalog-detail";
+import { TmdbClient } from "../catalog/tmdb-client";
+import type { ShowProgressResponseDto } from "../progress";
 import { UsersService } from "../users/users.service";
 import { parseWatchInput } from "./tracking-input";
 import { TrackingRepository } from "./tracking.repository";
@@ -9,7 +12,9 @@ import type { EpisodeWatchResponseDto, MovieWatchResponseDto } from "./tracking.
 @Injectable()
 export class TrackingService {
   constructor(
+    private readonly catalogRepository: CatalogRepository,
     private readonly trackingRepository: TrackingRepository,
+    private readonly tmdbClient: TmdbClient,
     private readonly usersService: UsersService,
   ) {}
 
@@ -52,4 +57,55 @@ export class TrackingService {
 
     return this.trackingRepository.unmarkMovieWatched(user.id, parseTvloreId(movieId, "movieId"));
   }
+
+  async markShowWatched(
+    authorizationHeader: string | undefined,
+    showId: string | undefined,
+    body: unknown,
+  ): Promise<ShowProgressResponseDto> {
+    const user = await this.usersService.getMe(authorizationHeader);
+    const input = parseWatchInput(body);
+    const parsedShowId = parseTvloreId(showId, "showId");
+
+    await this.hydrateShowSeasons(parsedShowId);
+
+    return this.trackingRepository.markShowWatched(user.id, parsedShowId, input.watchedAt);
+  }
+
+  async unmarkShowWatched(
+    authorizationHeader: string | undefined,
+    showId: string | undefined,
+  ): Promise<ShowProgressResponseDto> {
+    const user = await this.usersService.getMe(authorizationHeader);
+
+    return this.trackingRepository.unmarkShowWatched(user.id, parseTvloreId(showId, "showId"));
+  }
+
+  private async hydrateShowSeasons(showId: string) {
+    const [providerShowId, seasons] = await Promise.all([
+      this.catalogRepository.findShowProviderId(showId),
+      this.catalogRepository.findShowSeasons(showId),
+    ]);
+
+    if (!providerShowId || !seasons) {
+      throwNotFound("SHOW_NOT_FOUND", "Show was not found");
+    }
+
+    for (const season of seasons.seasons) {
+      if (season.episodeCount === 0) {
+        continue;
+      }
+
+      const seasonDetail = await this.tmdbClient.getResolvedSeason(providerShowId, season.seasonNumber);
+      await this.catalogRepository.upsertSeasonDetail(showId, seasonDetail);
+    }
+  }
+}
+
+function throwNotFound(code: string, message: string): never {
+  throw new NotFoundException({
+    code,
+    message,
+    details: null,
+  });
 }

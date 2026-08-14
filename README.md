@@ -25,6 +25,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Movie watched/unwatched tracking.
 - Episode watched/unwatched tracking.
 - Show detail progress state: not started, watching, or completed.
+- Show-level mark all watched/unwatched backed by the API.
 - Season-level mark all watched/unwatched.
 - Personal show/movie watchlist.
 - Personal show/movie rating preferences.
@@ -55,6 +56,7 @@ Google login
 -> Open show season
 -> Mark episode watched
 -> Mark all season episodes watched
+-> Mark full show watched
 -> Return to profile
 -> Library summary auto-refreshes
 -> Switch between Library, Search, and Profile

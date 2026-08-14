@@ -403,6 +403,40 @@ export async function unmarkEpisodeWatched(
   );
 }
 
+export async function markShowWatched(
+  accessToken: string | null,
+  showId: string,
+): Promise<ShowProgressResponse> {
+  return fetchJson(
+    `/shows/${showId}/watches`,
+    isShowProgressResponse,
+    "Unexpected show watch response",
+    {
+      body: JSON.stringify({ watchedAt: new Date().toISOString() }),
+      headers: {
+        ...getAuthHeaders(accessToken),
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+    },
+  );
+}
+
+export async function unmarkShowWatched(
+  accessToken: string | null,
+  showId: string,
+): Promise<ShowProgressResponse> {
+  return fetchJson(
+    `/shows/${showId}/watches`,
+    isShowProgressResponse,
+    "Unexpected show unwatch response",
+    {
+      headers: getAuthHeaders(accessToken),
+      method: "DELETE",
+    },
+  );
+}
+
 export async function markMovieWatched(
   accessToken: string | null,
   movieId: string,

@@ -1461,6 +1461,124 @@
           ]
         },
         {
+          "name": "POST /shows/:showId/watches",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "postman-{{$guid}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"watchedAt\": \"2026-08-09T00:00:00.000Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/shows/{{resolvedShowId}}/watches",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shows",
+                "{{resolvedShowId}}",
+                "watches"
+              ]
+            },
+            "description": "Marks every currently provider-backed season episode watched for the authenticated user. The backend hydrates show seasons before creating watch records."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('show is fully watched', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.showId).to.eql(pm.environment.get('resolvedShowId'));",
+                  "  pm.expect(body.status).to.eql('completed');",
+                  "  pm.expect(body.isComplete).to.eql(true);",
+                  "  pm.expect(body.totalEpisodeCount).to.be.above(0);",
+                  "  pm.expect(body.watchedEpisodeCount).to.eql(body.totalEpisodeCount);",
+                  "  pm.expect(body.nextEpisode).to.eql(null);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE /shows/:showId/watches",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "postman-{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shows/{{resolvedShowId}}/watches",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shows",
+                "{{resolvedShowId}}",
+                "watches"
+              ]
+            },
+            "description": "Removes every watched episode marker for this show for the authenticated user."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('show is unwatched', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.showId).to.eql(pm.environment.get('resolvedShowId'));",
+                  "  pm.expect(body.status).to.eql('not_started');",
+                  "  pm.expect(body.watchedEpisodeCount).to.eql(0);",
+                  "  pm.expect(body.isComplete).to.eql(false);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "DELETE /episodes/:episodeId/watches",
           "request": {
             "method": "DELETE",
