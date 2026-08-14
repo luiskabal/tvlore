@@ -30,7 +30,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Personal show/movie watchlist.
 - Personal show/movie rating preferences.
 - Library summary with watched show, movie, episode, watchlist, and rated-title counts.
-- Segmented Library views for watching, watchlist, rated titles, and history.
+- Segmented Library views for watching, movies, episodes, watchlist, rated titles, and history.
 - Holographic mobile profile summary card with Google avatar and library stats.
 - Continue-watching and recently-watched data from the backend.
 - Rated show/movie list from the backend.

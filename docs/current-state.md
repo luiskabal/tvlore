@@ -39,7 +39,7 @@ Implemented:
 - Mobile Library can show backend-owned recommendation candidates.
 - Mobile recommendation rows can save titles directly to the watchlist with optimistic feedback.
 - Mobile Library shows watchlist titles and rated titles separately from watched history.
-- Mobile Library has segmented views for all activity, continuing shows, watchlist, rated titles, and history.
+- Mobile Library has segmented views for all activity, continuing shows, recently watched movies, recently watched episodes, watchlist, rated titles, and history.
 - Mobile Library rows render catalog poster thumbnails when available, with stable placeholders otherwise.
 - Mobile Profile renders a touch-driven holo profile card with Google avatar and library stats.
 - Mobile library rows navigate back to movie detail or show season detail screens.
@@ -775,7 +775,7 @@ Current behavior:
 - Library shows recommendation rows when the backend has eligible catalog candidates.
 - Recommendation rows open the matching show or movie detail screen.
 - Recommendation rows can save the title to watchlist immediately, then reconcile through the existing library refresh invalidator.
-- Library can filter between all rows, continuing shows, saved titles, rated titles, and watch history.
+- Library can filter between all rows, continuing shows, recently watched movies, recently watched episodes, saved titles, rated titles, and watch history.
 - Library rows include compact poster thumbnails for quicker visual scanning.
 - Continue-watching rows open the next season, recently watched movies open movie detail, and recently watched episodes open the matching season.
 - Watchlist rows can remove saved titles through confirmable swipe actions, and recently watched rows can undo the underlying movie or episode watched marker through confirmable swipe actions.

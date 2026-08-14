@@ -440,6 +440,10 @@ export const styles = StyleSheet.create({
     gap: 4,
     padding: 14,
   },
+  summaryCardActive: {
+    backgroundColor: "#e8f3ed",
+    borderColor: "#1f7a5c",
+  },
   summaryGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -450,10 +454,16 @@ export const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "800",
   },
+  summaryLabelActive: {
+    color: "#1f7a5c",
+  },
   summaryValue: {
     color: "#171412",
     fontSize: 24,
     fontWeight: "900",
+  },
+  summaryValueActive: {
+    color: "#1f7a5c",
   },
   swipeActionButton: {
     alignItems: "center",

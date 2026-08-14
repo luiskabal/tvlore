@@ -21,11 +21,13 @@ import { styles } from "./home-styles";
 import { RecommendationsPanel } from "./RecommendationsPanel";
 import type { RecommendationActionState } from "./use-recommendation-actions";
 
-type LibrarySectionFilter = "all" | "history" | "rated" | "watching" | "watchlist";
+type LibrarySectionFilter = "all" | "episodes" | "history" | "movies" | "rated" | "watching" | "watchlist";
 
 const librarySections: Array<{ label: string; value: LibrarySectionFilter }> = [
   { label: "All", value: "all" },
   { label: "Watching", value: "watching" },
+  { label: "Movies", value: "movies" },
+  { label: "Episodes", value: "episodes" },
   { label: "Watchlist", value: "watchlist" },
   { label: "Rated", value: "rated" },
   { label: "History", value: "history" },
@@ -111,12 +113,25 @@ export function LibraryOverview({
   const hasContinueWatching = visibleLibrary.continueWatching.length > 0;
   const hasRatedTitles = visibleLibrary.ratedTitles.length > 0;
   const hasRecentlyWatched = visibleLibrary.recentlyWatched.length > 0;
+  const recentlyWatchedEpisodes = visibleLibrary.recentlyWatched.filter((item) => item.mediaType === "episode");
+  const recentlyWatchedMovies = visibleLibrary.recentlyWatched.filter((item) => item.mediaType === "movie");
+  const hasRecentlyWatchedEpisodes = recentlyWatchedEpisodes.length > 0;
+  const hasRecentlyWatchedMovies = recentlyWatchedMovies.length > 0;
   const hasWatchlist = visibleLibrary.watchlist.length > 0;
   const activeSection = selectedSection ?? getDefaultSection(visibleLibrary);
+  const summaryStats: Array<{ label: string; section: LibrarySectionFilter; value: number }> = [
+    { label: "Shows", section: "watching", value: visibleLibrary.summary.watchedShowCount },
+    { label: "Movies", section: "movies", value: visibleLibrary.summary.watchedMovieCount },
+    { label: "Episodes", section: "episodes", value: visibleLibrary.summary.watchedEpisodeCount },
+    { label: "Watchlist", section: "watchlist", value: visibleLibrary.summary.watchlistItemCount },
+    { label: "Rated", section: "rated", value: visibleLibrary.summary.ratedTitleCount },
+  ];
   const shouldShowWatchlist = activeSection === "all" || activeSection === "watchlist";
   const shouldShowContinueWatching = activeSection === "all" || activeSection === "watching";
   const shouldShowRated = activeSection === "all" || activeSection === "rated";
   const shouldShowHistory = activeSection === "all" || activeSection === "history";
+  const shouldShowMovies = activeSection === "movies";
+  const shouldShowEpisodes = activeSection === "episodes";
   const hideLibraryAction = (actionKey: string) => {
     setOptimisticRemovedKeys((current) => addSetValue(current, actionKey));
   };
@@ -124,11 +139,15 @@ export function LibraryOverview({
   return (
     <View style={styles.librarySectionFixed}>
       <View style={styles.summaryGrid}>
-        <SummaryStat label="Shows" value={visibleLibrary.summary.watchedShowCount} />
-        <SummaryStat label="Movies" value={visibleLibrary.summary.watchedMovieCount} />
-        <SummaryStat label="Episodes" value={visibleLibrary.summary.watchedEpisodeCount} />
-        <SummaryStat label="Watchlist" value={visibleLibrary.summary.watchlistItemCount} />
-        <SummaryStat label="Rated" value={visibleLibrary.summary.ratedTitleCount} />
+        {summaryStats.map((stat) => (
+          <SummaryStat
+            isActive={activeSection === stat.section}
+            key={stat.section}
+            label={stat.label}
+            onPress={() => setSelectedSection(stat.section)}
+            value={stat.value}
+          />
+        ))}
       </View>
 
       {isEmpty ? (
@@ -196,6 +215,40 @@ export function LibraryOverview({
                 key={`${item.mediaType}-${item.id}`}
                 onOpenMovie={onOpenMovie}
                 onOpenShow={onOpenShow}
+              />
+            ))}
+          </View>
+        ) : null}
+
+        {shouldShowMovies && hasRecentlyWatchedMovies ? (
+          <View style={styles.listSection}>
+            <Text style={styles.listTitle}>Movies</Text>
+            {recentlyWatchedMovies.map((item) => (
+              <RecentlyWatchedRow
+                item={item}
+                key={`${item.mediaType}-${item.id}`}
+                libraryAction={libraryAction}
+                onOptimisticRemove={hideLibraryAction}
+                onOpenMovie={onOpenMovie}
+                onOpenShowSeason={onOpenShowSeason}
+                onRemove={onRemoveRecentlyWatchedItem}
+              />
+            ))}
+          </View>
+        ) : null}
+
+        {shouldShowEpisodes && hasRecentlyWatchedEpisodes ? (
+          <View style={styles.listSection}>
+            <Text style={styles.listTitle}>Episodes</Text>
+            {recentlyWatchedEpisodes.map((item) => (
+              <RecentlyWatchedRow
+                item={item}
+                key={`${item.mediaType}-${item.id}`}
+                libraryAction={libraryAction}
+                onOptimisticRemove={hideLibraryAction}
+                onOpenMovie={onOpenMovie}
+                onOpenShowSeason={onOpenShowSeason}
+                onRemove={onRemoveRecentlyWatchedItem}
               />
             ))}
           </View>
@@ -275,12 +328,32 @@ function EmptySection({ activeSection }: { activeSection: LibrarySectionFilter }
   );
 }
 
-function SummaryStat({ label, value }: { label: string; value: number }) {
+function SummaryStat({
+  isActive,
+  label,
+  onPress,
+  value,
+}: {
+  isActive: boolean;
+  label: string;
+  onPress: () => void;
+  value: number;
+}) {
   return (
-    <View style={styles.summaryCard}>
-      <Text style={styles.summaryValue}>{value}</Text>
-      <Text style={styles.summaryLabel}>{label}</Text>
-    </View>
+    <Pressable
+      accessibilityLabel={`Filter library by ${label.toLowerCase()}`}
+      accessibilityRole="button"
+      accessibilityState={{ selected: isActive }}
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.summaryCard,
+        isActive ? styles.summaryCardActive : null,
+        pressed ? styles.pressedListItem : null,
+      ]}
+    >
+      <Text style={[styles.summaryValue, isActive ? styles.summaryValueActive : null]}>{value}</Text>
+      <Text style={[styles.summaryLabel, isActive ? styles.summaryLabelActive : null]}>{label}</Text>
+    </Pressable>
   );
 }
 
@@ -575,6 +648,14 @@ function hasItemsForSection(activeSection: LibrarySectionFilter, library: Librar
     return library.watchlist.length > 0;
   }
 
+  if (activeSection === "movies") {
+    return library.recentlyWatched.some((item) => item.mediaType === "movie");
+  }
+
+  if (activeSection === "episodes") {
+    return library.recentlyWatched.some((item) => item.mediaType === "episode");
+  }
+
   if (activeSection === "rated") {
     return library.ratedTitles.length > 0;
   }
@@ -661,6 +742,14 @@ function getEmptySectionTitle(activeSection: LibrarySectionFilter) {
     return "No saved titles";
   }
 
+  if (activeSection === "movies") {
+    return "No recent movies";
+  }
+
+  if (activeSection === "episodes") {
+    return "No recent episodes";
+  }
+
   if (activeSection === "rated") {
     return "No rated titles";
   }
@@ -675,6 +764,14 @@ function getEmptySectionDetail(activeSection: LibrarySectionFilter) {
 
   if (activeSection === "watchlist") {
     return "Saved shows and movies will appear here.";
+  }
+
+  if (activeSection === "movies") {
+    return "Watched movies will appear here.";
+  }
+
+  if (activeSection === "episodes") {
+    return "Watched episodes will appear here.";
   }
 
   if (activeSection === "rated") {
