@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 
@@ -39,6 +39,39 @@ export function LibraryOverview({
   onRemoveWatchlistItem,
 }: LibraryOverviewProps) {
   const [selectedSection, setSelectedSection] = useState<LibrarySectionFilter | null>(null);
+  const [optimisticRemovedKeys, setOptimisticRemovedKeys] = useState<Set<string>>(() => new Set());
+
+  useEffect(() => {
+    if (libraryAction.kind !== "error") {
+      return;
+    }
+
+    setOptimisticRemovedKeys((current) => deleteSetValue(current, libraryAction.actionKey));
+  }, [libraryAction]);
+
+  useEffect(() => {
+    if (!library) {
+      return;
+    }
+
+    const currentKeys = getLibraryActionKeys(library);
+
+    setOptimisticRemovedKeys((current) => {
+      let changed = false;
+      const next = new Set<string>();
+
+      current.forEach((key) => {
+        if (currentKeys.has(key)) {
+          next.add(key);
+          return;
+        }
+
+        changed = true;
+      });
+
+      return changed ? next : current;
+    });
+  }, [library]);
 
   if (!library) {
     return (
@@ -49,26 +82,30 @@ export function LibraryOverview({
     );
   }
 
+  const visibleLibrary = getOptimisticLibrary(library, optimisticRemovedKeys);
   const isEmpty =
-    library.summary.watchlistItemCount === 0 &&
-    library.summary.watchedEpisodeCount === 0 &&
-    library.summary.watchedMovieCount === 0 &&
-    library.summary.watchedShowCount === 0;
-  const hasContinueWatching = library.continueWatching.length > 0;
-  const hasRecentlyWatched = library.recentlyWatched.length > 0;
-  const hasWatchlist = library.watchlist.length > 0;
-  const activeSection = selectedSection ?? getDefaultSection(library);
+    visibleLibrary.summary.watchlistItemCount === 0 &&
+    visibleLibrary.summary.watchedEpisodeCount === 0 &&
+    visibleLibrary.summary.watchedMovieCount === 0 &&
+    visibleLibrary.summary.watchedShowCount === 0;
+  const hasContinueWatching = visibleLibrary.continueWatching.length > 0;
+  const hasRecentlyWatched = visibleLibrary.recentlyWatched.length > 0;
+  const hasWatchlist = visibleLibrary.watchlist.length > 0;
+  const activeSection = selectedSection ?? getDefaultSection(visibleLibrary);
   const shouldShowWatchlist = activeSection === "all" || activeSection === "watchlist";
   const shouldShowContinueWatching = activeSection === "all" || activeSection === "watching";
   const shouldShowHistory = activeSection === "all" || activeSection === "history";
+  const hideLibraryAction = (actionKey: string) => {
+    setOptimisticRemovedKeys((current) => addSetValue(current, actionKey));
+  };
 
   return (
     <View style={styles.librarySectionFixed}>
       <View style={styles.summaryGrid}>
-        <SummaryStat label="Shows" value={library.summary.watchedShowCount} />
-        <SummaryStat label="Movies" value={library.summary.watchedMovieCount} />
-        <SummaryStat label="Episodes" value={library.summary.watchedEpisodeCount} />
-        <SummaryStat label="Watchlist" value={library.summary.watchlistItemCount} />
+        <SummaryStat label="Shows" value={visibleLibrary.summary.watchedShowCount} />
+        <SummaryStat label="Movies" value={visibleLibrary.summary.watchedMovieCount} />
+        <SummaryStat label="Episodes" value={visibleLibrary.summary.watchedEpisodeCount} />
+        <SummaryStat label="Watchlist" value={visibleLibrary.summary.watchlistItemCount} />
       </View>
 
       {isEmpty ? (
@@ -87,14 +124,14 @@ export function LibraryOverview({
         showsVerticalScrollIndicator={false}
         style={styles.libraryListScroll}
       >
-        {!isEmpty && activeSection !== "all" && !hasItemsForSection(activeSection, library) ? (
+        {!isEmpty && activeSection !== "all" && !hasItemsForSection(activeSection, visibleLibrary) ? (
           <EmptySection activeSection={activeSection} />
         ) : null}
 
         {shouldShowContinueWatching && hasContinueWatching ? (
           <View style={styles.listSection}>
             <Text style={styles.listTitle}>Continue Watching</Text>
-            {library.continueWatching.map((show) => (
+            {visibleLibrary.continueWatching.map((show) => (
               <ContinueWatchingItem key={show.id} onOpenShowSeason={onOpenShowSeason} show={show} />
             ))}
           </View>
@@ -103,11 +140,12 @@ export function LibraryOverview({
         {shouldShowWatchlist && hasWatchlist ? (
           <View style={styles.listSection}>
             <Text style={styles.listTitle}>Watchlist</Text>
-            {library.watchlist.map((item) => (
+            {visibleLibrary.watchlist.map((item) => (
               <WatchlistRow
                 item={item}
                 key={`${item.mediaType}-${item.id}`}
                 libraryAction={libraryAction}
+                onOptimisticRemove={hideLibraryAction}
                 onOpenMovie={onOpenMovie}
                 onOpenShow={onOpenShow}
                 onRemove={onRemoveWatchlistItem}
@@ -119,11 +157,12 @@ export function LibraryOverview({
         {shouldShowHistory && hasRecentlyWatched ? (
           <View style={styles.listSection}>
             <Text style={styles.listTitle}>Recently Watched</Text>
-            {library.recentlyWatched.map((item) => (
+            {visibleLibrary.recentlyWatched.map((item) => (
               <RecentlyWatchedRow
                 item={item}
                 key={`${item.mediaType}-${item.id}`}
                 libraryAction={libraryAction}
+                onOptimisticRemove={hideLibraryAction}
                 onOpenMovie={onOpenMovie}
                 onOpenShowSeason={onOpenShowSeason}
                 onRemove={onRemoveRecentlyWatchedItem}
@@ -225,12 +264,14 @@ function ContinueWatchingItem({
 function WatchlistRow({
   item,
   libraryAction,
+  onOptimisticRemove,
   onOpenMovie,
   onRemove,
   onOpenShow,
 }: {
   item: LibraryWatchlistItem;
   libraryAction: LibraryActionState;
+  onOptimisticRemove: (actionKey: string) => void;
   onOpenMovie: (movieId: string) => void;
   onRemove: (item: LibraryWatchlistItem) => void;
   onOpenShow: (showId: string) => void;
@@ -254,7 +295,10 @@ function WatchlistRow({
       actionLabel="Remove"
       isLoading={isRemoving}
       loadingLabel="Removing"
-      onAction={() => onRemove(item)}
+      onAction={() => {
+        onOptimisticRemove(actionKey);
+        onRemove(item);
+      }}
     >
       <View style={styles.actionListItem}>
         <Pressable
@@ -277,12 +321,14 @@ function WatchlistRow({
 function RecentlyWatchedRow({
   item,
   libraryAction,
+  onOptimisticRemove,
   onOpenMovie,
   onRemove,
   onOpenShowSeason,
 }: {
   item: RecentlyWatchedItem;
   libraryAction: LibraryActionState;
+  onOptimisticRemove: (actionKey: string) => void;
   onOpenMovie: (movieId: string) => void;
   onRemove: (item: RecentlyWatchedItem) => void;
   onOpenShowSeason: (showId: string, seasonNumber: number) => void;
@@ -306,7 +352,10 @@ function RecentlyWatchedRow({
       actionLabel="Undo"
       isLoading={isRemoving}
       loadingLabel="Undoing"
-      onAction={() => onRemove(item)}
+      onAction={() => {
+        onOptimisticRemove(actionKey);
+        onRemove(item);
+      }}
     >
       <View style={styles.actionListItem}>
         <Pressable
@@ -376,6 +425,54 @@ function hasItemsForSection(activeSection: LibrarySectionFilter, library: Librar
   }
 
   return true;
+}
+
+function getOptimisticLibrary(library: LibraryResponse, removedKeys: Set<string>): LibraryResponse {
+  const recentlyWatched = library.recentlyWatched.filter((item) => !removedKeys.has(getHistoryActionKey(item)));
+  const watchlist = library.watchlist.filter((item) => !removedKeys.has(getWatchlistActionKey(item)));
+  const removedRecentlyWatched = library.recentlyWatched.filter((item) => removedKeys.has(getHistoryActionKey(item)));
+  const removedWatchlistCount = library.watchlist.length - watchlist.length;
+  const removedMovieCount = removedRecentlyWatched.filter((item) => item.mediaType === "movie").length;
+  const removedEpisodeCount = removedRecentlyWatched.filter((item) => item.mediaType === "episode").length;
+
+  return {
+    ...library,
+    recentlyWatched,
+    summary: {
+      ...library.summary,
+      watchedEpisodeCount: Math.max(0, library.summary.watchedEpisodeCount - removedEpisodeCount),
+      watchedMovieCount: Math.max(0, library.summary.watchedMovieCount - removedMovieCount),
+      watchlistItemCount: Math.max(0, library.summary.watchlistItemCount - removedWatchlistCount),
+    },
+    watchlist,
+  };
+}
+
+function getLibraryActionKeys(library: LibraryResponse) {
+  return new Set([
+    ...library.recentlyWatched.map(getHistoryActionKey),
+    ...library.watchlist.map(getWatchlistActionKey),
+  ]);
+}
+
+function addSetValue(values: Set<string>, value: string) {
+  if (values.has(value)) {
+    return values;
+  }
+
+  const next = new Set(values);
+  next.add(value);
+  return next;
+}
+
+function deleteSetValue(values: Set<string>, value: string) {
+  if (!values.has(value)) {
+    return values;
+  }
+
+  const next = new Set(values);
+  next.delete(value);
+  return next;
 }
 
 function getDefaultSection(library: LibraryResponse): LibrarySectionFilter {

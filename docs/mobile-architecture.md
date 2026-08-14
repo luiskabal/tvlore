@@ -196,6 +196,8 @@ swipe presentation affordance for removable Library rows.
 Library row mutations flow through `useLibraryActions`, which keeps Supabase
 token lookup and API calls out of `LibraryOverview`. The hook reuses existing
 watchlist and tracking endpoints, then notifies the local library invalidator.
+`LibraryOverview` applies optimistic row removal for swipe actions and restores
+the row if the matching mutation reports an error.
 
 `useHomeData` preserves the last ready snapshot during refreshes. Library and
 Profile render skeletons only when no home data has loaded yet.
@@ -251,7 +253,8 @@ Movie tracking uses the same boundary:
 CatalogDetailScreen(movie)
   -> useCatalogDetail()
   -> POST /movies/:movieId/watches or DELETE /movies/:movieId/watches
-  -> Update local movie watched state from backend response
+  -> Optimistically update local watched state
+  -> Reconcile local movie watched state from backend response
 ```
 
 Episode tracking uses the same boundary:
@@ -274,11 +277,13 @@ CatalogDetailScreen(show/movie)
   -> useCatalogDetail()
   -> POST or DELETE /shows/:showId/watchlist
   -> POST or DELETE /movies/:movieId/watchlist
-  -> Update local inWatchlist state from backend response
+  -> Optimistically update local inWatchlist state
+  -> Reconcile local inWatchlist state from backend response
 ```
 
-The app does not infer saved intent from local lists. It renders the
-`inWatchlist` value returned by detail endpoints and watchlist mutations.
+The app does not infer saved intent from local lists. It may render optimistic
+local state for reversible user actions, then settles on the `inWatchlist`
+value returned by detail endpoints and watchlist mutations.
 
 Catalog and season detail routes render content-shaped skeletons while their
 initial API requests are pending. This keeps detail screens visually stable

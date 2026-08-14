@@ -35,6 +35,7 @@ Implemented:
 - Mobile Profile renders a touch-driven holo profile card with Google avatar and library stats.
 - Mobile library rows navigate back to movie detail or show season detail screens.
 - Mobile Library rows can remove watchlist items and undo recent watched markers through swipe actions.
+- Mobile Library applies optimistic row removal for reversible swipe actions and rolls back on API error.
 - Mobile Library/Profile keep previous library data during refreshes and render skeletons on initial load.
 - Mobile has routed Library, Search, and Profile surfaces with persistent bottom app navigation.
 - Postman collection and local/Vercel environments.
@@ -719,9 +720,9 @@ Current behavior:
 - Detail screens render content-shaped skeletons while show, movie, or season data loads.
 - Show detail displays backend-owned progress state: not started, watching, or completed.
 - Movie detail can mark a movie watched or unwatched.
-- Movie watch actions update local detail state from the backend mutation response.
+- Movie watch actions update local detail state optimistically, then reconcile from the backend mutation response.
 - Show and movie detail can add or remove the title from the watchlist.
-- Watchlist actions update local detail state from the backend mutation response.
+- Watchlist actions update local detail state optimistically, then reconcile from the backend mutation response.
 - Show detail lists seasons and opens a season route.
 - Season detail loads backend-owned episode IDs and watched state.
 - Season detail can mark episodes watched or unwatched.
@@ -776,7 +777,7 @@ Product foundation:
 - Mobile can resolve a provider result and open internal show/movie details by TVLore ID.
 - Mobile can mark movies watched/unwatched through backend tracking endpoints.
 - Mobile can add/remove shows and movies from the watchlist through backend watchlist endpoints.
-- Mobile can remove watchlist/history rows from Library through swipe actions backed by existing backend watchlist and tracking endpoints.
+- Mobile can remove watchlist/history rows immediately through optimistic swipe actions backed by existing backend watchlist and tracking endpoints.
 - Mobile can open a show season, hydrate episode IDs, and mark episodes watched/unwatched through backend tracking endpoints.
 - Mobile can bulk-mark the loaded episodes in a season by orchestrating existing idempotent episode tracking endpoints.
 - Mobile has primary Library, Search, and Profile routes over the same authenticated API session.

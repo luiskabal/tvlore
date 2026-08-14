@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type Dispatch, type SetStateAction } from "react";
 
 import {
   addToWatchlist,
@@ -55,7 +55,26 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
   }, [id, mediaType]);
 
   const setMovieWatched = useCallback(async (movieId: string, watched: boolean) => {
+    const previousDetail = state.kind === "ready" && state.detail.mediaType === "movie" && state.detail.id === movieId
+      ? state.detail
+      : null;
+
     setWatchAction({ kind: "loading" });
+    setState((current) => {
+      if (current.kind !== "ready" || current.detail.mediaType !== "movie" || current.detail.id !== movieId) {
+        return current;
+      }
+
+      return {
+        detail: {
+          ...current.detail,
+          lastWatchedAt: watched ? new Date().toISOString() : null,
+          watchCount: getOptimisticWatchCount(current.detail.watchCount, current.detail.watched, watched),
+          watched,
+        },
+        kind: "ready",
+      };
+    });
 
     try {
       const token = await getSupabaseAccessToken();
@@ -81,15 +100,33 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
       notifyLibraryChanged();
       setWatchAction({ kind: "idle" });
     } catch (error) {
+      rollbackDetail(previousDetail, setState);
       setWatchAction({
         kind: "error",
         message: error instanceof Error ? error.message : "Watch update failed",
       });
     }
-  }, []);
+  }, [state]);
 
   const setInWatchlist = useCallback(async (targetMediaType: MediaType, targetId: string, inWatchlist: boolean) => {
+    const previousDetail = state.kind === "ready" && state.detail.id === targetId && state.detail.mediaType === targetMediaType
+      ? state.detail
+      : null;
+
     setWatchlistAction({ kind: "loading" });
+    setState((current) => {
+      if (current.kind !== "ready" || current.detail.id !== targetId || current.detail.mediaType !== targetMediaType) {
+        return current;
+      }
+
+      return {
+        detail: {
+          ...current.detail,
+          inWatchlist,
+        },
+        kind: "ready",
+      };
+    });
 
     try {
       const token = await getSupabaseAccessToken();
@@ -117,16 +154,42 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
       notifyLibraryChanged();
       setWatchlistAction({ kind: "idle" });
     } catch (error) {
+      rollbackDetail(previousDetail, setState);
       setWatchlistAction({
         kind: "error",
         message: error instanceof Error ? error.message : "Watchlist update failed",
       });
     }
-  }, []);
+  }, [state]);
 
   useEffect(() => {
     void refresh();
   }, [refresh]);
 
   return { refresh, setInWatchlist, setMovieWatched, state, watchAction, watchlistAction };
+}
+
+function getOptimisticWatchCount(currentCount: number, currentWatched: boolean, nextWatched: boolean) {
+  if (currentWatched === nextWatched) {
+    return currentCount;
+  }
+
+  return Math.max(0, currentCount + (nextWatched ? 1 : -1));
+}
+
+function rollbackDetail(
+  previousDetail: CatalogDetailResponse | null,
+  setState: Dispatch<SetStateAction<CatalogDetailState>>,
+) {
+  if (!previousDetail) {
+    return;
+  }
+
+  setState((current) => {
+    if (current.kind !== "ready" || current.detail.id !== previousDetail.id || current.detail.mediaType !== previousDetail.mediaType) {
+      return current;
+    }
+
+    return { detail: previousDetail, kind: "ready" };
+  });
 }
