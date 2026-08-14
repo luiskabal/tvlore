@@ -85,6 +85,7 @@ No active infrastructure tasks.
 - [x] Add personal show/movie rating preferences.
 - [x] Surface rated shows and movies in Library/Profile.
 - [x] Start first recommendation slice from stored ratings.
+- [x] Let recommendation rows save directly to watchlist.
 
 ## Deferred
 

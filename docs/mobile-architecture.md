@@ -135,6 +135,7 @@ src/
 |   |-- HomeScreen.tsx
 |   |-- LibraryOverview.tsx
 |   |-- RecommendationsPanel.tsx
+|   |-- use-recommendation-actions.ts
 |   |-- use-home-model.ts
 |   `-- use-home-data.ts
 |
@@ -191,8 +192,10 @@ and keeps the holo/tilt effect inside presentation code.
 `RecommendationsPanel` is presentation-only and is reused by Library and
 Profile. `useHomeData` loads the recommendation response alongside the user and
 library payloads, while `tvlore-api.ts` owns the response-shape validation.
-Recommendation rows receive navigation callbacks from the route screen and open
-the matching backend-owned show or movie detail screen.
+Recommendation rows receive navigation and save-to-watchlist callbacks from the
+route screen. `useRecommendationActions` reuses the existing watchlist endpoint,
+then notifies the local library invalidator. The panel owns only local optimistic
+row hiding and restores the row if the save fails.
 
 Library rows receive navigation callbacks from `LibraryScreen`: movies route
 to movie detail and episode/show rows route to season detail.

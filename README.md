@@ -34,6 +34,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Continue-watching and recently-watched data from the backend.
 - Rated show/movie list from the backend.
 - First-pass recommendations from stored rating preferences and hydrated catalog data.
+- Recommendation rows can be saved directly to the watchlist with optimistic feedback.
 - Library rows navigate back into movie and show season detail screens.
 - Library/Profile keeps prior data during refresh and shows skeletons on first load.
 - Routed Library, Search, and Profile mobile surfaces with bottom app navigation.

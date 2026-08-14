@@ -301,6 +301,12 @@ export const styles = StyleSheet.create({
   pressedListItem: {
     opacity: 0.72,
   },
+  recommendationMain: {
+    alignItems: "center",
+    flex: 1,
+    flexDirection: "row",
+    gap: 12,
+  },
   screen: {
     backgroundColor: "#f7f4ee",
     flex: 1,
@@ -392,6 +398,20 @@ export const styles = StyleSheet.create({
   skeletonStat: {
     flex: 1,
     height: 58,
+  },
+  smallActionButton: {
+    alignItems: "center",
+    backgroundColor: "#1f7a5c",
+    borderRadius: 8,
+    justifyContent: "center",
+    minWidth: 68,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  smallActionButtonText: {
+    color: "#fffdfa",
+    fontSize: 13,
+    fontWeight: "900",
   },
   statusDetail: {
     color: "#5f564d",

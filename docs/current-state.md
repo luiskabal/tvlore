@@ -34,6 +34,7 @@ Implemented:
 - Mobile watchlist mutations invalidate the local library data.
 - Mobile Library/Profile refresh authenticated library data after tracking changes.
 - Mobile Library/Profile can show backend-owned recommendation candidates.
+- Mobile recommendation rows can save titles directly to the watchlist with optimistic feedback.
 - Mobile Library shows watchlist titles and rated titles separately from watched history.
 - Mobile Library has segmented views for all activity, continuing shows, watchlist, rated titles, and history.
 - Mobile Library rows render catalog poster thumbnails when available, with stable placeholders otherwise.
@@ -760,6 +761,7 @@ Current behavior:
 - Library shows rated show/movie rows when the backend has rating preference data.
 - Library and Profile show recommendation rows when the backend has eligible catalog candidates.
 - Recommendation rows open the matching show or movie detail screen.
+- Recommendation rows can save the title to watchlist immediately, then reconcile through the existing library refresh invalidator.
 - Library can filter between all rows, continuing shows, saved titles, rated titles, and watch history.
 - Library rows include compact poster thumbnails for quicker visual scanning.
 - Continue-watching rows open the next season, recently watched movies open movie detail, and recently watched episodes open the matching season.

@@ -7,6 +7,7 @@ import type {
   LibraryRatedTitle,
   LibraryResponse,
   LibraryWatchlistItem,
+  RecommendationItem,
   RecommendationsResponse,
   RecentlyWatchedItem,
 } from "../api/tvlore-api";
@@ -18,6 +19,7 @@ import {
 } from "../library/use-library-actions";
 import { styles } from "./home-styles";
 import { RecommendationsPanel } from "./RecommendationsPanel";
+import type { RecommendationActionState } from "./use-recommendation-actions";
 
 type LibrarySectionFilter = "all" | "history" | "rated" | "watching" | "watchlist";
 
@@ -38,6 +40,8 @@ type LibraryOverviewProps = {
   onOpenShowSeason: (showId: string, seasonNumber: number) => void;
   onRemoveRecentlyWatchedItem: (item: RecentlyWatchedItem) => void;
   onRemoveWatchlistItem: (item: LibraryWatchlistItem) => void;
+  onSaveRecommendation: (item: RecommendationItem) => Promise<void>;
+  recommendationAction: RecommendationActionState;
   recommendations: RecommendationsResponse | null;
 };
 
@@ -49,6 +53,8 @@ export function LibraryOverview({
   onOpenShowSeason,
   onRemoveRecentlyWatchedItem,
   onRemoveWatchlistItem,
+  onSaveRecommendation,
+  recommendationAction,
   recommendations,
 }: LibraryOverviewProps) {
   const [selectedSection, setSelectedSection] = useState<LibrarySectionFilter | null>(null);
@@ -145,6 +151,8 @@ export function LibraryOverview({
           <RecommendationsPanel
             onOpenMovie={onOpenMovie}
             onOpenShow={onOpenShow}
+            onSaveToWatchlist={onSaveRecommendation}
+            recommendationAction={recommendationAction}
             recommendations={recommendations}
           />
         ) : null}

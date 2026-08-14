@@ -8,8 +8,10 @@ import { LibraryOverviewSkeleton } from "../home/LibraryOverview";
 import { RecommendationsPanel } from "../home/RecommendationsPanel";
 import { styles } from "../home/home-styles";
 import { useHomeModel } from "../home/use-home-model";
+import { useRecommendationActions } from "../home/use-recommendation-actions";
 
 export default function ProfileScreen() {
+  const { recommendationAction, saveRecommendation } = useRecommendationActions();
   const {
     auth,
     authActionMessage,
@@ -59,6 +61,8 @@ export default function ProfileScreen() {
           <RecommendationsPanel
             onOpenMovie={openMovie}
             onOpenShow={openShow}
+            onSaveToWatchlist={saveRecommendation}
+            recommendationAction={recommendationAction}
             recommendations={homeData.recommendations}
           />
         ) : null}
