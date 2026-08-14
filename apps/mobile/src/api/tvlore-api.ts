@@ -133,6 +133,7 @@ export type ShowDetailResponse = {
   originalTitle: string | null;
   overview: string;
   posterPath: string | null;
+  progress: ShowProgressResponse;
   seasons: ShowSeasonSummary[];
   title: string;
 };
@@ -156,8 +157,22 @@ export type MovieDetailResponse = {
 export type CatalogDetailResponse = MovieDetailResponse | ShowDetailResponse;
 
 export type ShowProgressResponse = {
+  isComplete: boolean;
+  nextEpisode: {
+    episodeNumber: number;
+    id: string;
+    seasonNumber: number;
+    title: string;
+  } | null;
   percentComplete: number;
+  seasons: Array<{
+    percentComplete: number;
+    seasonNumber: number;
+    totalEpisodeCount: number;
+    watchedEpisodeCount: number;
+  }>;
   showId: string;
+  status: "completed" | "not_started" | "watching";
   totalEpisodeCount: number;
   watchedEpisodeCount: number;
 };
@@ -503,6 +518,7 @@ function isShowDetailResponse(value: unknown): value is Omit<ShowDetailResponse,
     isNullableString(value.posterPath) &&
     isNullableString(value.backdropPath) &&
     isNullableString(value.firstAirDate) &&
+    isShowProgressResponse(value.progress) &&
     Array.isArray(value.seasons) &&
     value.seasons.every(isShowSeasonSummary)
   );
@@ -599,10 +615,39 @@ function isShowProgressResponse(value: unknown): value is ShowProgressResponse {
 
   return (
     typeof value.showId === "string" &&
+    typeof value.isComplete === "boolean" &&
+    isNextEpisode(value.nextEpisode) &&
+    typeof value.percentComplete === "number" &&
+    Array.isArray(value.seasons) &&
+    value.seasons.every(isShowProgressSeason) &&
+    isShowProgressStatus(value.status) &&
+    typeof value.totalEpisodeCount === "number" &&
+    typeof value.watchedEpisodeCount === "number"
+  );
+}
+
+function isNextEpisode(value: unknown) {
+  return value === null || (
+    isRecord(value) &&
+    typeof value.id === "string" &&
+    typeof value.seasonNumber === "number" &&
+    typeof value.episodeNumber === "number" &&
+    typeof value.title === "string"
+  );
+}
+
+function isShowProgressSeason(value: unknown) {
+  return (
+    isRecord(value) &&
+    typeof value.seasonNumber === "number" &&
     typeof value.percentComplete === "number" &&
     typeof value.totalEpisodeCount === "number" &&
     typeof value.watchedEpisodeCount === "number"
   );
+}
+
+function isShowProgressStatus(value: unknown) {
+  return value === "completed" || value === "not_started" || value === "watching";
 }
 
 function isMovieWatchResponse(value: unknown): value is MovieWatchResponse {

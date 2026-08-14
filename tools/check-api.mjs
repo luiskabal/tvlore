@@ -459,7 +459,7 @@ function assertShowDetail(body, showId, inWatchlist) {
   expectString(body.title, "show.title");
   expectString(body.overview, "show.overview");
   expectArray(body.seasons, "show.seasons");
-  expect(body.progress === null, "show.progress should be null in current detail response");
+  assertShowProgress(body.progress, showId);
 }
 
 function assertShowSeasons(body, showId) {
@@ -508,6 +508,7 @@ function assertShowProgress(body, showId) {
   expectInteger(body.totalEpisodeCount, "show progress.totalEpisodeCount");
   expectInteger(body.percentComplete, "show progress.percentComplete");
   expect(body.percentComplete >= 0 && body.percentComplete <= 100, "show progress.percentComplete range");
+  expect(["completed", "not_started", "watching"].includes(body.status), "show progress.status");
 
   if ("isComplete" in body) {
     expectBoolean(body.isComplete, "show progress.isComplete");

@@ -24,6 +24,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Season detail screen with backend-owned episode IDs.
 - Movie watched/unwatched tracking.
 - Episode watched/unwatched tracking.
+- Show detail progress state: not started, watching, or completed.
 - Season-level mark all watched/unwatched.
 - Personal show/movie watchlist.
 - Library summary with watched show, movie, episode, and watchlist counts.

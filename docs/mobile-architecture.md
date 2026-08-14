@@ -207,6 +207,7 @@ SearchScreen
   -> CatalogDetailScreen
   -> useCatalogDetail()
   -> GET /shows/:id or GET /movies/:id
+  -> Show detail renders backend-owned progress state
   -> SeasonDetailScreen
   -> useSeasonDetail()
   -> GET /shows/:id/seasons/:seasonNumber
@@ -214,6 +215,8 @@ SearchScreen
 
 The app still does not calculate catalog identity, progress, or watched state.
 It asks the backend, then renders the response.
+For shows, detail progress is based on episodes already persisted by opening
+season detail routes.
 
 Search uses client-side prefetch:
 

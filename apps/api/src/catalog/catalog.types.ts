@@ -1,3 +1,5 @@
+import type { ShowProgressResponseDto } from "../progress";
+
 export type MediaType = "movie" | "show";
 
 export type CatalogSearchInput = {
@@ -94,7 +96,7 @@ export type ShowDetailResponseDto = {
   originalTitle: string | null;
   overview: string;
   posterPath: string | null;
-  progress: null;
+  progress: ShowProgressResponseDto;
   seasons: ShowSeasonSummaryDto[];
   title: string;
 };

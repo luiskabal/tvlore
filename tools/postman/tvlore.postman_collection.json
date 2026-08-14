@@ -686,6 +686,10 @@
                   "  pm.expect(body.id).to.eql(pm.environment.get('resolvedShowId'));",
                   "  pm.expect(body.inWatchlist).to.be.a('boolean');",
                   "  pm.expect(body.title).to.be.a('string');",
+                  "  pm.expect(body.progress).to.be.an('object');",
+                  "  pm.expect(body.progress.showId).to.eql(pm.environment.get('resolvedShowId'));",
+                  "  pm.expect(body.progress.status).to.be.oneOf(['not_started', 'watching', 'completed']);",
+                  "  pm.expect(body.progress.percentComplete).to.be.a('number');",
                   "  pm.expect(body.seasons).to.be.an('array');",
                   "});"
                 ]

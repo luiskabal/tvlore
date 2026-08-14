@@ -57,7 +57,8 @@ GET /library
 `GET /users/me` validates a Supabase Auth bearer token, upserts the matching `UserIdentity`, and returns the real TVLore user.
 `GET /search` validates a Supabase Auth bearer token and calls TMDB from the backend using server-side credentials.
 `POST /catalog/resolve` validates a Supabase Auth bearer token, fetches TMDB details, and upserts an internal show or movie ID.
-Show and movie detail endpoints read internal TVLore IDs. Season detail fetches
+Show and movie detail endpoints read internal TVLore IDs. Show detail also
+returns progress for episodes already persisted in TVLore. Season detail fetches
 and persists TMDB episodes for the requested season. Watch endpoints store
 per-user watched state, watchlist endpoints store saved intent, and
 library/progress endpoints read the authenticated user's viewing state.

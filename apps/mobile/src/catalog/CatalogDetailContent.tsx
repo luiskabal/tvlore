@@ -45,7 +45,10 @@ export function CatalogDetailContent({
       {detail.mediaType === "movie" ? (
         <MovieWatchPanel movie={detail} watchAction={watchAction} onSetWatched={onSetMovieWatched} />
       ) : (
-        <ShowSeasonsPanel onOpenShowSeason={onOpenShowSeason} show={detail} />
+        <>
+          <ShowProgressPanel show={detail} />
+          <ShowSeasonsPanel onOpenShowSeason={onOpenShowSeason} show={detail} />
+        </>
       )}
     </View>
   );
@@ -103,7 +106,28 @@ export function CatalogDetailSkeleton({ mediaType }: { mediaType: MediaType }) {
 
       <ActionPanelSkeleton />
 
-      {mediaType === "movie" ? <ActionPanelSkeleton /> : <ShowSeasonsSkeleton />}
+      {mediaType === "movie" ? (
+        <ActionPanelSkeleton />
+      ) : (
+        <>
+          <ActionPanelSkeleton />
+          <ShowSeasonsSkeleton />
+        </>
+      )}
+    </View>
+  );
+}
+
+function ShowProgressPanel({ show }: { show: ShowDetailResponse }) {
+  return (
+    <View style={styles.statusPanel}>
+      <Text style={styles.statusTitle}>Progress</Text>
+      <Text style={styles.mutedText}>{getShowProgressLine(show)}</Text>
+      {show.progress.nextEpisode ? (
+        <Text style={styles.mutedText}>
+          Next S{show.progress.nextEpisode.seasonNumber} E{show.progress.nextEpisode.episodeNumber} - {show.progress.nextEpisode.title}
+        </Text>
+      ) : null}
     </View>
   );
 }
@@ -235,6 +259,24 @@ function getStatusLine(detail: CatalogDetailResponse) {
   }
 
   return detail.watched ? `Watched ${formatCount(detail.watchCount, "time")}` : "Not watched yet";
+}
+
+function getShowProgressLine(show: ShowDetailResponse) {
+  if (show.progress.totalEpisodeCount === 0) {
+    return "Open a season to load episodes and start tracking.";
+  }
+
+  const countText = `${show.progress.watchedEpisodeCount}/${show.progress.totalEpisodeCount} episodes`;
+
+  if (show.progress.status === "completed") {
+    return `Completed - ${countText}`;
+  }
+
+  if (show.progress.status === "watching") {
+    return `Watching - ${countText} watched (${show.progress.percentComplete}%)`;
+  }
+
+  return `Not started - ${countText}`;
 }
 
 function formatDate(value: string) {

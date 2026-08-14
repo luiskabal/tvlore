@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
 import { PrismaService } from "../prisma.service";
-import { calculatePercentComplete } from "../progress";
+import { calculatePercentComplete, toShowProgress } from "../progress";
 import type {
   LibraryContinueWatchingShowDto,
   LibraryNextEpisodeDto,
@@ -134,38 +134,6 @@ export class LibraryRepository {
 
     return show ? toShowProgress(show) : null;
   }
-}
-
-function toShowProgress(show: {
-  id: string;
-  seasons: Array<{
-    episodes: WatchedEpisode[];
-    seasonNumber: number;
-  }>;
-}): ShowProgressResponseDto {
-  const episodes = show.seasons.flatMap((season) => season.episodes);
-  const totalEpisodeCount = episodes.length;
-  const watchedEpisodeCount = countWatched(episodes);
-
-  return {
-    isComplete: totalEpisodeCount > 0 && watchedEpisodeCount === totalEpisodeCount,
-    nextEpisode: toNextEpisode(episodes.find((episode) => episode.watches.length === 0)),
-    percentComplete: calculatePercentComplete(watchedEpisodeCount, totalEpisodeCount),
-    seasons: show.seasons.map((season) => {
-      const seasonTotalEpisodeCount = season.episodes.length;
-      const seasonWatchedEpisodeCount = countWatched(season.episodes);
-
-      return {
-        percentComplete: calculatePercentComplete(seasonWatchedEpisodeCount, seasonTotalEpisodeCount),
-        seasonNumber: season.seasonNumber,
-        totalEpisodeCount: seasonTotalEpisodeCount,
-        watchedEpisodeCount: seasonWatchedEpisodeCount,
-      };
-    }),
-    showId: show.id,
-    totalEpisodeCount,
-    watchedEpisodeCount,
-  };
 }
 
 function toContinueWatchingShow(show: {

@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
+import { toShowProgress, type ProgressEpisode } from "../progress";
 import { PrismaService } from "../prisma.service";
 import type {
   CatalogResolveResponseDto,
@@ -55,7 +56,25 @@ export class CatalogRepository {
   async findShowDetail(showId: string, userId: string): Promise<ShowDetailResponseDto | null> {
     const show = await this.prismaService.getClient().show.findUnique({
       include: {
-        seasons: { orderBy: { seasonNumber: "asc" } },
+        seasons: {
+          include: {
+            episodes: {
+              orderBy: [{ seasonNumber: "asc" }, { episodeNumber: "asc" }],
+              select: {
+                episodeNumber: true,
+                id: true,
+                seasonNumber: true,
+                title: true,
+                watches: {
+                  select: { watchedAt: true },
+                  take: 1,
+                  where: { userId },
+                },
+              },
+            },
+          },
+          orderBy: { seasonNumber: "asc" },
+        },
         watchlistItems: {
           select: { createdAt: true },
           take: 1,
@@ -339,7 +358,7 @@ function toShowDetailResponse(show: {
   originalTitle: string | null;
   overview: string;
   posterPath: string | null;
-  seasons: Array<Parameters<typeof toSeasonSummaryResponse>[0]>;
+  seasons: Array<Parameters<typeof toSeasonSummaryResponse>[0] & { episodes: ProgressEpisode[] }>;
   title: string;
   watchlistItems: Array<{ createdAt: Date }>;
 }): ShowDetailResponseDto {
@@ -351,7 +370,7 @@ function toShowDetailResponse(show: {
     originalTitle: show.originalTitle,
     overview: show.overview,
     posterPath: show.posterPath,
-    progress: null,
+    progress: toShowProgress(show),
     seasons: show.seasons.map(toSeasonSummaryResponse),
     title: show.title,
   };

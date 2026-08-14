@@ -1,3 +1,5 @@
+import type { ShowProgressResponseDto } from "../progress";
+
 export type LibrarySummaryDto = {
   watchlistItemCount: number;
   watchedEpisodeCount: number;
@@ -63,19 +65,4 @@ export type LibraryResponseDto = {
   watchlist: LibraryWatchlistItemDto[];
 };
 
-export type ShowProgressSeasonDto = {
-  percentComplete: number;
-  seasonNumber: number;
-  totalEpisodeCount: number;
-  watchedEpisodeCount: number;
-};
-
-export type ShowProgressResponseDto = {
-  isComplete: boolean;
-  nextEpisode: LibraryNextEpisodeDto | null;
-  percentComplete: number;
-  seasons: ShowProgressSeasonDto[];
-  showId: string;
-  totalEpisodeCount: number;
-  watchedEpisodeCount: number;
-};
+export type { ShowProgressResponseDto };

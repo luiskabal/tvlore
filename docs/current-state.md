@@ -23,6 +23,7 @@ Implemented:
 - Mobile Library/Profile routes read the authenticated user and personal library summary from the API.
 - Mobile search resolves provider results and opens backend-owned show/movie detail screens.
 - Mobile show detail opens backend-owned season episode lists.
+- Mobile show detail displays backend-owned progress state for persisted episodes.
 - Mobile season detail can mark episodes watched or unwatched.
 - Mobile season detail can mark all loaded season episodes watched or unwatched.
 - Mobile show/movie detail can add or remove a title from the watchlist.
@@ -404,7 +405,8 @@ Current watched-state behavior:
 - Episodes return `watched`, `watchCount`, and `lastWatchedAt` for the authenticated user.
 - Mark watched/unwatched is idempotent in the MVP: one active row per user/movie or user/episode.
 - Add/remove watchlist is idempotent in the MVP: one active row per user/show or user/movie.
-- Show progress returned by episode watch mutations and `GET /shows/:showId/progress` is based on episodes currently persisted in TVLore. Opening a season hydrates its episode rows.
+- Show progress returned by show detail, episode watch mutations, and `GET /shows/:showId/progress` is based on episodes currently persisted in TVLore. Opening a season hydrates its episode rows.
+- Show detail returns `progress.status` as `not_started`, `watching`, or `completed`.
 - Show and movie detail responses return `inWatchlist` for the authenticated user.
 - `GET /library` returns summary counts, continue-watching shows, recent movie/episode activity, and watchlist titles for the authenticated user.
 
@@ -682,6 +684,7 @@ Search
 -> POST /catalog/resolve
 -> Show or movie detail route
 -> GET /shows/:id or GET /movies/:id
+-> Show detail progress state
 -> Show/movie watchlist add/remove
 -> Show season route
 -> GET /shows/:id/seasons/:seasonNumber
@@ -710,6 +713,7 @@ Current behavior:
 - Opening a search result resolves it into a TVLore ID before navigating.
 - Detail screens render backend-owned show/movie data.
 - Detail screens render content-shaped skeletons while show, movie, or season data loads.
+- Show detail displays backend-owned progress state: not started, watching, or completed.
 - Movie detail can mark a movie watched or unwatched.
 - Movie watch actions update local detail state from the backend mutation response.
 - Show and movie detail can add or remove the title from the watchlist.
@@ -761,6 +765,7 @@ Product foundation:
 - TMDB IDs are external references only.
 - Watch tracking is stored against internal TVLore IDs and authenticated user IDs.
 - Watchlist intent is stored against internal TVLore IDs and authenticated user IDs.
+- Show progress status is calculated by the backend from persisted episode watches.
 - Mobile can render backend-owned library data through the same Supabase token used by Postman.
 - Mobile can search TMDB-backed catalog data without receiving TMDB credentials.
 - Mobile can prefetch search results without prefetching database writes.
@@ -788,6 +793,7 @@ Search screen
 -> POST /catalog/resolve
 -> navigate to show/movie detail using TVLore ID
 -> detail screen loads backend-owned details
+-> show detail displays backend-owned progress status
 -> detail screen can POST/DELETE watchlist state
 -> movie detail can POST/DELETE /movies/:movieId/watches
 -> show detail can navigate to a season
