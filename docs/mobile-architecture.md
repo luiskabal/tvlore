@@ -196,7 +196,9 @@ swipe presentation affordance for removable Library rows.
 Library row mutations flow through `useLibraryActions`, which keeps Supabase
 token lookup and API calls out of `LibraryOverview`. The hook reuses existing
 watchlist and tracking endpoints, then notifies the local library invalidator.
-`LibraryOverview` applies optimistic row removal for swipe actions and restores
+`LibraryOverview` confirms removable swipe rows in presentation code: first
+swipe arms the row, tapping the revealed button or opening the same armed row
+again confirms it. Confirmed actions apply optimistic row removal and restore
 the row if the matching mutation reports an error.
 
 `useHomeData` preserves the last ready snapshot during refreshes. Library and

@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 
@@ -18,6 +18,7 @@ const librarySections: Array<{ label: string; value: LibrarySectionFilter }> = [
   { label: "Watchlist", value: "watchlist" },
   { label: "History", value: "history" },
 ];
+const swipeConfirmWindowMs = 4000;
 
 type LibraryOverviewProps = {
   library: LibraryResponse | null;
@@ -388,23 +389,80 @@ function SwipeableActionRow({
   loadingLabel: string;
   onAction: () => void;
 }) {
+  const [isArmed, setIsArmed] = useState(false);
+  const disarmTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const confirmLabel = `Confirm ${actionLabel.toLowerCase()}`;
+
+  const clearDisarmTimeout = () => {
+    if (!disarmTimeoutRef.current) {
+      return;
+    }
+
+    clearTimeout(disarmTimeoutRef.current);
+    disarmTimeoutRef.current = null;
+  };
+  const armAction = () => {
+    clearDisarmTimeout();
+    setIsArmed(true);
+    disarmTimeoutRef.current = setTimeout(() => {
+      setIsArmed(false);
+      disarmTimeoutRef.current = null;
+    }, swipeConfirmWindowMs);
+  };
+  const confirmAction = () => {
+    if (isLoading) {
+      return;
+    }
+
+    clearDisarmTimeout();
+    setIsArmed(false);
+    onAction();
+  };
+
+  useEffect(() => {
+    if (isLoading) {
+      clearDisarmTimeout();
+      setIsArmed(false);
+    }
+  }, [isLoading]);
+
+  useEffect(() => () => clearDisarmTimeout(), []);
+
   return (
     <Swipeable
       containerStyle={styles.swipeableRow}
+      onSwipeableOpen={(direction) => {
+        if (direction !== "right" || isLoading) {
+          return;
+        }
+
+        if (isArmed) {
+          confirmAction();
+          return;
+        }
+
+        armAction();
+      }}
       overshootRight={false}
       renderRightActions={() => (
         <View style={styles.swipeActions}>
           <Pressable
             accessibilityRole="button"
             disabled={isLoading}
-            onPress={onAction}
-            style={[styles.swipeActionButton, isLoading ? styles.disabledButton : null]}
+            onPress={confirmAction}
+            style={[
+              styles.swipeActionButton,
+              isArmed ? styles.swipeActionButtonArmed : null,
+              isLoading ? styles.disabledButton : null,
+            ]}
           >
-            <Text style={styles.swipeActionButtonText}>{isLoading ? loadingLabel : actionLabel}</Text>
+            <Text style={styles.swipeActionButtonText}>
+              {isLoading ? loadingLabel : isArmed ? confirmLabel : actionLabel}
+            </Text>
           </Pressable>
         </View>
       )}
-      rightThreshold={44}
+      rightThreshold={isArmed ? 12 : 44}
     >
       {children}
     </Swipeable>

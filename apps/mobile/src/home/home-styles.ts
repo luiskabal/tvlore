@@ -421,8 +421,11 @@ export const styles = StyleSheet.create({
     backgroundColor: "#9c2f23",
     borderRadius: 8,
     justifyContent: "center",
-    minWidth: 92,
+    minWidth: 124,
     paddingHorizontal: 14,
+  },
+  swipeActionButtonArmed: {
+    backgroundColor: "#6f1f18",
   },
   swipeActionButtonText: {
     color: "#ffffff",
