@@ -1,9 +1,9 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { ActivityIndicator, Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
+import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
 
 import type { MediaType } from "../api/tvlore-api";
-import { CatalogDetailContent } from "./CatalogDetailContent";
+import { CatalogDetailContent, CatalogDetailSkeleton } from "./CatalogDetailContent";
 import { styles } from "./catalog-detail-styles";
 import { useCatalogDetail } from "./use-catalog-detail";
 
@@ -21,10 +21,7 @@ export default function CatalogDetailScreen({ mediaType }: { mediaType: MediaTyp
         </Pressable>
 
         {state.kind === "loading" ? (
-          <View style={styles.centerPanel}>
-            <ActivityIndicator color="#1f7a5c" />
-            <Text style={styles.mutedText}>Loading</Text>
-          </View>
+          <CatalogDetailSkeleton mediaType={mediaType} />
         ) : null}
 
         {state.kind === "error" ? (

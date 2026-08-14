@@ -1,8 +1,8 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { ActivityIndicator, Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
+import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
 
-import { SeasonContent } from "./SeasonContent";
+import { SeasonContent, SeasonDetailSkeleton } from "./SeasonContent";
 import { styles } from "./season-detail-styles";
 import { useSeasonDetail } from "./use-season-detail";
 
@@ -21,10 +21,7 @@ export default function SeasonDetailScreen() {
         </Pressable>
 
         {state.kind === "loading" ? (
-          <View style={styles.centerPanel}>
-            <ActivityIndicator color="#1f7a5c" />
-            <Text style={styles.mutedText}>Loading season</Text>
-          </View>
+          <SeasonDetailSkeleton />
         ) : null}
 
         {state.kind === "error" ? (

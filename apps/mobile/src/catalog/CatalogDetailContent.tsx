@@ -1,6 +1,6 @@
 import { Image, Pressable, Text, View } from "react-native";
 
-import type { CatalogDetailResponse, MovieDetailResponse, ShowDetailResponse, ShowSeasonSummary } from "../api/tvlore-api";
+import type { CatalogDetailResponse, MediaType, MovieDetailResponse, ShowDetailResponse, ShowSeasonSummary } from "../api/tvlore-api";
 import { styles } from "./catalog-detail-styles";
 import { getTmdbPosterUrl } from "./posters";
 import type { WatchActionState } from "./use-catalog-detail";
@@ -45,6 +45,29 @@ export function CatalogDetailContent({
   );
 }
 
+export function CatalogDetailSkeleton({ mediaType }: { mediaType: MediaType }) {
+  return (
+    <View style={styles.detail}>
+      <View style={styles.hero}>
+        <View style={styles.skeletonPoster} />
+        <View style={styles.skeletonHeroText}>
+          <View style={styles.skeletonPill} />
+          <View style={styles.skeletonTitleBlock} />
+          <View style={styles.skeletonMetaLine} />
+        </View>
+      </View>
+
+      <View style={styles.skeletonOverview}>
+        <View style={styles.skeletonLineWide} />
+        <View style={styles.skeletonLineWide} />
+        <View style={styles.skeletonLineMedium} />
+      </View>
+
+      {mediaType === "movie" ? <MovieWatchSkeleton /> : <ShowSeasonsSkeleton />}
+    </View>
+  );
+}
+
 function ShowSeasonsPanel({
   onOpenShowSeason,
   show,
@@ -64,6 +87,25 @@ function ShowSeasonsPanel({
           season={season}
           showId={show.id}
         />
+      ))}
+    </View>
+  );
+}
+
+function ShowSeasonsSkeleton() {
+  return (
+    <View style={styles.seasonsSection}>
+      <View style={styles.skeletonSectionTitle} />
+      <View style={styles.skeletonMetaLine} />
+
+      {[0, 1, 2].map((item) => (
+        <View key={item} style={styles.skeletonSeasonRow}>
+          <View style={styles.skeletonSeasonBody}>
+            <View style={styles.skeletonLineMedium} />
+            <View style={styles.skeletonLineShort} />
+          </View>
+          <View style={styles.skeletonOpenText} />
+        </View>
       ))}
     </View>
   );
@@ -92,6 +134,16 @@ function SeasonRow({
       </View>
       <Text style={styles.openText}>Open</Text>
     </Pressable>
+  );
+}
+
+function MovieWatchSkeleton() {
+  return (
+    <View style={styles.skeletonPanel}>
+      <View style={styles.skeletonSectionTitle} />
+      <View style={styles.skeletonLineMedium} />
+      <View style={styles.skeletonButton} />
+    </View>
   );
 }
 

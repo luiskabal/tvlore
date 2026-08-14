@@ -31,6 +31,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Library rows navigate back into movie and show season detail screens.
 - Library/Profile keeps prior data during refresh and shows skeletons on first load.
 - Routed Library, Search, and Profile mobile surfaces with bottom app navigation.
+- Detail screens render content-shaped skeletons while show, movie, or season data loads.
 - Mobile library, profile, search, and detail screens follow a route/container, hook, presentation, and styles split.
 - Postman collection and API smoke checks for local/Vercel validation.
 
@@ -61,7 +62,6 @@ Use `corepack pnpm api:check` for local/Vercel HTTP smoke checks.
 
 ## Next Backlog Items
 
-- Add detail-screen skeletons for show, movie, and season routes.
 - Add watchlist / want-to-watch state before social features.
 
 ## Workspace Layout

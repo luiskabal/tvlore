@@ -666,6 +666,7 @@ Current behavior:
 - Search code is split into route/container, controls, results, hook, and styles modules.
 - Opening a search result resolves it into a TVLore ID before navigating.
 - Detail screens render backend-owned show/movie data.
+- Detail screens render content-shaped skeletons while show, movie, or season data loads.
 - Movie detail can mark a movie watched or unwatched.
 - Movie watch actions update local detail state from the backend mutation response.
 - Show detail lists seasons and opens a season route.
@@ -754,17 +755,17 @@ Detail-screen skeletons
 
 ## 14. Recommended Next Step
 
-Add detail-screen skeletons for show, movie, and season routes:
+Add watchlist / want-to-watch state before social features:
 
 ```text
-Detail route opens
--> stable skeleton appears immediately
--> backend response replaces skeleton
+Search result or detail title
+-> save to watchlist
+-> Library shows planned titles separately from watched history
 ```
 
 Why this is next:
 
-- Library, Search, and Profile now exist as primary routes.
-- Search already gives immediate loading feedback.
-- Detail screens still feel slower than they are because they wait on backend/provider data without a polished placeholder.
-- Improving perceived loading here reduces repeated taps and makes the existing backend work feel much more solid before adding new states.
+- Watched history now works for movies and episodes.
+- A tracker app needs a place for intent, not only completed watching.
+- Watchlist is still personal/private MVP scope, so it adds product value before social complexity.
+- It will shape the library UX before we invest in public profiles or matching.

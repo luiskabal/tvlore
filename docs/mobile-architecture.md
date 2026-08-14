@@ -246,6 +246,10 @@ SeasonDetailScreen
 The app still does not calculate watched state. It renders the returned
 `watched`, `watchCount`, and `lastWatchedAt` values.
 
+Catalog and season detail routes render content-shaped skeletons while their
+initial API requests are pending. This keeps detail screens visually stable
+when Vercel, Supabase, or TMDB respond slowly.
+
 After tracking mutations, related detail screens update their local response
 state immediately and notify the local library invalidator. Library and Profile
 subscribe to that invalidator instead of receiving mutation callbacks from child

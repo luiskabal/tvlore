@@ -39,6 +39,48 @@ export function SeasonContent({
   );
 }
 
+export function SeasonDetailSkeleton() {
+  return (
+    <View style={styles.detail}>
+      <View style={styles.header}>
+        <View style={styles.skeletonKicker} />
+        <View style={styles.skeletonTitleBlock} />
+        <View style={styles.skeletonLineMedium} />
+      </View>
+
+      <View style={styles.skeletonOverview}>
+        <View style={styles.skeletonLineWide} />
+        <View style={styles.skeletonLineWide} />
+        <View style={styles.skeletonLineShort} />
+      </View>
+
+      <View style={styles.skeletonPanel}>
+        <View style={styles.skeletonSectionTitle} />
+        <View style={styles.skeletonLineMedium} />
+        <View style={styles.bulkButtonRow}>
+          <View style={styles.skeletonButton} />
+          <View style={styles.skeletonButton} />
+        </View>
+      </View>
+
+      <View style={styles.episodeList}>
+        <View style={styles.skeletonSectionTitle} />
+        {[0, 1, 2].map((item) => (
+          <View key={item} style={styles.skeletonEpisodeRow}>
+            <View style={styles.skeletonStill} />
+            <View style={styles.skeletonEpisodeBody}>
+              <View style={styles.skeletonLineMedium} />
+              <View style={styles.skeletonLineShort} />
+              <View style={styles.skeletonLineWide} />
+              <View style={styles.skeletonButton} />
+            </View>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function EpisodeList({
   episodes,
   onSetEpisodeWatched,
