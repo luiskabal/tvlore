@@ -78,6 +78,10 @@ Example hooks:
 
 Query hooks are client infrastructure. They must not implement backend business decisions.
 
+Current decision: keep local hooks instead of adding a query library. Revisit
+this after watchlist if shared cache invalidation spreads across Library,
+Search, Profile, show detail, and movie detail.
+
 ## Current Implemented Layout
 
 The mobile app now follows this smaller version of the target shape:

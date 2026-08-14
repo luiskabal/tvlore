@@ -9,7 +9,6 @@ No active infrastructure tasks.
 ## Next
 
 - [ ] Add a watchlist / want-to-watch state before social features.
-- [ ] Decide whether mobile server-state hooks should stay local or move to a query library after the next product slice.
 
 ## Notes
 
@@ -76,6 +75,7 @@ No active infrastructure tasks.
 - [x] Split mobile search controls, results, and styles out of `SearchScreen`.
 - [x] Promote the temporary mobile home into routed Library, Search, and Profile surfaces.
 - [x] Add detail-screen skeletons for show, movie, and season routes.
+- [x] Decide to keep mobile server-state hooks local until watchlist proves more cache complexity.
 
 ## Deferred
 
