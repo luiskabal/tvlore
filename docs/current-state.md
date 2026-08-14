@@ -21,6 +21,7 @@ Implemented:
 - Authenticated watchlist endpoints for shows and movies.
 - Authenticated rating preference endpoints for shows and movies.
 - Authenticated personal library and show progress read endpoints.
+- Authenticated first-pass recommendation endpoint from stored ratings and hydrated catalog rows.
 - Mobile Library/Profile routes read the authenticated user and personal library summary from the API.
 - Mobile search resolves provider results and opens backend-owned show/movie detail screens.
 - Mobile show detail opens backend-owned season episode lists.
@@ -32,6 +33,7 @@ Implemented:
 - Mobile tracking mutations invalidate the local library data.
 - Mobile watchlist mutations invalidate the local library data.
 - Mobile Library/Profile refresh authenticated library data after tracking changes.
+- Mobile Library/Profile can show backend-owned recommendation candidates.
 - Mobile Library shows watchlist titles and rated titles separately from watched history.
 - Mobile Library has segmented views for all activity, continuing shows, watchlist, rated titles, and history.
 - Mobile Library rows render catalog poster thumbnails when available, with stable placeholders otherwise.
@@ -49,7 +51,7 @@ Implemented:
 Not implemented yet:
 
 - Social matching.
-- Recommendation ranking from rating preferences.
+- Richer recommendation ranking with genres, providers, or collaborative signals.
 
 ## 2. Current System Diagram
 
@@ -409,6 +411,7 @@ PUT /movies/:movieId/preference
 DELETE /movies/:movieId/preference
 GET /shows/:showId/progress
 GET /library
+GET /recommendations
 ```
 
 Current watched-state behavior:
@@ -662,6 +665,7 @@ flowchart TB
   MovieWatchlist[Watchlist / POST /movies/:movieId/watchlist]
   MovieRating[Preferences / PUT /movies/:movieId/preference]
   Library[Library / GET /library]
+  Recommendations[Recommendations / GET /recommendations]
   MovieUnwatch[Tracking / DELETE /movies/:movieId/watches]
 
   Env --> Login
@@ -684,7 +688,8 @@ flowchart TB
   MovieWatchlist --> MovieRating
   MovieRating --> MovieWatch
   MovieWatch --> Library
-  Library --> MovieUnwatch
+  Library --> Recommendations
+  Recommendations --> MovieUnwatch
 ```
 
 Expected behavior:
@@ -710,6 +715,7 @@ Expected behavior:
 - `PUT /movies/:movieId/preference` stores a 1-5 movie rating for the authenticated user.
 - `DELETE /movies/:movieId/preference` clears that movie rating for the authenticated user.
 - `GET /library` returns personal summary, rated titles, continue-watching, watchlist, and recently watched activity.
+- `GET /recommendations` returns unrated, unwatched, unsaved catalog candidates ordered by the user's stronger rated media type.
 - `DELETE /movies/:movieId/watches` marks that movie unwatched for the authenticated user.
 - `GET /movies/:movieId` returns movie detail with authenticated user's watched state.
 
@@ -720,13 +726,13 @@ The current mobile app has these product-facing slices:
 ```text
 Library
 -> Supabase session
--> GET /users/me and GET /library in parallel
--> Library summary, watchlist, rated titles, continue-watching, recently-watched
+-> GET /users/me, GET /library, and GET /recommendations in parallel
+-> Library summary, recommendations, watchlist, rated titles, continue-watching, recently-watched
 
 Profile
 -> Supabase session
--> GET /users/me and GET /library in parallel
--> Holo profile card, account state, sign out
+-> GET /users/me, GET /library, and GET /recommendations in parallel
+-> Holo profile card, recommendations, account state, sign out
 
 Search
 -> GET /search
@@ -752,6 +758,8 @@ Current behavior:
 - Library shows continue-watching and recently watched rows when the backend has watched data.
 - Library shows saved watchlist rows when the backend has watchlist data.
 - Library shows rated show/movie rows when the backend has rating preference data.
+- Library and Profile show recommendation rows when the backend has eligible catalog candidates.
+- Recommendation rows open the matching show or movie detail screen.
 - Library can filter between all rows, continuing shows, saved titles, rated titles, and watch history.
 - Library rows include compact poster thumbnails for quicker visual scanning.
 - Continue-watching rows open the next season, recently watched movies open movie detail, and recently watched episodes open the matching season.
@@ -785,7 +793,7 @@ Why this shape matters:
 
 - The mobile app owns presentation only.
 - Supabase owns session storage and refresh.
-- The backend owns product reads, progress, and library calculations.
+- The backend owns product reads, progress, library calculations, and recommendation heuristics.
 - The frontend now has a proven contract for authenticated library and tracking flows.
 
 ## 12. What We Proved

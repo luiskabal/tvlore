@@ -134,6 +134,7 @@ src/
 |   |-- home-styles.ts
 |   |-- HomeScreen.tsx
 |   |-- LibraryOverview.tsx
+|   |-- RecommendationsPanel.tsx
 |   |-- use-home-model.ts
 |   `-- use-home-data.ts
 |
@@ -172,7 +173,7 @@ LibraryScreen/ProfileScreen
   -> useHomeData()
   -> getSupabaseAccessToken()
   -> getHomeData(accessToken)
-  -> GET /users/me and GET /library in parallel
+  -> GET /users/me, GET /library, and GET /recommendations in parallel
 ```
 
 The mobile app does not call `GET /health` during normal product refreshes. Health
@@ -186,6 +187,12 @@ when the user returns to Library or Profile.
 The Library route renders `LibraryOverview`. The Profile route renders
 `HoloProfileCard`. The card uses Supabase Google avatar metadata when available
 and keeps the holo/tilt effect inside presentation code.
+
+`RecommendationsPanel` is presentation-only and is reused by Library and
+Profile. `useHomeData` loads the recommendation response alongside the user and
+library payloads, while `tvlore-api.ts` owns the response-shape validation.
+Recommendation rows receive navigation callbacks from the route screen and open
+the matching backend-owned show or movie detail screen.
 
 Library rows receive navigation callbacks from `LibraryScreen`: movies route
 to movie detail and episode/show rows route to season detail.

@@ -1162,6 +1162,66 @@ Business validation:
 
 Errors: `VALIDATION_FAILED`, `UNAUTHORIZED`.
 
+### `GET /recommendations`
+
+Purpose: return first-pass personalized suggestions for the authenticated user.
+
+Current MVP status: implemented with stored rating preferences and catalog rows already hydrated in TVLore.
+
+Auth: required.
+
+Route parameters: none.
+
+Query parameters: none in the MVP.
+
+Request: none.
+
+Response:
+
+```json
+{
+  "basis": {
+    "averageShowRating": 4.5,
+    "averageMovieRating": 3.8,
+    "ratedTitleCount": 8
+  },
+  "items": [
+    {
+      "mediaType": "show",
+      "id": "uuid",
+      "title": "Severance",
+      "overview": "Mark leads a team...",
+      "posterPath": "/path.jpg",
+      "reason": "based_on_show_ratings"
+    },
+    {
+      "mediaType": "movie",
+      "id": "uuid",
+      "title": "Arrival",
+      "overview": "Taking place after alien crafts land...",
+      "posterPath": "/path.jpg",
+      "reason": "based_on_movie_ratings"
+    }
+  ]
+}
+```
+
+Status codes:
+
+- `200 OK`
+- `401 UNAUTHORIZED`
+
+Authorization: recommendations are only for the authenticated user.
+
+Business validation:
+
+- The endpoint excludes titles the user has already rated, watched, or saved to watchlist.
+- The first heuristic prioritizes the media type with the user's higher average rating.
+- Results are limited to catalog rows already persisted in TVLore; the MVP does not call TMDB from this endpoint.
+- If the user has no rating preferences yet, `items` is empty.
+
+Errors: `UNAUTHORIZED`.
+
 ## Future Social API
 
 These endpoints are conceptual and out of scope for MVP.

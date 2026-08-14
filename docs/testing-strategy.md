@@ -103,6 +103,7 @@ Authenticated `api:check` covers:
 - Movie watch/unwatch idempotency.
 - Progress after marking an episode watched.
 - Library summary, recently watched, watchlist, and rated titles after marking watched items and setting ratings.
+- Recommendations contract after rating titles.
 
 The first tests cover pure authentication/user helpers:
 
@@ -137,6 +138,8 @@ Test:
 - Mark episode watched.
 - Mark movie watched.
 - Library summary and rated-title projection.
+- Recommendations exclude already rated, watched, and watchlisted titles.
+- Recommendations prioritize the media type with the stronger user rating average.
 
 ### Repository Integration Tests
 
@@ -156,6 +159,7 @@ Test:
 - Contracts match documented shapes. Covered by authenticated `corepack pnpm api:check` when `TVLORE_SUPABASE_ACCESS_TOKEN` is set.
 - Validation errors return TVLore error contract. Covered by authenticated `corepack pnpm api:check`.
 - Domain errors map to stable codes. Covered by authenticated `corepack pnpm api:check`.
+- Recommendations return stable `basis` and `items` shapes. Covered by authenticated `corepack pnpm api:check`.
 
 ### Authentication Tests
 

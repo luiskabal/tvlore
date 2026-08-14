@@ -8,7 +8,7 @@ No active infrastructure tasks.
 
 ## Next
 
-- [ ] Start first recommendation/social matching slice from stored ratings.
+- [ ] Persist richer catalog signals, such as genres, before improving recommendation quality.
 
 ## Notes
 
@@ -16,6 +16,7 @@ No active infrastructure tasks.
 - Mobile cleanup should start with the largest screens: `SeasonDetailScreen`, `CatalogDetailScreen`, `SearchScreen`, then `HomeScreen`.
 - Keep the current screen -> hook -> API client boundary. The cleanup goal is readability, not a new state-management layer yet.
 - Ratings are explicit preference signals. Keep them separate from watched state so recommendations can use both later.
+- First recommendations intentionally use only hydrated catalog data and ratings. Improve quality only after storing stronger content signals.
 
 ## Done
 
@@ -83,12 +84,13 @@ No active infrastructure tasks.
 - [x] Add compact poster thumbnails to mobile Library rows.
 - [x] Add personal show/movie rating preferences.
 - [x] Surface rated shows and movies in Library/Profile.
+- [x] Start first recommendation slice from stored ratings.
 
 ## Deferred
 
 - TVLore-owned access and refresh token service.
 - Social features.
-- Ratings and recommendations.
+- Richer recommendation ranking.
 - Offline mutation queues.
 - Admin/web frontend.
 - Payments/subscriptions.

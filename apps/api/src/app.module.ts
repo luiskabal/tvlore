@@ -15,6 +15,9 @@ import { MoviePreferencesController, ShowPreferencesController } from "./prefere
 import { PreferencesRepository } from "./preferences/preferences.repository";
 import { PreferencesService } from "./preferences/preferences.service";
 import { PrismaService } from "./prisma.service";
+import { RecommendationsController } from "./recommendations/recommendations.controller";
+import { RecommendationsRepository } from "./recommendations/recommendations.repository";
+import { RecommendationsService } from "./recommendations/recommendations.service";
 import { RootController } from "./root.controller";
 import { EpisodeTrackingController, MovieTrackingController } from "./tracking/tracking.controller";
 import { TrackingRepository } from "./tracking/tracking.repository";
@@ -43,6 +46,7 @@ import { WatchlistService } from "./watchlist/watchlist.service";
     MoviePreferencesController,
     LibraryController,
     ShowProgressController,
+    RecommendationsController,
   ],
   providers: [
     ApiConfigProvider,
@@ -53,12 +57,14 @@ import { WatchlistService } from "./watchlist/watchlist.service";
     WatchlistRepository,
     PreferencesRepository,
     LibraryRepository,
+    RecommendationsRepository,
     TmdbClient,
     CatalogService,
     TrackingService,
     WatchlistService,
     PreferencesService,
     LibraryService,
+    RecommendationsService,
     UsersRepository,
     UsersService,
   ],

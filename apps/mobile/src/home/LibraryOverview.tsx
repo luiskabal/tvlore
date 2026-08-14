@@ -7,6 +7,7 @@ import type {
   LibraryRatedTitle,
   LibraryResponse,
   LibraryWatchlistItem,
+  RecommendationsResponse,
   RecentlyWatchedItem,
 } from "../api/tvlore-api";
 import { getTmdbPosterUrl } from "../catalog/posters";
@@ -16,6 +17,7 @@ import {
   type LibraryActionState,
 } from "../library/use-library-actions";
 import { styles } from "./home-styles";
+import { RecommendationsPanel } from "./RecommendationsPanel";
 
 type LibrarySectionFilter = "all" | "history" | "rated" | "watching" | "watchlist";
 
@@ -36,6 +38,7 @@ type LibraryOverviewProps = {
   onOpenShowSeason: (showId: string, seasonNumber: number) => void;
   onRemoveRecentlyWatchedItem: (item: RecentlyWatchedItem) => void;
   onRemoveWatchlistItem: (item: LibraryWatchlistItem) => void;
+  recommendations: RecommendationsResponse | null;
 };
 
 export function LibraryOverview({
@@ -46,6 +49,7 @@ export function LibraryOverview({
   onOpenShowSeason,
   onRemoveRecentlyWatchedItem,
   onRemoveWatchlistItem,
+  recommendations,
 }: LibraryOverviewProps) {
   const [selectedSection, setSelectedSection] = useState<LibrarySectionFilter | null>(null);
   const [optimisticRemovedKeys, setOptimisticRemovedKeys] = useState<Set<string>>(() => new Set());
@@ -137,6 +141,14 @@ export function LibraryOverview({
         showsVerticalScrollIndicator={false}
         style={styles.libraryListScroll}
       >
+        {!isEmpty && activeSection === "all" ? (
+          <RecommendationsPanel
+            onOpenMovie={onOpenMovie}
+            onOpenShow={onOpenShow}
+            recommendations={recommendations}
+          />
+        ) : null}
+
         {!isEmpty && activeSection !== "all" && !hasItemsForSection(activeSection, visibleLibrary) ? (
           <EmptySection activeSection={activeSection} />
         ) : null}

@@ -1,18 +1,19 @@
 import { useCallback, useState } from "react";
 
-import { getHomeData, type LibraryResponse, type UserResponse } from "../api/tvlore-api";
+import { getHomeData, type LibraryResponse, type RecommendationsResponse, type UserResponse } from "../api/tvlore-api";
 import { getSupabaseAccessToken } from "../auth/supabase-auth";
 
 export type HomeReadyState = {
   kind: "ready";
   library: LibraryResponse | null;
+  recommendations: RecommendationsResponse | null;
   user: UserResponse | null;
 };
 
 export type HomeState =
   | { kind: "loading" }
   | HomeReadyState
-  | { kind: "refreshing"; library: LibraryResponse | null; user: UserResponse | null }
+  | { kind: "refreshing"; library: LibraryResponse | null; recommendations: RecommendationsResponse | null; user: UserResponse | null }
   | { kind: "offline"; message: string };
 
 export function useHomeData() {

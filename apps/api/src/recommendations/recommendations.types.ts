@@ -1,0 +1,19 @@
+export type RecommendationBasisDto = {
+  averageMovieRating: number | null;
+  averageShowRating: number | null;
+  ratedTitleCount: number;
+};
+
+export type RecommendationItemDto = {
+  id: string;
+  mediaType: "movie" | "show";
+  overview: string;
+  posterPath: string | null;
+  reason: "based_on_movie_ratings" | "based_on_show_ratings" | "from_catalog";
+  title: string;
+};
+
+export type RecommendationsResponseDto = {
+  basis: RecommendationBasisDto;
+  items: RecommendationItemDto[];
+};

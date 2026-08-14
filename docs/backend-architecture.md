@@ -27,7 +27,6 @@ Future modules may include:
 ratings/
 social/
 matches/
-recommendations/
 notifications/
 ```
 
@@ -85,6 +84,12 @@ src/
 |   |-- library.service.ts
 |   `-- library.types.ts
 |
+|-- recommendations/
+|   |-- recommendations.controller.ts
+|   |-- recommendations.repository.ts
+|   |-- recommendations.service.ts
+|   `-- recommendations.types.ts
+|
 |-- __tests__/
 |-- progress.ts
 |-- config.ts
@@ -121,6 +126,13 @@ Watchlist follows the same shape:
 - `ShowWatchlistController` and `MovieWatchlistController`: HTTP routes for saved intent.
 - `WatchlistService`: resolves the authenticated TVLore user and validates route IDs.
 - `WatchlistRepository`: owns idempotent Prisma writes for show/movie watchlist rows.
+
+Recommendations follow the same shape:
+
+- `RecommendationsController`: HTTP route only.
+- `RecommendationsService`: resolves the authenticated TVLore user.
+- `RecommendationsRepository`: reads existing ratings, watched state, watchlist rows, and hydrated catalog candidates.
+- The current MVP heuristic stays database-backed and does not call TMDB from the recommendation endpoint.
 
 ## Layer Separation
 

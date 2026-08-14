@@ -23,6 +23,24 @@ export type LibraryResponse = {
   watchlist: LibraryWatchlistItem[];
 };
 
+export type RecommendationsResponse = {
+  basis: {
+    averageMovieRating: number | null;
+    averageShowRating: number | null;
+    ratedTitleCount: number;
+  };
+  items: RecommendationItem[];
+};
+
+export type RecommendationItem = {
+  id: string;
+  mediaType: MediaType;
+  overview: string;
+  posterPath: string | null;
+  reason: "based_on_movie_ratings" | "based_on_show_ratings" | "from_catalog";
+  title: string;
+};
+
 export type ContinueWatchingShow = {
   id: string;
   mediaType: "show";
@@ -230,16 +248,17 @@ export type PreferenceMutationResponse = {
 
 export type HomeData = {
   library: LibraryResponse | null;
+  recommendations: RecommendationsResponse | null;
   user: UserResponse | null;
 };
 
 export async function getHomeData(accessToken: string | null): Promise<HomeData> {
   if (!accessToken) {
-    return { library: null, user: null };
+    return { library: null, recommendations: null, user: null };
   }
 
   const authOptions = { headers: getAuthHeaders(accessToken) };
-  const [user, library] = await Promise.all([
+  const [user, library, recommendations] = await Promise.all([
     fetchJson(
       "/users/me",
       isUserResponse,
@@ -252,9 +271,15 @@ export async function getHomeData(accessToken: string | null): Promise<HomeData>
       "Unexpected library response",
       authOptions,
     ),
+    fetchJson(
+      "/recommendations",
+      isRecommendationsResponse,
+      "Unexpected recommendations response",
+      authOptions,
+    ),
   ]);
 
-  return { library, user };
+  return { library, recommendations, user };
 }
 
 export async function searchCatalog(
@@ -539,6 +564,39 @@ function isLibraryResponse(value: unknown): value is LibraryResponse {
     Array.isArray(value.watchlist) &&
     value.watchlist.every(isLibraryWatchlistItem)
   );
+}
+
+function isRecommendationsResponse(value: unknown): value is RecommendationsResponse {
+  if (!isRecord(value) || !isRecord(value.basis)) {
+    return false;
+  }
+
+  return (
+    isNullableNumber(value.basis.averageMovieRating) &&
+    isNullableNumber(value.basis.averageShowRating) &&
+    typeof value.basis.ratedTitleCount === "number" &&
+    Array.isArray(value.items) &&
+    value.items.every(isRecommendationItem)
+  );
+}
+
+function isRecommendationItem(value: unknown): value is RecommendationItem {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    isMediaType(value.mediaType) &&
+    typeof value.id === "string" &&
+    typeof value.title === "string" &&
+    typeof value.overview === "string" &&
+    isNullableString(value.posterPath) &&
+    isRecommendationReason(value.reason)
+  );
+}
+
+function isRecommendationReason(value: unknown): value is RecommendationItem["reason"] {
+  return value === "based_on_movie_ratings" || value === "based_on_show_ratings" || value === "from_catalog";
 }
 
 function isCatalogSearchResponse(value: unknown): value is CatalogSearchResponse {

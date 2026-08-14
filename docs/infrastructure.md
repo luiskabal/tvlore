@@ -51,6 +51,7 @@ POST /movies/:movieId/watchlist
 DELETE /movies/:movieId/watchlist
 GET /shows/:showId/progress
 GET /library
+GET /recommendations
 ```
 
 `GET /health/db` verifies runtime connectivity from Vercel to PostgreSQL. If Vercel has no `DATABASE_URL`, the API fails during startup.
@@ -243,3 +244,4 @@ the selected Postman environment.
 - Watch/unwatch endpoints store authenticated movie and episode state.
 - Watchlist endpoints store authenticated show/movie saved intent.
 - `GET /library` feeds the mobile home library summary.
+- `GET /recommendations` feeds Library/Profile suggestion rows from stored ratings and hydrated catalog rows.

@@ -72,6 +72,7 @@ async function checkUnauthorizedRoutes() {
   });
   await checkUnauthorized(`/movies/${missingUuid}/preference`, { method: "DELETE" });
   await checkUnauthorized("/library");
+  await checkUnauthorized("/recommendations");
   await checkUnauthorized(`/episodes/${missingUuid}/watches`, { method: "POST" });
   await checkUnauthorized(`/episodes/${missingUuid}/watches`, { method: "DELETE" });
   await checkUnauthorized(`/movies/${missingUuid}/watches`, { method: "POST" });
@@ -436,6 +437,11 @@ async function checkAuthenticatedProductFlow(token) {
     expectedStatus: 200,
     headers: authHeaders,
   });
+  await check("/recommendations", {
+    assert: assertRecommendations,
+    expectedStatus: 200,
+    headers: authHeaders,
+  });
 
   await check(`/episodes/${firstEpisodeId}/watches`, {
     assert: (body) => assertEpisodeWatchResponse(body, firstEpisodeId, false),
@@ -693,6 +699,28 @@ function assertLibrary(body) {
     expectUuid(item.id, "library watchlist.id");
     expectString(item.title, "library watchlist.title");
     expectIsoString(item.createdAt, "library watchlist.createdAt");
+  }
+}
+
+function assertRecommendations(body) {
+  expectRecord(body, "recommendations");
+  expectRecord(body.basis, "recommendations.basis");
+  expectNullableNumber(body.basis.averageMovieRating, "recommendations.basis.averageMovieRating");
+  expectNullableNumber(body.basis.averageShowRating, "recommendations.basis.averageShowRating");
+  expectInteger(body.basis.ratedTitleCount, "recommendations.basis.ratedTitleCount");
+  expectArray(body.items, "recommendations.items");
+
+  for (const item of body.items) {
+    expectRecord(item, "recommendations item");
+    expectUuid(item.id, "recommendations item.id");
+    expectMediaType(item.mediaType, "recommendations item.mediaType");
+    expectString(item.title, "recommendations item.title");
+    expectString(item.overview, "recommendations item.overview");
+    expectNullableString(item.posterPath, "recommendations item.posterPath");
+    expect(
+      ["based_on_movie_ratings", "based_on_show_ratings", "from_catalog"].includes(item.reason),
+      "recommendations item.reason",
+    );
   }
 }
 

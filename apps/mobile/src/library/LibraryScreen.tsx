@@ -34,6 +34,7 @@ export default function LibraryScreen() {
             onOpenShowSeason={openShowSeason}
             onRemoveRecentlyWatchedItem={removeRecentlyWatchedItem}
             onRemoveWatchlistItem={removeWatchlistItem}
+            recommendations={homeData.recommendations}
           />
         </View>
       ) : (
