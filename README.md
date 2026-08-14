@@ -41,6 +41,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Routed Library, Search, and Profile mobile surfaces with bottom app navigation.
 - Detail screens render content-shaped skeletons while show, movie, or season data loads.
 - Mobile library, profile, search, and detail screens follow a route/container, hook, presentation, and styles split.
+- Mobile API calls are grouped behind a stable `tvlore-api.ts` facade with domain modules for catalog, home, tracking, watchlist, and preferences.
 - Postman collection and API smoke checks for local/Vercel validation.
 
 ## Current MVP Flow
