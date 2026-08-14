@@ -32,6 +32,7 @@ Implemented:
 - Mobile Library/Profile refresh authenticated library data after tracking changes.
 - Mobile Library shows watchlist titles separately from watched history.
 - Mobile Library has segmented views for all activity, continuing shows, watchlist, and history.
+- Mobile Library rows render catalog poster thumbnails when available, with stable placeholders otherwise.
 - Mobile Profile renders a touch-driven holo profile card with Google avatar and library stats.
 - Mobile library rows navigate back to movie detail or show season detail screens.
 - Mobile Library rows can remove watchlist items and undo recent watched markers through confirmable swipe actions.
@@ -705,6 +706,7 @@ Current behavior:
 - Library shows continue-watching and recently watched rows when the backend has watched data.
 - Library shows saved watchlist rows when the backend has watchlist data.
 - Library can filter between all rows, continuing shows, saved titles, and watch history.
+- Library rows include compact poster thumbnails for quicker visual scanning.
 - Continue-watching rows open the next season, recently watched movies open movie detail, and recently watched episodes open the matching season.
 - Watchlist rows can remove saved titles through confirmable swipe actions, and recently watched rows can undo the underlying movie or episode watched marker through confirmable swipe actions.
 - Bottom app navigation connects Library, Search, and Profile from the root layout, so the tab bar stays stable while route content changes.
@@ -778,6 +780,7 @@ Product foundation:
 - Mobile can mark movies watched/unwatched through backend tracking endpoints.
 - Mobile can add/remove shows and movies from the watchlist through backend watchlist endpoints.
 - Mobile can remove watchlist/history rows immediately after swipe confirmation backed by existing backend watchlist and tracking endpoints.
+- Mobile can render library thumbnails from existing poster data without extra API calls.
 - Mobile can open a show season, hydrate episode IDs, and mark episodes watched/unwatched through backend tracking endpoints.
 - Mobile can bulk-mark the loaded episodes in a season by orchestrating existing idempotent episode tracking endpoints.
 - Mobile has primary Library, Search, and Profile routes over the same authenticated API session.

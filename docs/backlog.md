@@ -8,7 +8,7 @@ No active infrastructure tasks.
 
 ## Next
 
-- [ ] Validate the watchlist UX on iPhone and Postman after Vercel deploy.
+- [ ] Decide the next product-domain increment: ratings/preferences foundation or first social matching slice.
 
 ## Notes
 
@@ -79,6 +79,7 @@ No active infrastructure tasks.
 - [x] Add a watchlist / want-to-watch state before social features.
 - [x] Refine Library organization now that watched history and saved intent both exist.
 - [x] Add richer removal/actions from Library rows after the segmented UX settles.
+- [x] Add compact poster thumbnails to mobile Library rows.
 
 ## Deferred
 

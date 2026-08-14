@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 
 import type { ContinueWatchingShow, LibraryResponse, LibraryWatchlistItem, RecentlyWatchedItem } from "../api/tvlore-api";
+import { getTmdbPosterUrl } from "../catalog/posters";
 import {
   getHistoryActionKey,
   getWatchlistActionKey,
@@ -251,6 +252,7 @@ function ContinueWatchingItem({
       onPress={() => onOpenShowSeason(show.id, show.nextEpisode.seasonNumber)}
       style={({ pressed }) => [styles.listItem, pressed ? styles.pressedListItem : null]}
     >
+      <LibraryPoster label="TV" posterPath={show.posterPath} />
       <View style={styles.listText}>
         <Text style={styles.itemTitle}>{show.title}</Text>
         <Text style={styles.statusDetail}>
@@ -307,6 +309,7 @@ function WatchlistRow({
           onPress={openItem}
           style={({ pressed }) => [styles.listItemRow, pressed ? styles.pressedListItem : null]}
         >
+          <LibraryPoster label={item.mediaType === "movie" ? "M" : "TV"} posterPath={item.posterPath} />
           <View style={styles.listText}>
             <Text style={styles.itemTitle}>{item.title}</Text>
             <Text style={styles.statusDetail}>{item.mediaType === "movie" ? "Movie" : "Show"}</Text>
@@ -364,6 +367,7 @@ function RecentlyWatchedRow({
           onPress={openItem}
           style={({ pressed }) => [styles.listItemRow, pressed ? styles.pressedListItem : null]}
         >
+          <LibraryPoster label={item.mediaType === "movie" ? "M" : "E"} posterPath={getRecentlyWatchedPosterPath(item)} />
           <View style={styles.listText}>
             <Text style={styles.itemTitle}>{getRecentlyWatchedTitle(item)}</Text>
             <Text style={styles.statusDetail}>{getRecentlyWatchedDetail(item)}</Text>
@@ -373,6 +377,18 @@ function RecentlyWatchedRow({
         {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
       </View>
     </SwipeableActionRow>
+  );
+}
+
+function LibraryPoster({ label, posterPath }: { label: string; posterPath: string | null }) {
+  if (posterPath) {
+    return <Image source={{ uri: getTmdbPosterUrl(posterPath) }} style={styles.libraryPoster} />;
+  }
+
+  return (
+    <View style={styles.libraryPosterPlaceholder}>
+      <Text style={styles.libraryPosterPlaceholderText}>{label}</Text>
+    </View>
   );
 }
 
@@ -539,6 +555,10 @@ function getDefaultSection(library: LibraryResponse): LibrarySectionFilter {
 
 function getRecentlyWatchedTitle(item: RecentlyWatchedItem) {
   return item.mediaType === "movie" ? item.title : item.showTitle;
+}
+
+function getRecentlyWatchedPosterPath(item: RecentlyWatchedItem) {
+  return item.mediaType === "movie" ? item.posterPath : null;
 }
 
 function getRecentlyWatchedDetail(item: RecentlyWatchedItem) {

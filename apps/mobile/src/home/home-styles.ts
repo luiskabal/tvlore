@@ -246,6 +246,25 @@ export const styles = StyleSheet.create({
   libraryListScroll: {
     flex: 1,
   },
+  libraryPoster: {
+    backgroundColor: "#e3ddd3",
+    borderRadius: 6,
+    height: 64,
+    width: 44,
+  },
+  libraryPosterPlaceholder: {
+    alignItems: "center",
+    backgroundColor: "#e3ddd3",
+    borderRadius: 6,
+    height: 64,
+    justifyContent: "center",
+    width: 44,
+  },
+  libraryPosterPlaceholderText: {
+    color: "#5f564d",
+    fontSize: 13,
+    fontWeight: "900",
+  },
   listItem: {
     alignItems: "center",
     borderColor: "#d8d0c5",
@@ -361,7 +380,7 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   skeletonListItem: {
-    height: 74,
+    height: 94,
   },
   skeletonPortrait: {
     aspectRatio: 1.56,
