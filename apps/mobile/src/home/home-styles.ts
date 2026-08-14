@@ -2,6 +2,7 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   actionListItem: {
+    backgroundColor: "#f7f4ee",
     borderColor: "#d8d0c5",
     borderRadius: 8,
     borderWidth: 1,
@@ -48,6 +49,8 @@ export const styles = StyleSheet.create({
     color: "#7a7067",
     fontSize: 12,
     fontWeight: "700",
+    minWidth: 48,
+    textAlign: "right",
   },
   emptyPanel: {
     borderColor: "#d8d0c5",
@@ -229,21 +232,6 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
   },
-  inlineActionButton: {
-    alignItems: "center",
-    backgroundColor: "#fffdfa",
-    borderColor: "#d8d0c5",
-    borderRadius: 8,
-    borderWidth: 1,
-    minWidth: 76,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-  },
-  inlineActionButtonText: {
-    color: "#171412",
-    fontSize: 12,
-    fontWeight: "800",
-  },
   librarySection: {
     gap: 16,
   },
@@ -268,10 +256,6 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 14,
   },
-  listItemMeta: {
-    alignItems: "flex-end",
-    gap: 8,
-  },
   listItemRow: {
     alignItems: "center",
     flexDirection: "row",
@@ -284,12 +268,6 @@ export const styles = StyleSheet.create({
   listText: {
     flex: 1,
     gap: 4,
-  },
-  listTextAction: {
-    flex: 1,
-    gap: 4,
-    minHeight: 44,
-    justifyContent: "center",
   },
   listTitle: {
     color: "#171412",
@@ -437,6 +415,26 @@ export const styles = StyleSheet.create({
     color: "#171412",
     fontSize: 24,
     fontWeight: "900",
+  },
+  swipeActionButton: {
+    alignItems: "center",
+    backgroundColor: "#9c2f23",
+    borderRadius: 8,
+    justifyContent: "center",
+    minWidth: 92,
+    paddingHorizontal: 14,
+  },
+  swipeActionButtonText: {
+    color: "#ffffff",
+    fontSize: 13,
+    fontWeight: "900",
+  },
+  swipeActions: {
+    flexDirection: "row",
+    marginLeft: 8,
+  },
+  swipeableRow: {
+    borderRadius: 8,
   },
   subtitle: {
     color: "#4f4740",

@@ -1,5 +1,6 @@
 import { Stack, usePathname } from "expo-router";
 import { SafeAreaView, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { AppTabBar, type AppTab } from "../src/navigation/AppTabBar";
 import { styles } from "../src/navigation/app-tab-bar-styles";
@@ -8,7 +9,7 @@ export default function RootLayout() {
   const activeTab = getActiveTab(usePathname());
 
   return (
-    <View style={styles.rootShell}>
+    <GestureHandlerRootView style={styles.rootShell}>
       <View style={styles.stackShell}>
         <Stack screenOptions={{ headerShown: false }} />
       </View>
@@ -17,7 +18,7 @@ export default function RootLayout() {
           <AppTabBar active={activeTab} />
         </SafeAreaView>
       ) : null}
-    </View>
+    </GestureHandlerRootView>
   );
 }
 

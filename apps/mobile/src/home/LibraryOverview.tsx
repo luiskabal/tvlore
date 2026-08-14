@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
+import { Swipeable } from "react-native-gesture-handler";
 
 import type { ContinueWatchingShow, LibraryResponse, LibraryWatchlistItem, RecentlyWatchedItem } from "../api/tvlore-api";
 import {
@@ -135,6 +136,21 @@ export function LibraryOverview({
   );
 }
 
+export function LibraryOverviewSkeleton() {
+  return (
+    <View style={styles.librarySection}>
+      <View style={styles.summaryGrid}>
+        <View style={[styles.skeletonBlock, styles.skeletonStat]} />
+        <View style={[styles.skeletonBlock, styles.skeletonStat]} />
+        <View style={[styles.skeletonBlock, styles.skeletonStat]} />
+        <View style={[styles.skeletonBlock, styles.skeletonStat]} />
+      </View>
+      <View style={[styles.skeletonBlock, styles.skeletonListItem]} />
+      <View style={[styles.skeletonBlock, styles.skeletonListItem]} />
+    </View>
+  );
+}
+
 function LibrarySectionTabs({
   activeSection,
   onSelect,
@@ -173,96 +189,6 @@ function EmptySection({ activeSection }: { activeSection: LibrarySectionFilter }
   );
 }
 
-function hasItemsForSection(activeSection: LibrarySectionFilter, library: LibraryResponse) {
-  if (activeSection === "watching") {
-    return library.continueWatching.length > 0;
-  }
-
-  if (activeSection === "watchlist") {
-    return library.watchlist.length > 0;
-  }
-
-  if (activeSection === "history") {
-    return library.recentlyWatched.length > 0;
-  }
-
-  return true;
-}
-
-function getDefaultSection(library: LibraryResponse): LibrarySectionFilter {
-  return library.continueWatching.length > 0 ? "watching" : "all";
-}
-
-export function LibraryOverviewSkeleton() {
-  return (
-    <View style={styles.librarySection}>
-      <View style={styles.summaryGrid}>
-        <View style={[styles.skeletonBlock, styles.skeletonStat]} />
-        <View style={[styles.skeletonBlock, styles.skeletonStat]} />
-        <View style={[styles.skeletonBlock, styles.skeletonStat]} />
-        <View style={[styles.skeletonBlock, styles.skeletonStat]} />
-      </View>
-      <View style={[styles.skeletonBlock, styles.skeletonListItem]} />
-      <View style={[styles.skeletonBlock, styles.skeletonListItem]} />
-    </View>
-  );
-}
-
-function WatchlistRow({
-  item,
-  libraryAction,
-  onOpenMovie,
-  onRemove,
-  onOpenShow,
-}: {
-  item: LibraryWatchlistItem;
-  libraryAction: LibraryActionState;
-  onOpenMovie: (movieId: string) => void;
-  onRemove: (item: LibraryWatchlistItem) => void;
-  onOpenShow: (showId: string) => void;
-}) {
-  const actionKey = getWatchlistActionKey(item);
-  const isRemoving = libraryAction.kind === "loading" && libraryAction.actionKey === actionKey;
-  const errorMessage = libraryAction.kind === "error" && libraryAction.actionKey === actionKey
-    ? libraryAction.message
-    : null;
-  const openItem = () => {
-    if (item.mediaType === "movie") {
-      onOpenMovie(item.id);
-      return;
-    }
-
-    onOpenShow(item.id);
-  };
-
-  return (
-    <View style={styles.actionListItem}>
-      <View style={styles.listItemRow}>
-        <Pressable
-          accessibilityRole="button"
-          onPress={openItem}
-          style={({ pressed }) => [styles.listTextAction, pressed ? styles.pressedListItem : null]}
-        >
-          <Text style={styles.itemTitle}>{item.title}</Text>
-          <Text style={styles.statusDetail}>{item.mediaType === "movie" ? "Movie" : "Show"}</Text>
-        </Pressable>
-        <View style={styles.listItemMeta}>
-          <Text style={styles.dateText}>{formatShortDate(item.createdAt)}</Text>
-          <Pressable
-            accessibilityRole="button"
-            disabled={isRemoving}
-            onPress={() => onRemove(item)}
-            style={[styles.inlineActionButton, isRemoving ? styles.disabledButton : null]}
-          >
-            <Text style={styles.inlineActionButtonText}>{isRemoving ? "Removing" : "Remove"}</Text>
-          </Pressable>
-        </View>
-      </View>
-      {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
-    </View>
-  );
-}
-
 function SummaryStat({ label, value }: { label: string; value: number }) {
   return (
     <View style={styles.summaryCard}>
@@ -296,6 +222,58 @@ function ContinueWatchingItem({
   );
 }
 
+function WatchlistRow({
+  item,
+  libraryAction,
+  onOpenMovie,
+  onRemove,
+  onOpenShow,
+}: {
+  item: LibraryWatchlistItem;
+  libraryAction: LibraryActionState;
+  onOpenMovie: (movieId: string) => void;
+  onRemove: (item: LibraryWatchlistItem) => void;
+  onOpenShow: (showId: string) => void;
+}) {
+  const actionKey = getWatchlistActionKey(item);
+  const isRemoving = libraryAction.kind === "loading" && libraryAction.actionKey === actionKey;
+  const errorMessage = libraryAction.kind === "error" && libraryAction.actionKey === actionKey
+    ? libraryAction.message
+    : null;
+  const openItem = () => {
+    if (item.mediaType === "movie") {
+      onOpenMovie(item.id);
+      return;
+    }
+
+    onOpenShow(item.id);
+  };
+
+  return (
+    <SwipeableActionRow
+      actionLabel="Remove"
+      isLoading={isRemoving}
+      loadingLabel="Removing"
+      onAction={() => onRemove(item)}
+    >
+      <View style={styles.actionListItem}>
+        <Pressable
+          accessibilityRole="button"
+          onPress={openItem}
+          style={({ pressed }) => [styles.listItemRow, pressed ? styles.pressedListItem : null]}
+        >
+          <View style={styles.listText}>
+            <Text style={styles.itemTitle}>{item.title}</Text>
+            <Text style={styles.statusDetail}>{item.mediaType === "movie" ? "Movie" : "Show"}</Text>
+          </View>
+          <Text style={styles.dateText}>{formatShortDate(item.createdAt)}</Text>
+        </Pressable>
+        {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+      </View>
+    </SwipeableActionRow>
+  );
+}
+
 function RecentlyWatchedRow({
   item,
   libraryAction,
@@ -324,31 +302,84 @@ function RecentlyWatchedRow({
   };
 
   return (
-    <View style={styles.actionListItem}>
-      <View style={styles.listItemRow}>
+    <SwipeableActionRow
+      actionLabel="Undo"
+      isLoading={isRemoving}
+      loadingLabel="Undoing"
+      onAction={() => onRemove(item)}
+    >
+      <View style={styles.actionListItem}>
         <Pressable
           accessibilityRole="button"
           onPress={openItem}
-          style={({ pressed }) => [styles.listTextAction, pressed ? styles.pressedListItem : null]}
+          style={({ pressed }) => [styles.listItemRow, pressed ? styles.pressedListItem : null]}
         >
-          <Text style={styles.itemTitle}>{getRecentlyWatchedTitle(item)}</Text>
-          <Text style={styles.statusDetail}>{getRecentlyWatchedDetail(item)}</Text>
-        </Pressable>
-        <View style={styles.listItemMeta}>
+          <View style={styles.listText}>
+            <Text style={styles.itemTitle}>{getRecentlyWatchedTitle(item)}</Text>
+            <Text style={styles.statusDetail}>{getRecentlyWatchedDetail(item)}</Text>
+          </View>
           <Text style={styles.dateText}>{formatShortDate(item.watchedAt)}</Text>
+        </Pressable>
+        {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+      </View>
+    </SwipeableActionRow>
+  );
+}
+
+function SwipeableActionRow({
+  actionLabel,
+  children,
+  isLoading,
+  loadingLabel,
+  onAction,
+}: {
+  actionLabel: string;
+  children: ReactNode;
+  isLoading: boolean;
+  loadingLabel: string;
+  onAction: () => void;
+}) {
+  return (
+    <Swipeable
+      containerStyle={styles.swipeableRow}
+      overshootRight={false}
+      renderRightActions={() => (
+        <View style={styles.swipeActions}>
           <Pressable
             accessibilityRole="button"
-            disabled={isRemoving}
-            onPress={() => onRemove(item)}
-            style={[styles.inlineActionButton, isRemoving ? styles.disabledButton : null]}
+            disabled={isLoading}
+            onPress={onAction}
+            style={[styles.swipeActionButton, isLoading ? styles.disabledButton : null]}
           >
-            <Text style={styles.inlineActionButtonText}>{isRemoving ? "Undoing" : "Undo"}</Text>
+            <Text style={styles.swipeActionButtonText}>{isLoading ? loadingLabel : actionLabel}</Text>
           </Pressable>
         </View>
-      </View>
-      {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
-    </View>
+      )}
+      rightThreshold={44}
+    >
+      {children}
+    </Swipeable>
   );
+}
+
+function hasItemsForSection(activeSection: LibrarySectionFilter, library: LibraryResponse) {
+  if (activeSection === "watching") {
+    return library.continueWatching.length > 0;
+  }
+
+  if (activeSection === "watchlist") {
+    return library.watchlist.length > 0;
+  }
+
+  if (activeSection === "history") {
+    return library.recentlyWatched.length > 0;
+  }
+
+  return true;
+}
+
+function getDefaultSection(library: LibraryResponse): LibrarySectionFilter {
+  return library.continueWatching.length > 0 ? "watching" : "all";
 }
 
 function getRecentlyWatchedTitle(item: RecentlyWatchedItem) {
