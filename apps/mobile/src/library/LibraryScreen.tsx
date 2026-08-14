@@ -6,8 +6,10 @@ import { isSupabaseConfigured } from "../auth/supabase-auth";
 import { LibraryOverview, LibraryOverviewSkeleton } from "../home/LibraryOverview";
 import { styles } from "../home/home-styles";
 import { useHomeModel } from "../home/use-home-model";
+import { useLibraryActions } from "./use-library-actions";
 
 export default function LibraryScreen() {
+  const { libraryAction, removeRecentlyWatchedItem, removeWatchlistItem } = useLibraryActions();
   const {
     auth,
     authActionMessage,
@@ -26,9 +28,12 @@ export default function LibraryScreen() {
           <LibraryHeader showSearchButton={isSignedIn} />
           <LibraryOverview
             library={homeData.library}
+            libraryAction={libraryAction}
             onOpenMovie={openMovie}
             onOpenShow={openShow}
             onOpenShowSeason={openShowSeason}
+            onRemoveRecentlyWatchedItem={removeRecentlyWatchedItem}
+            onRemoveWatchlistItem={removeWatchlistItem}
           />
         </View>
       ) : (

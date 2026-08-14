@@ -34,6 +34,7 @@ Implemented:
 - Mobile Library has segmented views for all activity, continuing shows, watchlist, and history.
 - Mobile Profile renders a touch-driven holo profile card with Google avatar and library stats.
 - Mobile library rows navigate back to movie detail or show season detail screens.
+- Mobile Library rows can remove watchlist items and undo recent watched markers.
 - Mobile Library/Profile keep previous library data during refreshes and render skeletons on initial load.
 - Mobile has routed Library, Search, and Profile surfaces with persistent bottom app navigation.
 - Postman collection and local/Vercel environments.
@@ -704,6 +705,7 @@ Current behavior:
 - Library shows saved watchlist rows when the backend has watchlist data.
 - Library can filter between all rows, continuing shows, saved titles, and watch history.
 - Continue-watching rows open the next season, recently watched movies open movie detail, and recently watched episodes open the matching season.
+- Watchlist rows can remove saved titles, and recently watched rows can undo the underlying movie or episode watched marker.
 - Bottom app navigation connects Library, Search, and Profile from the root layout, so the tab bar stays stable while route content changes.
 - Empty library state is expected after cleanup-oriented smoke checks.
 - Search supports all/show/movie filters.
@@ -774,6 +776,7 @@ Product foundation:
 - Mobile can resolve a provider result and open internal show/movie details by TVLore ID.
 - Mobile can mark movies watched/unwatched through backend tracking endpoints.
 - Mobile can add/remove shows and movies from the watchlist through backend watchlist endpoints.
+- Mobile can remove watchlist/history rows from Library through existing backend watchlist and tracking endpoints.
 - Mobile can open a show season, hydrate episode IDs, and mark episodes watched/unwatched through backend tracking endpoints.
 - Mobile can bulk-mark the loaded episodes in a season by orchestrating existing idempotent episode tracking endpoints.
 - Mobile has primary Library, Search, and Profile routes over the same authenticated API session.

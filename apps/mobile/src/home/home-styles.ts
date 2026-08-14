@@ -1,6 +1,13 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
+  actionListItem: {
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 10,
+    padding: 14,
+  },
   button: {
     alignItems: "center",
     alignSelf: "flex-start",
@@ -222,6 +229,21 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
   },
+  inlineActionButton: {
+    alignItems: "center",
+    backgroundColor: "#fffdfa",
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    minWidth: 76,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+  },
+  inlineActionButtonText: {
+    color: "#171412",
+    fontSize: 12,
+    fontWeight: "800",
+  },
   librarySection: {
     gap: 16,
   },
@@ -246,12 +268,28 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 14,
   },
+  listItemMeta: {
+    alignItems: "flex-end",
+    gap: 8,
+  },
+  listItemRow: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 12,
+    justifyContent: "space-between",
+  },
   listSection: {
     gap: 10,
   },
   listText: {
     flex: 1,
     gap: 4,
+  },
+  listTextAction: {
+    flex: 1,
+    gap: 4,
+    minHeight: 44,
+    justifyContent: "center",
   },
   listTitle: {
     color: "#171412",

@@ -139,7 +139,8 @@ src/
 |
 |-- library/
 |   |-- LibraryScreen.tsx
-|   `-- library-refresh.ts
+|   |-- library-refresh.ts
+|   `-- use-library-actions.ts
 |
 |-- profile/
 |   `-- ProfileScreen.tsx
@@ -190,6 +191,10 @@ Library rows receive navigation callbacks from `LibraryScreen`: movies route
 to movie detail and episode/show rows route to season detail.
 `LibraryOverview` owns only local section-filter UI state for switching between
 all rows, continuing shows, watchlist, and watch history.
+
+Library row mutations flow through `useLibraryActions`, which keeps Supabase
+token lookup and API calls out of `LibraryOverview`. The hook reuses existing
+watchlist and tracking endpoints, then notifies the local library invalidator.
 
 `useHomeData` preserves the last ready snapshot during refreshes. Library and
 Profile render skeletons only when no home data has loaded yet.
