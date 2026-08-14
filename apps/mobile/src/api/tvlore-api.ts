@@ -515,7 +515,6 @@ function isShowSeasonSummary(value: unknown): value is ShowSeasonSummary {
 
   return (
     typeof value.id === "string" &&
-    typeof value.inWatchlist === "boolean" &&
     typeof value.title === "string" &&
     typeof value.overview === "string" &&
     isNullableString(value.posterPath) &&
