@@ -26,7 +26,7 @@ export function LibraryOverview({
   onOpenShow,
   onOpenShowSeason,
 }: LibraryOverviewProps) {
-  const [activeSection, setActiveSection] = useState<LibrarySectionFilter>("all");
+  const [selectedSection, setSelectedSection] = useState<LibrarySectionFilter | null>(null);
 
   if (!library) {
     return (
@@ -45,6 +45,7 @@ export function LibraryOverview({
   const hasContinueWatching = library.continueWatching.length > 0;
   const hasRecentlyWatched = library.recentlyWatched.length > 0;
   const hasWatchlist = library.watchlist.length > 0;
+  const activeSection = selectedSection ?? getDefaultSection(library);
   const shouldShowWatchlist = activeSection === "all" || activeSection === "watchlist";
   const shouldShowContinueWatching = activeSection === "all" || activeSection === "watching";
   const shouldShowHistory = activeSection === "all" || activeSection === "history";
@@ -66,7 +67,7 @@ export function LibraryOverview({
       ) : null}
 
       {!isEmpty ? (
-        <LibrarySectionTabs activeSection={activeSection} onSelect={setActiveSection} />
+        <LibrarySectionTabs activeSection={activeSection} onSelect={setSelectedSection} />
       ) : null}
 
       {!isEmpty && activeSection !== "all" && !hasItemsForSection(activeSection, library) ? (
@@ -165,6 +166,10 @@ function hasItemsForSection(activeSection: LibrarySectionFilter, library: Librar
   }
 
   return true;
+}
+
+function getDefaultSection(library: LibraryResponse): LibrarySectionFilter {
+  return library.continueWatching.length > 0 ? "watching" : "all";
 }
 
 export function LibraryOverviewSkeleton() {
