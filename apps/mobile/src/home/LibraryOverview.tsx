@@ -10,6 +10,7 @@ import type {
   RecommendationItem,
   RecommendationsResponse,
   RecentlyWatchedItem,
+  WatchedEpisodeItem,
 } from "../api/tvlore-api";
 import { getTmdbPosterUrl } from "../catalog/posters";
 import {
@@ -21,7 +22,16 @@ import { styles } from "./home-styles";
 import { RecommendationsPanel } from "./RecommendationsPanel";
 import type { RecommendationActionState } from "./use-recommendation-actions";
 
-type LibrarySectionFilter = "all" | "episodes" | "movies" | "rated" | "watching" | "watchlist";
+type LibrarySectionFilter = "chronology" | "episodes" | "movies" | "rated" | "watching" | "watchlist";
+
+type EpisodeGroup = {
+  seasons: Array<{
+    episodes: WatchedEpisodeItem[];
+    seasonNumber: number;
+  }>;
+  showId: string;
+  showTitle: string;
+};
 
 const swipeConfirmWindowMs = 4000;
 
@@ -104,9 +114,9 @@ export function LibraryOverview({
   const hasContinueWatching = visibleLibrary.continueWatching.length > 0;
   const hasRatedTitles = visibleLibrary.ratedTitles.length > 0;
   const hasRecentlyWatched = visibleLibrary.recentlyWatched.length > 0;
-  const recentlyWatchedEpisodes = visibleLibrary.recentlyWatched.filter((item) => item.mediaType === "episode");
   const recentlyWatchedMovies = visibleLibrary.recentlyWatched.filter((item) => item.mediaType === "movie");
-  const hasRecentlyWatchedEpisodes = recentlyWatchedEpisodes.length > 0;
+  const episodeGroups = groupEpisodesByShowAndSeason(visibleLibrary.watchedEpisodes);
+  const hasWatchedEpisodes = visibleLibrary.watchedEpisodes.length > 0;
   const hasRecentlyWatchedMovies = recentlyWatchedMovies.length > 0;
   const hasWatchlist = visibleLibrary.watchlist.length > 0;
   const activeSection = selectedSection ?? getDefaultSection(visibleLibrary);
@@ -117,17 +127,17 @@ export function LibraryOverview({
     visibleLibrary.summary.watchlistItemCount +
     visibleLibrary.summary.ratedTitleCount;
   const summaryStats: Array<{ label: string; section: LibrarySectionFilter; value: number }> = [
-    { label: "All", section: "all", value: summaryTotal },
+    { label: "Cronologia", section: "chronology", value: summaryTotal },
     { label: "Shows", section: "watching", value: visibleLibrary.summary.watchedShowCount },
     { label: "Movies", section: "movies", value: visibleLibrary.summary.watchedMovieCount },
     { label: "Episodes", section: "episodes", value: visibleLibrary.summary.watchedEpisodeCount },
     { label: "Watchlist", section: "watchlist", value: visibleLibrary.summary.watchlistItemCount },
     { label: "Rated", section: "rated", value: visibleLibrary.summary.ratedTitleCount },
   ];
-  const shouldShowWatchlist = activeSection === "all" || activeSection === "watchlist";
-  const shouldShowContinueWatching = activeSection === "all" || activeSection === "watching";
-  const shouldShowRated = activeSection === "all" || activeSection === "rated";
-  const shouldShowHistory = activeSection === "all";
+  const shouldShowWatchlist = activeSection === "chronology" || activeSection === "watchlist";
+  const shouldShowContinueWatching = activeSection === "chronology" || activeSection === "watching";
+  const shouldShowRated = activeSection === "chronology" || activeSection === "rated";
+  const shouldShowHistory = activeSection === "chronology";
   const shouldShowMovies = activeSection === "movies";
   const shouldShowEpisodes = activeSection === "episodes";
   const hideLibraryAction = (actionKey: string) => {
@@ -160,7 +170,7 @@ export function LibraryOverview({
         showsVerticalScrollIndicator={false}
         style={styles.libraryListScroll}
       >
-        {!isEmpty && activeSection === "all" ? (
+        {!isEmpty && activeSection === "chronology" ? (
           <RecommendationsPanel
             onOpenMovie={onOpenMovie}
             onOpenShow={onOpenShow}
@@ -170,7 +180,7 @@ export function LibraryOverview({
           />
         ) : null}
 
-        {!isEmpty && activeSection !== "all" && !hasItemsForSection(activeSection, visibleLibrary) ? (
+        {!isEmpty && activeSection !== "chronology" && !hasItemsForSection(activeSection, visibleLibrary) ? (
           <EmptySection activeSection={activeSection} />
         ) : null}
 
@@ -231,16 +241,15 @@ export function LibraryOverview({
           </View>
         ) : null}
 
-        {shouldShowEpisodes && hasRecentlyWatchedEpisodes ? (
+        {shouldShowEpisodes && hasWatchedEpisodes ? (
           <View style={styles.listSection}>
             <Text style={styles.listTitle}>Episodes</Text>
-            {recentlyWatchedEpisodes.map((item) => (
-              <RecentlyWatchedRow
-                item={item}
-                key={`${item.mediaType}-${item.id}`}
+            {episodeGroups.map((group) => (
+              <EpisodeShowGroup
+                group={group}
+                key={group.showId}
                 libraryAction={libraryAction}
                 onOptimisticRemove={hideLibraryAction}
-                onOpenMovie={onOpenMovie}
                 onOpenShowSeason={onOpenShowSeason}
                 onRemove={onRemoveRecentlyWatchedItem}
               />
@@ -463,6 +472,42 @@ function RecentlyWatchedRow({
   );
 }
 
+function EpisodeShowGroup({
+  group,
+  libraryAction,
+  onOptimisticRemove,
+  onOpenShowSeason,
+  onRemove,
+}: {
+  group: EpisodeGroup;
+  libraryAction: LibraryActionState;
+  onOptimisticRemove: (actionKey: string) => void;
+  onOpenShowSeason: (showId: string, seasonNumber: number) => void;
+  onRemove: (item: RecentlyWatchedItem) => void;
+}) {
+  return (
+    <View style={styles.groupPanel}>
+      <Text style={styles.groupTitle}>{group.showTitle}</Text>
+      {group.seasons.map((season) => (
+        <View key={`${group.showId}-${season.seasonNumber}`} style={styles.groupSeason}>
+          <Text style={styles.groupSubtitle}>Season {season.seasonNumber}</Text>
+          {season.episodes.map((episode) => (
+            <RecentlyWatchedRow
+              item={episode}
+              key={episode.id}
+              libraryAction={libraryAction}
+              onOptimisticRemove={onOptimisticRemove}
+              onOpenMovie={noop}
+              onOpenShowSeason={onOpenShowSeason}
+              onRemove={onRemove}
+            />
+          ))}
+        </View>
+      ))}
+    </View>
+  );
+}
+
 function RatedTitleRow({
   item,
   onOpenMovie,
@@ -618,7 +663,7 @@ function hasItemsForSection(activeSection: LibrarySectionFilter, library: Librar
   }
 
   if (activeSection === "episodes") {
-    return library.recentlyWatched.some((item) => item.mediaType === "episode");
+    return library.watchedEpisodes.length > 0;
   }
 
   if (activeSection === "rated") {
@@ -631,21 +676,22 @@ function hasItemsForSection(activeSection: LibrarySectionFilter, library: Librar
 function getOptimisticLibrary(library: LibraryResponse, removedKeys: Set<string>): LibraryResponse {
   const recentlyWatched = library.recentlyWatched.filter((item) => !removedKeys.has(getHistoryActionKey(item)));
   const watchlist = library.watchlist.filter((item) => !removedKeys.has(getWatchlistActionKey(item)));
-  const removedRecentlyWatched = library.recentlyWatched.filter((item) => removedKeys.has(getHistoryActionKey(item)));
+  const watchedEpisodes = library.watchedEpisodes.filter((item) => !removedKeys.has(getHistoryActionKey(item)));
+  const removedRecentlyWatchedMovies = library.recentlyWatched.filter((item) => item.mediaType === "movie" && removedKeys.has(getHistoryActionKey(item)));
+  const removedWatchedEpisodes = library.watchedEpisodes.filter((item) => removedKeys.has(getHistoryActionKey(item)));
   const removedWatchlistCount = library.watchlist.length - watchlist.length;
-  const removedMovieCount = removedRecentlyWatched.filter((item) => item.mediaType === "movie").length;
-  const removedEpisodeCount = removedRecentlyWatched.filter((item) => item.mediaType === "episode").length;
 
   return {
     ...library,
     recentlyWatched,
     summary: {
       ...library.summary,
-      watchedEpisodeCount: Math.max(0, library.summary.watchedEpisodeCount - removedEpisodeCount),
-      watchedMovieCount: Math.max(0, library.summary.watchedMovieCount - removedMovieCount),
+      watchedEpisodeCount: Math.max(0, library.summary.watchedEpisodeCount - removedWatchedEpisodes.length),
+      watchedMovieCount: Math.max(0, library.summary.watchedMovieCount - removedRecentlyWatchedMovies.length),
       watchlistItemCount: Math.max(0, library.summary.watchlistItemCount - removedWatchlistCount),
     },
     watchlist,
+    watchedEpisodes,
   };
 }
 
@@ -653,6 +699,7 @@ function getLibraryActionKeys(library: LibraryResponse) {
   return new Set([
     ...library.recentlyWatched.map(getHistoryActionKey),
     ...library.watchlist.map(getWatchlistActionKey),
+    ...library.watchedEpisodes.map(getHistoryActionKey),
   ]);
 }
 
@@ -677,7 +724,7 @@ function deleteSetValue(values: Set<string>, value: string) {
 }
 
 function getDefaultSection(library: LibraryResponse): LibrarySectionFilter {
-  return library.continueWatching.length > 0 ? "watching" : "all";
+  return library.continueWatching.length > 0 ? "watching" : "chronology";
 }
 
 function getRecentlyWatchedTitle(item: RecentlyWatchedItem) {
@@ -744,4 +791,39 @@ function getEmptySectionDetail(activeSection: LibrarySectionFilter) {
 
 function formatShortDate(value: string) {
   return new Date(value).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+
+function noop() {}
+
+function groupEpisodesByShowAndSeason(
+  episodes: WatchedEpisodeItem[],
+): EpisodeGroup[] {
+  const groups = new Map<string, EpisodeGroup>();
+
+  episodes.forEach((episode) => {
+    const showGroup = groups.get(episode.showId) ?? {
+      seasons: [],
+      showId: episode.showId,
+      showTitle: episode.showTitle,
+    };
+    const seasonGroup = showGroup.seasons.find((season) => season.seasonNumber === episode.seasonNumber);
+
+    if (seasonGroup) {
+      seasonGroup.episodes.push(episode);
+    } else {
+      showGroup.seasons.push({ episodes: [episode], seasonNumber: episode.seasonNumber });
+    }
+
+    groups.set(episode.showId, showGroup);
+  });
+
+  return Array.from(groups.values()).map((group) => ({
+    ...group,
+    seasons: group.seasons
+      .map((season) => ({
+        ...season,
+        episodes: [...season.episodes].sort((left, right) => left.episodeNumber - right.episodeNumber),
+      }))
+      .sort((left, right) => left.seasonNumber - right.seasonNumber),
+  }));
 }

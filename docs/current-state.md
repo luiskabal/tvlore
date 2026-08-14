@@ -39,7 +39,7 @@ Implemented:
 - Mobile Library can show backend-owned recommendation candidates.
 - Mobile recommendation rows can save titles directly to the watchlist with optimistic feedback.
 - Mobile Library shows watchlist titles and rated titles separately from watched history.
-- Mobile Library summary cards filter all activity, continuing shows, recently watched movies, recently watched episodes, watchlist, and rated titles.
+- Mobile Library summary cards filter Cronologia, continuing shows, recently watched movies, watched episodes grouped by show and season, watchlist, and rated titles.
 - Mobile Library rows render catalog poster thumbnails when available, with stable placeholders otherwise.
 - Mobile Profile renders a touch-driven holo profile card with Google avatar and library stats.
 - Mobile library rows navigate back to movie detail or show season detail screens.
@@ -431,7 +431,7 @@ Current watched-state behavior:
 - Show progress returned by show detail, episode watch mutations, and `GET /shows/:showId/progress` is based on episodes currently persisted in TVLore. Opening a season hydrates its episode rows.
 - Show detail returns `progress.status` as `not_started`, `watching`, or `completed`.
 - Show and movie detail responses return `inWatchlist` and nullable `rating` for the authenticated user.
-- `GET /library` returns summary counts, continue-watching shows, rated titles, recent movie/episode activity, and watchlist titles for the authenticated user.
+- `GET /library` returns summary counts, continue-watching shows, rated titles, recent movie/episode activity, full watched episode activity, and watchlist titles for the authenticated user.
 
 Why season detail fetches TMDB:
 
@@ -725,7 +725,7 @@ Expected behavior:
 - `DELETE /shows/:showId/preference` clears that show rating for the authenticated user.
 - `PUT /movies/:movieId/preference` stores a 1-5 movie rating for the authenticated user.
 - `DELETE /movies/:movieId/preference` clears that movie rating for the authenticated user.
-- `GET /library` returns personal summary, rated titles, continue-watching, watchlist, and recently watched activity.
+- `GET /library` returns personal summary, rated titles, continue-watching, watchlist, recently watched activity, and full watched episode activity.
 - `GET /recommendations` returns unrated, unwatched, unsaved catalog candidates ordered by the user's stronger rated media type.
 - `POST /shows/:showId/watches` hydrates the show seasons, marks every episode watched, and returns completed show progress.
 - `DELETE /shows/:showId/watches` removes every episode watch marker for that show and returns not-started show progress.
@@ -775,7 +775,7 @@ Current behavior:
 - Library shows recommendation rows when the backend has eligible catalog candidates.
 - Recommendation rows open the matching show or movie detail screen.
 - Recommendation rows can save the title to watchlist immediately, then reconcile through the existing library refresh invalidator.
-- Library can filter from its summary cards between all rows, continuing shows, recently watched movies, recently watched episodes, saved titles, and rated titles. Watch history appears inside All.
+- Library can filter from its summary cards between Cronologia, continuing shows, recently watched movies, watched episodes grouped by show and season, saved titles, and rated titles. Watch history appears inside Cronologia.
 - Library rows include compact poster thumbnails for quicker visual scanning.
 - Continue-watching rows open the next season, recently watched movies open movie detail, and recently watched episodes open the matching season.
 - Watchlist rows can remove saved titles through confirmable swipe actions, and recently watched rows can undo the underlying movie or episode watched marker through confirmable swipe actions.

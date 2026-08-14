@@ -9,6 +9,7 @@ import type {
   LibraryRecentlyWatchedItemDto,
   LibraryResponseDto,
   LibraryWatchlistItemDto,
+  LibraryWatchedEpisodeDto,
   ShowProgressResponseDto,
 } from "./library.types";
 
@@ -128,6 +129,7 @@ export class LibraryRepository {
         watchedShowCount: watchedShowIds.length,
       },
       watchlist: toWatchlist(showWatchlistItems, movieWatchlistItems),
+      watchedEpisodes: toWatchedEpisodes(episodeWatches),
     };
   }
 
@@ -204,16 +206,7 @@ function toRecentlyWatched(
   }>,
 ): LibraryRecentlyWatchedItemDto[] {
   return [
-    ...episodeWatches.map((watch) => ({
-      episodeNumber: watch.episode.episodeNumber,
-      id: watch.episode.id,
-      mediaType: "episode" as const,
-      seasonNumber: watch.episode.seasonNumber,
-      showId: watch.episode.show.id,
-      showTitle: watch.episode.show.title,
-      title: watch.episode.title,
-      watchedAt: watch.watchedAt.toISOString(),
-    })),
+    ...toWatchedEpisodes(episodeWatches),
     ...movieWatches.map((watch) => ({
       id: watch.movie.id,
       mediaType: "movie" as const,
@@ -222,6 +215,30 @@ function toRecentlyWatched(
       watchedAt: watch.watchedAt.toISOString(),
     })),
   ].sort((left, right) => compareIsoDates(right.watchedAt, left.watchedAt)).slice(0, 10);
+}
+
+function toWatchedEpisodes(
+  episodeWatches: Array<{
+    episode: {
+      episodeNumber: number;
+      id: string;
+      seasonNumber: number;
+      show: { id: string; title: string };
+      title: string;
+    };
+    watchedAt: Date;
+  }>,
+): LibraryWatchedEpisodeDto[] {
+  return episodeWatches.map((watch) => ({
+    episodeNumber: watch.episode.episodeNumber,
+    id: watch.episode.id,
+    mediaType: "episode" as const,
+    seasonNumber: watch.episode.seasonNumber,
+    showId: watch.episode.show.id,
+    showTitle: watch.episode.show.title,
+    title: watch.episode.title,
+    watchedAt: watch.watchedAt.toISOString(),
+  }));
 }
 
 function toWatchlist(

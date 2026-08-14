@@ -19,6 +19,7 @@ export type LibraryResponse = {
     watchedShowCount: number;
   };
   watchlist: LibraryWatchlistItem[];
+  watchedEpisodes: WatchedEpisodeItem[];
 };
 
 export type RecommendationsResponse = {
@@ -61,16 +62,18 @@ export type RecentlyWatchedItem =
       title: string;
       watchedAt: string;
     }
-  | {
-      episodeNumber: number;
-      id: string;
-      mediaType: "episode";
-      seasonNumber: number;
-      showId: string;
-      showTitle: string;
-      title: string;
-      watchedAt: string;
-    };
+  | WatchedEpisodeItem;
+
+export type WatchedEpisodeItem = {
+  episodeNumber: number;
+  id: string;
+  mediaType: "episode";
+  seasonNumber: number;
+  showId: string;
+  showTitle: string;
+  title: string;
+  watchedAt: string;
+};
 
 export type LibraryWatchlistItem =
   | {

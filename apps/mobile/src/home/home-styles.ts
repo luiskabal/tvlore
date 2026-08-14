@@ -75,6 +75,26 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
   },
+  groupPanel: {
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 12,
+    padding: 14,
+  },
+  groupSeason: {
+    gap: 8,
+  },
+  groupSubtitle: {
+    color: "#5f564d",
+    fontSize: 13,
+    fontWeight: "800",
+  },
+  groupTitle: {
+    color: "#171412",
+    fontSize: 18,
+    fontWeight: "900",
+  },
   holoBadge: {
     backgroundColor: "rgba(247, 244, 238, 0.84)",
     borderRadius: 999,

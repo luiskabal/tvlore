@@ -221,9 +221,10 @@ row hiding and restores the row if the save fails.
 Library rows receive navigation callbacks from `LibraryScreen`: movies route
 to movie detail and episode/show rows route to season detail.
 `LibraryOverview` owns only local section-filter UI state for switching between
-all rows, continuing shows, recently watched movies, recently watched episodes,
-watchlist, and rated titles. Summary stat cards reuse the same filter state as
-the only section selector. Watch history still appears inside All. It also owns the swipe presentation
+Cronologia, continuing shows, recently watched movies, watched episodes grouped
+by show and season, watchlist, and rated titles. Summary stat cards reuse the
+same filter state as the only section selector. The chronological watch feed
+still appears inside Cronologia. It also owns the swipe presentation
 affordance for removable Library rows and compact poster thumbnail rendering
 from existing API data.
 

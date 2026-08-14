@@ -1141,7 +1141,7 @@ Errors: `SHOW_NOT_FOUND`, `VALIDATION_FAILED`.
 
 Purpose: return personal library/profile summary for authenticated user.
 
-Current MVP status: implemented with summary, continue-watching shows, rated titles, watchlist titles, and recent movie/episode activity.
+Current MVP status: implemented with summary, continue-watching shows, rated titles, watchlist titles, recent movie/episode activity, and complete watched episode activity.
 
 Auth: required.
 
@@ -1230,6 +1230,18 @@ Response:
       "posterPath": "/path.jpg",
       "createdAt": "2026-08-09T00:00:00.000Z"
     }
+  ],
+  "watchedEpisodes": [
+    {
+      "mediaType": "episode",
+      "id": "uuid",
+      "showId": "uuid",
+      "showTitle": "Dark",
+      "seasonNumber": 1,
+      "episodeNumber": 1,
+      "title": "Secrets",
+      "watchedAt": "2026-08-09T00:00:00.000Z"
+    }
   ]
 }
 ```
@@ -1249,6 +1261,7 @@ Business validation:
 - Summary and progress are calculated by backend.
 - Results include only authenticated user's data.
 - Ratings are explicit preferences and are returned separately from watched history.
+- `recentlyWatched` is a short chronological feed; `watchedEpisodes` is the complete watched episode list for structured episode views.
 
 Errors: `VALIDATION_FAILED`, `UNAUTHORIZED`.
 

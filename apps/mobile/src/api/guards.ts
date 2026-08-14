@@ -21,6 +21,7 @@ import type {
   ShowSeasonSummary,
   UserResponse,
   WatchlistMutationResponse,
+  WatchedEpisodeItem,
 } from "./types";
 
 export function isUserResponse(value: unknown): value is UserResponse {
@@ -57,7 +58,9 @@ export function isLibraryResponse(value: unknown): value is LibraryResponse {
     Array.isArray(value.recentlyWatched) &&
     value.recentlyWatched.every(isRecentlyWatchedItem) &&
     Array.isArray(value.watchlist) &&
-    value.watchlist.every(isLibraryWatchlistItem)
+    value.watchlist.every(isLibraryWatchlistItem) &&
+    Array.isArray(value.watchedEpisodes) &&
+    value.watchedEpisodes.every(isWatchedEpisodeItem)
   );
 }
 
@@ -346,7 +349,12 @@ function isRecentlyWatchedItem(value: unknown): value is RecentlyWatchedItem {
     );
   }
 
+  return isWatchedEpisodeItem(value);
+}
+
+function isWatchedEpisodeItem(value: unknown): value is WatchedEpisodeItem {
   return (
+    isRecord(value) &&
     value.mediaType === "episode" &&
     typeof value.id === "string" &&
     typeof value.showId === "string" &&

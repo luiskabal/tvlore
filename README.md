@@ -30,7 +30,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Personal show/movie watchlist.
 - Personal show/movie rating preferences.
 - Library summary with watched show, movie, episode, watchlist, and rated-title counts.
-- Tappable Library summary cards filter all activity, watching shows, movies, episodes, watchlist, and rated titles.
+- Tappable Library summary cards filter Cronologia, watching shows, movies, grouped episodes, watchlist, and rated titles.
 - Holographic mobile profile summary card with Google avatar and library stats.
 - Continue-watching and recently-watched data from the backend.
 - Rated show/movie list from the backend.

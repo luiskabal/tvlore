@@ -437,6 +437,10 @@ async function checkAuthenticatedProductFlow(token) {
         "library should include recently watched episode",
       );
       expect(
+        body.watchedEpisodes.some((item) => item.id === firstEpisodeId),
+        "library should include watched episode",
+      );
+      expect(
         body.recentlyWatched.some((item) => item.id === resolvedMovie.id),
         "library should include recently watched movie",
       );
@@ -721,6 +725,7 @@ function assertLibrary(body) {
   expectArray(body.ratedTitles, "library.ratedTitles");
   expectArray(body.recentlyWatched, "library.recentlyWatched");
   expectArray(body.watchlist, "library.watchlist");
+  expectArray(body.watchedEpisodes, "library.watchedEpisodes");
 
   for (const item of body.ratedTitles) {
     expectRecord(item, "library.ratedTitles item");
@@ -738,6 +743,18 @@ function assertLibrary(body) {
     expect(["movie", "episode"].includes(item.mediaType), "library recentlyWatched mediaType");
     expectUuid(item.id, "library recentlyWatched.id");
     expectIsoString(item.watchedAt, "library recentlyWatched.watchedAt");
+  }
+
+  for (const item of body.watchedEpisodes) {
+    expectRecord(item, "library.watchedEpisodes item");
+    expectEqual(item.mediaType, "episode", "library watchedEpisodes mediaType");
+    expectUuid(item.id, "library watchedEpisodes.id");
+    expectUuid(item.showId, "library watchedEpisodes.showId");
+    expectString(item.showTitle, "library watchedEpisodes.showTitle");
+    expectString(item.title, "library watchedEpisodes.title");
+    expectPositiveInteger(item.seasonNumber, "library watchedEpisodes.seasonNumber");
+    expectPositiveInteger(item.episodeNumber, "library watchedEpisodes.episodeNumber");
+    expectIsoString(item.watchedAt, "library watchedEpisodes.watchedAt");
   }
 
   for (const item of body.watchlist) {

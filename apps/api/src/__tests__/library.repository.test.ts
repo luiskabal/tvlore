@@ -68,4 +68,42 @@ describe("LibraryRepository", () => {
     });
     expect(client.show.findMany).not.toHaveBeenCalled();
   });
+
+  it("returns complete watched episodes separately from recent activity", async () => {
+    const episodeWatches = Array.from({ length: 11 }, (_, index) => ({
+      episode: {
+        episodeNumber: index + 1,
+        id: `episode-${index + 1}`,
+        seasonNumber: 1,
+        show: { id: showId, posterPath: "/dark.jpg", title: "Dark" },
+        title: `Episode ${index + 1}`,
+      },
+      watchedAt: new Date(`2026-08-14T10:${String(index).padStart(2, "0")}:00.000Z`),
+    })).reverse();
+    const client = {
+      episodeWatch: { findMany: vi.fn().mockResolvedValue(episodeWatches) },
+      moviePreference: { findMany: vi.fn().mockResolvedValue([]) },
+      movieWatch: { findMany: vi.fn().mockResolvedValue([]) },
+      movieWatchlistItem: { findMany: vi.fn().mockResolvedValue([]) },
+      show: { findMany: vi.fn().mockResolvedValue([]) },
+      showPreference: { findMany: vi.fn().mockResolvedValue([]) },
+      showWatchlistItem: { findMany: vi.fn().mockResolvedValue([]) },
+    };
+    const repository = new LibraryRepository({ getClient: () => client } as unknown as PrismaService);
+    const library = await repository.getLibrary(userId);
+
+    expect(library.summary.watchedEpisodeCount).toBe(11);
+    expect(library.summary.watchedShowCount).toBe(1);
+    expect(library.recentlyWatched).toHaveLength(10);
+    expect(library.watchedEpisodes).toHaveLength(11);
+    expect(library.watchedEpisodes[0]).toMatchObject({
+      episodeNumber: 11,
+      id: "episode-11",
+      mediaType: "episode",
+      seasonNumber: 1,
+      showId,
+      showTitle: "Dark",
+      title: "Episode 11",
+    });
+  });
 });

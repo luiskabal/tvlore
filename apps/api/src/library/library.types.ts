@@ -33,16 +33,18 @@ export type LibraryRecentlyWatchedItemDto =
       title: string;
       watchedAt: string;
     }
-  | {
-      episodeNumber: number;
-      id: string;
-      mediaType: "episode";
-      seasonNumber: number;
-      showId: string;
-      showTitle: string;
-      title: string;
-      watchedAt: string;
-    };
+  | LibraryWatchedEpisodeDto;
+
+export type LibraryWatchedEpisodeDto = {
+  episodeNumber: number;
+  id: string;
+  mediaType: "episode";
+  seasonNumber: number;
+  showId: string;
+  showTitle: string;
+  title: string;
+  watchedAt: string;
+};
 
 export type LibraryWatchlistItemDto =
   | {
@@ -84,6 +86,7 @@ export type LibraryResponseDto = {
   recentlyWatched: LibraryRecentlyWatchedItemDto[];
   summary: LibrarySummaryDto;
   watchlist: LibraryWatchlistItemDto[];
+  watchedEpisodes: LibraryWatchedEpisodeDto[];
 };
 
 export type { ShowProgressResponseDto };
