@@ -100,8 +100,6 @@ function PreferencePanel({
   onSetRating: (mediaType: MediaType, id: string, rating: number | null) => void;
   preferenceAction: PreferenceActionState;
 }) {
-  const isSaving = preferenceAction.kind === "loading";
-
   return (
     <View style={styles.statusPanel}>
       <Text style={styles.statusTitle}>Your rating</Text>
@@ -115,11 +113,9 @@ function PreferencePanel({
           return (
             <Pressable
               key={rating}
-              disabled={isSaving}
               style={[
                 styles.ratingButton,
                 isSelected ? styles.ratingButtonSelected : null,
-                isSaving ? styles.disabledButton : null,
               ]}
               onPress={() => onSetRating(detail.mediaType, detail.id, rating)}
             >
@@ -133,11 +129,10 @@ function PreferencePanel({
 
       {detail.rating ? (
         <Pressable
-          disabled={isSaving}
-          style={[styles.clearButton, isSaving ? styles.disabledButton : null]}
+          style={styles.clearButton}
           onPress={() => onSetRating(detail.mediaType, detail.id, null)}
         >
-          <Text style={styles.clearButtonText}>{isSaving ? "Saving" : "Clear rating"}</Text>
+          <Text style={styles.clearButtonText}>Clear rating</Text>
         </Pressable>
       ) : null}
     </View>
@@ -279,8 +274,6 @@ function MovieWatchPanel({
   onSetWatched: (movieId: string, watched: boolean) => void;
   watchAction: WatchActionState;
 }) {
-  const isSaving = watchAction.kind === "loading";
-
   return (
     <View style={styles.statusPanel}>
       <Text style={styles.statusTitle}>Watch state</Text>
@@ -291,12 +284,11 @@ function MovieWatchPanel({
       {watchAction.kind === "error" ? <Text style={styles.errorText}>{watchAction.message}</Text> : null}
 
       <Pressable
-        disabled={isSaving}
-        style={[movie.watched ? styles.secondaryButton : styles.primaryButton, isSaving ? styles.disabledButton : null]}
+        style={movie.watched ? styles.secondaryButton : styles.primaryButton}
         onPress={() => onSetWatched(movie.id, !movie.watched)}
       >
         <Text style={movie.watched ? styles.secondaryButtonText : styles.primaryButtonText}>
-          {isSaving ? "Saving" : movie.watched ? "Mark unwatched" : "Mark watched"}
+          {movie.watched ? "Mark unwatched" : "Mark watched"}
         </Text>
       </Pressable>
     </View>

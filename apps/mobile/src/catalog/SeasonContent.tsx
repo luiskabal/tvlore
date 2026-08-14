@@ -126,7 +126,6 @@ function SeasonBulkPanel({
   const episodeCount = season.episodes.length;
   const hasEpisodes = episodeCount > 0;
   const isBulkSaving = watchAction.kind === "bulk-loading";
-  const isSaving = isBulkSaving || watchAction.kind === "loading";
   const allWatched = hasEpisodes && watchedCount === episodeCount;
   const noneWatched = watchedCount === 0;
   const actionError = watchAction.kind === "bulk-error" ? watchAction.message : null;
@@ -139,8 +138,8 @@ function SeasonBulkPanel({
 
       <View style={styles.bulkButtonRow}>
         <Pressable
-          disabled={!hasEpisodes || allWatched || isSaving}
-          style={[styles.primaryButton, !hasEpisodes || allWatched || isSaving ? styles.disabledButton : null]}
+          disabled={!hasEpisodes || allWatched || isBulkSaving}
+          style={[styles.primaryButton, !hasEpisodes || allWatched || isBulkSaving ? styles.disabledButton : null]}
           onPress={() => onSetWatched(true)}
         >
           <Text style={styles.primaryButtonText}>
@@ -149,8 +148,8 @@ function SeasonBulkPanel({
         </Pressable>
 
         <Pressable
-          disabled={!hasEpisodes || noneWatched || isSaving}
-          style={[styles.secondaryButton, !hasEpisodes || noneWatched || isSaving ? styles.disabledButton : null]}
+          disabled={!hasEpisodes || noneWatched || isBulkSaving}
+          style={[styles.secondaryButton, !hasEpisodes || noneWatched || isBulkSaving ? styles.disabledButton : null]}
           onPress={() => onSetWatched(false)}
         >
           <Text style={styles.secondaryButtonText}>
@@ -171,8 +170,7 @@ function EpisodeRow({
   onSetWatched: (episodeId: string, watched: boolean) => void;
   watchAction: EpisodeWatchActionState;
 }) {
-  const isSaving = watchAction.kind === "loading" && watchAction.episodeId === episode.id;
-  const isDisabled = watchAction.kind === "loading" || watchAction.kind === "bulk-loading";
+  const isDisabled = watchAction.kind === "bulk-loading";
   const actionError = watchAction.kind === "error" && watchAction.episodeId === episode.id
     ? watchAction.message
     : null;
@@ -207,7 +205,7 @@ function EpisodeRow({
           onPress={() => onSetWatched(episode.id, !episode.watched)}
         >
           <Text style={episode.watched ? styles.secondaryButtonText : styles.primaryButtonText}>
-            {isSaving ? "Saving" : episode.watched ? "Mark unwatched" : "Mark watched"}
+            {episode.watched ? "Mark unwatched" : "Mark watched"}
           </Text>
         </Pressable>
       </View>

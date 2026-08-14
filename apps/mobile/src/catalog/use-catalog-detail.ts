@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import { useCallback, useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
 
 import {
   addToWatchlist,
@@ -39,6 +39,8 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
   const [watchAction, setWatchAction] = useState<WatchActionState>({ kind: "idle" });
   const [watchlistAction, setWatchlistAction] = useState<WatchlistActionState>({ kind: "idle" });
   const [preferenceAction, setPreferenceAction] = useState<PreferenceActionState>({ kind: "idle" });
+  const movieWatchRequestId = useRef(0);
+  const ratingRequestId = useRef(0);
 
   const refresh = useCallback(async () => {
     if (!id) {
@@ -67,6 +69,9 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
     const previousDetail = state.kind === "ready" && state.detail.mediaType === "movie" && state.detail.id === movieId
       ? state.detail
       : null;
+    const requestId = movieWatchRequestId.current + 1;
+
+    movieWatchRequestId.current = requestId;
 
     setWatchAction({ kind: "loading" });
     setState((current) => {
@@ -91,6 +96,10 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
         ? await markMovieWatched(token, movieId)
         : await unmarkMovieWatched(token, movieId);
 
+      if (movieWatchRequestId.current !== requestId) {
+        return;
+      }
+
       setState((current) => {
         if (current.kind !== "ready" || current.detail.mediaType !== "movie" || current.detail.id !== movieId) {
           return current;
@@ -109,6 +118,10 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
       notifyLibraryChanged();
       setWatchAction({ kind: "idle" });
     } catch (error) {
+      if (movieWatchRequestId.current !== requestId) {
+        return;
+      }
+
       rollbackDetail(previousDetail, setState);
       setWatchAction({
         kind: "error",
@@ -175,6 +188,9 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
     const previousDetail = state.kind === "ready" && state.detail.id === targetId && state.detail.mediaType === targetMediaType
       ? state.detail
       : null;
+    const requestId = ratingRequestId.current + 1;
+
+    ratingRequestId.current = requestId;
 
     setPreferenceAction({ kind: "loading" });
     setState((current) => {
@@ -197,6 +213,10 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
         ? await clearPreferenceRating(token, targetMediaType, targetId)
         : await setPreferenceRating(token, targetMediaType, targetId, rating);
 
+      if (ratingRequestId.current !== requestId) {
+        return;
+      }
+
       setState((current) => {
         if (
           current.kind !== "ready" ||
@@ -216,6 +236,10 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
       });
       setPreferenceAction({ kind: "idle" });
     } catch (error) {
+      if (ratingRequestId.current !== requestId) {
+        return;
+      }
+
       rollbackDetail(previousDetail, setState);
       setPreferenceAction({
         kind: "error",
