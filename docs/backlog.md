@@ -10,6 +10,7 @@ No active infrastructure tasks.
 
 - [ ] Persist richer catalog signals, such as genres, before improving recommendation quality.
 - [ ] Add curated watch paths for imported or fetched viewing orders, such as Marvel release or chronology order.
+- [ ] Research and add a country-aware `Where to Watch` section for show/movie availability.
 
 ## Notes
 
@@ -22,6 +23,9 @@ No active infrastructure tasks.
 - Recommendations belong in Library while it acts as the app home. Profile should stay focused on identity, stats, and account controls.
 - Cronologia uses a backend-owned paginated endpoint and loads more history as the user scrolls near the end.
 - Curated watch paths should support movies and shows in one ordered list, keep source/provenance, and resolve items into TVLore catalog IDs only when the user opens or saves the list.
+- Where to Watch should stay backend-owned: provider API keys stay server-side, results are normalized by country, and mobile only renders availability badges/icons plus allowed attribution or links.
+- Start by evaluating TMDB Watch Providers because TVLore already resolves TMDB refs. It gives country-specific subscription/rent/buy/free provider data, but JustWatch attribution is required and TMDB does not return full deep links.
+- Evaluate Watchmode, JustWatch Partner API, or Streaming Availability API only if TVLore needs richer coverage, direct/deep links, episode-level availability, or better commercial terms.
 
 ## Done
 

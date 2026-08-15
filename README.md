@@ -80,6 +80,7 @@ Use `corepack pnpm api:check` for local/Vercel HTTP smoke checks.
 ## Next Backlog Items
 
 - Refine recommendation quality after storing richer catalog signals such as genres or providers.
+- Research a country-aware `Where to Watch` section for streaming availability by platform.
 
 ## Workspace Layout
 
