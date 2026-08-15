@@ -40,6 +40,7 @@ Implemented:
 - Mobile recommendation rows can save titles directly to the watchlist with optimistic feedback.
 - Mobile Library shows watchlist titles and rated titles separately from watched history.
 - Mobile Library summary cards filter Cronologia, recommendations, continuing shows, recently watched movies, watched episodes grouped by show and season, watchlist, and rated titles.
+- Mobile Cronologia loads a backend-owned paginated movie/episode watch-history feed.
 - Mobile Library rows render catalog poster thumbnails when available, with stable placeholders otherwise.
 - Mobile Library episode season subsections can be expanded or collapsed with a tap.
 - Mobile Profile renders a touch-driven holo profile card with Google avatar and library stats.
@@ -418,6 +419,7 @@ PUT /movies/:movieId/preference
 DELETE /movies/:movieId/preference
 GET /shows/:showId/progress
 GET /library
+GET /library/chronology
 GET /recommendations
 ```
 
@@ -727,6 +729,7 @@ Expected behavior:
 - `PUT /movies/:movieId/preference` stores a 1-5 movie rating for the authenticated user.
 - `DELETE /movies/:movieId/preference` clears that movie rating for the authenticated user.
 - `GET /library` returns personal summary, rated titles, continue-watching, watchlist, recently watched activity, and full watched episode activity.
+- `GET /library/chronology` returns paginated personal movie/episode watch-history activity.
 - `GET /recommendations` returns unrated, unwatched, unsaved catalog candidates ordered by the user's stronger rated media type.
 - `POST /shows/:showId/watches` hydrates the show seasons, marks every episode watched, and returns completed show progress.
 - `DELETE /shows/:showId/watches` removes every episode watch marker for that show and returns not-started show progress.
@@ -741,7 +744,8 @@ The current mobile app has these product-facing slices:
 Library
 -> Supabase session
 -> GET /users/me, GET /library, and GET /recommendations in parallel
--> Library summary, recommendations, watchlist, rated titles, continue-watching, recently-watched
+-> GET /library/chronology when Cronologia becomes visible
+-> Library summary, recommendations, watchlist, rated titles, continue-watching, recently-watched, paginated chronology
 
 Profile
 -> Supabase session
@@ -776,7 +780,7 @@ Current behavior:
 - Library shows recommendation rows in a dedicated `For you` filter when the backend has eligible catalog candidates.
 - Recommendation rows open the matching show or movie detail screen.
 - Recommendation rows can save the title to watchlist immediately, then reconcile through the existing library refresh invalidator.
-- Library can filter from its summary cards between Cronologia, recommendations, continuing shows, recently watched movies, watched episodes grouped by show and season, saved titles, and rated titles. Cronologia only shows watched movies and episodes by date.
+- Library can filter from its summary cards between Cronologia, recommendations, continuing shows, recently watched movies, watched episodes grouped by show and season, saved titles, and rated titles. Cronologia shows paginated watched movies and episodes by date.
 - Episode groups keep each season collapsible so long watched histories stay scannable.
 - Library rows include compact poster thumbnails for quicker visual scanning.
 - Continue-watching rows open the next season, recently watched movies open movie detail, and recently watched episodes open the matching season.

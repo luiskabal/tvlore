@@ -188,6 +188,8 @@ LibraryScreen
   -> getSupabaseAccessToken()
   -> getHomeData(accessToken)
   -> GET /users/me, GET /library, and GET /recommendations in parallel
+  -> useLibraryChronology()
+  -> GET /library/chronology when Cronologia is visible
 
 ProfileScreen
   -> useHomeModel({ includeRecommendations: false })
@@ -224,8 +226,9 @@ to movie detail and episode/show rows route to season detail.
 Cronologia, recommendations, continuing shows, recently watched movies, watched
 episodes grouped by show and season, watchlist, and rated titles. Summary stat
 cards reuse the same filter state as the only section selector. Cronologia only
-renders the chronological watch feed. Watched episode season subsections keep
-their own local collapsed state. It also owns the swipe presentation
+renders the chronological watch feed. `useLibraryChronology` keeps Supabase
+token lookup, paging, and refresh invalidation out of `LibraryOverview`. Watched
+episode season subsections keep their own local collapsed state. It also owns the swipe presentation
 affordance for removable Library rows and compact poster thumbnail rendering
 from existing API data.
 

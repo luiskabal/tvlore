@@ -51,6 +51,7 @@ POST /movies/:movieId/watchlist
 DELETE /movies/:movieId/watchlist
 GET /shows/:showId/progress
 GET /library
+GET /library/chronology
 GET /recommendations
 ```
 
@@ -244,4 +245,5 @@ the selected Postman environment.
 - Watch/unwatch endpoints store authenticated movie and episode state.
 - Watchlist endpoints store authenticated show/movie saved intent.
 - `GET /library` feeds the mobile home library summary.
+- `GET /library/chronology` feeds the paginated Cronologia watch-history view.
 - `GET /recommendations` feeds Library suggestion rows from stored ratings and hydrated catalog rows.

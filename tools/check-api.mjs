@@ -74,6 +74,7 @@ async function checkUnauthorizedRoutes() {
   });
   await checkUnauthorized(`/movies/${missingUuid}/preference`, { method: "DELETE" });
   await checkUnauthorized("/library");
+  await checkUnauthorized("/library/chronology");
   await checkUnauthorized("/recommendations");
   await checkUnauthorized(`/episodes/${missingUuid}/watches`, { method: "POST" });
   await checkUnauthorized(`/episodes/${missingUuid}/watches`, { method: "DELETE" });
@@ -464,6 +465,23 @@ async function checkAuthenticatedProductFlow(token) {
     expectedStatus: 200,
     headers: authHeaders,
   });
+  await check("/library/chronology?limit=0", {
+    assert: assertValidationError,
+    expectedStatus: 400,
+    headers: authHeaders,
+  });
+  await check("/library/chronology?limit=1", {
+    assert: (body) => {
+      assertChronology(body);
+      expect(body.items.length <= 1, "chronology should honor limit");
+      expect(
+        body.items.some((item) => item.id === firstEpisodeId || item.id === resolvedMovie.id),
+        "chronology should include watched activity",
+      );
+    },
+    expectedStatus: 200,
+    headers: authHeaders,
+  });
   await check("/recommendations", {
     assert: assertRecommendations,
     expectedStatus: 200,
@@ -763,6 +781,19 @@ function assertLibrary(body) {
     expectUuid(item.id, "library watchlist.id");
     expectString(item.title, "library watchlist.title");
     expectIsoString(item.createdAt, "library watchlist.createdAt");
+  }
+}
+
+function assertChronology(body) {
+  expectRecord(body, "chronology");
+  expectArray(body.items, "chronology.items");
+  expectNullableString(body.nextCursor, "chronology.nextCursor");
+
+  for (const item of body.items) {
+    expectRecord(item, "chronology item");
+    expect(["movie", "episode"].includes(item.mediaType), "chronology item.mediaType");
+    expectUuid(item.id, "chronology item.id");
+    expectIsoString(item.watchedAt, "chronology item.watchedAt");
   }
 }
 

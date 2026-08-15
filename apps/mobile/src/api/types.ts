@@ -22,6 +22,11 @@ export type LibraryResponse = {
   watchedEpisodes: WatchedEpisodeItem[];
 };
 
+export type LibraryChronologyResponse = {
+  items: RecentlyWatchedItem[];
+  nextCursor: string | null;
+};
+
 export type RecommendationsResponse = {
   basis: {
     averageMovieRating: number | null;

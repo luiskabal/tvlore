@@ -3,6 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
 import { calculatePercentComplete, toShowProgress } from "../progress";
 import type {
+  LibraryChronologyResponseDto,
   LibraryContinueWatchingShowDto,
   LibraryNextEpisodeDto,
   LibraryRatedTitleDto,
@@ -133,6 +134,50 @@ export class LibraryRepository {
     };
   }
 
+  async getChronology(
+    userId: string,
+    input: { cursor?: Date; limit: number },
+  ): Promise<LibraryChronologyResponseDto> {
+    const client = this.prismaService.getClient();
+    const pageSize = input.limit + 1;
+    const where = input.cursor
+      ? { userId, watchedAt: { lt: input.cursor } }
+      : { userId };
+    const [episodeWatches, movieWatches] = await Promise.all([
+      client.episodeWatch.findMany({
+        include: {
+          episode: {
+            select: {
+              episodeNumber: true,
+              id: true,
+              seasonNumber: true,
+              show: { select: { id: true, title: true } },
+              title: true,
+            },
+          },
+        },
+        orderBy: { watchedAt: "desc" },
+        take: pageSize,
+        where,
+      }),
+      client.movieWatch.findMany({
+        include: {
+          movie: { select: { id: true, posterPath: true, title: true } },
+        },
+        orderBy: { watchedAt: "desc" },
+        take: pageSize,
+        where,
+      }),
+    ]);
+    const chronologyItems = toChronologyItems(episodeWatches, movieWatches);
+    const items = chronologyItems.slice(0, input.limit);
+
+    return {
+      items,
+      nextCursor: chronologyItems.length > input.limit ? items[items.length - 1]?.watchedAt ?? null : null,
+    };
+  }
+
   async findShowProgress(userId: string, showId: string): Promise<ShowProgressResponseDto | null> {
     const show = await this.prismaService.getClient().show.findUnique({
       select: {
@@ -205,6 +250,25 @@ function toRecentlyWatched(
     watchedAt: Date;
   }>,
 ): LibraryRecentlyWatchedItemDto[] {
+  return toChronologyItems(episodeWatches, movieWatches).slice(0, 10);
+}
+
+function toChronologyItems(
+  episodeWatches: Array<{
+    episode: {
+      episodeNumber: number;
+      id: string;
+      seasonNumber: number;
+      show: { id: string; title: string };
+      title: string;
+    };
+    watchedAt: Date;
+  }>,
+  movieWatches: Array<{
+    movie: { id: string; posterPath: string | null; title: string };
+    watchedAt: Date;
+  }>,
+): LibraryRecentlyWatchedItemDto[] {
   return [
     ...toWatchedEpisodes(episodeWatches),
     ...movieWatches.map((watch) => ({
@@ -214,7 +278,7 @@ function toRecentlyWatched(
       title: watch.movie.title,
       watchedAt: watch.watchedAt.toISOString(),
     })),
-  ].sort((left, right) => compareIsoDates(right.watchedAt, left.watchedAt)).slice(0, 10);
+  ].sort((left, right) => compareIsoDates(right.watchedAt, left.watchedAt));
 }
 
 function toWatchedEpisodes(

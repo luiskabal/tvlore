@@ -106,4 +106,71 @@ describe("LibraryRepository", () => {
       title: "Episode 11",
     });
   });
+
+  it("returns paginated chronology sorted across movies and episodes", async () => {
+    const episodeWatches = [
+      {
+        episode: {
+          episodeNumber: 2,
+          id: "episode-new",
+          seasonNumber: 1,
+          show: { id: showId, title: "Dark" },
+          title: "Lies",
+        },
+        watchedAt: new Date("2026-08-14T10:02:00.000Z"),
+      },
+      {
+        episode: {
+          episodeNumber: 1,
+          id: "episode-old",
+          seasonNumber: 1,
+          show: { id: showId, title: "Dark" },
+          title: "Secrets",
+        },
+        watchedAt: new Date("2026-08-14T10:00:00.000Z"),
+      },
+    ];
+    const movieWatches = [
+      {
+        movie: { id: "movie-new", posterPath: "/new.jpg", title: "Newest Movie" },
+        watchedAt: new Date("2026-08-14T10:03:00.000Z"),
+      },
+      {
+        movie: { id: "movie-mid", posterPath: null, title: "Middle Movie" },
+        watchedAt: new Date("2026-08-14T10:01:00.000Z"),
+      },
+    ];
+    const client = {
+      episodeWatch: { findMany: vi.fn().mockResolvedValue(episodeWatches) },
+      movieWatch: { findMany: vi.fn().mockResolvedValue(movieWatches) },
+    };
+    const repository = new LibraryRepository({ getClient: () => client } as unknown as PrismaService);
+    const chronology = await repository.getChronology(userId, { limit: 3 });
+
+    expect(chronology.items.map((item) => item.id)).toEqual(["movie-new", "episode-new", "movie-mid"]);
+    expect(chronology.nextCursor).toBe("2026-08-14T10:01:00.000Z");
+    expect(client.episodeWatch.findMany).toHaveBeenCalledWith(expect.objectContaining({
+      orderBy: { watchedAt: "desc" },
+      take: 4,
+      where: { userId },
+    }));
+    expect(client.movieWatch.findMany).toHaveBeenCalledWith(expect.objectContaining({
+      orderBy: { watchedAt: "desc" },
+      take: 4,
+      where: { userId },
+    }));
+
+    const cursor = new Date("2026-08-14T10:01:00.000Z");
+
+    await repository.getChronology(userId, { cursor, limit: 2 });
+
+    expect(client.episodeWatch.findMany).toHaveBeenLastCalledWith(expect.objectContaining({
+      take: 3,
+      where: { userId, watchedAt: { lt: cursor } },
+    }));
+    expect(client.movieWatch.findMany).toHaveBeenLastCalledWith(expect.objectContaining({
+      take: 3,
+      where: { userId, watchedAt: { lt: cursor } },
+    }));
+  });
 });

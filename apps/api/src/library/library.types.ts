@@ -89,4 +89,9 @@ export type LibraryResponseDto = {
   watchedEpisodes: LibraryWatchedEpisodeDto[];
 };
 
+export type LibraryChronologyResponseDto = {
+  items: LibraryRecentlyWatchedItemDto[];
+  nextCursor: string | null;
+};
+
 export type { ShowProgressResponseDto };

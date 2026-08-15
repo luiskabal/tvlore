@@ -18,6 +18,7 @@ import {
   getWatchlistActionKey,
   type LibraryActionState,
 } from "../library/use-library-actions";
+import type { LibraryChronologyState } from "../library/use-library-chronology";
 import { styles } from "./home-styles";
 import { RecommendationsPanel } from "./RecommendationsPanel";
 import type { RecommendationActionState } from "./use-recommendation-actions";
@@ -43,8 +44,11 @@ type EpisodeGroup = {
 const swipeConfirmWindowMs = 4000;
 
 type LibraryOverviewProps = {
+  chronology: LibraryChronologyState;
   library: LibraryResponse | null;
   libraryAction: LibraryActionState;
+  onChronologyVisible: () => void;
+  onLoadMoreChronology: () => void;
   onOpenMovie: (movieId: string) => void;
   onOpenShow: (showId: string) => void;
   onOpenShowSeason: (showId: string, seasonNumber: number) => void;
@@ -56,8 +60,11 @@ type LibraryOverviewProps = {
 };
 
 export function LibraryOverview({
+  chronology,
   library,
   libraryAction,
+  onChronologyVisible,
+  onLoadMoreChronology,
   onOpenMovie,
   onOpenShow,
   onOpenShowSeason,
@@ -83,7 +90,7 @@ export function LibraryOverview({
       return;
     }
 
-    const currentKeys = getLibraryActionKeys(library);
+    const currentKeys = getLibraryActionKeys(library, chronology.items);
 
     setOptimisticRemovedKeys((current) => {
       let changed = false;
@@ -100,7 +107,19 @@ export function LibraryOverview({
 
       return changed ? next : current;
     });
-  }, [library]);
+  }, [chronology.items, library]);
+
+  useEffect(() => {
+    if (!library) {
+      return;
+    }
+
+    const activeSection = selectedSection ?? getDefaultSection(library);
+
+    if (activeSection === "chronology") {
+      onChronologyVisible();
+    }
+  }, [library, onChronologyVisible, selectedSection]);
 
   if (!library) {
     return (
@@ -120,7 +139,6 @@ export function LibraryOverview({
     visibleLibrary.summary.watchedShowCount === 0;
   const hasContinueWatching = visibleLibrary.continueWatching.length > 0;
   const hasRatedTitles = visibleLibrary.ratedTitles.length > 0;
-  const hasRecentlyWatched = visibleLibrary.recentlyWatched.length > 0;
   const recentlyWatchedMovies = visibleLibrary.recentlyWatched.filter((item) => item.mediaType === "movie");
   const episodeGroups = groupEpisodesByShowAndSeason(visibleLibrary.watchedEpisodes);
   const hasWatchedEpisodes = visibleLibrary.watchedEpisodes.length > 0;
@@ -145,6 +163,8 @@ export function LibraryOverview({
   const shouldShowMovies = activeSection === "movies";
   const shouldShowEpisodes = activeSection === "episodes";
   const shouldShowRecommendations = activeSection === "recommendations";
+  const chronologyItems = chronology.items.length > 0 ? chronology.items : visibleLibrary.recentlyWatched;
+  const visibleChronologyItems = chronologyItems.filter((item) => !optimisticRemovedKeys.has(getHistoryActionKey(item)));
   const hideLibraryAction = (actionKey: string) => {
     setOptimisticRemovedKeys((current) => addSetValue(current, actionKey));
   };
@@ -185,7 +205,7 @@ export function LibraryOverview({
           />
         ) : null}
 
-        {!isEmpty && activeSection !== "recommendations" && !hasItemsForSection(activeSection, visibleLibrary) ? (
+        {!isEmpty && activeSection !== "recommendations" && activeSection !== "chronology" && !hasItemsForSection(activeSection, visibleLibrary) ? (
           <EmptySection activeSection={activeSection} />
         ) : null}
 
@@ -262,21 +282,18 @@ export function LibraryOverview({
           </View>
         ) : null}
 
-        {shouldShowHistory && hasRecentlyWatched ? (
-          <View style={styles.listSection}>
-            <Text style={styles.listTitle}>Cronologia</Text>
-            {visibleLibrary.recentlyWatched.map((item) => (
-              <RecentlyWatchedRow
-                item={item}
-                key={`${item.mediaType}-${item.id}`}
-                libraryAction={libraryAction}
-                onOptimisticRemove={hideLibraryAction}
-                onOpenMovie={onOpenMovie}
-                onOpenShowSeason={onOpenShowSeason}
-                onRemove={onRemoveRecentlyWatchedItem}
-              />
-            ))}
-          </View>
+        {shouldShowHistory ? (
+          <ChronologySection
+            chronology={chronology}
+            items={visibleChronologyItems}
+            libraryAction={libraryAction}
+            onLoadMore={onLoadMoreChronology}
+            onOptimisticRemove={hideLibraryAction}
+            onOpenMovie={onOpenMovie}
+            onOpenShowSeason={onOpenShowSeason}
+            onRemove={onRemoveRecentlyWatchedItem}
+            onRetry={onChronologyVisible}
+          />
         ) : null}
       </ScrollView>
     </View>
@@ -474,6 +491,80 @@ function RecentlyWatchedRow({
         {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
       </View>
     </SwipeableActionRow>
+  );
+}
+
+function ChronologySection({
+  chronology,
+  items,
+  libraryAction,
+  onLoadMore,
+  onOptimisticRemove,
+  onOpenMovie,
+  onOpenShowSeason,
+  onRemove,
+  onRetry,
+}: {
+  chronology: LibraryChronologyState;
+  items: RecentlyWatchedItem[];
+  libraryAction: LibraryActionState;
+  onLoadMore: () => void;
+  onOptimisticRemove: (actionKey: string) => void;
+  onOpenMovie: (movieId: string) => void;
+  onOpenShowSeason: (showId: string, seasonNumber: number) => void;
+  onRemove: (item: RecentlyWatchedItem) => void;
+  onRetry: () => void;
+}) {
+  if (chronology.kind === "loading" && items.length === 0) {
+    return (
+      <View style={styles.statusPanel}>
+        <Text style={styles.statusLabel}>Loading chronology</Text>
+        <Text style={styles.statusDetail}>Fetching your watched history by date.</Text>
+      </View>
+    );
+  }
+
+  if (items.length === 0) {
+    return chronology.kind === "error" ? (
+      <View style={styles.statusPanel}>
+        <Text style={styles.statusLabel}>Could not load chronology</Text>
+        <Text style={styles.errorText}>{chronology.message}</Text>
+        <Pressable style={styles.button} onPress={onRetry}>
+          <Text style={styles.buttonText}>Retry</Text>
+        </Pressable>
+      </View>
+    ) : (
+      <EmptySection activeSection="chronology" />
+    );
+  }
+
+  return (
+    <View style={styles.listSection}>
+      <Text style={styles.listTitle}>Cronologia</Text>
+      {chronology.kind === "loading" ? <Text style={styles.statusDetail}>Loading full history...</Text> : null}
+      {chronology.kind === "error" ? <Text style={styles.errorText}>{chronology.message}</Text> : null}
+      {items.map((item) => (
+        <RecentlyWatchedRow
+          item={item}
+          key={`${item.mediaType}-${item.id}`}
+          libraryAction={libraryAction}
+          onOptimisticRemove={onOptimisticRemove}
+          onOpenMovie={onOpenMovie}
+          onOpenShowSeason={onOpenShowSeason}
+          onRemove={onRemove}
+        />
+      ))}
+      {chronology.nextCursor ? (
+        <Pressable
+          accessibilityRole="button"
+          disabled={chronology.kind === "loadingMore"}
+          onPress={onLoadMore}
+          style={[styles.button, chronology.kind === "loadingMore" ? styles.disabledButton : null]}
+        >
+          <Text style={styles.buttonText}>{chronology.kind === "loadingMore" ? "Loading" : "Load more"}</Text>
+        </Pressable>
+      ) : null}
+    </View>
   );
 }
 
@@ -764,11 +855,12 @@ function getOptimisticLibrary(library: LibraryResponse, removedKeys: Set<string>
   };
 }
 
-function getLibraryActionKeys(library: LibraryResponse) {
+function getLibraryActionKeys(library: LibraryResponse, chronologyItems: RecentlyWatchedItem[] = []) {
   return new Set([
     ...library.recentlyWatched.map(getHistoryActionKey),
     ...library.watchlist.map(getWatchlistActionKey),
     ...library.watchedEpisodes.map(getHistoryActionKey),
+    ...chronologyItems.map(getHistoryActionKey),
   ]);
 }
 

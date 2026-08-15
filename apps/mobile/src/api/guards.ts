@@ -4,6 +4,7 @@ import type {
   CatalogSearchResult,
   ContinueWatchingShow,
   EpisodeWatchResponse,
+  LibraryChronologyResponse,
   LibraryRatedTitle,
   LibraryResponse,
   LibraryWatchlistItem,
@@ -61,6 +62,18 @@ export function isLibraryResponse(value: unknown): value is LibraryResponse {
     value.watchlist.every(isLibraryWatchlistItem) &&
     Array.isArray(value.watchedEpisodes) &&
     value.watchedEpisodes.every(isWatchedEpisodeItem)
+  );
+}
+
+export function isLibraryChronologyResponse(value: unknown): value is LibraryChronologyResponse {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    Array.isArray(value.items) &&
+    value.items.every(isRecentlyWatchedItem) &&
+    isNullableString(value.nextCursor)
   );
 }
 

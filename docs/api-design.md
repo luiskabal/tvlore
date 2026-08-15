@@ -1265,6 +1265,70 @@ Business validation:
 
 Errors: `VALIDATION_FAILED`, `UNAUTHORIZED`.
 
+### `GET /library/chronology`
+
+Purpose: return a paginated chronological watch-history feed for authenticated user.
+
+Current MVP status: implemented with movie and episode watch events ordered by `watchedAt` descending.
+
+Auth: required.
+
+Route parameters: none.
+
+Query parameters:
+
+- `limit` optional integer between `1` and `50`. Defaults to `20`.
+- `cursor` optional ISO datetime. Use the previous response `nextCursor` to load the next page.
+
+Request: none.
+
+Response:
+
+```json
+{
+  "items": [
+    {
+      "mediaType": "movie",
+      "id": "uuid",
+      "title": "Arrival",
+      "posterPath": "/path.jpg",
+      "watchedAt": "2026-08-09T00:00:00.000Z"
+    },
+    {
+      "mediaType": "episode",
+      "id": "uuid",
+      "showId": "uuid",
+      "showTitle": "Dark",
+      "seasonNumber": 1,
+      "episodeNumber": 1,
+      "title": "Secrets",
+      "watchedAt": "2026-08-08T00:00:00.000Z"
+    }
+  ],
+  "nextCursor": "2026-08-08T00:00:00.000Z"
+}
+```
+
+Status codes:
+
+- `200 OK`
+- `400 BAD_REQUEST`
+- `401 UNAUTHORIZED`
+
+Authorization: chronology is only for the authenticated user.
+
+Transport validation:
+
+- `limit` must be inside the supported page-size range.
+- `cursor` must be parseable as an ISO datetime.
+
+Business validation:
+
+- Results include only authenticated user's watch records.
+- Movies and episodes are merged into one backend-owned chronological feed.
+
+Errors: `VALIDATION_FAILED`, `UNAUTHORIZED`.
+
 ### `GET /recommendations`
 
 Purpose: return first-pass personalized suggestions for the authenticated user.

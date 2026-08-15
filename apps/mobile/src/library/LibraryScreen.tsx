@@ -7,10 +7,12 @@ import { LibraryOverview, LibraryOverviewSkeleton } from "../home/LibraryOvervie
 import { styles } from "../home/home-styles";
 import { useHomeModel } from "../home/use-home-model";
 import { useRecommendationActions } from "../home/use-recommendation-actions";
+import { useLibraryChronology } from "./use-library-chronology";
 import { useLibraryActions } from "./use-library-actions";
 
 export default function LibraryScreen() {
   const { libraryAction, removeRecentlyWatchedItem, removeWatchlistItem } = useLibraryActions();
+  const { chronology, loadInitialChronology, loadMoreChronology } = useLibraryChronology();
   const { recommendationAction, saveRecommendation } = useRecommendationActions();
   const {
     auth,
@@ -29,8 +31,11 @@ export default function LibraryScreen() {
         <View style={styles.fixedContent}>
           <LibraryHeader showSearchButton={isSignedIn} />
           <LibraryOverview
+            chronology={chronology}
             library={homeData.library}
             libraryAction={libraryAction}
+            onChronologyVisible={loadInitialChronology}
+            onLoadMoreChronology={loadMoreChronology}
             onOpenMovie={openMovie}
             onOpenShow={openShow}
             onOpenShowSeason={openShowSeason}
