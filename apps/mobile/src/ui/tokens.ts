@@ -1,0 +1,38 @@
+export const ui = {
+  color: {
+    accent: "#1f7a5c",
+    accentSoft: "#e8f3ed",
+    border: "#d8d0c5",
+    danger: "#9c2f23",
+    dangerDark: "#6f1f18",
+    ink: "#171412",
+    muted: "#5f564d",
+    muted2: "#7a7067",
+    panel: "#fffdfa",
+    panelAlt: "#f7f4ee",
+    skeleton: "#e3ddd3",
+    skeletonAlt: "#ece7dd",
+    white: "#ffffff",
+  },
+  radius: {
+    sm: 6,
+    md: 8,
+    pill: 999,
+  },
+  space: {
+    xs: 4,
+    sm: 8,
+    md: 12,
+    lg: 14,
+    xl: 16,
+    xxl: 18,
+  },
+  type: {
+    body: 14,
+    button: 16,
+    label: 12,
+    rowTitle: 16,
+    sectionTitle: 18,
+    stat: 24,
+  },
+} as const;

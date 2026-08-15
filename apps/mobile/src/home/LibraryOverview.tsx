@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Image, Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 
 import type {
@@ -19,6 +19,7 @@ import {
   type LibraryActionState,
 } from "../library/use-library-actions";
 import type { LibraryChronologyState } from "../library/use-library-chronology";
+import { Button, MediaRow, Skeleton, StatCard } from "../ui";
 import { styles } from "./home-styles";
 import { RecommendationsPanel } from "./RecommendationsPanel";
 import type { RecommendationActionState } from "./use-recommendation-actions";
@@ -173,7 +174,8 @@ export function LibraryOverview({
     <View style={styles.librarySectionFixed}>
       <View style={styles.summaryGrid}>
         {summaryStats.map((stat) => (
-          <SummaryStat
+          <StatCard
+            accessibilityLabel={`Filter library by ${stat.label.toLowerCase()}`}
             isActive={activeSection === stat.section}
             key={stat.section}
             label={stat.label}
@@ -304,13 +306,13 @@ export function LibraryOverviewSkeleton() {
   return (
     <View style={styles.librarySection}>
       <View style={styles.summaryGrid}>
-        <View style={[styles.skeletonBlock, styles.skeletonStat]} />
-        <View style={[styles.skeletonBlock, styles.skeletonStat]} />
-        <View style={[styles.skeletonBlock, styles.skeletonStat]} />
-        <View style={[styles.skeletonBlock, styles.skeletonStat]} />
+        <Skeleton height={58} style={styles.skeletonStat} />
+        <Skeleton height={58} style={styles.skeletonStat} />
+        <Skeleton height={58} style={styles.skeletonStat} />
+        <Skeleton height={58} style={styles.skeletonStat} />
       </View>
-      <View style={[styles.skeletonBlock, styles.skeletonListItem]} />
-      <View style={[styles.skeletonBlock, styles.skeletonListItem]} />
+      <Skeleton height={94} />
+      <Skeleton height={94} />
     </View>
   );
 }
@@ -324,35 +326,6 @@ function EmptySection({ activeSection }: { activeSection: LibrarySectionFilter }
   );
 }
 
-function SummaryStat({
-  isActive,
-  label,
-  onPress,
-  value,
-}: {
-  isActive: boolean;
-  label: string;
-  onPress: () => void;
-  value: number;
-}) {
-  return (
-    <Pressable
-      accessibilityLabel={`Filter library by ${label.toLowerCase()}`}
-      accessibilityRole="button"
-      accessibilityState={{ selected: isActive }}
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.summaryCard,
-        isActive ? styles.summaryCardActive : null,
-        pressed ? styles.pressedListItem : null,
-      ]}
-    >
-      <Text style={[styles.summaryValue, isActive ? styles.summaryValueActive : null]}>{value}</Text>
-      <Text style={[styles.summaryLabel, isActive ? styles.summaryLabelActive : null]}>{label}</Text>
-    </Pressable>
-  );
-}
-
 function ContinueWatchingItem({
   onOpenShowSeason,
   show,
@@ -361,20 +334,14 @@ function ContinueWatchingItem({
   show: ContinueWatchingShow;
 }) {
   return (
-    <Pressable
-      accessibilityRole="button"
+    <MediaRow
+      detail={`S${show.nextEpisode.seasonNumber} E${show.nextEpisode.episodeNumber} - ${show.nextEpisode.title}`}
       onPress={() => onOpenShowSeason(show.id, show.nextEpisode.seasonNumber)}
-      style={({ pressed }) => [styles.listItem, pressed ? styles.pressedListItem : null]}
-    >
-      <LibraryPoster label="TV" posterPath={show.posterPath} />
-      <View style={styles.listText}>
-        <Text style={styles.itemTitle}>{show.title}</Text>
-        <Text style={styles.statusDetail}>
-          S{show.nextEpisode.seasonNumber} E{show.nextEpisode.episodeNumber} - {show.nextEpisode.title}
-        </Text>
-      </View>
-      <Text style={styles.progressText}>{show.percentComplete}%</Text>
-    </Pressable>
+      posterLabel="TV"
+      posterUri={getPosterUri(show.posterPath)}
+      title={show.title}
+      trailing={`${show.percentComplete}%`}
+    />
   );
 }
 
@@ -418,18 +385,15 @@ function WatchlistRow({
       }}
     >
       <View style={styles.actionListItem}>
-        <Pressable
-          accessibilityRole="button"
+        <MediaRow
+          detail={item.mediaType === "movie" ? "Movie" : "Show"}
+          frame={false}
           onPress={openItem}
-          style={({ pressed }) => [styles.listItemRow, pressed ? styles.pressedListItem : null]}
-        >
-          <LibraryPoster label={item.mediaType === "movie" ? "M" : "TV"} posterPath={item.posterPath} />
-          <View style={styles.listText}>
-            <Text style={styles.itemTitle}>{item.title}</Text>
-            <Text style={styles.statusDetail}>{item.mediaType === "movie" ? "Movie" : "Show"}</Text>
-          </View>
-          <Text style={styles.dateText}>{formatShortDate(item.createdAt)}</Text>
-        </Pressable>
+          posterLabel={item.mediaType === "movie" ? "M" : "TV"}
+          posterUri={getPosterUri(item.posterPath)}
+          title={item.title}
+          trailing={formatShortDate(item.createdAt)}
+        />
         {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
       </View>
     </SwipeableActionRow>
@@ -476,18 +440,15 @@ function RecentlyWatchedRow({
       }}
     >
       <View style={styles.actionListItem}>
-        <Pressable
-          accessibilityRole="button"
+        <MediaRow
+          detail={getRecentlyWatchedDetail(item)}
+          frame={false}
           onPress={openItem}
-          style={({ pressed }) => [styles.listItemRow, pressed ? styles.pressedListItem : null]}
-        >
-          <LibraryPoster label={item.mediaType === "movie" ? "M" : "E"} posterPath={getRecentlyWatchedPosterPath(item)} />
-          <View style={styles.listText}>
-            <Text style={styles.itemTitle}>{getRecentlyWatchedTitle(item)}</Text>
-            <Text style={styles.statusDetail}>{getRecentlyWatchedDetail(item)}</Text>
-          </View>
-          <Text style={styles.dateText}>{formatShortDate(item.watchedAt)}</Text>
-        </Pressable>
+          posterLabel={item.mediaType === "movie" ? "M" : "E"}
+          posterUri={getRecentlyWatchedPosterUri(item)}
+          title={getRecentlyWatchedTitle(item)}
+          trailing={formatShortDate(item.watchedAt)}
+        />
         {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
       </View>
     </SwipeableActionRow>
@@ -529,9 +490,7 @@ function ChronologySection({
       <View style={styles.statusPanel}>
         <Text style={styles.statusLabel}>Could not load chronology</Text>
         <Text style={styles.errorText}>{chronology.message}</Text>
-        <Pressable style={styles.button} onPress={onRetry}>
-          <Text style={styles.buttonText}>Retry</Text>
-        </Pressable>
+        <Button label="Retry" onPress={onRetry} />
       </View>
     ) : (
       <EmptySection activeSection="chronology" />
@@ -555,14 +514,13 @@ function ChronologySection({
         />
       ))}
       {chronology.nextCursor ? (
-        <Pressable
-          accessibilityRole="button"
+        <Button
           disabled={chronology.kind === "loadingMore"}
+          isLoading={chronology.kind === "loadingMore"}
+          label="Load more"
+          loadingLabel="Loading"
           onPress={onLoadMore}
-          style={[styles.button, chronology.kind === "loadingMore" ? styles.disabledButton : null]}
-        >
-          <Text style={styles.buttonText}>{chronology.kind === "loadingMore" ? "Loading" : "Load more"}</Text>
-        </Pressable>
+        />
       ) : null}
     </View>
   );
@@ -679,32 +637,14 @@ function RatedTitleRow({
   };
 
   return (
-    <Pressable
-      accessibilityRole="button"
+    <MediaRow
+      detail={`${item.mediaType === "movie" ? "Movie" : "Show"} - Updated ${formatShortDate(item.updatedAt)}`}
       onPress={openItem}
-      style={({ pressed }) => [styles.listItem, pressed ? styles.pressedListItem : null]}
-    >
-      <LibraryPoster label={item.mediaType === "movie" ? "M" : "TV"} posterPath={item.posterPath} />
-      <View style={styles.listText}>
-        <Text style={styles.itemTitle}>{item.title}</Text>
-        <Text style={styles.statusDetail}>
-          {item.mediaType === "movie" ? "Movie" : "Show"} - Updated {formatShortDate(item.updatedAt)}
-        </Text>
-      </View>
-      <Text style={styles.progressText}>{item.rating}/5</Text>
-    </Pressable>
-  );
-}
-
-function LibraryPoster({ label, posterPath }: { label: string; posterPath: string | null }) {
-  if (posterPath) {
-    return <Image source={{ uri: getTmdbPosterUrl(posterPath) }} style={styles.libraryPoster} />;
-  }
-
-  return (
-    <View style={styles.libraryPosterPlaceholder}>
-      <Text style={styles.libraryPosterPlaceholderText}>{label}</Text>
-    </View>
+      posterLabel={item.mediaType === "movie" ? "M" : "TV"}
+      posterUri={getPosterUri(item.posterPath)}
+      title={item.title}
+      trailing={`${item.rating}/5`}
+    />
   );
 }
 
@@ -892,8 +832,8 @@ function getRecentlyWatchedTitle(item: RecentlyWatchedItem) {
   return item.mediaType === "movie" ? item.title : item.showTitle;
 }
 
-function getRecentlyWatchedPosterPath(item: RecentlyWatchedItem) {
-  return item.mediaType === "movie" ? item.posterPath : null;
+function getRecentlyWatchedPosterUri(item: RecentlyWatchedItem) {
+  return item.mediaType === "movie" ? getPosterUri(item.posterPath) : null;
 }
 
 function getRecentlyWatchedDetail(item: RecentlyWatchedItem) {
@@ -963,6 +903,10 @@ function formatShortDate(value: string) {
 }
 
 function noop() {}
+
+function getPosterUri(posterPath: string | null) {
+  return posterPath ? getTmdbPosterUrl(posterPath) : null;
+}
 
 function groupEpisodesByShowAndSeason(
   episodes: WatchedEpisodeItem[],

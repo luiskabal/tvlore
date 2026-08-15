@@ -9,20 +9,6 @@ export const styles = StyleSheet.create({
     gap: 10,
     padding: 14,
   },
-  button: {
-    alignItems: "center",
-    alignSelf: "flex-start",
-    backgroundColor: "#1f7a5c",
-    borderRadius: 8,
-    minWidth: 120,
-    paddingHorizontal: 18,
-    paddingVertical: 12,
-  },
-  buttonText: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "700",
-  },
   content: {
     flexGrow: 1,
     gap: 20,
@@ -44,13 +30,6 @@ export const styles = StyleSheet.create({
     padding: 24,
     paddingBottom: 16,
     paddingTop: 72,
-  },
-  dateText: {
-    color: "#7a7067",
-    fontSize: 12,
-    fontWeight: "700",
-    minWidth: 48,
-    textAlign: "right",
   },
   emptyPanel: {
     borderColor: "#d8d0c5",
@@ -284,25 +263,6 @@ export const styles = StyleSheet.create({
   libraryListScroll: {
     flex: 1,
   },
-  libraryPoster: {
-    backgroundColor: "#e3ddd3",
-    borderRadius: 6,
-    height: 64,
-    width: 44,
-  },
-  libraryPosterPlaceholder: {
-    alignItems: "center",
-    backgroundColor: "#e3ddd3",
-    borderRadius: 6,
-    height: 64,
-    justifyContent: "center",
-    width: 44,
-  },
-  libraryPosterPlaceholderText: {
-    color: "#5f564d",
-    fontSize: 13,
-    fontWeight: "900",
-  },
   listItem: {
     alignItems: "center",
     borderColor: "#d8d0c5",
@@ -312,12 +272,6 @@ export const styles = StyleSheet.create({
     gap: 12,
     justifyContent: "space-between",
     padding: 14,
-  },
-  listItemRow: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: 12,
-    justifyContent: "space-between",
   },
   listSection: {
     gap: 10,
@@ -329,11 +283,6 @@ export const styles = StyleSheet.create({
   listTitle: {
     color: "#171412",
     fontSize: 18,
-    fontWeight: "800",
-  },
-  progressText: {
-    color: "#1f7a5c",
-    fontSize: 14,
     fontWeight: "800",
   },
   pressedListItem: {
@@ -379,10 +328,6 @@ export const styles = StyleSheet.create({
     height: 26,
     width: 58,
   },
-  skeletonBlock: {
-    backgroundColor: "#e3ddd3",
-    borderRadius: 8,
-  },
   skeletonCard: {
     backgroundColor: "#ece7dd",
     borderColor: "#d8d0c5",
@@ -396,9 +341,6 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  skeletonListItem: {
-    height: 94,
-  },
   skeletonPortrait: {
     aspectRatio: 1.56,
   },
@@ -409,20 +351,6 @@ export const styles = StyleSheet.create({
   skeletonStat: {
     flex: 1,
     height: 58,
-  },
-  smallActionButton: {
-    alignItems: "center",
-    backgroundColor: "#1f7a5c",
-    borderRadius: 8,
-    justifyContent: "center",
-    minWidth: 68,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-  },
-  smallActionButtonText: {
-    color: "#fffdfa",
-    fontSize: 13,
-    fontWeight: "900",
   },
   statusDetail: {
     color: "#5f564d",
@@ -441,40 +369,10 @@ export const styles = StyleSheet.create({
     gap: 8,
     padding: 16,
   },
-  summaryCard: {
-    backgroundColor: "#fffdfa",
-    borderColor: "#d8d0c5",
-    borderRadius: 8,
-    borderWidth: 1,
-    flexBasis: "30%",
-    flexGrow: 1,
-    gap: 4,
-    padding: 14,
-  },
-  summaryCardActive: {
-    backgroundColor: "#e8f3ed",
-    borderColor: "#1f7a5c",
-  },
   summaryGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 10,
-  },
-  summaryLabel: {
-    color: "#5f564d",
-    fontSize: 12,
-    fontWeight: "800",
-  },
-  summaryLabelActive: {
-    color: "#1f7a5c",
-  },
-  summaryValue: {
-    color: "#171412",
-    fontSize: 24,
-    fontWeight: "900",
-  },
-  summaryValueActive: {
-    color: "#1f7a5c",
   },
   swipeActionButton: {
     alignItems: "center",

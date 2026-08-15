@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Image, Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 import type { RecommendationItem, RecommendationsResponse } from "../api/tvlore-api";
 import { getTmdbPosterUrl } from "../catalog/posters";
+import { Button, MediaRow } from "../ui";
 import { styles } from "./home-styles";
 import {
   getRecommendationActionKey,
@@ -92,36 +93,20 @@ function RecommendationRow({
 
   return (
     <View style={styles.listItem}>
-      <Pressable
-        accessibilityRole="button"
+      <MediaRow
+        detail={getReasonText(item.reason)}
+        frame={false}
         onPress={openItem}
-        style={({ pressed }) => [styles.recommendationMain, pressed ? styles.pressedListItem : null]}
-      >
-        <RecommendationPoster label={item.mediaType === "movie" ? "M" : "TV"} posterPath={item.posterPath} />
-        <View style={styles.listText}>
-          <Text style={styles.itemTitle}>{item.title}</Text>
-          <Text style={styles.statusDetail}>{getReasonText(item.reason)}</Text>
-        </View>
-      </Pressable>
-      <Pressable
-        accessibilityRole="button"
+        posterLabel={item.mediaType === "movie" ? "M" : "TV"}
+        posterUri={item.posterPath ? getTmdbPosterUrl(item.posterPath) : null}
+        style={styles.recommendationMain}
+        title={item.title}
+      />
+      <Button
+        label="Save"
         onPress={() => onSaveToWatchlist(item)}
-        style={({ pressed }) => [styles.smallActionButton, pressed ? styles.pressedListItem : null]}
-      >
-        <Text style={styles.smallActionButtonText}>Save</Text>
-      </Pressable>
-    </View>
-  );
-}
-
-function RecommendationPoster({ label, posterPath }: { label: string; posterPath: string | null }) {
-  if (posterPath) {
-    return <Image source={{ uri: getTmdbPosterUrl(posterPath) }} style={styles.libraryPoster} />;
-  }
-
-  return (
-    <View style={styles.libraryPosterPlaceholder}>
-      <Text style={styles.libraryPosterPlaceholderText}>{label}</Text>
+        size="small"
+      />
     </View>
   );
 }

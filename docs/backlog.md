@@ -9,6 +9,7 @@ No active infrastructure tasks.
 ## Next
 
 - [ ] Persist richer catalog signals, such as genres, before improving recommendation quality.
+- [ ] Add curated watch paths for imported or fetched viewing orders, such as Marvel release or chronology order.
 
 ## Notes
 
@@ -20,6 +21,7 @@ No active infrastructure tasks.
 - First recommendations intentionally use only hydrated catalog data and ratings. Improve quality only after storing stronger content signals.
 - Recommendations belong in Library while it acts as the app home. Profile should stay focused on identity, stats, and account controls.
 - Cronologia uses a backend-owned paginated endpoint. Infinite scroll can replace the explicit load-more button later.
+- Curated watch paths should support movies and shows in one ordered list, keep source/provenance, and resolve items into TVLore catalog IDs only when the user opens or saves the list.
 
 ## Done
 
@@ -93,6 +95,7 @@ No active infrastructure tasks.
 - [x] Add backend-owned show-level mark all watched/unwatched.
 - [x] Add backend-owned paginated Cronologia feed.
 - [x] Add short-lived mobile read cache for search and catalog detail reads.
+- [x] Add an initial mobile UI component pool for repeated Library visual patterns.
 
 ## Deferred
 

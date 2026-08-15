@@ -158,6 +158,17 @@ src/
 |-- profile/
 |   `-- ProfileScreen.tsx
 |
+|-- ui/
+|   |-- AppText.tsx
+|   |-- Badge.tsx
+|   |-- Button.tsx
+|   |-- MediaRow.tsx
+|   |-- PosterImage.tsx
+|   |-- Skeleton.tsx
+|   |-- StatCard.tsx
+|   |-- index.ts
+|   `-- tokens.ts
+|
 `-- search/
     |-- SearchControls.tsx
     |-- SearchResults.tsx
@@ -215,6 +226,11 @@ reflected when the user returns to Library or Profile.
 The Library route renders `LibraryOverview`. The Profile route renders
 `HoloProfileCard`. The card uses Supabase Google avatar metadata when available
 and keeps the holo/tilt effect inside presentation code.
+
+`src/ui` owns the first reusable visual pool: tokens, text, buttons, badges,
+skeleton blocks, stat cards, poster frames, and media rows. These components are
+presentation-only. They do not fetch data, resolve catalog IDs, calculate
+progress, or own domain-specific mutation logic.
 
 `RecommendationsPanel` is presentation-only and currently belongs to Library
 behind its own `For you` filter. `useHomeData` loads the recommendation response
