@@ -44,7 +44,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Detail screens render content-shaped skeletons while show, movie, or season data loads.
 - Mobile caches search and catalog detail reads briefly in memory, then clears that cache on login, logout, and successful mutations.
 - Mobile library, profile, search, and detail screens follow a route/container, hook, presentation, and styles split.
-- Mobile has an initial reusable UI pool for tokens, text, buttons, badges, skeletons, stat cards, posters, and media rows, already used by Library and Search surfaces.
+- Mobile has an initial reusable UI pool for tokens, text, buttons, badges, skeletons, stat cards, posters, and media rows, already used by Library, Search, and catalog detail surfaces.
 - Mobile API calls are grouped behind a stable `tvlore-api.ts` facade with domain modules for catalog, home, tracking, watchlist, and preferences.
 - Postman collection and API smoke checks for local/Vercel validation.
 

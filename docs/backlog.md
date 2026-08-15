@@ -97,6 +97,7 @@ No active infrastructure tasks.
 - [x] Add short-lived mobile read cache for search and catalog detail reads.
 - [x] Add an initial mobile UI component pool for repeated Library visual patterns.
 - [x] Apply the mobile UI component pool to Search results and controls.
+- [x] Apply the mobile UI component pool to catalog detail screens.
 
 ## Deferred
 

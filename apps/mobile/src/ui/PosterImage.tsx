@@ -5,7 +5,7 @@ import { ui } from "./tokens";
 
 type PosterImageProps = {
   label: string;
-  size?: "default" | "large" | "search";
+  size?: "default" | "detail" | "large" | "search";
   uri: string | null;
 };
 
@@ -27,6 +27,10 @@ const styles = StyleSheet.create({
   default: {
     height: 64,
     width: 44,
+  },
+  detail: {
+    height: 168,
+    width: 114,
   },
   large: {
     height: 92,

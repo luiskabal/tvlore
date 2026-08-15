@@ -228,8 +228,8 @@ The Library route renders `LibraryOverview`. The Profile route renders
 and keeps the holo/tilt effect inside presentation code.
 
 `src/ui` owns the first reusable visual pool: tokens, text, buttons, badges,
-skeleton blocks, stat cards, poster frames, and media rows. Library and Search
-use this pool for repeated visual patterns. These components are
+skeleton blocks, stat cards, poster frames, and media rows. Library, Search,
+and catalog detail use this pool for repeated visual patterns. These components are
 presentation-only. They do not fetch data, resolve catalog IDs, calculate
 progress, or own domain-specific mutation logic.
 
