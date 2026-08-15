@@ -1,10 +1,11 @@
 import { BadGatewayException, HttpException, HttpStatus, Inject, Injectable, NotFoundException, ServiceUnavailableException } from "@nestjs/common";
 
 import { API_CONFIG, type ApiConfig } from "../config";
-import type { CatalogResolveInput, CatalogSearchInput } from "./catalog.types";
+import type { CatalogResolveInput, CatalogSearchInput, MediaType } from "./catalog.types";
 import { toResolvedSeason } from "./catalog-detail";
 import { toResolvedMovie, toResolvedShow } from "./catalog-resolve";
 import { toCatalogSearchResults } from "./catalog-search";
+import { toWatchProvidersResponse } from "./catalog-watch-providers";
 
 @Injectable()
 export class TmdbClient {
@@ -54,6 +55,13 @@ export class TmdbClient {
     }
 
     return season;
+  }
+
+  async getWatchProviders(mediaType: MediaType, providerId: string, country: string) {
+    const path = mediaType === "show" ? "tv" : "movie";
+    const url = new URL(`https://api.themoviedb.org/3/${path}/${providerId}/watch/providers`);
+
+    return toWatchProvidersResponse(await this.getJson(url), country);
   }
 
   private async getJson(url: URL) {

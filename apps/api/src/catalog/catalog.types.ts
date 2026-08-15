@@ -127,3 +127,20 @@ export type ShowSeasonDetailResponseDto = ShowSeasonSummaryDto & {
   episodes: ShowEpisodeDto[];
   showId: string;
 };
+
+export type WatchProviderDto = {
+  id: number;
+  logoPath: string | null;
+  name: string;
+};
+
+export type WatchProvidersResponseDto = {
+  country: string;
+  link: string | null;
+  providers: {
+    buy: WatchProviderDto[];
+    free: WatchProviderDto[];
+    rent: WatchProviderDto[];
+    stream: WatchProviderDto[];
+  };
+};

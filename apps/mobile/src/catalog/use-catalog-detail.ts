@@ -4,6 +4,7 @@ import {
   addToWatchlist,
   clearPreferenceRating,
   getCatalogDetail,
+  getWatchProviders,
   markMovieWatched,
   markShowWatched,
   removeFromWatchlist,
@@ -12,9 +13,11 @@ import {
   unmarkShowWatched,
   type CatalogDetailResponse,
   type MediaType,
+  type WatchProvidersResponse,
 } from "../api/tvlore-api";
 import { getSupabaseAccessToken } from "../auth/supabase-auth";
 import { notifyLibraryChanged } from "../library/library-refresh";
+import { getDeviceWatchCountry } from "./watch-country";
 
 export type CatalogDetailState =
   | { kind: "loading" }
@@ -36,8 +39,14 @@ export type PreferenceActionState =
   | { kind: "loading" }
   | { kind: "error"; message: string };
 
+export type WatchProvidersState =
+  | { kind: "loading" }
+  | { kind: "ready"; providers: WatchProvidersResponse }
+  | { kind: "error"; message: string };
+
 export function useCatalogDetail(mediaType: MediaType, id: string | null) {
   const [state, setState] = useState<CatalogDetailState>({ kind: "loading" });
+  const [watchProvidersState, setWatchProvidersState] = useState<WatchProvidersState>({ kind: "loading" });
   const [watchAction, setWatchAction] = useState<WatchActionState>({ kind: "idle" });
   const [watchlistAction, setWatchlistAction] = useState<WatchlistActionState>({ kind: "idle" });
   const [preferenceAction, setPreferenceAction] = useState<PreferenceActionState>({ kind: "idle" });
@@ -47,23 +56,37 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
   const refresh = useCallback(async () => {
     if (!id) {
       setState({ kind: "error", message: "Missing catalog ID" });
+      setWatchProvidersState({ kind: "error", message: "Missing catalog ID" });
       return;
     }
 
     setState({ kind: "loading" });
+    setWatchProvidersState({ kind: "loading" });
 
     try {
       const token = await getSupabaseAccessToken();
       const detail = await getCatalogDetail(token, mediaType, id);
+
       setState({ detail, kind: "ready" });
       setWatchAction({ kind: "idle" });
       setWatchlistAction({ kind: "idle" });
       setPreferenceAction({ kind: "idle" });
+
+      try {
+        const providers = await getWatchProviders(token, mediaType, id, getDeviceWatchCountry());
+        setWatchProvidersState({ kind: "ready", providers });
+      } catch (error) {
+        setWatchProvidersState({
+          kind: "error",
+          message: error instanceof Error ? error.message : "Availability failed",
+        });
+      }
     } catch (error) {
       setState({
         kind: "error",
         message: error instanceof Error ? error.message : "Detail failed",
       });
+      setWatchProvidersState({ kind: "error", message: "Availability failed" });
     }
   }, [id, mediaType]);
 
@@ -292,7 +315,18 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
     void refresh();
   }, [refresh]);
 
-  return { preferenceAction, refresh, setInWatchlist, setMovieWatched, setRating, setShowWatched, state, watchAction, watchlistAction };
+  return {
+    preferenceAction,
+    refresh,
+    setInWatchlist,
+    setMovieWatched,
+    setRating,
+    setShowWatched,
+    state,
+    watchAction,
+    watchlistAction,
+    watchProvidersState,
+  };
 }
 
 function getOptimisticWatchCount(currentCount: number, currentWatched: boolean, nextWatched: boolean) {

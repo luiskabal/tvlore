@@ -25,6 +25,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Movie watched/unwatched tracking.
 - Episode watched/unwatched tracking.
 - Show detail progress state: not started, watching, or completed.
+- Country-aware `Where to watch` availability on show/movie detail using TMDB Watch Providers.
 - Show-level mark all watched/unwatched backed by the API.
 - Season-level mark all watched/unwatched.
 - Personal show/movie watchlist.
@@ -80,7 +81,7 @@ Use `corepack pnpm api:check` for local/Vercel HTTP smoke checks.
 ## Next Backlog Items
 
 - Refine recommendation quality after storing richer catalog signals such as genres or providers.
-- Research a country-aware `Where to Watch` section for streaming availability by platform.
+- Store the user's preferred availability country instead of relying on device-locale fallback.
 
 ## Workspace Layout
 

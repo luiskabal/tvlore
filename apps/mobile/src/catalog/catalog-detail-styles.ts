@@ -42,6 +42,44 @@ export const styles = StyleSheet.create({
   pressedSeasonRow: {
     opacity: 0.72,
   },
+  panelHeaderRow: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  providerLogo: {
+    backgroundColor: ui.color.panelAlt,
+    borderRadius: ui.radius.sm,
+    height: 24,
+    width: 24,
+  },
+  providerName: {
+    flexShrink: 1,
+  },
+  providerPill: {
+    alignItems: "center",
+    backgroundColor: ui.color.panelAlt,
+    borderColor: ui.color.border,
+    borderRadius: ui.radius.pill,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: 6,
+    maxWidth: "100%",
+    paddingHorizontal: ui.space.sm,
+    paddingVertical: 6,
+  },
+  providerRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  providerSection: {
+    gap: 8,
+  },
+  providerSkeletonRow: {
+    flexDirection: "row",
+    gap: 8,
+  },
   ratingButton: {
     alignItems: "center",
     backgroundColor: ui.color.panel,

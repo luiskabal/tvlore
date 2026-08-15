@@ -4,6 +4,7 @@ import { UsersService } from "../users/users.service";
 import { parseSeasonNumber, parseTvloreId } from "./catalog-detail";
 import { parseCatalogResolveInput } from "./catalog-resolve";
 import { parseCatalogSearchInput } from "./catalog-search";
+import { parseWatchCountry } from "./catalog-watch-providers";
 import type {
   CatalogResolveResponseDto,
   CatalogSearchResponseDto,
@@ -11,6 +12,7 @@ import type {
   ShowDetailResponseDto,
   ShowSeasonDetailResponseDto,
   ShowSeasonsResponseDto,
+  WatchProvidersResponseDto,
 } from "./catalog.types";
 import { CatalogRepository } from "./catalog.repository";
 import { TmdbClient } from "./tmdb-client";
@@ -83,6 +85,42 @@ export class CatalogService {
     }
 
     return movie;
+  }
+
+  async getShowWatchProviders(
+    authorizationHeader: string | undefined,
+    showId: string | undefined,
+    country: string | undefined,
+  ): Promise<WatchProvidersResponseDto> {
+    await this.usersService.getMe(authorizationHeader);
+
+    const parsedShowId = parseTvloreId(showId, "showId");
+    const parsedCountry = parseWatchCountry(country);
+    const providerShowId = await this.catalogRepository.findShowProviderId(parsedShowId);
+
+    if (!providerShowId) {
+      throwNotFound("SHOW_NOT_FOUND", "Show was not found");
+    }
+
+    return this.tmdbClient.getWatchProviders("show", providerShowId, parsedCountry);
+  }
+
+  async getMovieWatchProviders(
+    authorizationHeader: string | undefined,
+    movieId: string | undefined,
+    country: string | undefined,
+  ): Promise<WatchProvidersResponseDto> {
+    await this.usersService.getMe(authorizationHeader);
+
+    const parsedMovieId = parseTvloreId(movieId, "movieId");
+    const parsedCountry = parseWatchCountry(country);
+    const providerMovieId = await this.catalogRepository.findMovieProviderId(parsedMovieId);
+
+    if (!providerMovieId) {
+      throwNotFound("MOVIE_NOT_FOUND", "Movie was not found");
+    }
+
+    return this.tmdbClient.getWatchProviders("movie", providerMovieId, parsedCountry);
   }
 
   async getShowSeasons(

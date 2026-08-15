@@ -699,6 +699,67 @@
           ]
         },
         {
+          "name": "GET /shows/:showId/watch-providers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "postman-{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shows/{{resolvedShowId}}/watch-providers?country=CL",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shows",
+                "{{resolvedShowId}}",
+                "watch-providers"
+              ],
+              "query": [
+                {
+                  "key": "country",
+                  "value": "CL"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('response is watch providers', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.country).to.eql('CL');",
+                  "  pm.expect(body.link === null || typeof body.link === 'string').to.eql(true);",
+                  "  pm.expect(body.providers.stream).to.be.an('array');",
+                  "  pm.expect(body.providers.rent).to.be.an('array');",
+                  "  pm.expect(body.providers.buy).to.be.an('array');",
+                  "  pm.expect(body.providers.free).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "POST /shows/:showId/watchlist",
           "request": {
             "method": "POST",
@@ -1149,6 +1210,67 @@
                   "  pm.expect(body.title).to.be.a('string');",
                   "  pm.expect(body.watched).to.be.a('boolean');",
                   "  pm.expect(body.watchCount).to.be.a('number');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /movies/:movieId/watch-providers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "postman-{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/{{resolvedMovieId}}/watch-providers?country=CL",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "{{resolvedMovieId}}",
+                "watch-providers"
+              ],
+              "query": [
+                {
+                  "key": "country",
+                  "value": "CL"
+                }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('response is watch providers', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.country).to.eql('CL');",
+                  "  pm.expect(body.link === null || typeof body.link === 'string').to.eql(true);",
+                  "  pm.expect(body.providers.stream).to.be.an('array');",
+                  "  pm.expect(body.providers.rent).to.be.an('array');",
+                  "  pm.expect(body.providers.buy).to.be.an('array');",
+                  "  pm.expect(body.providers.free).to.be.an('array');",
                   "});"
                 ]
               }

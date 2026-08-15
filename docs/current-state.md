@@ -15,6 +15,7 @@ Implemented:
 - Authenticated `GET /search` backed by TMDB.
 - Authenticated `POST /catalog/resolve` that converts TMDB refs into TVLore internal IDs.
 - Authenticated show/movie detail endpoints by internal TVLore ID.
+- Authenticated show/movie watch-provider availability endpoints by country.
 - Season list and season detail endpoints for shows.
 - Episode catalog persistence when a season is opened.
 - Authenticated watch/unwatch endpoints for episodes and movies.
@@ -33,6 +34,7 @@ Implemented:
 - Mobile show detail can mark the full show watched or unwatched through one backend-owned bulk action.
 - Mobile show/movie detail can add or remove a title from the watchlist.
 - Mobile show/movie detail can rate or clear a rating preference for a title.
+- Mobile show/movie detail renders country-aware watch-provider availability.
 - Mobile tracking mutations invalidate the local library data.
 - Mobile watchlist mutations invalidate the local library data.
 - Mobile Library/Profile refresh authenticated library data after tracking changes.
@@ -58,6 +60,7 @@ Not implemented yet:
 
 - Social matching.
 - Richer recommendation ranking with genres, providers, or collaborative signals.
+- User-owned availability country preference.
 
 ## 2. Current System Diagram
 
@@ -400,9 +403,11 @@ Implemented endpoints:
 
 ```text
 GET /shows/:showId
+GET /shows/:showId/watch-providers
 GET /shows/:showId/seasons
 GET /shows/:showId/seasons/:seasonNumber
 GET /movies/:movieId
+GET /movies/:movieId/watch-providers
 POST /episodes/:episodeId/watches
 DELETE /episodes/:episodeId/watches
 POST /shows/:showId/watches
@@ -435,6 +440,7 @@ Current watched-state behavior:
 - Show detail returns `progress.status` as `not_started`, `watching`, or `completed`.
 - Show and movie detail responses return `inWatchlist` and nullable `rating` for the authenticated user.
 - `GET /library` returns summary counts, continue-watching shows, rated titles, recent movie/episode activity, full watched episode activity, and watchlist titles for the authenticated user.
+- `GET /shows/:showId/watch-providers` and `GET /movies/:movieId/watch-providers` return subscription/rent/buy/free availability for a country code using TMDB Watch Providers data.
 
 Why season detail fetches TMDB:
 
@@ -735,6 +741,7 @@ Expected behavior:
 - `DELETE /shows/:showId/watches` removes every episode watch marker for that show and returns not-started show progress.
 - `DELETE /movies/:movieId/watches` marks that movie unwatched for the authenticated user.
 - `GET /movies/:movieId` returns movie detail with authenticated user's watched state.
+- `GET /shows/:showId/watch-providers?country=CL` and `GET /movies/:movieId/watch-providers?country=CL` return country-aware streaming availability buckets.
 
 ## 11. Mobile Frontend Slice
 
@@ -760,6 +767,7 @@ Search
 -> Show detail progress state
 -> Show/movie watchlist add/remove
 -> Show/movie rating set/clear
+-> GET /shows/:id/watch-providers or GET /movies/:id/watch-providers
 -> Show-level watched/unwatched
 -> Show season route
 -> GET /shows/:id/seasons/:seasonNumber
@@ -804,6 +812,7 @@ Current behavior:
 - Watchlist actions update local detail state optimistically, then reconcile from the backend mutation response.
 - Show and movie detail can set or clear a 1-5 rating preference.
 - Rating actions update local detail state optimistically, then reconcile from the backend mutation response.
+- Show and movie detail show `Where to watch` availability buckets for the device country, with fallback to `CL`.
 - Show detail lists seasons and opens a season route.
 - Season detail loads backend-owned episode IDs and watched state.
 - Season detail can mark episodes watched or unwatched.
@@ -828,6 +837,7 @@ Infrastructure:
 - Supabase Google login works.
 - Postman can obtain a Supabase session through OAuth callback.
 - TMDB access works from backend only.
+- TMDB Watch Providers data can be returned by country without exposing TMDB credentials to mobile.
 
 Backend architecture:
 

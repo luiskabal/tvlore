@@ -137,6 +137,7 @@ src/
 |   |-- SeasonContent.tsx
 |   |-- SeasonDetailScreen.tsx
 |   |-- season-detail-styles.ts
+|   |-- watch-country.ts
 |   |-- use-season-detail.ts
 |   `-- use-catalog-detail.ts
 |
@@ -287,6 +288,7 @@ SearchScreen
   -> CatalogDetailScreen
   -> useCatalogDetail()
   -> GET /shows/:id or GET /movies/:id
+  -> GET /shows/:id/watch-providers or GET /movies/:id/watch-providers
   -> Show detail renders backend-owned progress state
   -> SeasonDetailScreen
   -> useSeasonDetail()
@@ -294,7 +296,9 @@ SearchScreen
 ```
 
 The app still does not calculate catalog identity, progress, or watched state.
-It asks the backend, then renders the response.
+It asks the backend, then renders the response. Detail screens also ask the
+backend for watch-provider availability using the device country, currently
+falling back to `CL` when no locale country is available.
 For shows, detail progress is based on episodes already persisted by opening
 season detail routes.
 

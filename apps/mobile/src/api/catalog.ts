@@ -5,6 +5,7 @@ import {
   isMovieDetailResponse,
   isShowDetailResponse,
   isShowSeasonDetailResponse,
+  isWatchProvidersResponse,
 } from "./guards";
 import type {
   CatalogDetailResponse,
@@ -13,6 +14,7 @@ import type {
   CatalogSearchResult,
   MediaType,
   ShowSeasonDetailResponse,
+  WatchProvidersResponse,
 } from "./types";
 
 export async function searchCatalog(
@@ -92,6 +94,23 @@ export async function getShowSeasonDetail(
     `/shows/${showId}/seasons/${seasonNumber}`,
     isShowSeasonDetailResponse,
     "Unexpected season detail response",
+    { headers: getAuthHeaders(accessToken) },
+  );
+}
+
+export async function getWatchProviders(
+  accessToken: string | null,
+  mediaType: MediaType,
+  id: string,
+  country: string,
+): Promise<WatchProvidersResponse> {
+  const params = new URLSearchParams({ country });
+  const path = mediaType === "show" ? `/shows/${id}/watch-providers` : `/movies/${id}/watch-providers`;
+
+  return fetchCachedJson(
+    `${path}?${params.toString()}`,
+    isWatchProvidersResponse,
+    "Unexpected watch providers response",
     { headers: getAuthHeaders(accessToken) },
   );
 }

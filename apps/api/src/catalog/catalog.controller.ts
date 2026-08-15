@@ -8,6 +8,7 @@ import type {
   ShowDetailResponseDto,
   ShowSeasonDetailResponseDto,
   ShowSeasonsResponseDto,
+  WatchProvidersResponseDto,
 } from "./catalog.types";
 
 @Controller("search")
@@ -51,6 +52,15 @@ export class ShowsController {
     return this.catalogService.getShow(authorizationHeader, showId);
   }
 
+  @Get(":showId/watch-providers")
+  getShowWatchProviders(
+    @Headers("authorization") authorizationHeader: string | undefined,
+    @Param("showId") showId: string | undefined,
+    @Query("country") country: string | undefined,
+  ): Promise<WatchProvidersResponseDto> {
+    return this.catalogService.getShowWatchProviders(authorizationHeader, showId, country);
+  }
+
   @Get(":showId/seasons")
   getShowSeasons(
     @Headers("authorization") authorizationHeader: string | undefined,
@@ -79,5 +89,14 @@ export class MoviesController {
     @Param("movieId") movieId: string | undefined,
   ): Promise<MovieDetailResponseDto> {
     return this.catalogService.getMovie(authorizationHeader, movieId);
+  }
+
+  @Get(":movieId/watch-providers")
+  getMovieWatchProviders(
+    @Headers("authorization") authorizationHeader: string | undefined,
+    @Param("movieId") movieId: string | undefined,
+    @Query("country") country: string | undefined,
+  ): Promise<WatchProvidersResponseDto> {
+    return this.catalogService.getMovieWatchProviders(authorizationHeader, movieId, country);
   }
 }

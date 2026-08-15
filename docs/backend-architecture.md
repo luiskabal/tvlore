@@ -55,6 +55,7 @@ src/
 |-- catalog/
 |   |-- catalog.controller.ts
 |   |-- catalog-detail.ts
+|   |-- catalog-watch-providers.ts
 |   |-- catalog.repository.ts
 |   |-- catalog-resolve.ts
 |   |-- catalog.service.ts
@@ -120,6 +121,7 @@ For example, `GET /users/me` is split as:
 - `catalog-search.ts`: pure query/result normalization with unit tests.
 - `catalog-resolve.ts`: pure resolve input/detail normalization with unit tests.
 - `catalog-detail.ts`: pure route/detail normalization with unit tests.
+- `catalog-watch-providers.ts`: pure country validation and TMDB watch-provider normalization with unit tests.
 
 Watchlist follows the same shape:
 

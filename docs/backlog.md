@@ -10,7 +10,7 @@ No active infrastructure tasks.
 
 - [ ] Persist richer catalog signals, such as genres, before improving recommendation quality.
 - [ ] Add curated watch paths for imported or fetched viewing orders, such as Marvel release or chronology order.
-- [ ] Research and add a country-aware `Where to Watch` section for show/movie availability.
+- [ ] Store the user's preferred availability country instead of relying on device-locale fallback.
 
 ## Notes
 
@@ -105,6 +105,7 @@ No active infrastructure tasks.
 - [x] Apply the mobile UI component pool to catalog detail screens.
 - [x] Apply the mobile UI component pool to season detail screens.
 - [x] Add initial mobile Vitest coverage for pure search and chronology logic.
+- [x] Add first country-aware Where to Watch slice on show/movie detail through TMDB Watch Providers.
 
 ## Deferred
 

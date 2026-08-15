@@ -203,6 +203,23 @@ export type MovieDetailResponse = {
 
 export type CatalogDetailResponse = MovieDetailResponse | ShowDetailResponse;
 
+export type WatchProvider = {
+  id: number;
+  logoPath: string | null;
+  name: string;
+};
+
+export type WatchProvidersResponse = {
+  country: string;
+  link: string | null;
+  providers: {
+    buy: WatchProvider[];
+    free: WatchProvider[];
+    rent: WatchProvider[];
+    stream: WatchProvider[];
+  };
+};
+
 export type ShowProgressResponse = {
   isComplete: boolean;
   nextEpisode: {

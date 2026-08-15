@@ -21,6 +21,7 @@ export default function CatalogDetailScreen({ mediaType }: { mediaType: MediaTyp
     state,
     watchAction,
     watchlistAction,
+    watchProvidersState,
   } = useCatalogDetail(mediaType, id);
 
   return (
@@ -54,6 +55,7 @@ export default function CatalogDetailScreen({ mediaType }: { mediaType: MediaTyp
             preferenceAction={preferenceAction}
             watchAction={watchAction}
             watchlistAction={watchlistAction}
+            watchProvidersState={watchProvidersState}
           />
         ) : null}
       </ScrollView>

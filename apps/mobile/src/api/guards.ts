@@ -21,6 +21,8 @@ import type {
   ShowSeasonDetailResponse,
   ShowSeasonSummary,
   UserResponse,
+  WatchProvider,
+  WatchProvidersResponse,
   WatchlistMutationResponse,
   WatchedEpisodeItem,
 } from "./types";
@@ -142,6 +144,32 @@ function isCatalogSearchResult(value: unknown): value is CatalogSearchResult {
 
 export function isCatalogResolveResponse(value: unknown): value is CatalogResolveResponse {
   return isRecord(value) && typeof value.id === "string" && isMediaType(value.mediaType);
+}
+
+export function isWatchProvidersResponse(value: unknown): value is WatchProvidersResponse {
+  return (
+    isRecord(value) &&
+    typeof value.country === "string" &&
+    isNullableString(value.link) &&
+    isRecord(value.providers) &&
+    isWatchProviderList(value.providers.buy) &&
+    isWatchProviderList(value.providers.free) &&
+    isWatchProviderList(value.providers.rent) &&
+    isWatchProviderList(value.providers.stream)
+  );
+}
+
+function isWatchProviderList(value: unknown): value is WatchProvider[] {
+  return Array.isArray(value) && value.every(isWatchProvider);
+}
+
+function isWatchProvider(value: unknown): value is WatchProvider {
+  return (
+    isRecord(value) &&
+    typeof value.id === "number" &&
+    typeof value.name === "string" &&
+    isNullableString(value.logoPath)
+  );
 }
 
 export function isShowDetailResponse(value: unknown): value is Omit<ShowDetailResponse, "mediaType"> {

@@ -130,6 +130,19 @@ export class CatalogRepository {
     return identifier?.providerId ?? null;
   }
 
+  async findMovieProviderId(movieId: string): Promise<string | null> {
+    const identifier = await this.prismaService.getClient().externalIdentifier.findFirst({
+      select: { providerId: true },
+      where: {
+        entityId: movieId,
+        entityType: "movie",
+        provider: "tmdb",
+      },
+    });
+
+    return identifier?.providerId ?? null;
+  }
+
   async findShowSeasons(showId: string): Promise<ShowSeasonsResponseDto | null> {
     const show = await this.prismaService.getClient().show.findUnique({
       include: {

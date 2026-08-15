@@ -1,10 +1,10 @@
-import { Pressable, View } from "react-native";
+import { Image, Pressable, View } from "react-native";
 
-import type { CatalogDetailResponse, MediaType, MovieDetailResponse, ShowDetailResponse, ShowSeasonSummary } from "../api/tvlore-api";
+import type { CatalogDetailResponse, MediaType, MovieDetailResponse, ShowDetailResponse, ShowSeasonSummary, WatchProvider } from "../api/tvlore-api";
 import { AppText, Badge, Button, PosterImage, Skeleton } from "../ui";
 import { styles } from "./catalog-detail-styles";
-import { getTmdbPosterUrl } from "./posters";
-import type { PreferenceActionState, WatchActionState, WatchlistActionState } from "./use-catalog-detail";
+import { getTmdbLogoUrl, getTmdbPosterUrl } from "./posters";
+import type { PreferenceActionState, WatchActionState, WatchlistActionState, WatchProvidersState } from "./use-catalog-detail";
 
 export function CatalogDetailContent({
   detail,
@@ -16,6 +16,7 @@ export function CatalogDetailContent({
   preferenceAction,
   watchAction,
   watchlistAction,
+  watchProvidersState,
 }: {
   detail: CatalogDetailResponse;
   onOpenShowSeason: (showId: string, seasonNumber: number) => void;
@@ -26,6 +27,7 @@ export function CatalogDetailContent({
   preferenceAction: PreferenceActionState;
   watchAction: WatchActionState;
   watchlistAction: WatchlistActionState;
+  watchProvidersState: WatchProvidersState;
 }) {
   return (
     <View style={styles.detail}>
@@ -45,6 +47,7 @@ export function CatalogDetailContent({
 
       <AppText style={styles.overview}>{detail.overview || "No overview available."}</AppText>
 
+      <WhereToWatchPanel state={watchProvidersState} />
       <WatchlistPanel detail={detail} onSetInWatchlist={onSetInWatchlist} watchlistAction={watchlistAction} />
       <PreferencePanel detail={detail} onSetRating={onSetRating} preferenceAction={preferenceAction} />
 
@@ -56,6 +59,77 @@ export function CatalogDetailContent({
           <ShowSeasonsPanel onOpenShowSeason={onOpenShowSeason} show={detail} />
         </>
       )}
+    </View>
+  );
+}
+
+function WhereToWatchPanel({ state }: { state: WatchProvidersState }) {
+  if (state.kind === "loading") {
+    return (
+      <View style={styles.statusPanel}>
+        <AppText variant="section">Where to watch</AppText>
+        <View style={styles.providerSkeletonRow}>
+          <Skeleton height={32} width={88} />
+          <Skeleton height={32} width={112} />
+        </View>
+      </View>
+    );
+  }
+
+  if (state.kind === "error") {
+    return (
+      <View style={styles.statusPanel}>
+        <AppText variant="section">Where to watch</AppText>
+        <AppText tone="muted">Availability is unavailable right now.</AppText>
+      </View>
+    );
+  }
+
+  const sections = [
+    { label: "Stream", providers: state.providers.providers.stream },
+    { label: "Rent", providers: state.providers.providers.rent },
+    { label: "Buy", providers: state.providers.providers.buy },
+    { label: "Free", providers: state.providers.providers.free },
+  ].filter((section) => section.providers.length > 0);
+
+  return (
+    <View style={styles.statusPanel}>
+      <View style={styles.panelHeaderRow}>
+        <AppText variant="section">Where to watch</AppText>
+        <Badge label={state.providers.country} tone="neutral" />
+      </View>
+
+      {sections.length === 0 ? (
+        <AppText tone="muted">No availability found for this country.</AppText>
+      ) : (
+        sections.map((section) => (
+          <View key={section.label} style={styles.providerSection}>
+            <AppText tone="muted" variant="caption">{section.label}</AppText>
+            <View style={styles.providerRow}>
+              {section.providers.map((provider) => (
+                <ProviderPill key={`${section.label}-${provider.id}`} provider={provider} />
+              ))}
+            </View>
+          </View>
+        ))
+      )}
+
+      <AppText tone="subtle" variant="caption">Availability data from JustWatch via TMDB.</AppText>
+    </View>
+  );
+}
+
+function ProviderPill({ provider }: { provider: WatchProvider }) {
+  return (
+    <View style={styles.providerPill}>
+      {provider.logoPath ? (
+        <Image
+          accessibilityIgnoresInvertColors
+          source={{ uri: getTmdbLogoUrl(provider.logoPath) }}
+          style={styles.providerLogo}
+        />
+      ) : null}
+      <AppText style={styles.providerName} variant="caption">{provider.name}</AppText>
     </View>
   );
 }
