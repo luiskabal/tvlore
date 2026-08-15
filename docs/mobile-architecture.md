@@ -331,7 +331,8 @@ opens an item.
 The app still does not calculate catalog identity, progress, or watched state.
 It asks the backend, then renders the response. Detail screens also ask the
 backend for watch-provider availability using the device country, currently
-falling back to `CL` when no locale country is available.
+falling back to `CL` when no locale country is available. Provider icons open
+the title-level TMDB/JustWatch availability link returned by the backend.
 For shows, detail progress is based on episodes already persisted by opening
 season detail routes.
 

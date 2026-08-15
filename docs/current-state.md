@@ -35,7 +35,7 @@ Implemented:
 - Mobile show detail can mark the full show watched or unwatched through one backend-owned bulk action.
 - Mobile show/movie detail can add or remove a title from the watchlist.
 - Mobile show/movie detail can rate or clear a rating preference for a title.
-- Mobile show/movie detail renders country-aware watch-provider availability.
+- Mobile show/movie detail renders country-aware watch-provider icons.
 - Mobile tracking mutations invalidate the local library data.
 - Mobile watchlist mutations invalidate the local library data.
 - Mobile Library/Profile refresh authenticated library data after tracking changes.
@@ -827,7 +827,7 @@ Current behavior:
 - Watchlist actions update local detail state optimistically, then reconcile from the backend mutation response.
 - Show and movie detail can set or clear a 1-5 rating preference.
 - Rating actions update local detail state optimistically, then reconcile from the backend mutation response.
-- Show and movie detail show `Where to watch` availability buckets for the device country, with fallback to `CL`.
+- Show and movie detail show `Where to watch` provider icons for the device country, with fallback to `CL`. Tapping a provider opens the title's TMDB/JustWatch availability link for that country.
 - Show detail lists seasons and opens a season route.
 - Season detail loads backend-owned episode IDs and watched state.
 - Season detail can mark episodes watched or unwatched.

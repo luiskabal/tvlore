@@ -1,4 +1,4 @@
-import { Image, Pressable, View } from "react-native";
+import { Image, Linking, Pressable, View } from "react-native";
 
 import type { CatalogDetailResponse, MediaType, MovieDetailResponse, ShowDetailResponse, ShowSeasonSummary, WatchProvider } from "../api/tvlore-api";
 import { AppText, Badge, Button, PosterImage, Skeleton } from "../ui";
@@ -69,8 +69,8 @@ function WhereToWatchPanel({ state }: { state: WatchProvidersState }) {
       <View style={styles.statusPanel}>
         <AppText variant="section">Where to watch</AppText>
         <View style={styles.providerSkeletonRow}>
-          <Skeleton height={32} width={88} />
-          <Skeleton height={32} width={112} />
+          <Skeleton height={54} width={54} />
+          <Skeleton height={54} width={54} />
         </View>
       </View>
     );
@@ -107,7 +107,11 @@ function WhereToWatchPanel({ state }: { state: WatchProvidersState }) {
             <AppText tone="muted" variant="caption">{section.label}</AppText>
             <View style={styles.providerRow}>
               {section.providers.map((provider) => (
-                <ProviderPill key={`${section.label}-${provider.id}`} provider={provider} />
+                <ProviderPill
+                  key={`${section.label}-${provider.id}`}
+                  provider={provider}
+                  watchUrl={state.providers.link}
+                />
               ))}
             </View>
           </View>
@@ -119,19 +123,39 @@ function WhereToWatchPanel({ state }: { state: WatchProvidersState }) {
   );
 }
 
-function ProviderPill({ provider }: { provider: WatchProvider }) {
+function ProviderPill({ provider, watchUrl }: { provider: WatchProvider; watchUrl: string | null }) {
   return (
-    <View style={styles.providerPill}>
+    <Pressable
+      accessibilityLabel={`Open ${provider.name} availability`}
+      accessibilityRole="link"
+      disabled={!watchUrl}
+      onPress={() => openWatchProviderLink(watchUrl)}
+      style={({ pressed }) => [
+        styles.providerPill,
+        pressed ? styles.pressedSeasonRow : null,
+        !watchUrl ? styles.providerPillDisabled : null,
+      ]}
+    >
       {provider.logoPath ? (
         <Image
           accessibilityIgnoresInvertColors
+          resizeMode="contain"
           source={{ uri: getTmdbLogoUrl(provider.logoPath) }}
           style={styles.providerLogo}
         />
-      ) : null}
-      <AppText style={styles.providerName} variant="caption">{provider.name}</AppText>
-    </View>
+      ) : (
+        <AppText style={styles.providerFallbackText} variant="caption">{getProviderInitials(provider.name)}</AppText>
+      )}
+    </Pressable>
   );
+}
+
+function openWatchProviderLink(watchUrl: string | null) {
+  if (!watchUrl) {
+    return;
+  }
+
+  void Linking.openURL(watchUrl).catch(() => undefined);
 }
 
 function WatchlistPanel({
@@ -437,4 +461,13 @@ function formatDate(value: string) {
 
 function formatCount(value: number, label: string) {
   return `${value} ${value === 1 ? label : `${label}s`}`;
+}
+
+function getProviderInitials(name: string) {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0]?.toUpperCase())
+    .join("");
 }

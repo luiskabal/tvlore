@@ -25,7 +25,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Movie watched/unwatched tracking.
 - Episode watched/unwatched tracking.
 - Show detail progress state: not started, watching, or completed.
-- Country-aware `Where to watch` availability on show/movie detail using TMDB Watch Providers.
+- Country-aware `Where to watch` provider icons on show/movie detail using TMDB Watch Providers.
 - Curated Watch Paths with backend-owned ordered viewing lists, including Marvel Infinity Saga and Star Wars Skywalker Saga.
 - Show-level mark all watched/unwatched backed by the API.
 - Season-level mark all watched/unwatched.

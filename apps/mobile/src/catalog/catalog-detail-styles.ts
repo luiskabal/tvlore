@@ -49,24 +49,27 @@ export const styles = StyleSheet.create({
   },
   providerLogo: {
     backgroundColor: ui.color.panelAlt,
-    borderRadius: ui.radius.sm,
-    height: 24,
-    width: 24,
+    borderRadius: ui.radius.md,
+    height: 44,
+    width: 44,
   },
-  providerName: {
-    flexShrink: 1,
+  providerFallbackText: {
+    color: ui.color.ink,
+    fontWeight: "800",
   },
   providerPill: {
     alignItems: "center",
     backgroundColor: ui.color.panelAlt,
     borderColor: ui.color.border,
-    borderRadius: ui.radius.pill,
+    borderRadius: ui.radius.md,
     borderWidth: 1,
-    flexDirection: "row",
-    gap: 6,
-    maxWidth: "100%",
-    paddingHorizontal: ui.space.sm,
-    paddingVertical: 6,
+    height: 54,
+    justifyContent: "center",
+    padding: 4,
+    width: 54,
+  },
+  providerPillDisabled: {
+    opacity: 0.56,
   },
   providerRow: {
     flexDirection: "row",
