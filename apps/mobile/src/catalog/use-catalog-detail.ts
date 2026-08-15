@@ -273,6 +273,7 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
           kind: "ready",
         };
       });
+      notifyLibraryChanged();
       setPreferenceAction({ kind: "idle" });
     } catch (error) {
       if (ratingRequestId.current !== requestId) {

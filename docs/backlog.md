@@ -92,6 +92,7 @@ No active infrastructure tasks.
 - [x] Keep recommendations out of Profile and scoped to Library.
 - [x] Add backend-owned show-level mark all watched/unwatched.
 - [x] Add backend-owned paginated Cronologia feed.
+- [x] Add short-lived mobile read cache for search and catalog detail reads.
 
 ## Deferred
 

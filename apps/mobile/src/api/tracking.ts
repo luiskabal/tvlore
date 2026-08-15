@@ -1,4 +1,4 @@
-import { fetchJson, getAuthHeaders } from "./client";
+import { fetchMutationJson, getAuthHeaders } from "./client";
 import { isEpisodeWatchResponse, isMovieWatchResponse, isShowProgressResponse } from "./guards";
 import type { EpisodeWatchResponse, MovieWatchResponse, ShowProgressResponse } from "./types";
 
@@ -6,7 +6,7 @@ export async function markEpisodeWatched(
   accessToken: string | null,
   episodeId: string,
 ): Promise<EpisodeWatchResponse> {
-  return fetchJson(
+  return fetchMutationJson(
     `/episodes/${episodeId}/watches`,
     isEpisodeWatchResponse,
     "Unexpected episode watch response",
@@ -25,7 +25,7 @@ export async function unmarkEpisodeWatched(
   accessToken: string | null,
   episodeId: string,
 ): Promise<EpisodeWatchResponse> {
-  return fetchJson(
+  return fetchMutationJson(
     `/episodes/${episodeId}/watches`,
     isEpisodeWatchResponse,
     "Unexpected episode unwatch response",
@@ -40,7 +40,7 @@ export async function markShowWatched(
   accessToken: string | null,
   showId: string,
 ): Promise<ShowProgressResponse> {
-  return fetchJson(
+  return fetchMutationJson(
     `/shows/${showId}/watches`,
     isShowProgressResponse,
     "Unexpected show watch response",
@@ -59,7 +59,7 @@ export async function unmarkShowWatched(
   accessToken: string | null,
   showId: string,
 ): Promise<ShowProgressResponse> {
-  return fetchJson(
+  return fetchMutationJson(
     `/shows/${showId}/watches`,
     isShowProgressResponse,
     "Unexpected show unwatch response",
@@ -74,7 +74,7 @@ export async function markMovieWatched(
   accessToken: string | null,
   movieId: string,
 ): Promise<MovieWatchResponse> {
-  return fetchJson(
+  return fetchMutationJson(
     `/movies/${movieId}/watches`,
     isMovieWatchResponse,
     "Unexpected movie watch response",
@@ -93,7 +93,7 @@ export async function unmarkMovieWatched(
   accessToken: string | null,
   movieId: string,
 ): Promise<MovieWatchResponse> {
-  return fetchJson(
+  return fetchMutationJson(
     `/movies/${movieId}/watches`,
     isMovieWatchResponse,
     "Unexpected movie unwatch response",

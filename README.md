@@ -42,6 +42,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Library/Profile keeps prior data during refresh and shows skeletons on first load.
 - Routed Library, Search, and Profile mobile surfaces with bottom app navigation.
 - Detail screens render content-shaped skeletons while show, movie, or season data loads.
+- Mobile caches search and catalog detail reads briefly in memory, then clears that cache on login, logout, and successful mutations.
 - Mobile library, profile, search, and detail screens follow a route/container, hook, presentation, and styles split.
 - Mobile API calls are grouped behind a stable `tvlore-api.ts` facade with domain modules for catalog, home, tracking, watchlist, and preferences.
 - Postman collection and API smoke checks for local/Vercel validation.

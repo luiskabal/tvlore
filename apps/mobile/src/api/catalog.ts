@@ -1,4 +1,4 @@
-import { fetchJson, getAuthHeaders } from "./client";
+import { fetchCachedJson, fetchMutationJson, getAuthHeaders } from "./client";
 import {
   isCatalogResolveResponse,
   isCatalogSearchResponse,
@@ -26,7 +26,7 @@ export async function searchCatalog(
     types: mediaTypes.join(","),
   });
 
-  return fetchJson(
+  return fetchCachedJson(
     `/search?${params.toString()}`,
     isCatalogSearchResponse,
     "Unexpected search response",
@@ -38,7 +38,7 @@ export async function resolveCatalogItem(
   accessToken: string | null,
   result: CatalogSearchResult,
 ): Promise<CatalogResolveResponse> {
-  return fetchJson(
+  return fetchMutationJson(
     "/catalog/resolve",
     isCatalogResolveResponse,
     "Unexpected resolve response",
@@ -63,7 +63,7 @@ export async function getCatalogDetail(
   id: string,
 ): Promise<CatalogDetailResponse> {
   if (mediaType === "show") {
-    const show = await fetchJson(
+    const show = await fetchCachedJson(
       `/shows/${id}`,
       isShowDetailResponse,
       "Unexpected show detail response",
@@ -73,7 +73,7 @@ export async function getCatalogDetail(
     return { ...show, mediaType };
   }
 
-  const movie = await fetchJson(
+  const movie = await fetchCachedJson(
     `/movies/${id}`,
     isMovieDetailResponse,
     "Unexpected movie detail response",
@@ -88,7 +88,7 @@ export async function getShowSeasonDetail(
   showId: string,
   seasonNumber: number,
 ): Promise<ShowSeasonDetailResponse> {
-  return fetchJson(
+  return fetchCachedJson(
     `/shows/${showId}/seasons/${seasonNumber}`,
     isShowSeasonDetailResponse,
     "Unexpected season detail response",

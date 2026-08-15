@@ -82,9 +82,10 @@ Example hooks:
 
 Query hooks are client infrastructure. They must not implement backend business decisions.
 
-Current decision: keep local hooks instead of adding a query library. Revisit
-this after watchlist if shared cache invalidation spreads across Library,
-Search, Profile, show detail, and movie detail.
+Current decision: keep local hooks instead of adding a query library. The API
+client owns only a small in-memory read cache for search and catalog detail
+reads. Revisit TanStack Query if cache invalidation spreads beyond this simple
+boundary.
 
 ## Current Implemented Layout
 
@@ -177,6 +178,10 @@ facade for screen and hook imports. The implementation is split by API
 responsibility: `client.ts` owns HTTP helpers, `guards.ts` owns response-shape
 validation, `types.ts` owns transport types, and the domain files own their
 endpoint groups. `supabase-auth.ts` owns Supabase session and OAuth behavior.
+`client.ts` also owns a short-lived read cache for catalog searches, movie/show
+detail, and season detail. Cache entries are keyed by request path and a hash of
+the auth header, are not persisted to AsyncStorage, and are cleared on login,
+logout, and successful POST/PUT/DELETE calls.
 
 `LibraryScreen` and `ProfileScreen` consume shared authenticated backend state
 through `useHomeModel`, but each screen opts into only the data it renders:
@@ -203,9 +208,9 @@ The mobile app does not call `GET /health` during normal product refreshes. Heal
 checks remain available for deployment and smoke checks, but product UI should
 avoid extra roundtrips that do not change the user's screen.
 
-`useHomeModel` refreshes this data when tracking mutations invalidate the
-library, so watch changes made in movie or season detail screens are reflected
-when the user returns to Library or Profile.
+`useHomeModel` refreshes this data when tracking, watchlist, or rating
+mutations invalidate the library, so changes made in detail screens are
+reflected when the user returns to Library or Profile.
 
 The Library route renders `LibraryOverview`. The Profile route renders
 `HoloProfileCard`. The card uses Supabase Google avatar metadata when available
@@ -276,6 +281,7 @@ season detail routes.
 Search uses client-side prefetch:
 
 - `GET /search` runs after a short debounce once the query has at least three characters.
+- Repeated search/detail reads can reuse the API client's short-lived in-memory cache.
 - Changing the show/movie filter triggers an immediate request and clears stale results into skeleton rows.
 - The Search button still forces an immediate request.
 - Older in-flight search responses are ignored if a newer query starts first.

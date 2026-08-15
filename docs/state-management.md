@@ -19,7 +19,9 @@ Local state should stay near the component that owns it.
 
 ## Server State
 
-Use TanStack Query.
+Current MVP: use local React hooks plus the TVLore API client. TanStack Query is
+the likely upgrade if request lifecycle and invalidation become broader than the
+current simple cache.
 
 Examples:
 
@@ -34,7 +36,7 @@ Examples:
 - Library.
 - Future match result.
 
-TanStack Query owns:
+Server-state infrastructure owns:
 
 - Caching.
 - Stale data.
@@ -45,6 +47,10 @@ TanStack Query owns:
 - Invalidation.
 - Mutations.
 - Background refresh.
+
+The current API client has a short-lived in-memory cache for search results,
+show/movie detail, and season detail. It is intentionally not persisted.
+Successful mutations and auth transitions clear it.
 
 Do not duplicate server resources into Zustand. Avoid stores such as:
 
@@ -117,4 +123,3 @@ The mobile app should call mutation hooks such as:
 Mutation hooks may handle request lifecycle, optimistic UI where safe, query invalidation, and error display mapping.
 
 They must not decide whether a watch is allowed, whether a user owns the resource, or how progress is calculated.
-

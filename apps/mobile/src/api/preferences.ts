@@ -1,4 +1,4 @@
-import { fetchJson, getAuthHeaders, getMediaPath } from "./client";
+import { fetchMutationJson, getAuthHeaders, getMediaPath } from "./client";
 import { isPreferenceMutationResponse } from "./guards";
 import type { MediaType, PreferenceMutationResponse } from "./types";
 
@@ -8,7 +8,7 @@ export async function setPreferenceRating(
   id: string,
   rating: number,
 ): Promise<PreferenceMutationResponse> {
-  return fetchJson(
+  return fetchMutationJson(
     `/${getMediaPath(mediaType, id)}/preference`,
     isPreferenceMutationResponse,
     "Unexpected preference response",
@@ -28,7 +28,7 @@ export async function clearPreferenceRating(
   mediaType: MediaType,
   id: string,
 ): Promise<PreferenceMutationResponse> {
-  return fetchJson(
+  return fetchMutationJson(
     `/${getMediaPath(mediaType, id)}/preference`,
     isPreferenceMutationResponse,
     "Unexpected preference response",

@@ -6,6 +6,7 @@ import * as SecureStore from "expo-secure-store";
 import * as WebBrowser from "expo-web-browser";
 import { AppState, Platform } from "react-native";
 
+import { clearApiReadCache } from "../api/client";
 import { supabaseProjectUrl, supabasePublishableKey, supabaseUrl } from "../config/env";
 
 const authRedirectUrl = "tvlore://auth/callback";
@@ -101,11 +102,14 @@ export async function signInWithGoogle() {
     throw sessionError;
   }
 
+  clearApiReadCache();
+
   return true;
 }
 
 export async function signOut() {
   if (!supabase) {
+    clearApiReadCache();
     return;
   }
 
@@ -114,6 +118,8 @@ export async function signOut() {
   if (error) {
     throw error;
   }
+
+  clearApiReadCache();
 }
 
 function extractSessionFromUrl(url: string) {
