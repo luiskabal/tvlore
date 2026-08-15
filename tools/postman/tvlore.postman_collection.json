@@ -1692,6 +1692,7 @@
                   "  var body = pm.response.json();",
                   "  pm.expect(body.basis.averageMovieRating === null || typeof body.basis.averageMovieRating === 'number').to.eql(true);",
                   "  pm.expect(body.basis.averageShowRating === null || typeof body.basis.averageShowRating === 'number').to.eql(true);",
+                  "  pm.expect(body.basis.availabilityCountry).to.match(/^[A-Z]{2}$/);",
                   "  pm.expect(body.basis.preferredGenreNames).to.be.an('array');",
                   "  body.basis.preferredGenreNames.forEach(function (genreName) {",
                   "    pm.expect(genreName).to.be.a('string');",
@@ -1709,6 +1710,7 @@
                   "    pm.expect(item.overview).to.be.a('string');",
                   "    pm.expect(item.posterPath === null || typeof item.posterPath === 'string').to.eql(true);",
                   "    pm.expect(['based_on_movie_ratings', 'based_on_show_ratings', 'from_catalog']).to.include(item.reason);",
+                  "    pm.expect(item.streamingAvailable).to.be.a('boolean');",
                   "  });",
                   "});"
                 ]

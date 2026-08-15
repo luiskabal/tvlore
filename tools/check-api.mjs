@@ -937,6 +937,7 @@ function assertRecommendations(body) {
   expectRecord(body.basis, "recommendations.basis");
   expectNullableNumber(body.basis.averageMovieRating, "recommendations.basis.averageMovieRating");
   expectNullableNumber(body.basis.averageShowRating, "recommendations.basis.averageShowRating");
+  expectCountryCode(body.basis.availabilityCountry, "recommendations.basis.availabilityCountry");
   expectArray(body.basis.preferredGenreNames, "recommendations.basis.preferredGenreNames");
   body.basis.preferredGenreNames.forEach((genreName) => expectString(genreName, "recommendations.basis.preferredGenreNames item"));
   expectInteger(body.basis.ratedTitleCount, "recommendations.basis.ratedTitleCount");
@@ -951,6 +952,7 @@ function assertRecommendations(body) {
     expectString(item.title, "recommendations item.title");
     expectString(item.overview, "recommendations item.overview");
     expectNullableString(item.posterPath, "recommendations item.posterPath");
+    expectBoolean(item.streamingAvailable, "recommendations item.streamingAvailable");
     expect(
       ["based_on_movie_ratings", "based_on_show_ratings", "from_catalog"].includes(item.reason),
       "recommendations item.reason",

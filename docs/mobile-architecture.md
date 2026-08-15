@@ -260,8 +260,8 @@ Recommendation rows receive navigation and save-to-watchlist callbacks from the
 route screen. `useRecommendationActions` reuses the existing watchlist endpoint,
 then notifies the local library invalidator. The panel owns only local optimistic
 row hiding and restores the row if the save fails. Recommendation rows render
-backend-provided genre names when available, but do not calculate suggestion
-quality locally.
+backend-provided genre names and streaming availability context when available,
+but do not calculate suggestion quality locally.
 
 Library rows receive navigation callbacks from `LibraryScreen`: movies route
 to movie detail and episode/show rows route to season detail.

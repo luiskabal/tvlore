@@ -1385,7 +1385,7 @@ Errors: `VALIDATION_FAILED`, `UNAUTHORIZED`.
 
 Purpose: return first-pass personalized suggestions for the authenticated user.
 
-Current MVP status: implemented with stored rating preferences and catalog rows already hydrated in TVLore.
+Current MVP status: implemented with stored rating preferences, hydrated catalog rows, persisted genre names, and a streaming-availability boost for the user's saved country.
 
 Auth: required.
 
@@ -1402,6 +1402,7 @@ Response:
   "basis": {
     "averageShowRating": 4.5,
     "averageMovieRating": 3.8,
+    "availabilityCountry": "CL",
     "preferredGenreNames": ["Drama", "Mystery"],
     "ratedTitleCount": 8
   },
@@ -1413,7 +1414,8 @@ Response:
       "title": "Severance",
       "overview": "Mark leads a team...",
       "posterPath": "/path.jpg",
-      "reason": "based_on_show_ratings"
+      "reason": "based_on_show_ratings",
+      "streamingAvailable": true
     },
     {
       "mediaType": "movie",
@@ -1422,7 +1424,8 @@ Response:
       "title": "Arrival",
       "overview": "Taking place after alien crafts land...",
       "posterPath": "/path.jpg",
-      "reason": "based_on_movie_ratings"
+      "reason": "based_on_movie_ratings",
+      "streamingAvailable": false
     }
   ]
 }
@@ -1440,7 +1443,8 @@ Business validation:
 - The endpoint excludes titles the user has already rated, watched, or saved to watchlist.
 - The first heuristic prioritizes the media type with the user's higher average rating.
 - Highly rated titles contribute preferred genre names, and candidates sharing those genres are ordered first.
-- Results are limited to catalog rows already persisted in TVLore; the MVP does not call TMDB from this endpoint.
+- Within each media type, titles available to stream in the user's saved availability country are ranked before titles without subscription-streaming availability.
+- Results are limited to catalog rows already persisted in TVLore; the endpoint only calls TMDB Watch Providers for the final candidate set.
 - If the user has no rating preferences yet, `items` is empty.
 
 Errors: `UNAUTHORIZED`.

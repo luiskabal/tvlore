@@ -9,7 +9,7 @@ type MediaType = "movie" | "show";
 export class RecommendationsRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getRecommendations(userId: string): Promise<RecommendationsResponseDto> {
+  async getRecommendations(userId: string, availabilityCountry: string): Promise<RecommendationsResponseDto> {
     const client = this.prismaService.getClient();
     const [
       showPreferences,
@@ -54,6 +54,7 @@ export class RecommendationsRepository {
         basis: {
           averageMovieRating,
           averageShowRating,
+          availabilityCountry,
           preferredGenreNames,
           ratedTitleCount: 0,
         },
@@ -94,6 +95,7 @@ export class RecommendationsRepository {
       basis: {
         averageMovieRating,
         averageShowRating,
+        availabilityCountry,
         preferredGenreNames,
         ratedTitleCount: showPreferences.length + moviePreferences.length,
       },
@@ -111,6 +113,7 @@ function toRecommendation(
     ...item,
     mediaType,
     reason: averageRating === null ? "from_catalog" : mediaType === "movie" ? "based_on_movie_ratings" : "based_on_show_ratings",
+    streamingAvailable: false,
   };
 }
 

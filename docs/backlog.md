@@ -17,7 +17,7 @@ No active infrastructure tasks.
 - Mobile cleanup should start with the largest screens: `SeasonDetailScreen`, `CatalogDetailScreen`, `SearchScreen`, then `HomeScreen`.
 - Keep the current screen -> hook -> API client boundary. The cleanup goal is readability, not a new state-management layer yet.
 - Ratings are explicit preference signals. Keep them separate from watched state so recommendations can use both later.
-- First recommendations intentionally use only hydrated catalog data and ratings. Improve quality only after storing stronger content signals.
+- First recommendations intentionally use hydrated catalog data, ratings, genres, and a small provider-availability boost. Improve quality only after storing stronger content signals.
 - Recommendations belong in Library while it acts as the app home. Profile should stay focused on identity, stats, and account controls.
 - Cronologia uses a backend-owned paginated endpoint and loads more history as the user scrolls near the end.
 - Curated watch paths should support movies and shows in one ordered list, keep source/provenance, and resolve items into TVLore catalog IDs only when the user opens or saves the list.
@@ -93,6 +93,7 @@ No active infrastructure tasks.
 - [x] Surface rated shows and movies in Library/Profile.
 - [x] Start first recommendation slice from stored ratings.
 - [x] Persist catalog genre names and use them to rank recommendation candidates.
+- [x] Boost recommendation candidates available to stream in the user's saved country.
 - [x] Let recommendation rows save directly to watchlist.
 - [x] Keep recommendations out of Profile and scoped to Library.
 - [x] Add backend-owned show-level mark all watched/unwatched.
@@ -114,7 +115,7 @@ No active infrastructure tasks.
 
 - TVLore-owned access and refresh token service.
 - Social features.
-- Richer recommendation ranking.
+- Richer recommendation ranking from stronger taste and behavior signals.
 - Offline mutation queues.
 - Admin/web frontend.
 - Payments/subscriptions.

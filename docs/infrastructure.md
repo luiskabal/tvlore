@@ -250,6 +250,6 @@ the selected Postman environment.
 - Watchlist endpoints store authenticated show/movie saved intent.
 - `GET /library` feeds the mobile home library summary.
 - `GET /library/chronology` feeds the paginated Cronologia watch-history view.
-- `GET /recommendations` feeds Library suggestion rows from stored ratings and hydrated catalog rows.
+- `GET /recommendations` feeds Library suggestion rows from stored ratings, hydrated catalog rows, genre names, and user-country streaming availability.
 - `GET /watch-paths` and `GET /watch-paths/:pathId` feed curated viewing-order screens.
 - `POST /watch-paths/:pathId/watchlist` saves a curated path into the authenticated user's watchlist using existing watchlist tables.

@@ -111,6 +111,7 @@ Authenticated `api:check` covers:
 - Progress after marking an episode watched.
 - Library summary, recently watched, watchlist, and rated titles after marking watched items and setting ratings.
 - Recommendations contract after rating titles.
+- Recommendations availability-country and streaming-availability fields.
 
 The first tests cover pure authentication/user helpers:
 
@@ -147,6 +148,7 @@ Test:
 - Library summary and rated-title projection.
 - Recommendations exclude already rated, watched, and watchlisted titles.
 - Recommendations prioritize the media type with the stronger user rating average.
+- Recommendations boost streamable candidates inside the existing media ordering.
 
 ### Repository Integration Tests
 

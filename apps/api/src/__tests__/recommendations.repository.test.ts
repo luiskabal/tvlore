@@ -58,10 +58,11 @@ describe("RecommendationsRepository", () => {
     };
     const repository = new RecommendationsRepository({ getClient: () => client } as unknown as PrismaService);
 
-    await expect(repository.getRecommendations(userId)).resolves.toEqual({
+    await expect(repository.getRecommendations(userId, "CL")).resolves.toEqual({
       basis: {
         averageMovieRating: 5,
         averageShowRating: 3,
+        availabilityCountry: "CL",
         preferredGenreNames: ["Action"],
         ratedTitleCount: 2,
       },
@@ -73,6 +74,7 @@ describe("RecommendationsRepository", () => {
           overview: "A candidate movie.",
           posterPath: null,
           reason: "based_on_movie_ratings",
+          streamingAvailable: false,
           title: "Candidate Movie",
         },
         {
@@ -82,6 +84,7 @@ describe("RecommendationsRepository", () => {
           overview: "A candidate movie without matching genres.",
           posterPath: null,
           reason: "based_on_movie_ratings",
+          streamingAvailable: false,
           title: "Candidate Movie Without Match",
         },
         {
@@ -91,6 +94,7 @@ describe("RecommendationsRepository", () => {
           overview: "A candidate show.",
           posterPath: "/show.jpg",
           reason: "based_on_show_ratings",
+          streamingAvailable: false,
           title: "Candidate Show",
         },
       ],
@@ -116,10 +120,11 @@ describe("RecommendationsRepository", () => {
     };
     const repository = new RecommendationsRepository({ getClient: () => client } as unknown as PrismaService);
 
-    await expect(repository.getRecommendations(userId)).resolves.toEqual({
+    await expect(repository.getRecommendations(userId, "CL")).resolves.toEqual({
       basis: {
         averageMovieRating: null,
         averageShowRating: null,
+        availabilityCountry: "CL",
         preferredGenreNames: [],
         ratedTitleCount: 0,
       },

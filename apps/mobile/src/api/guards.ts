@@ -93,6 +93,7 @@ export function isRecommendationsResponse(value: unknown): value is Recommendati
   return (
     isNullableNumber(value.basis.averageMovieRating) &&
     isNullableNumber(value.basis.averageShowRating) &&
+    typeof value.basis.availabilityCountry === "string" &&
     Array.isArray(value.basis.preferredGenreNames) &&
     value.basis.preferredGenreNames.every(isString) &&
     typeof value.basis.ratedTitleCount === "number" &&
@@ -114,7 +115,8 @@ function isRecommendationItem(value: unknown): value is RecommendationItem {
     typeof value.title === "string" &&
     typeof value.overview === "string" &&
     isNullableString(value.posterPath) &&
-    isRecommendationReason(value.reason)
+    isRecommendationReason(value.reason) &&
+    typeof value.streamingAvailable === "boolean"
   );
 }
 

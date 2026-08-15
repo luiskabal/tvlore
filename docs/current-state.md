@@ -24,7 +24,7 @@ Implemented:
 - Authenticated watchlist endpoints for shows and movies.
 - Authenticated rating preference endpoints for shows and movies.
 - Authenticated personal library and show progress read endpoints.
-- Authenticated first-pass recommendation endpoint from stored ratings, hydrated catalog rows, and persisted genre names.
+- Authenticated first-pass recommendation endpoint from stored ratings, hydrated catalog rows, persisted genre names, and country-aware streaming availability.
 - Authenticated curated Watch Paths endpoint with backend-owned ordered viewing lists.
 - Authenticated Watch Path save-to-watchlist endpoint that resolves every path item and saves it for the user.
 - Authenticated Watch Path detail includes per-user saved count and item saved state.
@@ -42,7 +42,7 @@ Implemented:
 - Mobile tracking mutations invalidate the local library data.
 - Mobile watchlist mutations invalidate the local library data.
 - Mobile Library/Profile refresh authenticated library data after tracking changes.
-- Mobile Library can show backend-owned recommendation candidates.
+- Mobile Library can show backend-owned recommendation candidates with streaming availability context.
 - Mobile recommendation rows can save titles directly to the watchlist with optimistic feedback.
 - Mobile Library shows watchlist titles and rated titles separately from watched history.
 - Mobile Library summary cards filter Cronologia, recommendations, continuing shows, recently watched movies, watched episodes grouped by show and season, watchlist, and rated titles.
@@ -67,7 +67,7 @@ Implemented:
 Not implemented yet:
 
 - Social matching.
-- Richer recommendation ranking with providers or collaborative signals.
+- Richer recommendation ranking with collaborative or deeper behavior signals.
 
 ## 2. Current System Diagram
 
@@ -756,7 +756,7 @@ Expected behavior:
 - `DELETE /movies/:movieId/preference` clears that movie rating for the authenticated user.
 - `GET /library` returns personal summary, rated titles, continue-watching, watchlist, recently watched activity, and full watched episode activity.
 - `GET /library/chronology` returns paginated personal movie/episode watch-history activity.
-- `GET /recommendations` returns unrated, unwatched, unsaved catalog candidates ordered by the user's stronger rated media type and preferred genre matches.
+- `GET /recommendations` returns unrated, unwatched, unsaved catalog candidates ordered by the user's stronger rated media type, preferred genre matches, and streaming availability in the user's saved country.
 - `GET /watch-paths` returns curated ordered viewing paths, and `GET /watch-paths/:pathId` returns path items with existing TVLore IDs plus per-user watchlist saved state when already resolved.
 - `POST /watch-paths/:pathId/watchlist` resolves every path item and saves the resulting shows or movies to the authenticated user's watchlist.
 - `POST /shows/:showId/watches` hydrates the show seasons, marks every episode watched, and returns completed show progress.
@@ -816,7 +816,7 @@ Current behavior:
 - Library shows continue-watching and recently watched rows when the backend has watched data.
 - Library shows saved watchlist rows when the backend has watchlist data.
 - Library shows rated show/movie rows when the backend has rating preference data.
-- Library shows recommendation rows in a dedicated `For you` filter when the backend has eligible catalog candidates.
+- Library shows recommendation rows in a dedicated `For you` filter when the backend has eligible catalog candidates, and rows can display whether the title streams in the user's saved country.
 - Recommendation rows open the matching show or movie detail screen.
 - Recommendation rows can save the title to watchlist immediately, then reconcile through the existing library refresh invalidator.
 - Library can filter from its summary cards between Cronologia, recommendations, continuing shows, recently watched movies, watched episodes grouped by show and season, saved titles, and rated titles. Cronologia shows paginated watched movies and episodes by date.
@@ -945,22 +945,22 @@ The remaining near-term frontend product flow is:
 
 ```text
 Richer loading and mutation feedback
--> recommendation quality from provider/country signals
+-> recommendation quality from stronger behavior signals
 -> social matching after the personal library loop stays stable
 ```
 
 ## 14. Recommended Next Step
 
-Improve recommendation quality with availability/provider signals:
+Add stronger recommendation signals from watch behavior:
 
 ```text
-Resolve show or movie
--> persist provider/country availability intent
--> use ratings plus genre/provider metadata for recommendations
+Track completed shows, watched movies, and ratings
+-> derive preferred genres and media balance
+-> tune recommendation reasons for "because you watched/rated X"
 ```
 
 Why this is next:
 
 - Watched history, watchlist, ratings, and bulk tracking now cover the core personal-library loop.
-- Recommendations now use explicit ratings, hydrated catalog rows, and genre names.
-- Provider/country signals can improve suggestions without adding social complexity yet.
+- Recommendations now use explicit ratings, hydrated catalog rows, genre names, and user-country streaming availability.
+- Deeper behavior signals can improve suggestions without adding social complexity yet.

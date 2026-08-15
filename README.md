@@ -41,7 +41,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Profile country selector for streaming availability, rendered with flag labels.
 - Continue-watching and recently-watched data from the backend.
 - Rated show/movie list from the backend.
-- First-pass recommendations from stored rating preferences, hydrated catalog data, and persisted genre names.
+- First-pass recommendations from stored rating preferences, hydrated catalog data, persisted genre names, and user-country streaming availability.
 - Recommendation rows can be saved directly to the watchlist with optimistic feedback.
 - Library recommendations live in their own `For you` filter, and rows navigate back into movie and show detail screens.
 - Library/Profile keeps prior data during refresh and shows skeletons on first load.
@@ -87,7 +87,7 @@ Use `corepack pnpm api:check` for local/Vercel HTTP smoke checks.
 
 ## Next Backlog Items
 
-- Refine recommendation quality with provider/country signals after the genre baseline.
+- Refine recommendation quality with stronger taste signals after the provider/country baseline.
 - Add user-owned imported watch paths after approving persistence/schema shape.
 
 ## Workspace Layout
