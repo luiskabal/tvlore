@@ -44,6 +44,11 @@ async function checkPublicHealth() {
 
 async function checkUnauthorizedRoutes() {
   await checkUnauthorized("/users/me");
+  await checkUnauthorized("/users/me", {
+    body: JSON.stringify({ availabilityCountry: "CL" }),
+    headers: { "content-type": "application/json" },
+    method: "PATCH",
+  });
   await checkUnauthorized("/search?query=dark");
   await checkUnauthorized("/catalog/resolve", {
     body: JSON.stringify({ mediaType: "show", provider: "tmdb", providerId: "70523" }),
@@ -97,10 +102,27 @@ async function checkAuthenticatedProductFlow(token) {
   const showWatchedAt = new Date(Date.now() + 500).toISOString();
   const movieWatchedAt = new Date(Date.now() + 1000).toISOString();
 
-  await check("/users/me", {
+  const currentUser = await check("/users/me", {
     assert: assertUser,
     expectedStatus: 200,
     headers: authHeaders,
+  });
+  await check("/users/me", {
+    assert: assertValidationError,
+    body: JSON.stringify({ availabilityCountry: "Chile" }),
+    expectedStatus: 400,
+    headers: jsonAuthHeaders,
+    method: "PATCH",
+  });
+  await check("/users/me", {
+    assert: (body) => {
+      assertUser(body);
+      expectEqual(body.availabilityCountry, currentUser.availabilityCountry, "user.availabilityCountry after update");
+    },
+    body: JSON.stringify({ availabilityCountry: currentUser.availabilityCountry }),
+    expectedStatus: 200,
+    headers: jsonAuthHeaders,
+    method: "PATCH",
   });
   await check("/search?query=dark&types=show,movie&page=1", {
     assert: assertSearchResponse,
@@ -637,6 +659,7 @@ async function check(path, options) {
 
 function assertUser(body) {
   expectRecord(body, "user");
+  expectCountryCode(body.availabilityCountry, "user.availabilityCountry");
   expectUuid(body.id, "user.id");
   expectString(body.displayName, "user.displayName");
   expectIsoString(body.createdAt, "user.createdAt");
@@ -1010,6 +1033,10 @@ function expectIsoString(value, label) {
 
 function expectMediaType(value, label) {
   expect(value === "show" || value === "movie", `${label} should be show or movie`);
+}
+
+function expectCountryCode(value, label) {
+  expect(typeof value === "string" && /^[A-Z]{2}$/.test(value), `${label} should be an ISO 3166-1 alpha-2 country code`);
 }
 
 function expectEqual(actual, expected, label) {

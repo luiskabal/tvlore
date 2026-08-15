@@ -15,3 +15,20 @@ export function getWatchCountryFromLocale(locale: string) {
 
   return region?.toUpperCase() ?? null;
 }
+
+export function getCountryFlagEmoji(country: string) {
+  const code = country.trim().toUpperCase();
+
+  if (!/^[A-Z]{2}$/.test(code)) {
+    return "";
+  }
+
+  return String.fromCodePoint(...[...code].map((letter) => 127397 + letter.charCodeAt(0)));
+}
+
+export function formatWatchCountry(country: string) {
+  const code = country.trim().toUpperCase();
+  const flag = getCountryFlagEmoji(code);
+
+  return flag ? `${flag} ${code}` : code;
+}

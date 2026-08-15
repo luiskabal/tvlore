@@ -16,6 +16,36 @@ export const styles = StyleSheet.create({
     paddingBottom: 32,
     paddingTop: 72,
   },
+  countryOptionButton: {
+    alignItems: "center",
+    backgroundColor: "#ffffff",
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    minHeight: 42,
+    minWidth: 78,
+    justifyContent: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  countryOptionButtonSelected: {
+    backgroundColor: "#e5f3ed",
+    borderColor: "#1f7a5c",
+  },
+  countryOptionText: {
+    color: "#5f564d",
+    fontSize: 14,
+    fontWeight: "800",
+  },
+  countryOptionTextSelected: {
+    color: "#1f7a5c",
+  },
+  countryOptionsRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    paddingTop: 4,
+  },
   disabledButton: {
     opacity: 0.6,
   },

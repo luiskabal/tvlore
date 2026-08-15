@@ -11,7 +11,8 @@ Implemented:
 - Expo mobile app that can authenticate with Google through Supabase Auth.
 - Supabase Postgres database connected to the backend through Prisma.
 - Supabase Auth token validation in the backend.
-- Authenticated `GET /users/me`.
+- Authenticated `GET /users/me` and `PATCH /users/me`.
+- User-owned streaming availability country preference.
 - Authenticated `GET /search` backed by TMDB.
 - Authenticated `POST /catalog/resolve` that converts TMDB refs into TVLore internal IDs.
 - Authenticated show/movie detail endpoints by internal TVLore ID.
@@ -37,7 +38,7 @@ Implemented:
 - Mobile show detail can mark the full show watched or unwatched through one backend-owned bulk action.
 - Mobile show/movie detail can add or remove a title from the watchlist.
 - Mobile show/movie detail can rate or clear a rating preference for a title.
-- Mobile show/movie detail renders country-aware watch-provider icons.
+- Mobile show/movie detail renders country-aware watch-provider icons using the user's saved country preference.
 - Mobile tracking mutations invalidate the local library data.
 - Mobile watchlist mutations invalidate the local library data.
 - Mobile Library/Profile refresh authenticated library data after tracking changes.
@@ -49,6 +50,7 @@ Implemented:
 - Mobile Library rows render catalog poster thumbnails when available, with stable placeholders otherwise.
 - Mobile Library episode season subsections can be expanded or collapsed with a tap.
 - Mobile Profile renders a touch-driven holo profile card with Google avatar and library stats.
+- Mobile Profile lets the user choose the watch-provider country with flag labels.
 - Mobile library rows navigate back to movie detail or show season detail screens.
 - Mobile Library rows can remove watchlist items and undo recent watched markers through confirmable swipe actions.
 - Mobile Library applies optimistic row removal after swipe confirmation and rolls back on API error.
@@ -66,7 +68,6 @@ Not implemented yet:
 
 - Social matching.
 - Richer recommendation ranking with providers or collaborative signals.
-- User-owned availability country preference.
 
 ## 2. Current System Diagram
 
@@ -223,6 +224,7 @@ Implemented endpoint:
 
 ```text
 GET /users/me
+PATCH /users/me
 ```
 
 What it does:
@@ -234,6 +236,8 @@ What it does:
 5. Upserts `user_identities`.
 6. Upserts or updates `users`.
 7. Returns the TVLore user.
+
+`PATCH /users/me` additionally validates and stores user settings such as the two-letter `availabilityCountry` used by watch-provider lookups.
 
 Important detail:
 
@@ -450,7 +454,7 @@ Current watched-state behavior:
 - Show detail returns `progress.status` as `not_started`, `watching`, or `completed`.
 - Show and movie detail responses return `inWatchlist` and nullable `rating` for the authenticated user.
 - `GET /library` returns summary counts, continue-watching shows, rated titles, recent movie/episode activity, full watched episode activity, and watchlist titles for the authenticated user.
-- `GET /shows/:showId/watch-providers` and `GET /movies/:movieId/watch-providers` return subscription/rent/buy/free availability for a country code using TMDB Watch Providers data.
+- `GET /shows/:showId/watch-providers` and `GET /movies/:movieId/watch-providers` return subscription/rent/buy/free availability for a country code using TMDB Watch Providers data; mobile now sends the authenticated user's saved `availabilityCountry`.
 
 Why season detail fetches TMDB:
 
@@ -485,6 +489,7 @@ erDiagram
   USER {
     uuid id PK
     string displayName
+    string availabilityCountry
     datetime createdAt
     datetime updatedAt
   }
@@ -625,7 +630,7 @@ erDiagram
 
 Current tables:
 
-- `users`: TVLore account/profile row.
+- `users`: TVLore account/profile row, including the saved streaming availability country.
 - `user_identities`: links a TVLore user to Supabase Auth.
 - `refresh_sessions`: exists for the originally planned TVLore-owned refresh-token model; Supabase owns sessions in the current MVP.
 - `shows`: internal TVLore show records created by resolve, including persisted TMDB genre names.
@@ -677,6 +682,7 @@ flowchart TB
   Token[Paste access_token into supabaseAccessToken Current value]
   Validate[Auth / Supabase / GET Supabase user]
   Me[Users / GET /users/me]
+  UserCountry[Users / PATCH /users/me availability country]
   Search[Catalog / GET /search]
   ResolveShow[Catalog / POST /catalog/resolve show]
   Show[Catalog / GET /shows/:showId]
@@ -702,7 +708,8 @@ flowchart TB
   Login --> Token
   Token --> Validate
   Validate --> Me
-  Me --> Search
+  Me --> UserCountry
+  UserCountry --> Search
   Search --> ResolveShow
   ResolveShow --> Show
   Show --> ShowWatchlist
@@ -729,6 +736,7 @@ Expected behavior:
 - `GET /health` and `GET /health/db` return `200` without auth.
 - `GET /users/me`, `GET /search`, and `POST /catalog/resolve` return `401` without auth.
 - `GET /users/me` returns the authenticated TVLore user with a valid Supabase token.
+- `PATCH /users/me` updates the authenticated user's streaming availability country.
 - `GET /search` returns normalized TMDB-backed results.
 - `POST /catalog/resolve` returns a TVLore UUID.
 - Running `GET /search` again after resolve should show `tvloreId` for the resolved item.
@@ -771,7 +779,8 @@ Library
 Profile
 -> Supabase session
 -> GET /users/me and GET /library in parallel
--> Holo profile card, library stats, account state, sign out
+-> PATCH /users/me when the user changes availability country
+-> Holo profile card, library stats, availability country, account state, sign out
 
 Search
 -> GET /search
@@ -838,7 +847,8 @@ Current behavior:
 - Watchlist actions update local detail state optimistically, then reconcile from the backend mutation response.
 - Show and movie detail can set or clear a 1-5 rating preference.
 - Rating actions update local detail state optimistically, then reconcile from the backend mutation response.
-- Show and movie detail show `Where to watch` provider icons for the device country, with fallback to `CL`. Tapping a provider opens the title's TMDB/JustWatch availability link for that country.
+- Profile lets the user choose the `Where to watch` country through flag-labelled country chips.
+- Show and movie detail show `Where to watch` provider icons for the user's saved country preference, with device country and `CL` as fallback. Tapping a provider opens the title's TMDB/JustWatch availability link for that country.
 - Show detail lists seasons and opens a season route.
 - Season detail loads backend-owned episode IDs and watched state.
 - Season detail can mark episodes watched or unwatched.
@@ -888,6 +898,7 @@ Product foundation:
 - Watch tracking is stored against internal TVLore IDs and authenticated user IDs.
 - Watchlist intent is stored against internal TVLore IDs and authenticated user IDs.
 - Rating preferences are stored against internal TVLore IDs and authenticated user IDs.
+- Availability country is stored on the authenticated user's TVLore profile and reused by mobile detail screens.
 - Genre names are persisted on resolved shows and movies from TMDB detail responses.
 - Show progress status is calculated by the backend from persisted episode watches.
 - Mobile can render backend-owned library data through the same Supabase token used by Postman.

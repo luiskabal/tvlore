@@ -238,6 +238,7 @@ Response:
 {
   "id": "uuid",
   "displayName": "Luis",
+  "availabilityCountry": "CL",
   "createdAt": "2026-08-09T00:00:00.000Z"
 }
 ```
@@ -258,6 +259,57 @@ Business validation:
 - TVLore `User` is found or created.
 
 Errors: `UNAUTHORIZED`, `USER_NOT_FOUND`.
+
+### `PATCH /users/me`
+
+Purpose: update authenticated TVLore user settings.
+
+Current MVP status: implemented for the user's streaming availability country.
+
+Auth: required.
+
+Route parameters: none.
+
+Query parameters: none.
+
+Request:
+
+```json
+{
+  "availabilityCountry": "CL"
+}
+```
+
+Response:
+
+```json
+{
+  "id": "uuid",
+  "displayName": "Luis",
+  "availabilityCountry": "CL",
+  "createdAt": "2026-08-09T00:00:00.000Z"
+}
+```
+
+Status codes:
+
+- `200 OK`
+- `400 BAD_REQUEST`
+- `401 UNAUTHORIZED`
+
+Authorization: Supabase access token must represent an active Supabase Auth user.
+
+Transport validation:
+
+- `availabilityCountry` is required.
+- `availabilityCountry` must be a two-letter ISO country code. Values are normalized to uppercase.
+
+Business validation:
+
+- The authenticated user's TVLore user row is found or created before settings are updated.
+- The preference is user-owned and is later used by mobile for watch-provider lookups.
+
+Errors: `VALIDATION_FAILED`, `UNAUTHORIZED`.
 
 ### `GET /search`
 

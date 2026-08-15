@@ -16,7 +16,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 ## Current Features
 
 - Google sign-in with Supabase Auth.
-- Authenticated `GET /users/me` backed by TVLore user records.
+- Authenticated `GET /users/me` and `PATCH /users/me` backed by TVLore user records.
 - API health and database health endpoints.
 - TMDB-backed search for shows and movies.
 - Catalog resolve from TMDB refs into internal TVLore IDs.
@@ -25,7 +25,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Movie watched/unwatched tracking.
 - Episode watched/unwatched tracking.
 - Show detail progress state: not started, watching, or completed.
-- Country-aware `Where to watch` provider icons on show/movie detail using TMDB Watch Providers.
+- Country-aware `Where to watch` provider icons on show/movie detail using the user's saved country preference and TMDB Watch Providers.
 - Curated Watch Paths with backend-owned ordered viewing lists, including Marvel Infinity Saga and Star Wars Skywalker Saga.
 - Curated Watch Paths can be saved to the user's watchlist in one backend-owned action.
 - Curated Watch Path detail shows saved count and saved row state for the authenticated user.
@@ -38,6 +38,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Cronologia loads backend-paginated watched movie and episode history and fetches more as the user scrolls.
 - Grouped episode seasons can be expanded or collapsed with a tap.
 - Holographic mobile profile summary card with Google avatar and library stats.
+- Profile country selector for streaming availability, rendered with flag labels.
 - Continue-watching and recently-watched data from the backend.
 - Rated show/movie list from the backend.
 - First-pass recommendations from stored rating preferences, hydrated catalog data, and persisted genre names.
@@ -88,7 +89,6 @@ Use `corepack pnpm api:check` for local/Vercel HTTP smoke checks.
 
 - Refine recommendation quality with provider/country signals after the genre baseline.
 - Add user-owned imported watch paths after approving persistence/schema shape.
-- Store the user's preferred availability country instead of relying on device-locale fallback.
 
 ## Workspace Layout
 

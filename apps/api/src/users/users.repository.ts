@@ -3,7 +3,7 @@ import { Injectable } from "@nestjs/common";
 import type { AuthenticatedUser } from "../auth/authenticated-user";
 import { PrismaService } from "../prisma.service";
 import { getDisplayName } from "./user-profile";
-import type { UserDto } from "./users.types";
+import type { UpdateUserInput, UserDto } from "./users.types";
 
 @Injectable()
 export class UsersRepository {
@@ -36,9 +36,24 @@ export class UsersRepository {
     });
 
     return {
+      availabilityCountry: identity.user.availabilityCountry,
       createdAt: identity.user.createdAt.toISOString(),
       displayName: identity.user.displayName,
       id: identity.user.id,
+    };
+  }
+
+  async updateUser(userId: string, input: UpdateUserInput): Promise<UserDto> {
+    const user = await this.prismaService.getClient().user.update({
+      data: input,
+      where: { id: userId },
+    });
+
+    return {
+      availabilityCountry: user.availabilityCountry,
+      createdAt: user.createdAt.toISOString(),
+      displayName: user.displayName,
+      id: user.id,
     };
   }
 }

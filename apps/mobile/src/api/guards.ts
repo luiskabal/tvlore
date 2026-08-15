@@ -40,6 +40,7 @@ export function isUserResponse(value: unknown): value is UserResponse {
   const candidate = value as Record<string, unknown>;
 
   return (
+    typeof candidate.availabilityCountry === "string" &&
     typeof candidate.id === "string" &&
     typeof candidate.displayName === "string" &&
     typeof candidate.createdAt === "string"

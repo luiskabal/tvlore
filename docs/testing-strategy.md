@@ -98,6 +98,7 @@ corepack pnpm api:check
 Authenticated `api:check` covers:
 
 - `/users/me` contract.
+- `/users/me` availability-country update and validation contract.
 - Search response shape.
 - Validation errors for bad search/resolve/watch inputs.
 - Not-found errors for missing show/movie/episode IDs.

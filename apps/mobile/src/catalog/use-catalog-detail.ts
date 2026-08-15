@@ -4,6 +4,7 @@ import {
   addToWatchlist,
   clearPreferenceRating,
   getCatalogDetail,
+  getCurrentUser,
   getWatchProviders,
   markMovieWatched,
   markShowWatched,
@@ -65,7 +66,10 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
 
     try {
       const token = await getSupabaseAccessToken();
-      const detail = await getCatalogDetail(token, mediaType, id);
+      const [detail, user] = await Promise.all([
+        getCatalogDetail(token, mediaType, id),
+        getCurrentUser(token),
+      ]);
 
       setState({ detail, kind: "ready" });
       setWatchAction({ kind: "idle" });
@@ -73,7 +77,7 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
       setPreferenceAction({ kind: "idle" });
 
       try {
-        const providers = await getWatchProviders(token, mediaType, id, getDeviceWatchCountry());
+        const providers = await getWatchProviders(token, mediaType, id, user.availabilityCountry || getDeviceWatchCountry());
         setWatchProvidersState({ kind: "ready", providers });
       } catch (error) {
         setWatchProvidersState({

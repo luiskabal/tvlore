@@ -9,7 +9,6 @@ No active infrastructure tasks.
 ## Next
 
 - [ ] Add user-owned imported or fetched watch paths after approving persistence/schema shape.
-- [ ] Store the user's preferred availability country instead of relying on device-locale fallback.
 
 ## Notes
 
@@ -109,6 +108,7 @@ No active infrastructure tasks.
 - [x] Add first backend-owned curated Watch Paths slice with Marvel and Star Wars paths.
 - [x] Let curated Watch Paths save every item to the user's watchlist in one backend-owned action.
 - [x] Show saved watchlist state inside curated Watch Path detail.
+- [x] Store the user's preferred availability country and render it with flag labels in mobile.
 
 ## Deferred
 

@@ -80,6 +80,7 @@ for login, refresh, or logout. Supabase handles those session operations.
 The backend still needs authenticated user resolution:
 
 - `GET /users/me`: returns the authenticated TVLore user.
+- `PATCH /users/me`: updates authenticated user-owned settings such as availability country.
 
 Detailed endpoint contracts are in [API Design](api-design.md).
 

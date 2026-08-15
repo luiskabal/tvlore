@@ -6,6 +6,7 @@ import type { CatalogDetailResponse, MediaType, ShowDetailResponse, ShowSeasonSu
 import { AppText, Badge, Button, PosterImage, Skeleton } from "../ui";
 import { ui } from "../ui";
 import { styles } from "./catalog-detail-styles";
+import { formatWatchCountry } from "./watch-country";
 import { getTmdbLogoUrl, getTmdbPosterUrl } from "./posters";
 import type { PreferenceActionState, WatchActionState, WatchlistActionState, WatchProvidersState } from "./use-catalog-detail";
 
@@ -227,7 +228,7 @@ function WhereToWatchPanel({ state }: { state: WatchProvidersState }) {
     <View style={styles.statusPanel}>
       <View style={styles.panelHeaderRow}>
         <AppText variant="section">Where to watch</AppText>
-        <Badge label={state.providers.country} tone="neutral" />
+        <Badge label={formatWatchCountry(state.providers.country)} tone="neutral" />
       </View>
 
       {sections.length === 0 ? (

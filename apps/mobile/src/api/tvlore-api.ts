@@ -4,5 +4,6 @@ export * from "./library";
 export * from "./preferences";
 export * from "./tracking";
 export * from "./types";
+export * from "./users";
 export * from "./watchlist";
 export * from "./watch-paths";

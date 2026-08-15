@@ -26,6 +26,7 @@ Status: current phase.
 - Google login.
 - TVLore user creation.
 - `GET /users/me`.
+- `PATCH /users/me` user settings.
 - Access token issuance.
 - Refresh flow.
 - Logout.
@@ -87,4 +88,3 @@ Only if product validation supports it:
 - Shared lists.
 - Recommendation exchange.
 - Social discovery.
-

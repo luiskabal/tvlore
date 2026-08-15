@@ -111,12 +111,12 @@ The rule is:
 Controller -> Service / use case -> Repository or provider -> external system
 ```
 
-For example, `GET /users/me` is split as:
+For example, `GET /users/me` and `PATCH /users/me` are split as:
 
 - `UsersController`: HTTP route only.
-- `UsersService`: orchestrates authenticated-user resolution and persistence.
+- `UsersService`: validates user setting input and orchestrates authenticated-user resolution and persistence.
 - `SupabaseAuthService`: validates Supabase bearer tokens.
-- `UsersRepository`: owns Prisma upsert logic.
+- `UsersRepository`: owns Prisma upsert and user-profile update logic.
 - `user-profile.ts`: pure display-name logic with unit tests.
 
 `GET /search` follows the same shape:

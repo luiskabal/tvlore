@@ -1,6 +1,7 @@
 export type MediaType = "movie" | "show";
 
 export type UserResponse = {
+  availabilityCountry: string;
   createdAt: string;
   displayName: string;
   id: string;

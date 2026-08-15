@@ -230,6 +230,7 @@ ProfileScreen
   -> getSupabaseAccessToken()
   -> getHomeData(accessToken, { includeRecommendations: false })
   -> GET /users/me and GET /library in parallel
+  -> PATCH /users/me when availability country changes
 ```
 
 The mobile app does not call `GET /health` during normal product refreshes. Health
@@ -337,9 +338,10 @@ path to watchlist.
 
 The app still does not calculate catalog identity, progress, or watched state.
 It asks the backend, then renders the response. Detail screens also ask the
-backend for watch-provider availability using the device country, currently
-falling back to `CL` when no locale country is available. Provider icons open
-the title-level TMDB/JustWatch availability link returned by the backend.
+backend for watch-provider availability using the authenticated user's saved
+country preference, falling back to the device country and then `CL` when
+needed. Provider icons open the title-level TMDB/JustWatch availability link
+returned by the backend.
 For shows, detail progress is based on episodes already persisted by opening
 season detail routes.
 

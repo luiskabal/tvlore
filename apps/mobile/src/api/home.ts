@@ -1,6 +1,7 @@
 import { fetchJson, getAuthHeaders } from "./client";
-import { isLibraryResponse, isRecommendationsResponse, isUserResponse } from "./guards";
+import { isLibraryResponse, isRecommendationsResponse } from "./guards";
 import type { HomeData } from "./types";
+import { getCurrentUser } from "./users";
 
 export async function getHomeData(
   accessToken: string | null,
@@ -13,12 +14,7 @@ export async function getHomeData(
   const includeRecommendations = options.includeRecommendations ?? true;
   const authOptions = { headers: getAuthHeaders(accessToken) };
   const [user, library, recommendations] = await Promise.all([
-    fetchJson(
-      "/users/me",
-      isUserResponse,
-      "Unexpected current user response",
-      authOptions,
-    ),
+    getCurrentUser(accessToken),
     fetchJson(
       "/library",
       isLibraryResponse,
