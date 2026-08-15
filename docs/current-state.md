@@ -24,6 +24,7 @@ Implemented:
 - Authenticated rating preference endpoints for shows and movies.
 - Authenticated personal library and show progress read endpoints.
 - Authenticated first-pass recommendation endpoint from stored ratings and hydrated catalog rows.
+- Authenticated curated Watch Paths endpoint with backend-owned ordered viewing lists.
 - Mobile Library/Profile routes read the authenticated user and personal library summary from the API.
 - Mobile search resolves provider results and opens backend-owned show/movie detail screens.
 - Mobile show detail opens backend-owned season episode lists.
@@ -50,7 +51,8 @@ Implemented:
 - Mobile Library rows can remove watchlist items and undo recent watched markers through confirmable swipe actions.
 - Mobile Library applies optimistic row removal after swipe confirmation and rolls back on API error.
 - Mobile Library/Profile keep previous library data during refreshes and render skeletons on initial load.
-- Mobile has routed Library, Search, and Profile surfaces with persistent bottom app navigation.
+- Mobile has routed Library, Search, Paths, and Profile surfaces with persistent bottom app navigation.
+- Mobile Paths lists curated viewing orders and opens path items through the existing catalog resolve flow.
 - Postman collection and local/Vercel environments.
 - Environment validation for local and Vercel.
 - Backend unit tests with Vitest.
@@ -173,6 +175,7 @@ Current backend modules:
 - `users`: resolves the authenticated Supabase user into a TVLore user.
 - `catalog`: searches TMDB, resolves TMDB items, and persists TVLore catalog IDs.
 - `preferences`: stores explicit per-user ratings for shows and movies.
+- `watch-paths`: exposes backend-owned curated viewing lists and hydrates existing TVLore IDs for their items.
 - `health`: verifies API and database availability.
 - `config`: loads and validates environment variables at startup.
 
@@ -426,6 +429,8 @@ GET /shows/:showId/progress
 GET /library
 GET /library/chronology
 GET /recommendations
+GET /watch-paths
+GET /watch-paths/:pathId
 ```
 
 Current watched-state behavior:
@@ -737,6 +742,7 @@ Expected behavior:
 - `GET /library` returns personal summary, rated titles, continue-watching, watchlist, recently watched activity, and full watched episode activity.
 - `GET /library/chronology` returns paginated personal movie/episode watch-history activity.
 - `GET /recommendations` returns unrated, unwatched, unsaved catalog candidates ordered by the user's stronger rated media type.
+- `GET /watch-paths` returns curated ordered viewing paths, and `GET /watch-paths/:pathId` returns path items with existing TVLore IDs when already resolved.
 - `POST /shows/:showId/watches` hydrates the show seasons, marks every episode watched, and returns completed show progress.
 - `DELETE /shows/:showId/watches` removes every episode watch marker for that show and returns not-started show progress.
 - `DELETE /movies/:movieId/watches` marks that movie unwatched for the authenticated user.
@@ -772,6 +778,13 @@ Search
 -> Show season route
 -> GET /shows/:id/seasons/:seasonNumber
 -> Episode watch/unwatch
+
+Paths
+-> GET /watch-paths
+-> GET /watch-paths/:pathId
+-> Tap path item
+-> POST /catalog/resolve if the item does not already have a TVLore ID
+-> Show or movie detail route
 ```
 
 Current behavior:
@@ -792,8 +805,10 @@ Current behavior:
 - Episode groups keep each season collapsible so long watched histories stay scannable.
 - Library rows include compact poster thumbnails for quicker visual scanning.
 - Continue-watching rows open the next season, recently watched movies open movie detail, and recently watched episodes open the matching season.
+- Paths lists curated viewing orders such as Marvel Infinity Saga and Star Wars Skywalker Saga.
+- Path detail rows navigate by tapping the full row and resolve the selected item into TVLore identity only when needed.
 - Watchlist rows can remove saved titles through confirmable swipe actions, and recently watched rows can undo the underlying movie or episode watched marker through confirmable swipe actions.
-- Bottom app navigation connects Library, Search, and Profile from the root layout, so the tab bar stays stable while route content changes.
+- Bottom app navigation connects Library, Search, Paths, and Profile from the root layout, so the tab bar stays stable while route content changes.
 - Empty library state is expected after cleanup-oriented smoke checks.
 - Search supports all/show/movie filters.
 - Search prefetches results with a debounce after the user enters at least three characters.
@@ -867,6 +882,7 @@ Product foundation:
 - Mobile can search TMDB-backed catalog data without receiving TMDB credentials.
 - Mobile can prefetch search results without prefetching database writes.
 - Mobile can resolve a provider result and open internal show/movie details by TVLore ID.
+- Mobile can open a backend-owned curated path and resolve individual path items into internal show/movie details.
 - Mobile can mark movies watched/unwatched through backend tracking endpoints.
 - Mobile can add/remove shows and movies from the watchlist through backend watchlist endpoints.
 - Mobile can rate shows and movies through backend preference endpoints.
@@ -875,7 +891,7 @@ Product foundation:
 - Mobile can open a show season, hydrate episode IDs, and mark episodes watched/unwatched through backend tracking endpoints.
 - Mobile can bulk-mark the loaded episodes in a season by orchestrating existing idempotent episode tracking endpoints.
 - Mobile can bulk-mark a full show through a backend-owned tracking endpoint instead of issuing one request per episode.
-- Mobile has primary Library, Search, and Profile routes over the same authenticated API session.
+- Mobile has primary Library, Search, Paths, and Profile routes over the same authenticated API session.
 
 ## 13. Why This Backend Base Helps The Frontend
 

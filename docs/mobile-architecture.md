@@ -10,7 +10,11 @@ app/
 |-- index.tsx
 |-- library.tsx
 |-- search.tsx
+|-- paths.tsx
 |-- profile.tsx
+|
+|-- paths/
+|   `-- [id].tsx
 |
 |-- shows/
 |   |-- [id].tsx
@@ -28,7 +32,7 @@ This structure is a starting point, not a permanent requirement.
 
 - Root layout owns the stack shell and persistent primary tab bar.
 - `/` redirects to `/library`.
-- Library, Search, and Profile are primary user surfaces.
+- Library, Search, Paths, and Profile are primary user surfaces.
 - Detail routes are stack screens above tabs and do not render the primary tab bar.
 - Protected routes require an authenticated TVLore session.
 - Deep links should route through backend validation where private data is involved.
@@ -97,7 +101,10 @@ app/
 |-- index.tsx
 |-- search.tsx
 |-- library.tsx
+|-- paths.tsx
 |-- profile.tsx
+|-- paths/
+|   `-- [id].tsx
 |-- movies/
 |   `-- [id].tsx
 `-- shows/
@@ -116,6 +123,7 @@ src/
 |   |-- tracking.ts
 |   |-- tvlore-api.ts
 |   |-- types.ts
+|   |-- watch-paths.ts
 |   `-- watchlist.ts
 |
 |-- auth/
@@ -158,6 +166,13 @@ src/
 |
 |-- profile/
 |   `-- ProfileScreen.tsx
+|
+|-- watch-paths/
+|   |-- WatchPathDetailScreen.tsx
+|   |-- WatchPathsScreen.tsx
+|   |-- use-watch-paths.ts
+|   |-- watch-paths-model.ts
+|   `-- watch-paths-styles.ts
 |
 |-- ui/
 |   |-- AppText.tsx
@@ -271,7 +286,7 @@ Profile render skeletons only when no home data has loaded yet.
 
 `HomeScreen` remains as a compatibility export to the Library route while `/`
 redirects to `/library`. The primary product surfaces are now route-level
-screens: Library, Search, and Profile.
+screens: Library, Search, Paths, and Profile.
 
 `AppTabBar` is mounted once in `app/_layout.tsx`, not inside Library, Search, or
 Profile screens. This keeps primary navigation stable while route content
@@ -294,6 +309,24 @@ SearchScreen
   -> useSeasonDetail()
   -> GET /shows/:id/seasons/:seasonNumber
 ```
+
+Watch Paths use the same boundary:
+
+```text
+WatchPathsScreen
+  -> useWatchPaths()
+  -> GET /watch-paths
+  -> WatchPathDetailScreen
+  -> useWatchPath(pathId)
+  -> GET /watch-paths/:pathId
+  -> tap path item
+  -> POST /catalog/resolve when the item has no TVLore ID yet
+  -> router.push(/shows/:id or /movies/:id)
+```
+
+The app does not persist or rank curated paths locally. It renders
+backend-owned ordered lists, then resolves catalog identity only when the user
+opens an item.
 
 The app still does not calculate catalog identity, progress, or watched state.
 It asks the backend, then renders the response. Detail screens also ask the

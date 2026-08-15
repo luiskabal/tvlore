@@ -3,11 +3,12 @@ import { Pressable, Text, View } from "react-native";
 
 import { styles } from "./app-tab-bar-styles";
 
-export type AppTab = "library" | "profile" | "search";
+export type AppTab = "library" | "paths" | "profile" | "search";
 
 const tabs: { href: Href; key: AppTab; label: string }[] = [
   { href: "/library", key: "library", label: "Library" },
   { href: "/search", key: "search", label: "Search" },
+  { href: "/paths", key: "paths", label: "Paths" },
   { href: "/profile", key: "profile", label: "Profile" },
 ];
 

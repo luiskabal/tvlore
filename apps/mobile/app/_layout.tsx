@@ -31,6 +31,10 @@ function getActiveTab(pathname: string): AppTab | null {
     return "search";
   }
 
+  if (pathname === "/paths") {
+    return "paths";
+  }
+
   if (pathname === "/profile") {
     return "profile";
   }

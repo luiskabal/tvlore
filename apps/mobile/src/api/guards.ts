@@ -21,6 +21,10 @@ import type {
   ShowSeasonDetailResponse,
   ShowSeasonSummary,
   UserResponse,
+  WatchPathDetailResponse,
+  WatchPathItem,
+  WatchPathsResponse,
+  WatchPathSummary,
   WatchProvider,
   WatchProvidersResponse,
   WatchlistMutationResponse,
@@ -144,6 +148,46 @@ function isCatalogSearchResult(value: unknown): value is CatalogSearchResult {
 
 export function isCatalogResolveResponse(value: unknown): value is CatalogResolveResponse {
   return isRecord(value) && typeof value.id === "string" && isMediaType(value.mediaType);
+}
+
+export function isWatchPathsResponse(value: unknown): value is WatchPathsResponse {
+  return isRecord(value) && Array.isArray(value.paths) && value.paths.every(isWatchPathSummary);
+}
+
+export function isWatchPathDetailResponse(value: unknown): value is WatchPathDetailResponse {
+  if (!isWatchPathSummary(value)) {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  return Array.isArray(candidate.items) && candidate.items.every(isWatchPathItem);
+}
+
+function isWatchPathSummary(value: unknown): value is WatchPathSummary {
+  return (
+    isRecord(value) &&
+    typeof value.description === "string" &&
+    typeof value.id === "string" &&
+    typeof value.itemCount === "number" &&
+    typeof value.title === "string"
+  );
+}
+
+function isWatchPathItem(value: unknown): value is WatchPathItem {
+  return (
+    isRecord(value) &&
+    isRecord(value.externalRef) &&
+    value.externalRef.provider === "tmdb" &&
+    typeof value.externalRef.providerId === "string" &&
+    typeof value.id === "string" &&
+    isMediaType(value.mediaType) &&
+    isNullableString(value.note) &&
+    typeof value.position === "number" &&
+    typeof value.title === "string" &&
+    isNullableString(value.tvloreId) &&
+    isNullableNumber(value.year)
+  );
 }
 
 export function isWatchProvidersResponse(value: unknown): value is WatchProvidersResponse {

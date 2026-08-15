@@ -1389,6 +1389,100 @@ Business validation:
 
 Errors: `UNAUTHORIZED`.
 
+### `GET /watch-paths`
+
+Purpose: return backend-owned curated viewing paths for the authenticated user.
+
+Current MVP status: implemented with static curated paths and no user-owned persistence.
+
+Auth: required.
+
+Route parameters: none.
+
+Query parameters: none.
+
+Request: none.
+
+Response:
+
+```json
+{
+  "paths": [
+    {
+      "id": "mcu-infinity-saga-release",
+      "title": "Marvel Infinity Saga",
+      "description": "MCU Phase 1-3 in theatrical release order.",
+      "itemCount": 23
+    }
+  ]
+}
+```
+
+Status codes: `200 OK`, `401 UNAUTHORIZED`.
+
+Authorization: paths are currently shared curated data, but the endpoint still requires auth so the product surface stays aligned with the authenticated app.
+
+Business validation:
+
+- The backend owns the curated path definitions.
+- Mobile does not persist, sort, or mutate path definitions.
+
+Errors: `UNAUTHORIZED`.
+
+### `GET /watch-paths/:pathId`
+
+Purpose: return one curated viewing path with ordered provider-backed items.
+
+Current MVP status: implemented for Marvel Infinity Saga and Star Wars Skywalker Saga.
+
+Auth: required.
+
+Route parameters:
+
+- `pathId` string.
+
+Query parameters: none.
+
+Request: none.
+
+Response:
+
+```json
+{
+  "id": "mcu-infinity-saga-release",
+  "title": "Marvel Infinity Saga",
+  "description": "MCU Phase 1-3 in theatrical release order.",
+  "itemCount": 23,
+  "items": [
+    {
+      "id": "mcu-infinity-saga-release-1",
+      "position": 1,
+      "mediaType": "movie",
+      "title": "Iron Man",
+      "year": 2008,
+      "note": "Phase 1",
+      "externalRef": {
+        "provider": "tmdb",
+        "providerId": "1726"
+      },
+      "tvloreId": null
+    }
+  ]
+}
+```
+
+Status codes: `200 OK`, `401 UNAUTHORIZED`, `404 NOT_FOUND`.
+
+Authorization: authenticated users may read curated paths.
+
+Business validation:
+
+- Unknown path IDs return `WATCH_PATH_NOT_FOUND`.
+- `tvloreId` is populated only when TVLore already has a resolved catalog row for the item's provider ref.
+- If `tvloreId` is null, the client opens the item by calling `POST /catalog/resolve` with the item's TMDB ref.
+
+Errors: `WATCH_PATH_NOT_FOUND`, `UNAUTHORIZED`.
+
 ## Future Social API
 
 These endpoints are conceptual and out of scope for MVP.

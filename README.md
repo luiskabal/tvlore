@@ -26,6 +26,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Episode watched/unwatched tracking.
 - Show detail progress state: not started, watching, or completed.
 - Country-aware `Where to watch` availability on show/movie detail using TMDB Watch Providers.
+- Curated Watch Paths with backend-owned ordered viewing lists, including Marvel Infinity Saga and Star Wars Skywalker Saga.
 - Show-level mark all watched/unwatched backed by the API.
 - Season-level mark all watched/unwatched.
 - Personal show/movie watchlist.
@@ -41,7 +42,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Recommendation rows can be saved directly to the watchlist with optimistic feedback.
 - Library recommendations live in their own `For you` filter, and rows navigate back into movie and show detail screens.
 - Library/Profile keeps prior data during refresh and shows skeletons on first load.
-- Routed Library, Search, and Profile mobile surfaces with bottom app navigation.
+- Routed Library, Search, Paths, and Profile mobile surfaces with bottom app navigation.
 - Detail screens render content-shaped skeletons while show, movie, or season data loads.
 - Mobile caches search and catalog detail reads briefly in memory, then clears that cache on login, logout, and successful mutations.
 - Mobile library, profile, search, and detail screens follow a route/container, hook, presentation, and styles split.
@@ -57,6 +58,8 @@ Google login
 -> Search catalog
 -> Open show or movie
 -> Resolve catalog item
+-> Open curated Watch Path
+-> Resolve a path item on tap
 -> Save show or movie to watchlist
 -> Rate show or movie
 -> Mark movie watched
@@ -81,6 +84,7 @@ Use `corepack pnpm api:check` for local/Vercel HTTP smoke checks.
 ## Next Backlog Items
 
 - Refine recommendation quality after storing richer catalog signals such as genres or providers.
+- Add user-owned imported watch paths after approving persistence/schema shape.
 - Store the user's preferred availability country instead of relying on device-locale fallback.
 
 ## Workspace Layout

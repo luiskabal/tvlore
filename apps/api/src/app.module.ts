@@ -28,6 +28,8 @@ import { UsersService } from "./users/users.service";
 import { MovieWatchlistController, ShowWatchlistController } from "./watchlist/watchlist.controller";
 import { WatchlistRepository } from "./watchlist/watchlist.repository";
 import { WatchlistService } from "./watchlist/watchlist.service";
+import { WatchPathsController } from "./watch-paths/watch-paths.controller";
+import { WatchPathsService } from "./watch-paths/watch-paths.service";
 
 @Module({
   controllers: [
@@ -48,6 +50,7 @@ import { WatchlistService } from "./watchlist/watchlist.service";
     LibraryController,
     ShowProgressController,
     RecommendationsController,
+    WatchPathsController,
   ],
   providers: [
     ApiConfigProvider,
@@ -66,6 +69,7 @@ import { WatchlistService } from "./watchlist/watchlist.service";
     PreferencesService,
     LibraryService,
     RecommendationsService,
+    WatchPathsService,
     UsersRepository,
     UsersService,
   ],

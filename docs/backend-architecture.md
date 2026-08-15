@@ -91,6 +91,13 @@ src/
 |   |-- recommendations.service.ts
 |   `-- recommendations.types.ts
 |
+|-- watch-paths/
+|   |-- watch-paths.controller.ts
+|   |-- watch-paths.data.ts
+|   |-- watch-paths.service.ts
+|   |-- watch-paths.types.ts
+|   `-- __tests__/
+|
 |-- __tests__/
 |-- progress.ts
 |-- config.ts
@@ -141,6 +148,13 @@ Recommendations follow the same shape:
 - `RecommendationsService`: resolves the authenticated TVLore user.
 - `RecommendationsRepository`: reads existing ratings, watched state, watchlist rows, and hydrated catalog candidates.
 - The current MVP heuristic stays database-backed and does not call TMDB from the recommendation endpoint.
+
+Watch Paths follow the same shape without adding persistence yet:
+
+- `WatchPathsController`: HTTP route only.
+- `WatchPathsService`: resolves the authenticated TVLore user and hydrates existing TVLore IDs for path items.
+- `watch-paths.data.ts`: owns the first static curated paths and pure mapping helpers.
+- Catalog identity still flows through `POST /catalog/resolve` when the user opens a path item.
 
 ## Layer Separation
 

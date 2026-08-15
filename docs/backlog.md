@@ -9,7 +9,7 @@ No active infrastructure tasks.
 ## Next
 
 - [ ] Persist richer catalog signals, such as genres, before improving recommendation quality.
-- [ ] Add curated watch paths for imported or fetched viewing orders, such as Marvel release or chronology order.
+- [ ] Add user-owned imported or fetched watch paths after approving persistence/schema shape.
 - [ ] Store the user's preferred availability country instead of relying on device-locale fallback.
 
 ## Notes
@@ -106,6 +106,7 @@ No active infrastructure tasks.
 - [x] Apply the mobile UI component pool to season detail screens.
 - [x] Add initial mobile Vitest coverage for pure search and chronology logic.
 - [x] Add first country-aware Where to Watch slice on show/movie detail through TMDB Watch Providers.
+- [x] Add first backend-owned curated Watch Paths slice with Marvel and Star Wars paths.
 
 ## Deferred
 

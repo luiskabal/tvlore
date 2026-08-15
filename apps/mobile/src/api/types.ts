@@ -140,6 +140,32 @@ export type CatalogResolveResponse = {
   mediaType: MediaType;
 };
 
+export type WatchPathSummary = {
+  description: string;
+  id: string;
+  itemCount: number;
+  title: string;
+};
+
+export type WatchPathItem = {
+  externalRef: CatalogExternalRef;
+  id: string;
+  mediaType: MediaType;
+  note: string | null;
+  position: number;
+  title: string;
+  tvloreId: string | null;
+  year: number | null;
+};
+
+export type WatchPathDetailResponse = WatchPathSummary & {
+  items: WatchPathItem[];
+};
+
+export type WatchPathsResponse = {
+  paths: WatchPathSummary[];
+};
+
 export type ShowSeasonSummary = {
   airDate: string | null;
   episodeCount: number;

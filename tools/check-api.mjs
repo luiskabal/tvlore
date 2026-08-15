@@ -78,6 +78,8 @@ async function checkUnauthorizedRoutes() {
   await checkUnauthorized("/library");
   await checkUnauthorized("/library/chronology");
   await checkUnauthorized("/recommendations");
+  await checkUnauthorized("/watch-paths");
+  await checkUnauthorized("/watch-paths/mcu-infinity-saga-release");
   await checkUnauthorized(`/episodes/${missingUuid}/watches`, { method: "POST" });
   await checkUnauthorized(`/episodes/${missingUuid}/watches`, { method: "DELETE" });
   await checkUnauthorized(`/movies/${missingUuid}/watches`, { method: "POST" });
@@ -101,6 +103,21 @@ async function checkAuthenticatedProductFlow(token) {
   });
   await check("/search?query=dark&types=show,movie&page=1", {
     assert: assertSearchResponse,
+    expectedStatus: 200,
+    headers: authHeaders,
+  });
+  await check("/watch-paths", {
+    assert: assertWatchPaths,
+    expectedStatus: 200,
+    headers: authHeaders,
+  });
+  await check("/watch-paths/not-a-path", {
+    assert: (body) => assertError(body, "WATCH_PATH_NOT_FOUND"),
+    expectedStatus: 404,
+    headers: authHeaders,
+  });
+  await check("/watch-paths/mcu-infinity-saga-release", {
+    assert: assertWatchPathDetail,
     expectedStatus: 200,
     headers: authHeaders,
   });
@@ -648,6 +665,45 @@ function assertResolveResponse(body, mediaType) {
   expectRecord(body, "resolve response");
   expectUuid(body.id, "resolve.id");
   expectEqual(body.mediaType, mediaType, "resolve.mediaType");
+}
+
+function assertWatchPaths(body) {
+  expectRecord(body, "watch paths");
+  expectArray(body.paths, "watch paths.paths");
+  expect(body.paths.length >= 2, "watch paths should include curated paths");
+
+  for (const path of body.paths) {
+    expectWatchPathSummary(path, "watch path");
+  }
+}
+
+function assertWatchPathDetail(body) {
+  expectWatchPathSummary(body, "watch path detail");
+  expectArray(body.items, "watch path detail.items");
+  expectEqual(body.items.length, body.itemCount, "watch path detail.itemCount");
+  expect(body.items.length > 0, "watch path detail should include items");
+
+  for (const item of body.items) {
+    expectRecord(item, "watch path detail item");
+    expectString(item.id, "watch path detail item.id");
+    expectMediaType(item.mediaType, "watch path detail item.mediaType");
+    expectPositiveInteger(item.position, "watch path detail item.position");
+    expectString(item.title, "watch path detail item.title");
+    expectNullableNumber(item.year, "watch path detail item.year");
+    expectNullableString(item.note, "watch path detail item.note");
+    expect(item.tvloreId === null || uuidPattern.test(item.tvloreId), "watch path detail item.tvloreId should be null or UUID");
+    expectRecord(item.externalRef, "watch path detail item.externalRef");
+    expectEqual(item.externalRef.provider, "tmdb", "watch path detail item.externalRef.provider");
+    expectString(item.externalRef.providerId, "watch path detail item.externalRef.providerId");
+  }
+}
+
+function expectWatchPathSummary(value, label) {
+  expectRecord(value, label);
+  expectString(value.id, `${label}.id`);
+  expectString(value.title, `${label}.title`);
+  expectString(value.description, `${label}.description`);
+  expectPositiveInteger(value.itemCount, `${label}.itemCount`);
 }
 
 function assertShowDetail(body, showId, inWatchlist, rating) {
