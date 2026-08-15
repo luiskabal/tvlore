@@ -1484,6 +1484,46 @@ Business validation:
 
 Errors: `WATCH_PATH_NOT_FOUND`, `UNAUTHORIZED`.
 
+### `POST /watch-paths/:pathId/watchlist`
+
+Purpose: resolve every item in a curated path and save each show or movie to the authenticated user's watchlist.
+
+Current MVP status: implemented for curated backend-owned paths.
+
+Auth: required.
+
+Route parameters:
+
+- `pathId` string.
+
+Query parameters: none.
+
+Request: none.
+
+Response:
+
+```json
+{
+  "id": "star-wars-skywalker-release",
+  "title": "Star Wars Skywalker Saga",
+  "itemCount": 9,
+  "savedItemCount": 9
+}
+```
+
+Status codes: `200 OK`, `401 UNAUTHORIZED`, `404 NOT_FOUND`.
+
+Authorization: authenticated users may save curated paths to their own watchlist.
+
+Business validation:
+
+- Unknown path IDs return `WATCH_PATH_NOT_FOUND`.
+- The backend resolves missing TVLore catalog IDs from the path's TMDB refs before saving.
+- Repeated calls are idempotent because show/movie watchlist rows are unique per user and title.
+- Mobile does not issue one request per path item; the backend owns the bulk action.
+
+Errors: `WATCH_PATH_NOT_FOUND`, `UNAUTHORIZED`.
+
 ## Future Social API
 
 These endpoints are conceptual and out of scope for MVP.

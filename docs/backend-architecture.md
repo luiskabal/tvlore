@@ -149,12 +149,13 @@ Recommendations follow the same shape:
 - `RecommendationsRepository`: reads existing ratings, watched state, watchlist rows, and hydrated catalog candidates.
 - The current MVP heuristic stays database-backed and does not call TMDB from the recommendation endpoint.
 
-Watch Paths follow the same shape without adding persistence yet:
+Watch Paths follow the same shape without adding new persistence yet:
 
 - `WatchPathsController`: HTTP route only.
-- `WatchPathsService`: resolves the authenticated TVLore user and hydrates existing TVLore IDs for path items.
+- `WatchPathsService`: resolves the authenticated TVLore user, hydrates existing TVLore IDs for path items, and owns the bulk save-to-watchlist use case.
 - `watch-paths.data.ts`: owns the first static curated paths and pure mapping helpers.
-- Catalog identity still flows through `POST /catalog/resolve` when the user opens a path item.
+- Catalog identity flows through `POST /catalog/resolve` when the user opens a path item, or through the same catalog repository/provider path when the backend saves a full path.
+- Saving a path uses existing show/movie watchlist tables; no path-specific database rows exist yet.
 
 ## Layer Separation
 

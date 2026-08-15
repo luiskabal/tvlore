@@ -80,6 +80,7 @@ async function checkUnauthorizedRoutes() {
   await checkUnauthorized("/recommendations");
   await checkUnauthorized("/watch-paths");
   await checkUnauthorized("/watch-paths/mcu-infinity-saga-release");
+  await checkUnauthorized("/watch-paths/mcu-infinity-saga-release/watchlist", { method: "POST" });
   await checkUnauthorized(`/episodes/${missingUuid}/watches`, { method: "POST" });
   await checkUnauthorized(`/episodes/${missingUuid}/watches`, { method: "DELETE" });
   await checkUnauthorized(`/movies/${missingUuid}/watches`, { method: "POST" });

@@ -25,6 +25,7 @@ import type {
   WatchPathItem,
   WatchPathsResponse,
   WatchPathSummary,
+  WatchPathWatchlistResponse,
   WatchProvider,
   WatchProvidersResponse,
   WatchlistMutationResponse,
@@ -162,6 +163,16 @@ export function isWatchPathDetailResponse(value: unknown): value is WatchPathDet
   const candidate = value as Record<string, unknown>;
 
   return Array.isArray(candidate.items) && candidate.items.every(isWatchPathItem);
+}
+
+export function isWatchPathWatchlistResponse(value: unknown): value is WatchPathWatchlistResponse {
+  return (
+    isRecord(value) &&
+    typeof value.id === "string" &&
+    typeof value.itemCount === "number" &&
+    typeof value.savedItemCount === "number" &&
+    typeof value.title === "string"
+  );
 }
 
 function isWatchPathSummary(value: unknown): value is WatchPathSummary {

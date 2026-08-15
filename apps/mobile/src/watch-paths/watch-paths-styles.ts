@@ -24,6 +24,12 @@ export const styles = StyleSheet.create({
   header: {
     gap: 8,
   },
+  headerActionsRow: {
+    alignItems: "center",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+  },
   itemBadge: {
     alignItems: "center",
     backgroundColor: ui.color.accentSoft,

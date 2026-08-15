@@ -107,6 +107,7 @@ No active infrastructure tasks.
 - [x] Add initial mobile Vitest coverage for pure search and chronology logic.
 - [x] Add first country-aware Where to Watch slice on show/movie detail through TMDB Watch Providers.
 - [x] Add first backend-owned curated Watch Paths slice with Marvel and Star Wars paths.
+- [x] Let curated Watch Paths save every item to the user's watchlist in one backend-owned action.
 
 ## Deferred
 

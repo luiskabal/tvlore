@@ -167,6 +167,13 @@ export type WatchPathsResponse = {
   paths: WatchPathSummary[];
 };
 
+export type WatchPathWatchlistResponse = {
+  id: string;
+  itemCount: number;
+  savedItemCount: number;
+  title: string;
+};
+
 export type ShowSeasonSummary = {
   airDate: string | null;
   episodeCount: number;

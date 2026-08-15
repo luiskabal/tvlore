@@ -26,3 +26,10 @@ export type WatchPathDetailDto = WatchPathSummaryDto & {
 export type WatchPathsResponseDto = {
   paths: WatchPathSummaryDto[];
 };
+
+export type WatchPathWatchlistResponseDto = {
+  id: string;
+  itemCount: number;
+  savedItemCount: number;
+  title: string;
+};

@@ -53,6 +53,9 @@ GET /shows/:showId/progress
 GET /library
 GET /library/chronology
 GET /recommendations
+GET /watch-paths
+GET /watch-paths/:pathId
+POST /watch-paths/:pathId/watchlist
 ```
 
 `GET /health/db` verifies runtime connectivity from Vercel to PostgreSQL. If Vercel has no `DATABASE_URL`, the API fails during startup.
@@ -247,3 +250,5 @@ the selected Postman environment.
 - `GET /library` feeds the mobile home library summary.
 - `GET /library/chronology` feeds the paginated Cronologia watch-history view.
 - `GET /recommendations` feeds Library suggestion rows from stored ratings and hydrated catalog rows.
+- `GET /watch-paths` and `GET /watch-paths/:pathId` feed curated viewing-order screens.
+- `POST /watch-paths/:pathId/watchlist` saves a curated path into the authenticated user's watchlist using existing watchlist tables.

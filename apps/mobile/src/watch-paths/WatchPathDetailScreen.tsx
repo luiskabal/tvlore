@@ -3,9 +3,10 @@ import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import { ActivityIndicator, Pressable, SafeAreaView, ScrollView, View } from "react-native";
 
-import { resolveCatalogItem, type WatchPathItem } from "../api/tvlore-api";
+import { resolveCatalogItem, saveWatchPathToWatchlist, type WatchPathItem } from "../api/tvlore-api";
 import { getSupabaseAccessToken } from "../auth/supabase-auth";
 import { getTmdbPosterUrl } from "../catalog/posters";
+import { notifyLibraryChanged } from "../library/library-refresh";
 import { AppText, Badge, Button, PosterImage, Skeleton, ui } from "../ui";
 import { styles } from "./watch-paths-styles";
 import { toCatalogSearchResult, getWatchPathItemKey } from "./watch-paths-model";
@@ -17,6 +18,7 @@ export default function WatchPathDetailScreen() {
   const { refresh, state } = useWatchPath(id);
   const [openingKey, setOpeningKey] = useState<string | null>(null);
   const [openError, setOpenError] = useState<string | null>(null);
+  const [saveState, setSaveState] = useState<SavePathState>({ kind: "idle" });
 
   const openItem = async (item: WatchPathItem) => {
     const itemKey = getWatchPathItemKey(item);
@@ -36,6 +38,26 @@ export default function WatchPathDetailScreen() {
       setOpenError(error instanceof Error ? error.message : "Could not open title");
     } finally {
       setOpeningKey(null);
+    }
+  };
+
+  const savePath = async () => {
+    if (state.kind !== "ready") {
+      return;
+    }
+
+    setSaveState({ kind: "loading" });
+
+    try {
+      const token = await getSupabaseAccessToken();
+      const response = await saveWatchPathToWatchlist(token, state.path.id);
+      notifyLibraryChanged();
+      setSaveState({ kind: "success", savedItemCount: response.savedItemCount });
+    } catch (error) {
+      setSaveState({
+        kind: "error",
+        message: error instanceof Error ? error.message : "Could not save path",
+      });
     }
   };
 
@@ -62,7 +84,21 @@ export default function WatchPathDetailScreen() {
             <View style={styles.header}>
               <AppText style={styles.title}>{state.path.title}</AppText>
               <AppText tone="muted">{state.path.description}</AppText>
-              <Badge label={`${state.path.itemCount} titles`} />
+              <View style={styles.headerActionsRow}>
+                <Badge label={`${state.path.itemCount} titles`} />
+                <Button
+                  disabled={saveState.kind === "success"}
+                  isLoading={saveState.kind === "loading"}
+                  label={saveState.kind === "success" ? "Saved" : "Save all"}
+                  loadingLabel="Saving"
+                  onPress={savePath}
+                  size="small"
+                />
+              </View>
+              {saveState.kind === "success" ? (
+                <AppText tone="accent">{saveState.savedItemCount} titles are in your watchlist.</AppText>
+              ) : null}
+              {saveState.kind === "error" ? <AppText tone="danger">{saveState.message}</AppText> : null}
             </View>
 
             {openError ? <AppText tone="danger">{openError}</AppText> : null}
@@ -83,6 +119,12 @@ export default function WatchPathDetailScreen() {
     </SafeAreaView>
   );
 }
+
+type SavePathState =
+  | { kind: "idle" }
+  | { kind: "loading" }
+  | { kind: "success"; savedItemCount: number }
+  | { kind: "error"; message: string };
 
 function PathItemRow({
   isOpening,
