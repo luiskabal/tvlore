@@ -30,13 +30,13 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Personal show/movie watchlist.
 - Personal show/movie rating preferences.
 - Library summary with watched show, movie, episode, watchlist, and rated-title counts.
-- Tappable Library summary cards filter Cronologia, watching shows, movies, grouped episodes, watchlist, and rated titles.
+- Tappable Library summary cards filter Cronologia, recommendations, watching shows, movies, grouped episodes, watchlist, and rated titles.
 - Holographic mobile profile summary card with Google avatar and library stats.
 - Continue-watching and recently-watched data from the backend.
 - Rated show/movie list from the backend.
 - First-pass recommendations from stored rating preferences and hydrated catalog data.
 - Recommendation rows can be saved directly to the watchlist with optimistic feedback.
-- Library recommendations and rows navigate back into movie and show detail screens.
+- Library recommendations live in their own `For you` filter, and rows navigate back into movie and show detail screens.
 - Library/Profile keeps prior data during refresh and shows skeletons on first load.
 - Routed Library, Search, and Profile mobile surfaces with bottom app navigation.
 - Detail screens render content-shaped skeletons while show, movie, or season data loads.

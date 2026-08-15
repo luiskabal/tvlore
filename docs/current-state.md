@@ -39,7 +39,7 @@ Implemented:
 - Mobile Library can show backend-owned recommendation candidates.
 - Mobile recommendation rows can save titles directly to the watchlist with optimistic feedback.
 - Mobile Library shows watchlist titles and rated titles separately from watched history.
-- Mobile Library summary cards filter Cronologia, continuing shows, recently watched movies, watched episodes grouped by show and season, watchlist, and rated titles.
+- Mobile Library summary cards filter Cronologia, recommendations, continuing shows, recently watched movies, watched episodes grouped by show and season, watchlist, and rated titles.
 - Mobile Library rows render catalog poster thumbnails when available, with stable placeholders otherwise.
 - Mobile Profile renders a touch-driven holo profile card with Google avatar and library stats.
 - Mobile library rows navigate back to movie detail or show season detail screens.
@@ -772,10 +772,10 @@ Current behavior:
 - Library shows continue-watching and recently watched rows when the backend has watched data.
 - Library shows saved watchlist rows when the backend has watchlist data.
 - Library shows rated show/movie rows when the backend has rating preference data.
-- Library shows recommendation rows when the backend has eligible catalog candidates.
+- Library shows recommendation rows in a dedicated `For you` filter when the backend has eligible catalog candidates.
 - Recommendation rows open the matching show or movie detail screen.
 - Recommendation rows can save the title to watchlist immediately, then reconcile through the existing library refresh invalidator.
-- Library can filter from its summary cards between Cronologia, continuing shows, recently watched movies, watched episodes grouped by show and season, saved titles, and rated titles. Watch history appears inside Cronologia.
+- Library can filter from its summary cards between Cronologia, recommendations, continuing shows, recently watched movies, watched episodes grouped by show and season, saved titles, and rated titles. Cronologia only shows watched movies and episodes by date.
 - Library rows include compact poster thumbnails for quicker visual scanning.
 - Continue-watching rows open the next season, recently watched movies open movie detail, and recently watched episodes open the matching season.
 - Watchlist rows can remove saved titles through confirmable swipe actions, and recently watched rows can undo the underlying movie or episode watched marker through confirmable swipe actions.

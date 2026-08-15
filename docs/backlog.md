@@ -9,6 +9,7 @@ No active infrastructure tasks.
 ## Next
 
 - [ ] Persist richer catalog signals, such as genres, before improving recommendation quality.
+- [ ] Add a paginated full Cronologia feed before applying infinite-scroll history UI.
 
 ## Notes
 
@@ -19,6 +20,7 @@ No active infrastructure tasks.
 - Ratings are explicit preference signals. Keep them separate from watched state so recommendations can use both later.
 - First recommendations intentionally use only hydrated catalog data and ratings. Improve quality only after storing stronger content signals.
 - Recommendations belong in Library while it acts as the app home. Profile should stay focused on identity, stats, and account controls.
+- Cronologia currently uses the recent watch feed. A complete history should come from a backend-owned paginated endpoint.
 
 ## Done
 

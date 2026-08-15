@@ -22,7 +22,14 @@ import { styles } from "./home-styles";
 import { RecommendationsPanel } from "./RecommendationsPanel";
 import type { RecommendationActionState } from "./use-recommendation-actions";
 
-type LibrarySectionFilter = "chronology" | "episodes" | "movies" | "rated" | "watching" | "watchlist";
+type LibrarySectionFilter =
+  | "chronology"
+  | "episodes"
+  | "movies"
+  | "rated"
+  | "recommendations"
+  | "watching"
+  | "watchlist";
 
 type EpisodeGroup = {
   seasons: Array<{
@@ -120,26 +127,24 @@ export function LibraryOverview({
   const hasRecentlyWatchedMovies = recentlyWatchedMovies.length > 0;
   const hasWatchlist = visibleLibrary.watchlist.length > 0;
   const activeSection = selectedSection ?? getDefaultSection(visibleLibrary);
-  const summaryTotal =
-    visibleLibrary.summary.watchedShowCount +
-    visibleLibrary.summary.watchedMovieCount +
-    visibleLibrary.summary.watchedEpisodeCount +
-    visibleLibrary.summary.watchlistItemCount +
-    visibleLibrary.summary.ratedTitleCount;
+  const chronologyCount = visibleLibrary.summary.watchedEpisodeCount + visibleLibrary.summary.watchedMovieCount;
+  const recommendationCount = recommendations?.items.length ?? 0;
   const summaryStats: Array<{ label: string; section: LibrarySectionFilter; value: number }> = [
-    { label: "Cronologia", section: "chronology", value: summaryTotal },
+    { label: "Cronologia", section: "chronology", value: chronologyCount },
     { label: "Shows", section: "watching", value: visibleLibrary.summary.watchedShowCount },
     { label: "Movies", section: "movies", value: visibleLibrary.summary.watchedMovieCount },
     { label: "Episodes", section: "episodes", value: visibleLibrary.summary.watchedEpisodeCount },
     { label: "Watchlist", section: "watchlist", value: visibleLibrary.summary.watchlistItemCount },
     { label: "Rated", section: "rated", value: visibleLibrary.summary.ratedTitleCount },
+    { label: "For you", section: "recommendations", value: recommendationCount },
   ];
-  const shouldShowWatchlist = activeSection === "chronology" || activeSection === "watchlist";
-  const shouldShowContinueWatching = activeSection === "chronology" || activeSection === "watching";
-  const shouldShowRated = activeSection === "chronology" || activeSection === "rated";
+  const shouldShowWatchlist = activeSection === "watchlist";
+  const shouldShowContinueWatching = activeSection === "watching";
+  const shouldShowRated = activeSection === "rated";
   const shouldShowHistory = activeSection === "chronology";
   const shouldShowMovies = activeSection === "movies";
   const shouldShowEpisodes = activeSection === "episodes";
+  const shouldShowRecommendations = activeSection === "recommendations";
   const hideLibraryAction = (actionKey: string) => {
     setOptimisticRemovedKeys((current) => addSetValue(current, actionKey));
   };
@@ -170,7 +175,7 @@ export function LibraryOverview({
         showsVerticalScrollIndicator={false}
         style={styles.libraryListScroll}
       >
-        {!isEmpty && activeSection === "chronology" ? (
+        {!isEmpty && shouldShowRecommendations ? (
           <RecommendationsPanel
             onOpenMovie={onOpenMovie}
             onOpenShow={onOpenShow}
@@ -180,7 +185,7 @@ export function LibraryOverview({
           />
         ) : null}
 
-        {!isEmpty && activeSection !== "chronology" && !hasItemsForSection(activeSection, visibleLibrary) ? (
+        {!isEmpty && activeSection !== "recommendations" && !hasItemsForSection(activeSection, visibleLibrary) ? (
           <EmptySection activeSection={activeSection} />
         ) : null}
 
@@ -259,7 +264,7 @@ export function LibraryOverview({
 
         {shouldShowHistory && hasRecentlyWatched ? (
           <View style={styles.listSection}>
-            <Text style={styles.listTitle}>Recently Watched</Text>
+            <Text style={styles.listTitle}>Cronologia</Text>
             {visibleLibrary.recentlyWatched.map((item) => (
               <RecentlyWatchedRow
                 item={item}
@@ -650,6 +655,10 @@ function SwipeableActionRow({
 }
 
 function hasItemsForSection(activeSection: LibrarySectionFilter, library: LibraryResponse) {
+  if (activeSection === "chronology") {
+    return library.recentlyWatched.length > 0;
+  }
+
   if (activeSection === "watching") {
     return library.continueWatching.length > 0;
   }
@@ -668,6 +677,10 @@ function hasItemsForSection(activeSection: LibrarySectionFilter, library: Librar
 
   if (activeSection === "rated") {
     return library.ratedTitles.length > 0;
+  }
+
+  if (activeSection === "recommendations") {
+    return true;
   }
 
   return true;
@@ -742,6 +755,10 @@ function getRecentlyWatchedDetail(item: RecentlyWatchedItem) {
 }
 
 function getEmptySectionTitle(activeSection: LibrarySectionFilter) {
+  if (activeSection === "chronology") {
+    return "No watch history";
+  }
+
   if (activeSection === "watching") {
     return "Nothing in progress";
   }
@@ -766,6 +783,10 @@ function getEmptySectionTitle(activeSection: LibrarySectionFilter) {
 }
 
 function getEmptySectionDetail(activeSection: LibrarySectionFilter) {
+  if (activeSection === "chronology") {
+    return "Watched movies and episodes will appear here by date.";
+  }
+
   if (activeSection === "watching") {
     return "Shows appear here after you mark at least one episode watched.";
   }

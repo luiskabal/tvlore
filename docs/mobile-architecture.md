@@ -209,8 +209,8 @@ The Library route renders `LibraryOverview`. The Profile route renders
 `HoloProfileCard`. The card uses Supabase Google avatar metadata when available
 and keeps the holo/tilt effect inside presentation code.
 
-`RecommendationsPanel` is presentation-only and currently belongs to Library,
-which acts as the app home. `useHomeData` loads the recommendation response
+`RecommendationsPanel` is presentation-only and currently belongs to Library
+behind its own `For you` filter. `useHomeData` loads the recommendation response
 alongside the user and library payloads only when the screen asks for it, while
 the API guard layer owns the response-shape validation.
 Recommendation rows receive navigation and save-to-watchlist callbacks from the
@@ -221,10 +221,10 @@ row hiding and restores the row if the save fails.
 Library rows receive navigation callbacks from `LibraryScreen`: movies route
 to movie detail and episode/show rows route to season detail.
 `LibraryOverview` owns only local section-filter UI state for switching between
-Cronologia, continuing shows, recently watched movies, watched episodes grouped
-by show and season, watchlist, and rated titles. Summary stat cards reuse the
-same filter state as the only section selector. The chronological watch feed
-still appears inside Cronologia. It also owns the swipe presentation
+Cronologia, recommendations, continuing shows, recently watched movies, watched
+episodes grouped by show and season, watchlist, and rated titles. Summary stat
+cards reuse the same filter state as the only section selector. Cronologia only
+renders the chronological watch feed. It also owns the swipe presentation
 affordance for removable Library rows and compact poster thumbnail rendering
 from existing API data.
 
