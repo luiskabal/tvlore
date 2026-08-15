@@ -319,6 +319,7 @@ WatchPathsScreen
   -> WatchPathDetailScreen
   -> useWatchPath(pathId)
   -> GET /watch-paths/:pathId
+  -> render saved count and item saved state
   -> tap path item
   -> POST /catalog/resolve when the item has no TVLore ID yet
   -> router.push(/shows/:id or /movies/:id)
@@ -328,8 +329,9 @@ WatchPathsScreen
 ```
 
 The app does not persist or rank curated paths locally. It renders
-backend-owned ordered lists, then resolves catalog identity only when the user
-opens an item or asks the backend to save the whole path to watchlist.
+backend-owned ordered lists and per-user saved state, then resolves catalog
+identity only when the user opens an item or asks the backend to save the whole
+path to watchlist.
 
 The app still does not calculate catalog identity, progress, or watched state.
 It asks the backend, then renders the response. Detail screens also ask the

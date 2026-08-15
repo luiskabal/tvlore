@@ -19,6 +19,9 @@ export default function WatchPathDetailScreen() {
   const [openingKey, setOpeningKey] = useState<string | null>(null);
   const [openError, setOpenError] = useState<string | null>(null);
   const [saveState, setSaveState] = useState<SavePathState>({ kind: "idle" });
+  const readyPath = state.kind === "ready" ? state.path : null;
+  const savedItemCount = readyPath ? getSavedItemCount(readyPath, saveState) : 0;
+  const isFullySaved = Boolean(readyPath && savedItemCount >= readyPath.itemCount);
 
   const openItem = async (item: WatchPathItem) => {
     const itemKey = getWatchPathItemKey(item);
@@ -42,7 +45,7 @@ export default function WatchPathDetailScreen() {
   };
 
   const savePath = async () => {
-    if (state.kind !== "ready") {
+    if (state.kind !== "ready" || isFullySaved) {
       return;
     }
 
@@ -53,6 +56,7 @@ export default function WatchPathDetailScreen() {
       const response = await saveWatchPathToWatchlist(token, state.path.id);
       notifyLibraryChanged();
       setSaveState({ kind: "success", savedItemCount: response.savedItemCount });
+      void refresh();
     } catch (error) {
       setSaveState({
         kind: "error",
@@ -79,24 +83,25 @@ export default function WatchPathDetailScreen() {
           </View>
         ) : null}
 
-        {state.kind === "ready" ? (
+        {readyPath ? (
           <>
             <View style={styles.header}>
-              <AppText style={styles.title}>{state.path.title}</AppText>
-              <AppText tone="muted">{state.path.description}</AppText>
+              <AppText style={styles.title}>{readyPath.title}</AppText>
+              <AppText tone="muted">{readyPath.description}</AppText>
               <View style={styles.headerActionsRow}>
-                <Badge label={`${state.path.itemCount} titles`} />
+                <Badge label={`${readyPath.itemCount} titles`} />
+                <Badge label={`${savedItemCount} saved`} tone="neutral" />
                 <Button
-                  disabled={saveState.kind === "success"}
+                  disabled={isFullySaved}
                   isLoading={saveState.kind === "loading"}
-                  label={saveState.kind === "success" ? "Saved" : "Save all"}
+                  label={isFullySaved ? "Saved" : savedItemCount > 0 ? "Save remaining" : "Save all"}
                   loadingLabel="Saving"
                   onPress={savePath}
                   size="small"
                 />
               </View>
               {saveState.kind === "success" ? (
-                <AppText tone="accent">{saveState.savedItemCount} titles are in your watchlist.</AppText>
+                <AppText tone="accent">{savedItemCount} titles are in your watchlist.</AppText>
               ) : null}
               {saveState.kind === "error" ? <AppText tone="danger">{saveState.message}</AppText> : null}
             </View>
@@ -104,9 +109,10 @@ export default function WatchPathDetailScreen() {
             {openError ? <AppText tone="danger">{openError}</AppText> : null}
 
             <View style={styles.list}>
-              {state.path.items.map((item) => (
+              {readyPath.items.map((item) => (
                 <PathItemRow
                   isOpening={openingKey === getWatchPathItemKey(item)}
+                  isSaved={saveState.kind === "success" || item.inWatchlist}
                   item={item}
                   key={item.id}
                   onOpen={openItem}
@@ -126,12 +132,20 @@ type SavePathState =
   | { kind: "success"; savedItemCount: number }
   | { kind: "error"; message: string };
 
+function getSavedItemCount(path: { savedItemCount: number }, saveState: SavePathState) {
+  return saveState.kind === "success"
+    ? Math.max(path.savedItemCount, saveState.savedItemCount)
+    : path.savedItemCount;
+}
+
 function PathItemRow({
   isOpening,
+  isSaved,
   item,
   onOpen,
 }: {
   isOpening: boolean;
+  isSaved: boolean;
   item: WatchPathItem;
   onOpen: (item: WatchPathItem) => void;
 }) {
@@ -158,8 +172,8 @@ function PathItemRow({
         </AppText>
       </View>
       {isOpening ? <ActivityIndicator color={ui.color.accent} size="small" /> : (
-        <AppText tone={item.tvloreId ? "accent" : "subtle"} variant="caption">
-          {item.tvloreId ? "Ready" : "Open"}
+        <AppText tone={isSaved || item.tvloreId ? "accent" : "subtle"} variant="caption">
+          {isSaved ? "Saved" : item.tvloreId ? "Ready" : "Open"}
         </AppText>
       )}
     </Pressable>

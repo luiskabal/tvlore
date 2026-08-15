@@ -162,7 +162,11 @@ export function isWatchPathDetailResponse(value: unknown): value is WatchPathDet
 
   const candidate = value as Record<string, unknown>;
 
-  return Array.isArray(candidate.items) && candidate.items.every(isWatchPathItem);
+  return (
+    Array.isArray(candidate.items) &&
+    candidate.items.every(isWatchPathItem) &&
+    typeof candidate.savedItemCount === "number"
+  );
 }
 
 export function isWatchPathWatchlistResponse(value: unknown): value is WatchPathWatchlistResponse {
@@ -192,6 +196,7 @@ function isWatchPathItem(value: unknown): value is WatchPathItem {
     value.externalRef.provider === "tmdb" &&
     typeof value.externalRef.providerId === "string" &&
     typeof value.id === "string" &&
+    typeof value.inWatchlist === "boolean" &&
     isMediaType(value.mediaType) &&
     isNullableString(value.note) &&
     isNullableString(value.posterPath) &&

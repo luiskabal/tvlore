@@ -9,6 +9,43 @@ import type { WatchlistRepository } from "../../watchlist/watchlist.repository";
 import { WatchPathsService } from "../watch-paths.service";
 
 describe("WatchPathsService", () => {
+  it("marks path items already saved to watchlist", async () => {
+    const catalogRepository = {
+      withExistingTvloreIds: vi.fn(async (items: CatalogSearchResultDto[]) => items.map((item, index) => ({
+        ...item,
+        tvloreId: index === 0 ? "saved-movie-id" : index === 1 ? "unsaved-movie-id" : null,
+      }))),
+    };
+    const watchlistRepository = {
+      findSavedCatalogKeys: vi.fn(async () => new Set(["movie:saved-movie-id"])),
+    };
+    const service = new WatchPathsService(
+      catalogRepository as unknown as CatalogRepository,
+      {} as unknown as TmdbClient,
+      { getMe: vi.fn(async () => ({ createdAt: "", displayName: "Luis", id: "user-id" })) } as unknown as UsersService,
+      watchlistRepository as unknown as WatchlistRepository,
+    );
+
+    const response = await service.get("Bearer token", "star-wars-skywalker-release");
+
+    expect(response.savedItemCount).toBe(1);
+    expect(response.items[0]).toMatchObject({
+      inWatchlist: true,
+      title: "Star Wars",
+      tvloreId: "saved-movie-id",
+    });
+    expect(response.items[1]).toMatchObject({
+      inWatchlist: false,
+      title: "The Empire Strikes Back",
+      tvloreId: "unsaved-movie-id",
+    });
+    expect(response.items[2]?.inWatchlist).toBe(false);
+    expect(watchlistRepository.findSavedCatalogKeys).toHaveBeenCalledWith("user-id", [
+      { id: "saved-movie-id", mediaType: "movie" },
+      { id: "unsaved-movie-id", mediaType: "movie" },
+    ]);
+  });
+
   it("saves every path item to the user's watchlist", async () => {
     const catalogRepository = {
       upsertResolvedItem: vi.fn(async (item: CatalogResolvedItem) => ({

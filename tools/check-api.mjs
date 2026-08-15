@@ -680,6 +680,9 @@ function assertWatchPaths(body) {
 
 function assertWatchPathDetail(body) {
   expectWatchPathSummary(body, "watch path detail");
+  expectInteger(body.savedItemCount, "watch path detail.savedItemCount");
+  expect(body.savedItemCount >= 0, "watch path detail.savedItemCount should be non-negative");
+  expect(body.savedItemCount <= body.itemCount, "watch path detail.savedItemCount should not exceed itemCount");
   expectArray(body.items, "watch path detail.items");
   expectEqual(body.items.length, body.itemCount, "watch path detail.itemCount");
   expect(body.items.length > 0, "watch path detail should include items");
@@ -687,6 +690,7 @@ function assertWatchPathDetail(body) {
   for (const item of body.items) {
     expectRecord(item, "watch path detail item");
     expectString(item.id, "watch path detail item.id");
+    expectBoolean(item.inWatchlist, "watch path detail item.inWatchlist");
     expectMediaType(item.mediaType, "watch path detail item.mediaType");
     expectPositiveInteger(item.position, "watch path detail item.position");
     expectString(item.title, "watch path detail item.title");

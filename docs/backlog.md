@@ -108,6 +108,7 @@ No active infrastructure tasks.
 - [x] Add first country-aware Where to Watch slice on show/movie detail through TMDB Watch Providers.
 - [x] Add first backend-owned curated Watch Paths slice with Marvel and Star Wars paths.
 - [x] Let curated Watch Paths save every item to the user's watchlist in one backend-owned action.
+- [x] Show saved watchlist state inside curated Watch Path detail.
 
 ## Deferred
 

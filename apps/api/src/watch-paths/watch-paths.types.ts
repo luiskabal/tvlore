@@ -10,6 +10,7 @@ export type WatchPathSummaryDto = {
 export type WatchPathItemDto = {
   externalRef: CatalogExternalRefDto;
   id: string;
+  inWatchlist: boolean;
   mediaType: MediaType;
   note: string | null;
   posterPath: string | null;
@@ -21,6 +22,7 @@ export type WatchPathItemDto = {
 
 export type WatchPathDetailDto = WatchPathSummaryDto & {
   items: WatchPathItemDto[];
+  savedItemCount: number;
 };
 
 export type WatchPathsResponseDto = {

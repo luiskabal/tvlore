@@ -1453,11 +1453,13 @@ Response:
   "title": "Marvel Infinity Saga",
   "description": "MCU Phase 1-3 in theatrical release order.",
   "itemCount": 23,
+  "savedItemCount": 1,
   "items": [
     {
       "id": "mcu-infinity-saga-release-1",
       "position": 1,
       "mediaType": "movie",
+      "inWatchlist": true,
       "title": "Iron Man",
       "year": 2008,
       "note": "Phase 1",
@@ -1480,6 +1482,7 @@ Business validation:
 
 - Unknown path IDs return `WATCH_PATH_NOT_FOUND`.
 - `tvloreId` is populated only when TVLore already has a resolved catalog row for the item's provider ref.
+- `savedItemCount` and each item's `inWatchlist` are calculated for the authenticated user from existing watchlist rows.
 - If `tvloreId` is null, the client opens the item by calling `POST /catalog/resolve` with the item's TMDB ref.
 
 Errors: `WATCH_PATH_NOT_FOUND`, `UNAUTHORIZED`.

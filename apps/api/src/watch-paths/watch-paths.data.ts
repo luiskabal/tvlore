@@ -3,7 +3,7 @@ import type { WatchPathDetailDto, WatchPathItemDto, WatchPathSummaryDto } from "
 type WatchPathDefinition = {
   description: string;
   id: string;
-  items: Array<Omit<WatchPathItemDto, "id" | "position" | "tvloreId">>;
+  items: Array<Omit<WatchPathItemDto, "id" | "inWatchlist" | "position" | "tvloreId">>;
   title: string;
 };
 
@@ -107,17 +107,26 @@ export function getWatchPathDefinition(pathId: string) {
 export function toWatchPathDetail(
   path: WatchPathDefinition,
   tvloreIdByRefKey: Map<string, string> = new Map(),
+  savedRefKeys: Set<string> = new Set(),
 ): WatchPathDetailDto {
+  const items = path.items.map((item, index) => {
+    const refKey = getWatchPathItemRefKey(item);
+
+    return {
+      ...item,
+      id: `${path.id}-${index + 1}`,
+      inWatchlist: savedRefKeys.has(refKey),
+      position: index + 1,
+      tvloreId: tvloreIdByRefKey.get(refKey) ?? null,
+    };
+  });
+
   return {
     description: path.description,
     id: path.id,
     itemCount: path.items.length,
-    items: path.items.map((item, index) => ({
-      ...item,
-      id: `${path.id}-${index + 1}`,
-      position: index + 1,
-      tvloreId: tvloreIdByRefKey.get(getWatchPathItemRefKey(item)) ?? null,
-    })),
+    items,
+    savedItemCount: items.filter((item) => item.inWatchlist).length,
     title: path.title,
   };
 }

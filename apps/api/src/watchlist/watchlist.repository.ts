@@ -1,11 +1,36 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { PrismaService } from "../prisma.service";
-import type { WatchlistMutationResponseDto } from "./watchlist.types";
+import type { WatchlistCatalogRef, WatchlistMutationResponseDto } from "./watchlist.types";
 
 @Injectable()
 export class WatchlistRepository {
   constructor(private readonly prismaService: PrismaService) {}
+
+  async findSavedCatalogKeys(userId: string, refs: WatchlistCatalogRef[]): Promise<Set<string>> {
+    if (refs.length === 0) {
+      return new Set();
+    }
+
+    const showIds = refs.filter((ref) => ref.mediaType === "show").map((ref) => ref.id);
+    const movieIds = refs.filter((ref) => ref.mediaType === "movie").map((ref) => ref.id);
+    const client = this.prismaService.getClient();
+    const [showItems, movieItems] = await Promise.all([
+      client.showWatchlistItem.findMany({
+        select: { showId: true },
+        where: { showId: { in: showIds }, userId },
+      }),
+      client.movieWatchlistItem.findMany({
+        select: { movieId: true },
+        where: { movieId: { in: movieIds }, userId },
+      }),
+    ]);
+
+    return new Set([
+      ...showItems.map((item) => getCatalogKey("show", item.showId)),
+      ...movieItems.map((item) => getCatalogKey("movie", item.movieId)),
+    ]);
+  }
 
   async addShow(userId: string, showId: string): Promise<WatchlistMutationResponseDto> {
     const client = this.prismaService.getClient();
@@ -66,6 +91,10 @@ export class WatchlistRepository {
 
     return { id: movieId, inWatchlist: false, mediaType: "movie" };
   }
+}
+
+export function getCatalogKey(mediaType: WatchlistCatalogRef["mediaType"], id: string) {
+  return `${mediaType}:${id}`;
 }
 
 function throwNotFound(code: string, message: string): never {

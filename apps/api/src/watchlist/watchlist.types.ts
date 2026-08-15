@@ -5,3 +5,8 @@ export type WatchlistMutationResponseDto = {
   inWatchlist: boolean;
   mediaType: WatchlistMediaType;
 };
+
+export type WatchlistCatalogRef = {
+  id: string;
+  mediaType: WatchlistMediaType;
+};

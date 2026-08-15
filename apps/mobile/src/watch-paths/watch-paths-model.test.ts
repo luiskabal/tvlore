@@ -25,6 +25,7 @@ function item(): WatchPathItem {
   return {
     externalRef: { provider: "tmdb", providerId: "1726" },
     id: "mcu-1",
+    inWatchlist: false,
     mediaType: "movie",
     note: "Phase 1",
     posterPath: "/78lPtwv72eTNqFW9COBYI0dWDJa.jpg",

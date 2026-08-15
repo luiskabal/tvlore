@@ -4,7 +4,7 @@ import { CatalogRepository } from "../catalog/catalog.repository";
 import { TmdbClient } from "../catalog/tmdb-client";
 import type { CatalogResolveResponseDto, CatalogSearchResultDto } from "../catalog/catalog.types";
 import { UsersService } from "../users/users.service";
-import { WatchlistRepository } from "../watchlist/watchlist.repository";
+import { getCatalogKey, WatchlistRepository } from "../watchlist/watchlist.repository";
 import {
   getWatchPathDefinition,
   getWatchPathItemRefKey,
@@ -31,7 +31,7 @@ export class WatchPathsService {
   }
 
   async get(authorizationHeader: string | undefined, pathId: string | undefined): Promise<WatchPathDetailDto> {
-    await this.usersService.getMe(authorizationHeader);
+    const user = await this.usersService.getMe(authorizationHeader);
 
     if (!pathId) {
       throwNotFound();
@@ -49,8 +49,9 @@ export class WatchPathsService {
         .filter((item) => item.tvloreId)
         .map((item) => [getWatchPathItemRefKey(item), item.tvloreId as string]),
     );
+    const savedRefKeys = await this.getSavedRefKeys(user.id, path.items, tvloreIdByRefKey);
 
-    return toWatchPathDetail(path, tvloreIdByRefKey);
+    return toWatchPathDetail(path, tvloreIdByRefKey, savedRefKeys);
   }
 
   async saveToWatchlist(
@@ -106,6 +107,31 @@ export class WatchPathsService {
     });
 
     return this.catalogRepository.upsertResolvedItem(resolvedItem);
+  }
+
+  private async getSavedRefKeys(
+    userId: string,
+    items: NonNullable<ReturnType<typeof getWatchPathDefinition>>["items"],
+    tvloreIdByRefKey: Map<string, string>,
+  ) {
+    const refs = items
+      .map((item) => {
+        const refKey = getWatchPathItemRefKey(item);
+        const id = tvloreIdByRefKey.get(refKey);
+
+        return id ? { id, mediaType: item.mediaType, refKey } : null;
+      })
+      .filter((item): item is { id: string; mediaType: "movie" | "show"; refKey: string } => Boolean(item));
+    const savedCatalogKeys = await this.watchlistRepository.findSavedCatalogKeys(
+      userId,
+      refs.map(({ id, mediaType }) => ({ id, mediaType })),
+    );
+
+    return new Set(
+      refs
+        .filter((item) => savedCatalogKeys.has(getCatalogKey(item.mediaType, item.id)))
+        .map((item) => item.refKey),
+    );
   }
 }
 

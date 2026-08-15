@@ -150,6 +150,7 @@ export type WatchPathSummary = {
 export type WatchPathItem = {
   externalRef: CatalogExternalRef;
   id: string;
+  inWatchlist: boolean;
   mediaType: MediaType;
   note: string | null;
   posterPath: string | null;
@@ -161,6 +162,7 @@ export type WatchPathItem = {
 
 export type WatchPathDetailResponse = WatchPathSummary & {
   items: WatchPathItem[];
+  savedItemCount: number;
 };
 
 export type WatchPathsResponse = {

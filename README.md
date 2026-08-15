@@ -28,6 +28,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Country-aware `Where to watch` provider icons on show/movie detail using TMDB Watch Providers.
 - Curated Watch Paths with backend-owned ordered viewing lists, including Marvel Infinity Saga and Star Wars Skywalker Saga.
 - Curated Watch Paths can be saved to the user's watchlist in one backend-owned action.
+- Curated Watch Path detail shows saved count and saved row state for the authenticated user.
 - Show-level mark all watched/unwatched backed by the API.
 - Season-level mark all watched/unwatched.
 - Personal show/movie watchlist.

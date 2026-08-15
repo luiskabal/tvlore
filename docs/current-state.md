@@ -26,6 +26,7 @@ Implemented:
 - Authenticated first-pass recommendation endpoint from stored ratings and hydrated catalog rows.
 - Authenticated curated Watch Paths endpoint with backend-owned ordered viewing lists.
 - Authenticated Watch Path save-to-watchlist endpoint that resolves every path item and saves it for the user.
+- Authenticated Watch Path detail includes per-user saved count and item saved state.
 - Mobile Library/Profile routes read the authenticated user and personal library summary from the API.
 - Mobile search resolves provider results and opens backend-owned show/movie detail screens.
 - Mobile show detail opens backend-owned season episode lists.
@@ -178,7 +179,7 @@ Current backend modules:
 - `users`: resolves the authenticated Supabase user into a TVLore user.
 - `catalog`: searches TMDB, resolves TMDB items, and persists TVLore catalog IDs.
 - `preferences`: stores explicit per-user ratings for shows and movies.
-- `watch-paths`: exposes backend-owned curated viewing lists and hydrates existing TVLore IDs for their items.
+- `watch-paths`: exposes backend-owned curated viewing lists, hydrates existing TVLore IDs, and marks item saved state for the authenticated user.
 - `health`: verifies API and database availability.
 - `config`: loads and validates environment variables at startup.
 
@@ -746,7 +747,7 @@ Expected behavior:
 - `GET /library` returns personal summary, rated titles, continue-watching, watchlist, recently watched activity, and full watched episode activity.
 - `GET /library/chronology` returns paginated personal movie/episode watch-history activity.
 - `GET /recommendations` returns unrated, unwatched, unsaved catalog candidates ordered by the user's stronger rated media type.
-- `GET /watch-paths` returns curated ordered viewing paths, and `GET /watch-paths/:pathId` returns path items with existing TVLore IDs when already resolved.
+- `GET /watch-paths` returns curated ordered viewing paths, and `GET /watch-paths/:pathId` returns path items with existing TVLore IDs plus per-user watchlist saved state when already resolved.
 - `POST /watch-paths/:pathId/watchlist` resolves every path item and saves the resulting shows or movies to the authenticated user's watchlist.
 - `POST /shows/:showId/watches` hydrates the show seasons, marks every episode watched, and returns completed show progress.
 - `DELETE /shows/:showId/watches` removes every episode watch marker for that show and returns not-started show progress.
@@ -814,6 +815,7 @@ Current behavior:
 - Paths lists curated viewing orders such as Marvel Infinity Saga and Star Wars Skywalker Saga.
 - Path detail rows navigate by tapping the full row and resolve the selected item into TVLore identity only when needed.
 - Path detail can save all path titles into the user's watchlist through one backend-owned bulk action.
+- Path detail shows how many path titles are already saved and marks saved rows.
 - Watchlist rows can remove saved titles through confirmable swipe actions, and recently watched rows can undo the underlying movie or episode watched marker through confirmable swipe actions.
 - Bottom app navigation connects Library, Search, Paths, and Profile from the root layout, so the tab bar stays stable while route content changes.
 - Empty library state is expected after cleanup-oriented smoke checks.
