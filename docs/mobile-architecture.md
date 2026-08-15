@@ -224,7 +224,8 @@ to movie detail and episode/show rows route to season detail.
 Cronologia, recommendations, continuing shows, recently watched movies, watched
 episodes grouped by show and season, watchlist, and rated titles. Summary stat
 cards reuse the same filter state as the only section selector. Cronologia only
-renders the chronological watch feed. It also owns the swipe presentation
+renders the chronological watch feed. Watched episode season subsections keep
+their own local collapsed state. It also owns the swipe presentation
 affordance for removable Library rows and compact poster thumbnail rendering
 from existing API data.
 

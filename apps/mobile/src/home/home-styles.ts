@@ -85,10 +85,28 @@ export const styles = StyleSheet.create({
   groupSeason: {
     gap: 8,
   },
+  groupSeasonHeader: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 2,
+  },
+  groupSeasonMeta: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 8,
+  },
   groupSubtitle: {
     color: "#5f564d",
     fontSize: 13,
     fontWeight: "800",
+  },
+  groupSeasonToggle: {
+    color: "#1f7a5c",
+    fontSize: 18,
+    fontWeight: "900",
+    minWidth: 18,
+    textAlign: "right",
   },
   groupTitle: {
     color: "#171412",

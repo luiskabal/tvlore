@@ -490,13 +490,71 @@ function EpisodeShowGroup({
   onOpenShowSeason: (showId: string, seasonNumber: number) => void;
   onRemove: (item: RecentlyWatchedItem) => void;
 }) {
+  const [collapsedSeasons, setCollapsedSeasons] = useState<Set<number>>(() => new Set());
+  const toggleSeason = (seasonNumber: number) => {
+    setCollapsedSeasons((current) => (
+      current.has(seasonNumber)
+        ? deleteSetValue(current, seasonNumber)
+        : addSetValue(current, seasonNumber)
+    ));
+  };
+
   return (
     <View style={styles.groupPanel}>
       <Text style={styles.groupTitle}>{group.showTitle}</Text>
       {group.seasons.map((season) => (
-        <View key={`${group.showId}-${season.seasonNumber}`} style={styles.groupSeason}>
-          <Text style={styles.groupSubtitle}>Season {season.seasonNumber}</Text>
-          {season.episodes.map((episode) => (
+        <EpisodeSeasonGroup
+          episodes={season.episodes}
+          isCollapsed={collapsedSeasons.has(season.seasonNumber)}
+          key={`${group.showId}-${season.seasonNumber}`}
+          libraryAction={libraryAction}
+          onOptimisticRemove={onOptimisticRemove}
+          onOpenShowSeason={onOpenShowSeason}
+          onRemove={onRemove}
+          onToggle={() => toggleSeason(season.seasonNumber)}
+          seasonNumber={season.seasonNumber}
+        />
+      ))}
+    </View>
+  );
+}
+
+function EpisodeSeasonGroup({
+  episodes,
+  isCollapsed,
+  libraryAction,
+  onOptimisticRemove,
+  onOpenShowSeason,
+  onRemove,
+  onToggle,
+  seasonNumber,
+}: {
+  episodes: WatchedEpisodeItem[];
+  isCollapsed: boolean;
+  libraryAction: LibraryActionState;
+  onOptimisticRemove: (actionKey: string) => void;
+  onOpenShowSeason: (showId: string, seasonNumber: number) => void;
+  onRemove: (item: RecentlyWatchedItem) => void;
+  onToggle: () => void;
+  seasonNumber: number;
+}) {
+  return (
+    <View style={styles.groupSeason}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityState={{ expanded: !isCollapsed }}
+        onPress={onToggle}
+        style={({ pressed }) => [styles.groupSeasonHeader, pressed ? styles.pressedListItem : null]}
+      >
+        <Text style={styles.groupSubtitle}>Season {seasonNumber}</Text>
+        <View style={styles.groupSeasonMeta}>
+          <Text style={styles.statusDetail}>{episodes.length} watched</Text>
+          <Text style={styles.groupSeasonToggle}>{isCollapsed ? "+" : "-"}</Text>
+        </View>
+      </Pressable>
+      {isCollapsed
+        ? null
+        : episodes.map((episode) => (
             <RecentlyWatchedRow
               item={episode}
               key={episode.id}
@@ -507,8 +565,6 @@ function EpisodeShowGroup({
               onRemove={onRemove}
             />
           ))}
-        </View>
-      ))}
     </View>
   );
 }
@@ -716,7 +772,7 @@ function getLibraryActionKeys(library: LibraryResponse) {
   ]);
 }
 
-function addSetValue(values: Set<string>, value: string) {
+function addSetValue<T>(values: Set<T>, value: T) {
   if (values.has(value)) {
     return values;
   }
@@ -726,7 +782,7 @@ function addSetValue(values: Set<string>, value: string) {
   return next;
 }
 
-function deleteSetValue(values: Set<string>, value: string) {
+function deleteSetValue<T>(values: Set<T>, value: T) {
   if (!values.has(value)) {
     return values;
   }

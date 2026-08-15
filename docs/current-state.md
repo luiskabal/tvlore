@@ -41,6 +41,7 @@ Implemented:
 - Mobile Library shows watchlist titles and rated titles separately from watched history.
 - Mobile Library summary cards filter Cronologia, recommendations, continuing shows, recently watched movies, watched episodes grouped by show and season, watchlist, and rated titles.
 - Mobile Library rows render catalog poster thumbnails when available, with stable placeholders otherwise.
+- Mobile Library episode season subsections can be expanded or collapsed with a tap.
 - Mobile Profile renders a touch-driven holo profile card with Google avatar and library stats.
 - Mobile library rows navigate back to movie detail or show season detail screens.
 - Mobile Library rows can remove watchlist items and undo recent watched markers through confirmable swipe actions.
@@ -776,6 +777,7 @@ Current behavior:
 - Recommendation rows open the matching show or movie detail screen.
 - Recommendation rows can save the title to watchlist immediately, then reconcile through the existing library refresh invalidator.
 - Library can filter from its summary cards between Cronologia, recommendations, continuing shows, recently watched movies, watched episodes grouped by show and season, saved titles, and rated titles. Cronologia only shows watched movies and episodes by date.
+- Episode groups keep each season collapsible so long watched histories stay scannable.
 - Library rows include compact poster thumbnails for quicker visual scanning.
 - Continue-watching rows open the next season, recently watched movies open movie detail, and recently watched episodes open the matching season.
 - Watchlist rows can remove saved titles through confirmable swipe actions, and recently watched rows can undo the underlying movie or episode watched marker through confirmable swipe actions.
