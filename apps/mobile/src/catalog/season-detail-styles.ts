@@ -1,12 +1,14 @@
 import { StyleSheet } from "react-native";
 
+import { ui } from "../ui";
+
 export const styles = StyleSheet.create({
   backButton: {
     alignSelf: "flex-start",
     paddingVertical: 4,
   },
   backButtonText: {
-    color: "#1f7a5c",
+    color: ui.color.accent,
     fontSize: 16,
     fontWeight: "800",
   },
@@ -24,9 +26,6 @@ export const styles = StyleSheet.create({
   detail: {
     gap: 20,
   },
-  disabledButton: {
-    opacity: 0.6,
-  },
   episodeBody: {
     flex: 1,
     gap: 7,
@@ -35,198 +34,74 @@ export const styles = StyleSheet.create({
     gap: 12,
   },
   episodeOverview: {
-    color: "#5f564d",
-    fontSize: 14,
     lineHeight: 19,
   },
   episodeRow: {
-    backgroundColor: "#fffdfa",
-    borderColor: "#d8d0c5",
-    borderRadius: 8,
+    backgroundColor: ui.color.panel,
+    borderColor: ui.color.border,
+    borderRadius: ui.radius.md,
     borderWidth: 1,
     flexDirection: "row",
     gap: 12,
     padding: 12,
   },
   episodeTitle: {
-    color: "#171412",
     fontSize: 17,
-    fontWeight: "800",
     lineHeight: 22,
-  },
-  errorText: {
-    color: "#9c2f23",
-    fontSize: 14,
-    lineHeight: 20,
   },
   header: {
     gap: 8,
   },
   kicker: {
-    color: "#1f7a5c",
+    color: ui.color.accent,
     fontSize: 13,
     fontWeight: "900",
     textTransform: "uppercase",
   },
-  mutedText: {
-    color: "#5f564d",
-    fontSize: 14,
-    lineHeight: 20,
-  },
   overview: {
-    color: "#302b27",
     fontSize: 16,
     lineHeight: 23,
   },
-  primaryButton: {
-    alignItems: "center",
-    alignSelf: "flex-start",
-    backgroundColor: "#1f7a5c",
-    borderRadius: 8,
-    minWidth: 118,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-  },
-  primaryButtonText: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "800",
-  },
   screen: {
-    backgroundColor: "#f7f4ee",
+    backgroundColor: ui.color.panelAlt,
     flex: 1,
   },
-  secondaryButton: {
-    alignItems: "center",
-    alignSelf: "flex-start",
-    backgroundColor: "#171412",
-    borderRadius: 8,
-    minWidth: 136,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-  },
-  secondaryButtonText: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "800",
-  },
   sectionTitle: {
-    color: "#171412",
     fontSize: 20,
-    fontWeight: "800",
-  },
-  skeletonButton: {
-    backgroundColor: "#d8d0c5",
-    borderRadius: 8,
-    height: 38,
-    width: 132,
   },
   skeletonEpisodeBody: {
     flex: 1,
     gap: 10,
   },
   skeletonEpisodeRow: {
-    backgroundColor: "#fffdfa",
-    borderColor: "#d8d0c5",
-    borderRadius: 8,
+    backgroundColor: ui.color.panel,
+    borderColor: ui.color.border,
+    borderRadius: ui.radius.md,
     borderWidth: 1,
     flexDirection: "row",
     gap: 12,
     padding: 12,
   },
-  skeletonKicker: {
-    backgroundColor: "#d8d0c5",
-    borderRadius: 8,
-    height: 16,
-    width: 90,
-  },
-  skeletonLineMedium: {
-    backgroundColor: "#d8d0c5",
-    borderRadius: 8,
-    height: 16,
-    width: "70%",
-  },
-  skeletonLineShort: {
-    backgroundColor: "#e2dbd1",
-    borderRadius: 8,
-    height: 14,
-    width: "46%",
-  },
-  skeletonLineWide: {
-    backgroundColor: "#e2dbd1",
-    borderRadius: 8,
-    height: 15,
-    width: "100%",
-  },
   skeletonOverview: {
     gap: 10,
   },
   skeletonPanel: {
-    borderColor: "#d8d0c5",
-    borderRadius: 8,
+    borderColor: ui.color.border,
+    borderRadius: ui.radius.md,
     borderWidth: 1,
     gap: 12,
     padding: 16,
   },
-  skeletonSectionTitle: {
-    backgroundColor: "#d8d0c5",
-    borderRadius: 8,
-    height: 22,
-    width: "42%",
-  },
-  skeletonStill: {
-    backgroundColor: "#d8d0c5",
-    borderRadius: 8,
-    height: 64,
-    width: 96,
-  },
-  skeletonTitleBlock: {
-    backgroundColor: "#d8d0c5",
-    borderRadius: 8,
-    height: 36,
-    width: "82%",
-  },
   statusPanel: {
-    borderColor: "#d8d0c5",
-    borderRadius: 8,
+    borderColor: ui.color.border,
+    borderRadius: ui.radius.md,
     borderWidth: 1,
     gap: 8,
     padding: 16,
   },
-  statusTitle: {
-    color: "#171412",
-    fontSize: 18,
-    fontWeight: "800",
-  },
-  still: {
-    backgroundColor: "#d8d0c5",
-    borderRadius: 8,
-    height: 64,
-    width: 96,
-  },
-  stillPlaceholder: {
-    alignItems: "center",
-    backgroundColor: "#e8e2d8",
-    borderRadius: 8,
-    height: 64,
-    justifyContent: "center",
-    width: 96,
-  },
-  stillPlaceholderText: {
-    color: "#5f564d",
-    fontSize: 18,
-    fontWeight: "800",
-  },
   title: {
-    color: "#171412",
     fontSize: 34,
     fontWeight: "800",
     lineHeight: 39,
-  },
-  watchedText: {
-    color: "#1f7a5c",
-    fontSize: 13,
-    fontWeight: "800",
-    lineHeight: 18,
   },
 });

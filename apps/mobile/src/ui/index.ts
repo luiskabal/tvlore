@@ -5,4 +5,5 @@ export * from "./MediaRow";
 export * from "./PosterImage";
 export * from "./Skeleton";
 export * from "./StatCard";
+export * from "./StillImage";
 export * from "./tokens";

@@ -1,7 +1,8 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
+import { Pressable, SafeAreaView, ScrollView, View } from "react-native";
 
+import { AppText, Button } from "../ui";
 import { SeasonContent, SeasonDetailSkeleton } from "./SeasonContent";
 import { styles } from "./season-detail-styles";
 import { useSeasonDetail } from "./use-season-detail";
@@ -17,7 +18,7 @@ export default function SeasonDetailScreen() {
       <StatusBar style="dark" />
       <ScrollView contentContainerStyle={styles.content}>
         <Pressable style={styles.backButton} onPress={() => router.back()}>
-          <Text style={styles.backButtonText}>Back</Text>
+          <AppText style={styles.backButtonText}>Back</AppText>
         </Pressable>
 
         {state.kind === "loading" ? (
@@ -26,11 +27,9 @@ export default function SeasonDetailScreen() {
 
         {state.kind === "error" ? (
           <View style={styles.statusPanel}>
-            <Text style={styles.statusTitle}>Could not open season</Text>
-            <Text style={styles.mutedText}>{state.message}</Text>
-            <Pressable style={styles.primaryButton} onPress={refresh}>
-              <Text style={styles.primaryButtonText}>Retry</Text>
-            </Pressable>
+            <AppText variant="section">Could not open season</AppText>
+            <AppText tone="muted">{state.message}</AppText>
+            <Button label="Retry" onPress={refresh} />
           </View>
         ) : null}
 

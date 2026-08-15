@@ -1,6 +1,7 @@
-import { Image, Pressable, Text, View } from "react-native";
+import { View } from "react-native";
 
 import type { ShowEpisode, ShowProgressResponse, ShowSeasonDetailResponse } from "../api/tvlore-api";
+import { AppText, Button, Skeleton, StillImage } from "../ui";
 import { getTmdbPosterUrl } from "./posters";
 import { styles } from "./season-detail-styles";
 import type { EpisodeWatchActionState } from "./use-season-detail";
@@ -21,12 +22,12 @@ export function SeasonContent({
   return (
     <View style={styles.detail}>
       <View style={styles.header}>
-        <Text style={styles.kicker}>Season {season.seasonNumber}</Text>
-        <Text style={styles.title}>{season.title}</Text>
-        <Text style={styles.mutedText}>{getProgressText(season, showProgress)}</Text>
+        <AppText style={styles.kicker}>Season {season.seasonNumber}</AppText>
+        <AppText style={styles.title}>{season.title}</AppText>
+        <AppText tone="muted">{getProgressText(season, showProgress)}</AppText>
       </View>
 
-      {season.overview ? <Text style={styles.overview}>{season.overview}</Text> : null}
+      {season.overview ? <AppText style={styles.overview}>{season.overview}</AppText> : null}
 
       <SeasonBulkPanel season={season} watchAction={watchAction} onSetWatched={onSetSeasonWatched} />
 
@@ -43,36 +44,36 @@ export function SeasonDetailSkeleton() {
   return (
     <View style={styles.detail}>
       <View style={styles.header}>
-        <View style={styles.skeletonKicker} />
-        <View style={styles.skeletonTitleBlock} />
-        <View style={styles.skeletonLineMedium} />
+        <Skeleton height={16} width={90} />
+        <Skeleton height={36} width="82%" />
+        <Skeleton height={16} width="70%" />
       </View>
 
       <View style={styles.skeletonOverview}>
-        <View style={styles.skeletonLineWide} />
-        <View style={styles.skeletonLineWide} />
-        <View style={styles.skeletonLineShort} />
+        <Skeleton height={15} />
+        <Skeleton height={15} />
+        <Skeleton height={14} width="46%" />
       </View>
 
       <View style={styles.skeletonPanel}>
-        <View style={styles.skeletonSectionTitle} />
-        <View style={styles.skeletonLineMedium} />
+        <Skeleton height={22} width="42%" />
+        <Skeleton height={16} width="70%" />
         <View style={styles.bulkButtonRow}>
-          <View style={styles.skeletonButton} />
-          <View style={styles.skeletonButton} />
+          <Skeleton height={38} width={132} />
+          <Skeleton height={38} width={132} />
         </View>
       </View>
 
       <View style={styles.episodeList}>
-        <View style={styles.skeletonSectionTitle} />
+        <Skeleton height={22} width="42%" />
         {[0, 1, 2].map((item) => (
           <View key={item} style={styles.skeletonEpisodeRow}>
-            <View style={styles.skeletonStill} />
+            <Skeleton height={64} width={96} />
             <View style={styles.skeletonEpisodeBody}>
-              <View style={styles.skeletonLineMedium} />
-              <View style={styles.skeletonLineShort} />
-              <View style={styles.skeletonLineWide} />
-              <View style={styles.skeletonButton} />
+              <Skeleton height={16} width="70%" />
+              <Skeleton height={14} width="46%" />
+              <Skeleton height={15} />
+              <Skeleton height={38} width={132} />
             </View>
           </View>
         ))}
@@ -92,12 +93,12 @@ function EpisodeList({
 }) {
   return (
     <View style={styles.episodeList}>
-      <Text style={styles.sectionTitle}>Episodes</Text>
+      <AppText style={styles.sectionTitle} variant="section">Episodes</AppText>
 
       {episodes.length === 0 ? (
         <View style={styles.statusPanel}>
-          <Text style={styles.statusTitle}>No episodes</Text>
-          <Text style={styles.mutedText}>This season has no episode data yet.</Text>
+          <AppText variant="section">No episodes</AppText>
+          <AppText tone="muted">This season has no episode data yet.</AppText>
         </View>
       ) : null}
 
@@ -132,30 +133,29 @@ function SeasonBulkPanel({
 
   return (
     <View style={styles.statusPanel}>
-      <Text style={styles.statusTitle}>Season actions</Text>
-      <Text style={styles.mutedText}>{watchedCount}/{episodeCount} episodes watched</Text>
-      {actionError ? <Text style={styles.errorText}>{actionError}</Text> : null}
+      <AppText variant="section">Season actions</AppText>
+      <AppText tone="muted">{watchedCount}/{episodeCount} episodes watched</AppText>
+      {actionError ? <AppText tone="danger">{actionError}</AppText> : null}
 
       <View style={styles.bulkButtonRow}>
-        <Pressable
+        <Button
           disabled={!hasEpisodes || allWatched || isBulkSaving}
-          style={[styles.primaryButton, !hasEpisodes || allWatched || isBulkSaving ? styles.disabledButton : null]}
+          isLoading={isBulkSaving && watchAction.watched}
+          label="Mark all watched"
+          loadingLabel="Saving"
           onPress={() => onSetWatched(true)}
-        >
-          <Text style={styles.primaryButtonText}>
-            {isBulkSaving && watchAction.watched ? "Saving" : "Mark all watched"}
-          </Text>
-        </Pressable>
+          size="small"
+        />
 
-        <Pressable
+        <Button
           disabled={!hasEpisodes || noneWatched || isBulkSaving}
-          style={[styles.secondaryButton, !hasEpisodes || noneWatched || isBulkSaving ? styles.disabledButton : null]}
+          isLoading={isBulkSaving && !watchAction.watched}
+          label="Mark all unwatched"
+          loadingLabel="Saving"
           onPress={() => onSetWatched(false)}
-        >
-          <Text style={styles.secondaryButtonText}>
-            {isBulkSaving && !watchAction.watched ? "Saving" : "Mark all unwatched"}
-          </Text>
-        </Pressable>
+          size="small"
+          variant="secondary"
+        />
       </View>
     </View>
   );
@@ -177,37 +177,32 @@ function EpisodeRow({
 
   return (
     <View style={styles.episodeRow}>
-      {episode.stillPath ? (
-        <Image source={{ uri: getTmdbPosterUrl(episode.stillPath) }} style={styles.still} />
-      ) : (
-        <View style={styles.stillPlaceholder}>
-          <Text style={styles.stillPlaceholderText}>E{episode.episodeNumber}</Text>
-        </View>
-      )}
+      <StillImage
+        label={`E${episode.episodeNumber}`}
+        uri={episode.stillPath ? getTmdbPosterUrl(episode.stillPath) : null}
+      />
 
       <View style={styles.episodeBody}>
-        <Text style={styles.episodeTitle} numberOfLines={2}>
+        <AppText numberOfLines={2} style={styles.episodeTitle} variant="title">
           {episode.episodeNumber}. {episode.title}
-        </Text>
-        <Text style={styles.mutedText}>{getEpisodeMeta(episode)}</Text>
-        <Text style={styles.episodeOverview} numberOfLines={3}>
+        </AppText>
+        <AppText tone="muted">{getEpisodeMeta(episode)}</AppText>
+        <AppText numberOfLines={3} style={styles.episodeOverview} tone="muted">
           {episode.overview || "No overview available."}
-        </Text>
+        </AppText>
 
         {episode.watched && episode.lastWatchedAt ? (
-          <Text style={styles.watchedText}>Watched {formatDate(episode.lastWatchedAt)}</Text>
+          <AppText tone="accent" variant="caption">Watched {formatDate(episode.lastWatchedAt)}</AppText>
         ) : null}
-        {actionError ? <Text style={styles.errorText}>{actionError}</Text> : null}
+        {actionError ? <AppText tone="danger">{actionError}</AppText> : null}
 
-        <Pressable
+        <Button
           disabled={isDisabled}
-          style={[episode.watched ? styles.secondaryButton : styles.primaryButton, isDisabled ? styles.disabledButton : null]}
+          label={episode.watched ? "Mark unwatched" : "Mark watched"}
           onPress={() => onSetWatched(episode.id, !episode.watched)}
-        >
-          <Text style={episode.watched ? styles.secondaryButtonText : styles.primaryButtonText}>
-            {episode.watched ? "Mark unwatched" : "Mark watched"}
-          </Text>
-        </Pressable>
+          size="small"
+          variant={episode.watched ? "secondary" : "primary"}
+        />
       </View>
     </View>
   );

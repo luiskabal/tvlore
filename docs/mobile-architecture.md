@@ -166,6 +166,7 @@ src/
 |   |-- PosterImage.tsx
 |   |-- Skeleton.tsx
 |   |-- StatCard.tsx
+|   |-- StillImage.tsx
 |   |-- index.ts
 |   `-- tokens.ts
 |
@@ -228,10 +229,11 @@ The Library route renders `LibraryOverview`. The Profile route renders
 and keeps the holo/tilt effect inside presentation code.
 
 `src/ui` owns the first reusable visual pool: tokens, text, buttons, badges,
-skeleton blocks, stat cards, poster frames, and media rows. Library, Search,
-and catalog detail use this pool for repeated visual patterns. These components are
-presentation-only. They do not fetch data, resolve catalog IDs, calculate
-progress, or own domain-specific mutation logic.
+skeleton blocks, stat cards, poster frames, still-image frames, and media rows.
+Library, Search, catalog detail, and season detail use this pool for repeated
+visual patterns. These components are presentation-only. They do not fetch
+data, resolve catalog IDs, calculate progress, or own domain-specific mutation
+logic.
 
 `RecommendationsPanel` is presentation-only and currently belongs to Library
 behind its own `For you` filter. `useHomeData` loads the recommendation response
