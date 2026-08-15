@@ -3,6 +3,9 @@ import { StyleSheet } from "react-native";
 import { ui } from "../ui";
 
 export const styles = StyleSheet.create({
+  actionMessageGroup: {
+    gap: 6,
+  },
   backButton: {
     alignSelf: "flex-start",
     paddingVertical: 4,
@@ -25,10 +28,20 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 16,
   },
+  heroHeaderRow: {
+    alignItems: "flex-start",
+    flexDirection: "row",
+    gap: 12,
+    justifyContent: "space-between",
+  },
   heroText: {
     flex: 1,
-    gap: 8,
     justifyContent: "center",
+  },
+  heroTitleBlock: {
+    flex: 1,
+    gap: 8,
+    minWidth: 0,
   },
   iconActionButton: {
     alignItems: "center",
@@ -36,9 +49,9 @@ export const styles = StyleSheet.create({
     borderColor: ui.color.border,
     borderRadius: ui.radius.pill,
     borderWidth: 1,
-    height: 48,
+    height: 44,
     justifyContent: "center",
-    width: 48,
+    width: 44,
   },
   iconActionButtonActive: {
     backgroundColor: ui.color.accent,
@@ -99,13 +112,11 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 8,
   },
-  quickActionGroup: {
-    gap: 8,
-  },
   quickActionRow: {
     alignItems: "center",
     flexDirection: "row",
-    gap: 10,
+    gap: 8,
+    justifyContent: "flex-end",
   },
   ratingButton: {
     alignItems: "center",

@@ -44,20 +44,26 @@ export function CatalogDetailContent({
         />
 
         <View style={styles.heroText}>
-          <Badge label={detail.mediaType === "show" ? "Show" : "Movie"} />
-          <AppText style={styles.title}>{detail.title}</AppText>
-          <AppText tone="muted">{getMetadata(detail)}</AppText>
+          <View style={styles.heroHeaderRow}>
+            <View style={styles.heroTitleBlock}>
+              <Badge label={detail.mediaType === "show" ? "Show" : "Movie"} />
+              <AppText style={styles.title}>{detail.title}</AppText>
+              <AppText tone="muted">{getMetadata(detail)}</AppText>
+            </View>
+
+            <TitleActionRow
+              detail={detail}
+              onSetInWatchlist={onSetInWatchlist}
+              onSetMovieWatched={onSetMovieWatched}
+              onSetShowWatched={onSetShowWatched}
+              watchAction={watchAction}
+              watchlistAction={watchlistAction}
+            />
+          </View>
         </View>
       </View>
 
-      <TitleActionRow
-        detail={detail}
-        onSetInWatchlist={onSetInWatchlist}
-        onSetMovieWatched={onSetMovieWatched}
-        onSetShowWatched={onSetShowWatched}
-        watchAction={watchAction}
-        watchlistAction={watchlistAction}
-      />
+      <TitleActionMessages watchAction={watchAction} watchlistAction={watchlistAction} />
 
       <AppText style={styles.overview}>{detail.overview || "No overview available."}</AppText>
 
@@ -96,34 +102,48 @@ function TitleActionRow({
   const canToggleWatched = detail.mediaType === "movie" || isWatched || canUnwatchShow || detail.progress.totalEpisodeCount > 0;
 
   return (
-    <View style={styles.quickActionGroup}>
-      <View style={styles.quickActionRow}>
-        <IconActionButton
-          accessibilityLabel={detail.inWatchlist ? "Remove from watchlist" : "Add to watchlist"}
-          icon={detail.inWatchlist ? "bookmark" : "bookmark-outline"}
-          isActive={detail.inWatchlist}
-          isLoading={isWatchlistSaving}
-          onPress={() => onSetInWatchlist(detail.mediaType, detail.id, !detail.inWatchlist)}
-        />
+    <View style={styles.quickActionRow}>
+      <IconActionButton
+        accessibilityLabel={detail.inWatchlist ? "Remove from watchlist" : "Add to watchlist"}
+        icon={detail.inWatchlist ? "bookmark" : "bookmark-outline"}
+        isActive={detail.inWatchlist}
+        isLoading={isWatchlistSaving}
+        onPress={() => onSetInWatchlist(detail.mediaType, detail.id, !detail.inWatchlist)}
+      />
 
-        <IconActionButton
-          accessibilityLabel={isWatched ? "Mark unwatched" : "Mark watched"}
-          disabled={!canToggleWatched}
-          icon={isWatched ? "checkmark" : "close"}
-          isActive={isWatched}
-          isDanger={!isWatched}
-          isLoading={isWatchSaving}
-          onPress={() => {
-            if (detail.mediaType === "movie") {
-              onSetMovieWatched(detail.id, !detail.watched);
-              return;
-            }
+      <IconActionButton
+        accessibilityLabel={isWatched ? "Mark unwatched" : "Mark watched"}
+        disabled={!canToggleWatched}
+        icon={isWatched ? "checkmark" : "close"}
+        isActive={isWatched}
+        isDanger={!isWatched}
+        isLoading={isWatchSaving}
+        onPress={() => {
+          if (detail.mediaType === "movie") {
+            onSetMovieWatched(detail.id, !detail.watched);
+            return;
+          }
 
-            onSetShowWatched(detail.id, !detail.progress.isComplete);
-          }}
-        />
-      </View>
+          onSetShowWatched(detail.id, !detail.progress.isComplete);
+        }}
+      />
+    </View>
+  );
+}
 
+function TitleActionMessages({
+  watchAction,
+  watchlistAction,
+}: {
+  watchAction: WatchActionState;
+  watchlistAction: WatchlistActionState;
+}) {
+  if (watchlistAction.kind !== "error" && watchAction.kind !== "error") {
+    return null;
+  }
+
+  return (
+    <View style={styles.actionMessageGroup}>
       {watchlistAction.kind === "error" ? <AppText tone="danger">{watchlistAction.message}</AppText> : null}
       {watchAction.kind === "error" ? <AppText tone="danger">{watchAction.message}</AppText> : null}
     </View>
@@ -323,13 +343,17 @@ export function CatalogDetailSkeleton({ mediaType }: { mediaType: MediaType }) {
       <View style={styles.hero}>
         <Skeleton height={168} width={114} />
         <View style={styles.skeletonHeroText}>
-          <Skeleton height={26} width={62} />
-          <Skeleton height={34} width="84%" />
-          <Skeleton height={14} width="54%" />
+          <View style={styles.heroHeaderRow}>
+            <View style={styles.heroTitleBlock}>
+              <Skeleton height={26} width={62} />
+              <Skeleton height={34} width="84%" />
+              <Skeleton height={14} width="54%" />
+            </View>
+
+            <QuickActionSkeleton />
+          </View>
         </View>
       </View>
-
-      <QuickActionSkeleton />
 
       <View style={styles.skeletonOverview}>
         <Skeleton height={15} />
