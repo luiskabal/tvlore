@@ -5,12 +5,12 @@ import { ui } from "./tokens";
 
 type PosterImageProps = {
   label: string;
-  size?: "default" | "large";
+  size?: "default" | "large" | "search";
   uri: string | null;
 };
 
 export function PosterImage({ label, size = "default", uri }: PosterImageProps) {
-  const frameStyle = size === "large" ? styles.large : styles.default;
+  const frameStyle = styles[size];
 
   if (uri) {
     return <Image source={{ uri }} style={[styles.poster, frameStyle]} />;
@@ -41,5 +41,9 @@ const styles = StyleSheet.create({
   poster: {
     backgroundColor: ui.color.skeleton,
     borderRadius: ui.radius.sm,
+  },
+  search: {
+    height: 112,
+    width: 76,
   },
 });

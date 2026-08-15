@@ -228,7 +228,8 @@ The Library route renders `LibraryOverview`. The Profile route renders
 and keeps the holo/tilt effect inside presentation code.
 
 `src/ui` owns the first reusable visual pool: tokens, text, buttons, badges,
-skeleton blocks, stat cards, poster frames, and media rows. These components are
+skeleton blocks, stat cards, poster frames, and media rows. Library and Search
+use this pool for repeated visual patterns. These components are
 presentation-only. They do not fetch data, resolve catalog IDs, calculate
 progress, or own domain-specific mutation logic.
 
@@ -308,7 +309,8 @@ Search uses client-side prefetch:
 `SearchScreen` owns only route/container behavior: input state, selected filter,
 debounce orchestration, resolve navigation, and hook wiring. `SearchControls`
 owns the input/filter/button UI. `SearchResults` owns result states, skeletons,
-and result rows. `search-styles.ts` owns the styling.
+and result rows. Shared visual pieces come from `src/ui`, while
+`search-styles.ts` keeps only screen-specific layout and filter styling.
 
 Movie tracking uses the same boundary:
 

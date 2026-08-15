@@ -1,7 +1,8 @@
-import { ActivityIndicator, Image, Pressable, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, View } from "react-native";
 
 import type { CatalogSearchResult } from "../api/tvlore-api";
 import { getTmdbPosterUrl } from "../catalog/posters";
+import { AppText, Badge, PosterImage, Skeleton, ui } from "../ui";
 import { styles } from "./search-styles";
 import { getResultKey, type ResolveState, type SearchState } from "./use-catalog-search";
 
@@ -26,8 +27,8 @@ export function SearchResults({
   if (search.kind === "error") {
     return (
       <View style={styles.statusPanel}>
-        <Text style={styles.statusTitle}>Search failed</Text>
-        <Text style={styles.mutedText}>{search.message}</Text>
+        <AppText variant="section">Search failed</AppText>
+        <AppText tone="muted">{search.message}</AppText>
       </View>
     );
   }
@@ -41,17 +42,17 @@ export function SearchResults({
   return (
     <View style={styles.resultsSection}>
       <View style={styles.resultsHeader}>
-        <Text style={styles.sectionTitle}>
+        <AppText style={styles.sectionTitle} variant="section">
           {search.results.length} results for {search.query}
-        </Text>
-        {isRefreshing ? <ActivityIndicator color="#1f7a5c" size="small" /> : null}
+        </AppText>
+        {isRefreshing ? <ActivityIndicator color={ui.color.accent} size="small" /> : null}
       </View>
-      {isRefreshing ? <Text style={styles.mutedText}>Updating results</Text> : null}
+      {isRefreshing ? <AppText tone="muted">Updating results</AppText> : null}
 
       {search.results.length === 0 ? (
         <View style={styles.statusPanel}>
-          <Text style={styles.statusTitle}>No results</Text>
-          <Text style={styles.mutedText}>Try another title or filter.</Text>
+          <AppText variant="section">No results</AppText>
+          <AppText tone="muted">Try another title or filter.</AppText>
         </View>
       ) : null}
 
@@ -70,8 +71,8 @@ export function SearchResults({
 function LoadingStrip({ label }: { label: string }) {
   return (
     <View style={styles.loadingStrip}>
-      <ActivityIndicator color="#1f7a5c" size="small" />
-      <Text style={styles.loadingText}>{label}</Text>
+      <ActivityIndicator color={ui.color.accent} size="small" />
+      <AppText tone="muted" variant="caption">{label}</AppText>
     </View>
   );
 }
@@ -81,11 +82,11 @@ function SearchSkeleton() {
     <View style={styles.skeletonList}>
       {[0, 1, 2].map((item) => (
         <View key={item} style={styles.skeletonRow}>
-          <View style={styles.skeletonPoster} />
+          <Skeleton height={112} width={76} />
           <View style={styles.skeletonBody}>
-            <View style={styles.skeletonTitle} />
-            <View style={styles.skeletonLine} />
-            <View style={styles.skeletonLineShort} />
+            <Skeleton height={20} width="72%" />
+            <Skeleton height={14} width="92%" />
+            <Skeleton height={14} width="62%" />
           </View>
         </View>
       ))}
@@ -122,26 +123,26 @@ function SearchResultRow({
         isResolving ? styles.disabledButton : null,
       ]}
     >
-      {result.posterPath ? (
-        <Image source={{ uri: getTmdbPosterUrl(result.posterPath) }} style={styles.poster} />
-      ) : (
-        <View style={styles.posterPlaceholder}>
-          <Text style={styles.posterPlaceholderText}>{result.mediaType === "show" ? "TV" : "M"}</Text>
-        </View>
-      )}
+      <PosterImage
+        label={result.mediaType === "show" ? "TV" : "M"}
+        size="search"
+        uri={result.posterPath ? getTmdbPosterUrl(result.posterPath) : null}
+      />
 
       <View style={styles.resultBody}>
         <View style={styles.resultHeading}>
-          <Text style={styles.resultTitle} numberOfLines={2}>{result.title}</Text>
-          <Text style={styles.mediaPill}>{result.mediaType === "show" ? "Show" : "Movie"}</Text>
+          <AppText numberOfLines={2} style={styles.resultTitle} variant="title">{result.title}</AppText>
+          <Badge label={result.mediaType === "show" ? "Show" : "Movie"} />
         </View>
-        <Text style={styles.resultMeta}>{result.year ?? "Unknown year"}</Text>
-        <Text style={styles.resultOverview} numberOfLines={3}>{result.overview || "No overview available."}</Text>
+        <AppText style={styles.resultMeta} tone="subtle" variant="caption">{result.year ?? "Unknown year"}</AppText>
+        <AppText numberOfLines={3} style={styles.resultOverview} tone="muted">
+          {result.overview || "No overview available."}
+        </AppText>
 
-        {result.tvloreId ? <Text style={styles.tvloreText}>Already in TVLore</Text> : null}
-        {resolved ? <Text style={styles.tvloreText}>Ready</Text> : null}
-        {isResolving ? <ActivityIndicator color="#1f7a5c" size="small" /> : null}
-        {resolveError ? <Text style={styles.errorText}>{resolveError}</Text> : null}
+        {result.tvloreId ? <AppText tone="accent" variant="caption">Already in TVLore</AppText> : null}
+        {resolved ? <AppText tone="accent" variant="caption">Ready</AppText> : null}
+        {isResolving ? <ActivityIndicator color={ui.color.accent} size="small" /> : null}
+        {resolveError ? <AppText tone="danger">{resolveError}</AppText> : null}
       </View>
     </Pressable>
   );

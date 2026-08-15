@@ -1,5 +1,6 @@
-import { Pressable, Text, TextInput, View } from "react-native";
+import { Pressable, TextInput, View } from "react-native";
 
+import { AppText, Button } from "../ui";
 import type { SearchFilter } from "./use-catalog-search";
 import { styles } from "./search-styles";
 
@@ -29,8 +30,8 @@ export function SearchControls({
   return (
     <>
       <View style={styles.header}>
-        <Text style={styles.title}>Search</Text>
-        <Text style={styles.subtitle}>Shows and movies</Text>
+        <AppText style={styles.title}>Search</AppText>
+        <AppText style={styles.subtitle} tone="muted">Shows and movies</AppText>
       </View>
 
       <View style={styles.searchPanel}>
@@ -56,20 +57,24 @@ export function SearchControls({
               ]}
               onPress={() => onSelectFilter(item.value)}
             >
-              <Text style={[styles.filterText, filter === item.value ? styles.activeFilterText : null]}>
+              <AppText
+                style={[styles.filterText, filter === item.value ? styles.activeFilterText : null]}
+                variant="caption"
+              >
                 {item.label}
-              </Text>
+              </AppText>
             </Pressable>
           ))}
         </View>
 
-        <Pressable
+        <Button
           disabled={!canSearch || isSearching}
-          style={[styles.primaryButton, !canSearch || isSearching ? styles.disabledButton : null]}
+          isLoading={isSearching}
+          label="Search"
+          loadingLabel="Searching"
           onPress={onSubmit}
-        >
-          <Text style={styles.primaryButtonText}>{isSearching ? "Searching" : "Search"}</Text>
-        </Pressable>
+          style={styles.searchButton}
+        />
       </View>
     </>
   );
