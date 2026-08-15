@@ -1,10 +1,15 @@
-import { Image, Linking, Pressable, View } from "react-native";
+import type { ComponentProps } from "react";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { ActivityIndicator, Image, Linking, Pressable, View } from "react-native";
 
-import type { CatalogDetailResponse, MediaType, MovieDetailResponse, ShowDetailResponse, ShowSeasonSummary, WatchProvider } from "../api/tvlore-api";
+import type { CatalogDetailResponse, MediaType, ShowDetailResponse, ShowSeasonSummary, WatchProvider } from "../api/tvlore-api";
 import { AppText, Badge, Button, PosterImage, Skeleton } from "../ui";
+import { ui } from "../ui";
 import { styles } from "./catalog-detail-styles";
 import { getTmdbLogoUrl, getTmdbPosterUrl } from "./posters";
 import type { PreferenceActionState, WatchActionState, WatchlistActionState, WatchProvidersState } from "./use-catalog-detail";
+
+type IconName = ComponentProps<typeof Ionicons>["name"];
 
 export function CatalogDetailContent({
   detail,
@@ -45,21 +50,127 @@ export function CatalogDetailContent({
         </View>
       </View>
 
+      <TitleActionRow
+        detail={detail}
+        onSetInWatchlist={onSetInWatchlist}
+        onSetMovieWatched={onSetMovieWatched}
+        onSetShowWatched={onSetShowWatched}
+        watchAction={watchAction}
+        watchlistAction={watchlistAction}
+      />
+
       <AppText style={styles.overview}>{detail.overview || "No overview available."}</AppText>
 
       <WhereToWatchPanel state={watchProvidersState} />
-      <WatchlistPanel detail={detail} onSetInWatchlist={onSetInWatchlist} watchlistAction={watchlistAction} />
       <PreferencePanel detail={detail} onSetRating={onSetRating} preferenceAction={preferenceAction} />
 
-      {detail.mediaType === "movie" ? (
-        <MovieWatchPanel movie={detail} watchAction={watchAction} onSetWatched={onSetMovieWatched} />
-      ) : (
+      {detail.mediaType === "show" ? (
         <>
-          <ShowProgressPanel show={detail} watchAction={watchAction} onSetWatched={onSetShowWatched} />
+          <ShowProgressPanel show={detail} />
           <ShowSeasonsPanel onOpenShowSeason={onOpenShowSeason} show={detail} />
         </>
-      )}
+      ) : null}
     </View>
+  );
+}
+
+function TitleActionRow({
+  detail,
+  onSetInWatchlist,
+  onSetMovieWatched,
+  onSetShowWatched,
+  watchAction,
+  watchlistAction,
+}: {
+  detail: CatalogDetailResponse;
+  onSetInWatchlist: (mediaType: MediaType, id: string, inWatchlist: boolean) => void;
+  onSetMovieWatched: (movieId: string, watched: boolean) => void;
+  onSetShowWatched: (showId: string, watched: boolean) => void;
+  watchAction: WatchActionState;
+  watchlistAction: WatchlistActionState;
+}) {
+  const isWatchlistSaving = watchlistAction.kind === "loading";
+  const isWatchSaving = watchAction.kind === "loading";
+  const isWatched = detail.mediaType === "movie" ? detail.watched : detail.progress.isComplete;
+  const canUnwatchShow = detail.mediaType === "show" && detail.progress.watchedEpisodeCount > 0;
+  const canToggleWatched = detail.mediaType === "movie" || isWatched || canUnwatchShow || detail.progress.totalEpisodeCount > 0;
+
+  return (
+    <View style={styles.quickActionGroup}>
+      <View style={styles.quickActionRow}>
+        <IconActionButton
+          accessibilityLabel={detail.inWatchlist ? "Remove from watchlist" : "Add to watchlist"}
+          icon={detail.inWatchlist ? "bookmark" : "bookmark-outline"}
+          isActive={detail.inWatchlist}
+          isLoading={isWatchlistSaving}
+          onPress={() => onSetInWatchlist(detail.mediaType, detail.id, !detail.inWatchlist)}
+        />
+
+        <IconActionButton
+          accessibilityLabel={isWatched ? "Mark unwatched" : "Mark watched"}
+          disabled={!canToggleWatched}
+          icon={isWatched ? "checkmark" : "close"}
+          isActive={isWatched}
+          isDanger={!isWatched}
+          isLoading={isWatchSaving}
+          onPress={() => {
+            if (detail.mediaType === "movie") {
+              onSetMovieWatched(detail.id, !detail.watched);
+              return;
+            }
+
+            onSetShowWatched(detail.id, !detail.progress.isComplete);
+          }}
+        />
+      </View>
+
+      {watchlistAction.kind === "error" ? <AppText tone="danger">{watchlistAction.message}</AppText> : null}
+      {watchAction.kind === "error" ? <AppText tone="danger">{watchAction.message}</AppText> : null}
+    </View>
+  );
+}
+
+function IconActionButton({
+  accessibilityLabel,
+  disabled,
+  icon,
+  isActive,
+  isDanger,
+  isLoading,
+  onPress,
+}: {
+  accessibilityLabel: string;
+  disabled?: boolean;
+  icon: IconName;
+  isActive?: boolean;
+  isDanger?: boolean;
+  isLoading?: boolean;
+  onPress: () => void;
+}) {
+  const isDisabled = disabled || isLoading;
+  const iconColor = isActive ? ui.color.white : isDanger ? ui.color.dangerDark : ui.color.accent;
+
+  return (
+    <Pressable
+      accessibilityLabel={accessibilityLabel}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: isDisabled, selected: isActive }}
+      disabled={isDisabled}
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.iconActionButton,
+        isActive ? styles.iconActionButtonActive : null,
+        isDanger && !isActive ? styles.iconActionButtonDanger : null,
+        isDisabled ? styles.iconActionButtonDisabled : null,
+        pressed ? styles.pressedSeasonRow : null,
+      ]}
+    >
+      {isLoading ? (
+        <ActivityIndicator color={iconColor} size="small" />
+      ) : (
+        <Ionicons color={iconColor} name={icon} size={24} />
+      )}
+    </Pressable>
   );
 }
 
@@ -158,36 +269,6 @@ function openWatchProviderLink(watchUrl: string | null) {
   void Linking.openURL(watchUrl).catch(() => undefined);
 }
 
-function WatchlistPanel({
-  detail,
-  onSetInWatchlist,
-  watchlistAction,
-}: {
-  detail: CatalogDetailResponse;
-  onSetInWatchlist: (mediaType: MediaType, id: string, inWatchlist: boolean) => void;
-  watchlistAction: WatchlistActionState;
-}) {
-  const isSaving = watchlistAction.kind === "loading";
-
-  return (
-    <View style={styles.statusPanel}>
-      <AppText variant="section">Watchlist</AppText>
-      <AppText tone="muted">
-        {detail.inWatchlist ? "Saved for later." : "Save this title to watch later."}
-      </AppText>
-      {watchlistAction.kind === "error" ? <AppText tone="danger">{watchlistAction.message}</AppText> : null}
-
-      <Button
-        isLoading={isSaving}
-        label={detail.inWatchlist ? "Remove from watchlist" : "Add to watchlist"}
-        loadingLabel="Saving"
-        onPress={() => onSetInWatchlist(detail.mediaType, detail.id, !detail.inWatchlist)}
-        variant={detail.inWatchlist ? "secondary" : "primary"}
-      />
-    </View>
-  );
-}
-
 function PreferencePanel({
   detail,
   onSetRating,
@@ -248,6 +329,8 @@ export function CatalogDetailSkeleton({ mediaType }: { mediaType: MediaType }) {
         </View>
       </View>
 
+      <QuickActionSkeleton />
+
       <View style={styles.skeletonOverview}>
         <Skeleton height={15} />
         <Skeleton height={15} />
@@ -257,30 +340,17 @@ export function CatalogDetailSkeleton({ mediaType }: { mediaType: MediaType }) {
       <ActionPanelSkeleton />
       <ActionPanelSkeleton />
 
-      {mediaType === "movie" ? (
-        <ActionPanelSkeleton />
-      ) : (
+      {mediaType === "show" ? (
         <>
           <ActionPanelSkeleton />
           <ShowSeasonsSkeleton />
         </>
-      )}
+      ) : null}
     </View>
   );
 }
 
-function ShowProgressPanel({
-  onSetWatched,
-  show,
-  watchAction,
-}: {
-  onSetWatched: (showId: string, watched: boolean) => void;
-  show: ShowDetailResponse;
-  watchAction: WatchActionState;
-}) {
-  const isSaving = watchAction.kind === "loading";
-  const canUnwatch = show.progress.watchedEpisodeCount > 0;
-
+function ShowProgressPanel({ show }: { show: ShowDetailResponse }) {
   return (
     <View style={styles.statusPanel}>
       <AppText variant="section">Progress</AppText>
@@ -290,28 +360,6 @@ function ShowProgressPanel({
           Next S{show.progress.nextEpisode.seasonNumber} E{show.progress.nextEpisode.episodeNumber} - {show.progress.nextEpisode.title}
         </AppText>
       ) : null}
-      {watchAction.kind === "error" ? <AppText tone="danger">{watchAction.message}</AppText> : null}
-
-      <View style={styles.actionRow}>
-        <Button
-          disabled={isSaving || show.progress.isComplete}
-          isLoading={isSaving}
-          label="Mark watched"
-          loadingLabel="Saving"
-          onPress={() => onSetWatched(show.id, true)}
-          size="small"
-        />
-
-        <Button
-          disabled={isSaving || !canUnwatch}
-          isLoading={isSaving}
-          label="Mark unwatched"
-          loadingLabel="Saving"
-          onPress={() => onSetWatched(show.id, false)}
-          size="small"
-          variant="secondary"
-        />
-      </View>
     </View>
   );
 }
@@ -393,29 +441,11 @@ function ActionPanelSkeleton() {
   );
 }
 
-function MovieWatchPanel({
-  movie,
-  onSetWatched,
-  watchAction,
-}: {
-  movie: MovieDetailResponse;
-  onSetWatched: (movieId: string, watched: boolean) => void;
-  watchAction: WatchActionState;
-}) {
+function QuickActionSkeleton() {
   return (
-    <View style={styles.statusPanel}>
-      <AppText variant="section">Watch state</AppText>
-      <AppText tone="muted">{getStatusLine(movie)}</AppText>
-      {movie.lastWatchedAt ? (
-        <AppText tone="muted">Last watched {formatDate(movie.lastWatchedAt)}</AppText>
-      ) : null}
-      {watchAction.kind === "error" ? <AppText tone="danger">{watchAction.message}</AppText> : null}
-
-      <Button
-        label={movie.watched ? "Mark unwatched" : "Mark watched"}
-        onPress={() => onSetWatched(movie.id, !movie.watched)}
-        variant={movie.watched ? "secondary" : "primary"}
-      />
+    <View style={styles.quickActionRow}>
+      <Skeleton height={48} width={48} />
+      <Skeleton height={48} width={48} />
     </View>
   );
 }
@@ -429,12 +459,8 @@ function getMetadata(detail: CatalogDetailResponse) {
   return detail.runtimeMinutes ? `${year} - ${detail.runtimeMinutes} min` : year;
 }
 
-function getStatusLine(detail: CatalogDetailResponse) {
-  if (detail.mediaType === "show") {
-    return `${detail.seasons.length} seasons available`;
-  }
-
-  return detail.watched ? `Watched ${formatCount(detail.watchCount, "time")}` : "Not watched yet";
+function getStatusLine(show: ShowDetailResponse) {
+  return `${show.seasons.length} seasons available`;
 }
 
 function getShowProgressLine(show: ShowDetailResponse) {

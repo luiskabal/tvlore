@@ -3,11 +3,6 @@ import { StyleSheet } from "react-native";
 import { ui } from "../ui";
 
 export const styles = StyleSheet.create({
-  actionRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-  },
   backButton: {
     alignSelf: "flex-start",
     paddingVertical: 4,
@@ -34,6 +29,27 @@ export const styles = StyleSheet.create({
     flex: 1,
     gap: 8,
     justifyContent: "center",
+  },
+  iconActionButton: {
+    alignItems: "center",
+    backgroundColor: ui.color.panel,
+    borderColor: ui.color.border,
+    borderRadius: ui.radius.pill,
+    borderWidth: 1,
+    height: 48,
+    justifyContent: "center",
+    width: 48,
+  },
+  iconActionButtonActive: {
+    backgroundColor: ui.color.accent,
+    borderColor: ui.color.accent,
+  },
+  iconActionButtonDanger: {
+    backgroundColor: "#fbecea",
+    borderColor: ui.color.danger,
+  },
+  iconActionButtonDisabled: {
+    opacity: 0.56,
   },
   overview: {
     fontSize: 16,
@@ -82,6 +98,14 @@ export const styles = StyleSheet.create({
   providerSkeletonRow: {
     flexDirection: "row",
     gap: 8,
+  },
+  quickActionGroup: {
+    gap: 8,
+  },
+  quickActionRow: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 10,
   },
   ratingButton: {
     alignItems: "center",
