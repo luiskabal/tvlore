@@ -914,11 +914,15 @@ function assertRecommendations(body) {
   expectRecord(body.basis, "recommendations.basis");
   expectNullableNumber(body.basis.averageMovieRating, "recommendations.basis.averageMovieRating");
   expectNullableNumber(body.basis.averageShowRating, "recommendations.basis.averageShowRating");
+  expectArray(body.basis.preferredGenreNames, "recommendations.basis.preferredGenreNames");
+  body.basis.preferredGenreNames.forEach((genreName) => expectString(genreName, "recommendations.basis.preferredGenreNames item"));
   expectInteger(body.basis.ratedTitleCount, "recommendations.basis.ratedTitleCount");
   expectArray(body.items, "recommendations.items");
 
   for (const item of body.items) {
     expectRecord(item, "recommendations item");
+    expectArray(item.genreNames, "recommendations item.genreNames");
+    item.genreNames.forEach((genreName) => expectString(genreName, "recommendations item.genreNames item"));
     expectUuid(item.id, "recommendations item.id");
     expectMediaType(item.mediaType, "recommendations item.mediaType");
     expectString(item.title, "recommendations item.title");

@@ -20,11 +20,11 @@ export class RecommendationsRepository {
       movieWatches,
     ] = await Promise.all([
       client.showPreference.findMany({
-        select: { rating: true, showId: true },
+        select: { rating: true, show: { select: { genreNames: true } }, showId: true },
         where: { userId },
       }),
       client.moviePreference.findMany({
-        select: { movieId: true, rating: true },
+        select: { movie: { select: { genreNames: true } }, movieId: true, rating: true },
         where: { userId },
       }),
       client.showWatchlistItem.findMany({
@@ -47,12 +47,14 @@ export class RecommendationsRepository {
     const averageShowRating = getAverageRating(showPreferences);
     const averageMovieRating = getAverageRating(moviePreferences);
     const mediaOrder = getMediaOrder(averageShowRating, averageMovieRating);
+    const preferredGenreNames = getPreferredGenreNames(showPreferences, moviePreferences);
 
     if (mediaOrder.length === 0) {
       return {
         basis: {
           averageMovieRating,
           averageShowRating,
+          preferredGenreNames,
           ratedTitleCount: 0,
         },
         items: [],
@@ -72,26 +74,27 @@ export class RecommendationsRepository {
     const [shows, movies] = await Promise.all([
       client.show.findMany({
         orderBy: { updatedAt: "desc" },
-        select: { id: true, overview: true, posterPath: true, title: true },
-        take: 10,
+        select: { genreNames: true, id: true, overview: true, posterPath: true, title: true },
+        take: 20,
         where: withoutIds(excludedShowIds),
       }),
       client.movie.findMany({
         orderBy: { updatedAt: "desc" },
-        select: { id: true, overview: true, posterPath: true, title: true },
-        take: 10,
+        select: { genreNames: true, id: true, overview: true, posterPath: true, title: true },
+        take: 20,
         where: withoutIds(excludedMovieIds),
       }),
     ]);
     const itemsByType = {
-      movie: movies.map((movie) => toRecommendation(movie, "movie", averageMovieRating)),
-      show: shows.map((show) => toRecommendation(show, "show", averageShowRating)),
+      movie: rankByGenreMatch(movies, preferredGenreNames).slice(0, 10).map((movie) => toRecommendation(movie, "movie", averageMovieRating)),
+      show: rankByGenreMatch(shows, preferredGenreNames).slice(0, 10).map((show) => toRecommendation(show, "show", averageShowRating)),
     };
 
     return {
       basis: {
         averageMovieRating,
         averageShowRating,
+        preferredGenreNames,
         ratedTitleCount: showPreferences.length + moviePreferences.length,
       },
       items: mediaOrder.flatMap((mediaType) => itemsByType[mediaType]).slice(0, 10),
@@ -100,7 +103,7 @@ export class RecommendationsRepository {
 }
 
 function toRecommendation(
-  item: { id: string; overview: string; posterPath: string | null; title: string },
+  item: { genreNames: string[]; id: string; overview: string; posterPath: string | null; title: string },
   mediaType: MediaType,
   averageRating: number | null,
 ): RecommendationItemDto {
@@ -109,6 +112,30 @@ function toRecommendation(
     mediaType,
     reason: averageRating === null ? "from_catalog" : mediaType === "movie" ? "based_on_movie_ratings" : "based_on_show_ratings",
   };
+}
+
+function getPreferredGenreNames(
+  showPreferences: Array<{ rating: number; show: { genreNames: string[] } }>,
+  moviePreferences: Array<{ movie: { genreNames: string[] }; rating: number }>,
+) {
+  return unique([
+    ...showPreferences.filter((item) => item.rating >= 4).flatMap((item) => item.show.genreNames),
+    ...moviePreferences.filter((item) => item.rating >= 4).flatMap((item) => item.movie.genreNames),
+  ]);
+}
+
+function rankByGenreMatch<T extends { genreNames: string[] }>(items: T[], preferredGenreNames: string[]) {
+  if (preferredGenreNames.length === 0) {
+    return items;
+  }
+
+  const preferred = new Set(preferredGenreNames);
+
+  return [...items].sort((left, right) => getGenreScore(right, preferred) - getGenreScore(left, preferred));
+}
+
+function getGenreScore(item: { genreNames: string[] }, preferredGenreNames: Set<string>) {
+  return item.genreNames.filter((genreName) => preferredGenreNames.has(genreName)).length;
 }
 
 function getMediaOrder(averageShowRating: number | null, averageMovieRating: number | null): MediaType[] {

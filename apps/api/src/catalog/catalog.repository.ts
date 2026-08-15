@@ -247,6 +247,7 @@ export class CatalogRepository {
       const data = {
         backdropPath: item.backdropPath,
         firstAirDate: toDate(item.firstAirDate),
+        genreNames: item.genreNames,
         originalTitle: item.originalTitle,
         overview: item.overview,
         posterPath: item.posterPath,
@@ -287,6 +288,7 @@ export class CatalogRepository {
       });
       const data = {
         backdropPath: item.backdropPath,
+        genreNames: item.genreNames,
         originalTitle: item.originalTitle,
         overview: item.overview,
         posterPath: item.posterPath,

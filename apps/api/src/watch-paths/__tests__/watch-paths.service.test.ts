@@ -62,6 +62,7 @@ describe("WatchPathsService", () => {
         backdropPath: null,
         externalRef: { provider: "tmdb", providerId: input.providerId },
         firstAirDate: null,
+        genreNames: [],
         mediaType: input.mediaType,
         originalTitle: null,
         overview: "",

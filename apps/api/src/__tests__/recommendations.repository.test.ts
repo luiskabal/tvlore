@@ -14,6 +14,14 @@ describe("RecommendationsRepository", () => {
       movie: {
         findMany: vi.fn().mockResolvedValue([
           {
+            genreNames: [],
+            id: "movie-candidate-without-genre-match",
+            overview: "A candidate movie without matching genres.",
+            posterPath: null,
+            title: "Candidate Movie Without Match",
+          },
+          {
+            genreNames: ["Action", "Sci-Fi"],
             id: "movie-candidate",
             overview: "A candidate movie.",
             posterPath: null,
@@ -22,7 +30,7 @@ describe("RecommendationsRepository", () => {
         ]),
       },
       moviePreference: {
-        findMany: vi.fn().mockResolvedValue([{ movieId: "rated-movie", rating: 5 }]),
+        findMany: vi.fn().mockResolvedValue([{ movie: { genreNames: ["Action"] }, movieId: "rated-movie", rating: 5 }]),
       },
       movieWatch: {
         findMany: vi.fn().mockResolvedValue([{ movieId: "watched-movie" }]),
@@ -33,6 +41,7 @@ describe("RecommendationsRepository", () => {
       show: {
         findMany: vi.fn().mockResolvedValue([
           {
+            genreNames: ["Drama"],
             id: "show-candidate",
             overview: "A candidate show.",
             posterPath: "/show.jpg",
@@ -41,7 +50,7 @@ describe("RecommendationsRepository", () => {
         ]),
       },
       showPreference: {
-        findMany: vi.fn().mockResolvedValue([{ rating: 3, showId: "rated-show" }]),
+        findMany: vi.fn().mockResolvedValue([{ rating: 3, show: { genreNames: ["Drama"] }, showId: "rated-show" }]),
       },
       showWatchlistItem: {
         findMany: vi.fn().mockResolvedValue([{ showId: "saved-show" }]),
@@ -53,10 +62,12 @@ describe("RecommendationsRepository", () => {
       basis: {
         averageMovieRating: 5,
         averageShowRating: 3,
+        preferredGenreNames: ["Action"],
         ratedTitleCount: 2,
       },
       items: [
         {
+          genreNames: ["Action", "Sci-Fi"],
           id: "movie-candidate",
           mediaType: "movie",
           overview: "A candidate movie.",
@@ -65,6 +76,16 @@ describe("RecommendationsRepository", () => {
           title: "Candidate Movie",
         },
         {
+          genreNames: [],
+          id: "movie-candidate-without-genre-match",
+          mediaType: "movie",
+          overview: "A candidate movie without matching genres.",
+          posterPath: null,
+          reason: "based_on_movie_ratings",
+          title: "Candidate Movie Without Match",
+        },
+        {
+          genreNames: ["Drama"],
           id: "show-candidate",
           mediaType: "show",
           overview: "A candidate show.",
@@ -99,6 +120,7 @@ describe("RecommendationsRepository", () => {
       basis: {
         averageMovieRating: null,
         averageShowRating: null,
+        preferredGenreNames: [],
         ratedTitleCount: 0,
       },
       items: [],

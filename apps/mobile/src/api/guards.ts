@@ -92,6 +92,8 @@ export function isRecommendationsResponse(value: unknown): value is Recommendati
   return (
     isNullableNumber(value.basis.averageMovieRating) &&
     isNullableNumber(value.basis.averageShowRating) &&
+    Array.isArray(value.basis.preferredGenreNames) &&
+    value.basis.preferredGenreNames.every(isString) &&
     typeof value.basis.ratedTitleCount === "number" &&
     Array.isArray(value.items) &&
     value.items.every(isRecommendationItem)
@@ -105,6 +107,8 @@ function isRecommendationItem(value: unknown): value is RecommendationItem {
 
   return (
     isMediaType(value.mediaType) &&
+    Array.isArray(value.genreNames) &&
+    value.genreNames.every(isString) &&
     typeof value.id === "string" &&
     typeof value.title === "string" &&
     typeof value.overview === "string" &&
@@ -506,6 +510,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function isNullableString(value: unknown) {
   return value === null || typeof value === "string";
+}
+
+function isString(value: unknown): value is string {
+  return typeof value === "string";
 }
 
 function isNullableNumber(value: unknown) {

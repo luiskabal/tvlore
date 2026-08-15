@@ -23,7 +23,7 @@ Implemented:
 - Authenticated watchlist endpoints for shows and movies.
 - Authenticated rating preference endpoints for shows and movies.
 - Authenticated personal library and show progress read endpoints.
-- Authenticated first-pass recommendation endpoint from stored ratings and hydrated catalog rows.
+- Authenticated first-pass recommendation endpoint from stored ratings, hydrated catalog rows, and persisted genre names.
 - Authenticated curated Watch Paths endpoint with backend-owned ordered viewing lists.
 - Authenticated Watch Path save-to-watchlist endpoint that resolves every path item and saves it for the user.
 - Authenticated Watch Path detail includes per-user saved count and item saved state.
@@ -65,7 +65,7 @@ Implemented:
 Not implemented yet:
 
 - Social matching.
-- Richer recommendation ranking with genres, providers, or collaborative signals.
+- Richer recommendation ranking with providers or collaborative signals.
 - User-owned availability country preference.
 
 ## 2. Current System Diagram
@@ -518,6 +518,7 @@ erDiagram
     string posterPath
     string backdropPath
     date firstAirDate
+    string[] genreNames
     datetime createdAt
     datetime updatedAt
   }
@@ -531,6 +532,7 @@ erDiagram
     string backdropPath
     date releaseDate
     int runtimeMinutes
+    string[] genreNames
     datetime createdAt
     datetime updatedAt
   }
@@ -626,8 +628,8 @@ Current tables:
 - `users`: TVLore account/profile row.
 - `user_identities`: links a TVLore user to Supabase Auth.
 - `refresh_sessions`: exists for the originally planned TVLore-owned refresh-token model; Supabase owns sessions in the current MVP.
-- `shows`: internal TVLore show records created by resolve.
-- `movies`: internal TVLore movie records created by resolve.
+- `shows`: internal TVLore show records created by resolve, including persisted TMDB genre names.
+- `movies`: internal TVLore movie records created by resolve, including persisted TMDB genre names.
 - `seasons`: internal TVLore season records created from TMDB show details.
 - `episodes`: internal TVLore episode records created when a season is opened.
 - `external_identifiers`: maps TVLore IDs to provider refs like `tmdb:70523`.
@@ -746,7 +748,7 @@ Expected behavior:
 - `DELETE /movies/:movieId/preference` clears that movie rating for the authenticated user.
 - `GET /library` returns personal summary, rated titles, continue-watching, watchlist, recently watched activity, and full watched episode activity.
 - `GET /library/chronology` returns paginated personal movie/episode watch-history activity.
-- `GET /recommendations` returns unrated, unwatched, unsaved catalog candidates ordered by the user's stronger rated media type.
+- `GET /recommendations` returns unrated, unwatched, unsaved catalog candidates ordered by the user's stronger rated media type and preferred genre matches.
 - `GET /watch-paths` returns curated ordered viewing paths, and `GET /watch-paths/:pathId` returns path items with existing TVLore IDs plus per-user watchlist saved state when already resolved.
 - `POST /watch-paths/:pathId/watchlist` resolves every path item and saves the resulting shows or movies to the authenticated user's watchlist.
 - `POST /shows/:showId/watches` hydrates the show seasons, marks every episode watched, and returns completed show progress.
@@ -886,6 +888,7 @@ Product foundation:
 - Watch tracking is stored against internal TVLore IDs and authenticated user IDs.
 - Watchlist intent is stored against internal TVLore IDs and authenticated user IDs.
 - Rating preferences are stored against internal TVLore IDs and authenticated user IDs.
+- Genre names are persisted on resolved shows and movies from TMDB detail responses.
 - Show progress status is calculated by the backend from persisted episode watches.
 - Mobile can render backend-owned library data through the same Supabase token used by Postman.
 - Mobile can search TMDB-backed catalog data without receiving TMDB credentials.
@@ -931,22 +934,22 @@ The remaining near-term frontend product flow is:
 
 ```text
 Richer loading and mutation feedback
--> recommendation quality once catalog signals improve
+-> recommendation quality from provider/country signals
 -> social matching after the personal library loop stays stable
 ```
 
 ## 14. Recommended Next Step
 
-Improve recommendation quality by persisting richer catalog signals:
+Improve recommendation quality with availability/provider signals:
 
 ```text
 Resolve show or movie
--> persist genres/provider signals
--> use ratings plus content metadata for recommendations
+-> persist provider/country availability intent
+-> use ratings plus genre/provider metadata for recommendations
 ```
 
 Why this is next:
 
 - Watched history, watchlist, ratings, and bulk tracking now cover the core personal-library loop.
-- Recommendations currently use only hydrated catalog rows and explicit ratings.
-- Stronger catalog metadata will improve suggestions without adding social complexity yet.
+- Recommendations now use explicit ratings, hydrated catalog rows, and genre names.
+- Provider/country signals can improve suggestions without adding social complexity yet.

@@ -8,7 +8,6 @@ No active infrastructure tasks.
 
 ## Next
 
-- [ ] Persist richer catalog signals, such as genres, before improving recommendation quality.
 - [ ] Add user-owned imported or fetched watch paths after approving persistence/schema shape.
 - [ ] Store the user's preferred availability country instead of relying on device-locale fallback.
 
@@ -94,6 +93,7 @@ No active infrastructure tasks.
 - [x] Add personal show/movie rating preferences.
 - [x] Surface rated shows and movies in Library/Profile.
 - [x] Start first recommendation slice from stored ratings.
+- [x] Persist catalog genre names and use them to rank recommendation candidates.
 - [x] Let recommendation rows save directly to watchlist.
 - [x] Keep recommendations out of Profile and scoped to Library.
 - [x] Add backend-owned show-level mark all watched/unwatched.

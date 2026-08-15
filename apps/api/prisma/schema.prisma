@@ -65,6 +65,7 @@ model Show {
   posterPath     String?             @map("poster_path")
   backdropPath   String?             @map("backdrop_path")
   firstAirDate   DateTime?           @map("first_air_date") @db.Date
+  genreNames     String[]            @default([]) @map("genre_names")
   createdAt      DateTime            @default(now()) @map("created_at")
   updatedAt      DateTime            @updatedAt @map("updated_at")
   episodes       Episode[]
@@ -84,6 +85,7 @@ model Movie {
   backdropPath   String?              @map("backdrop_path")
   releaseDate    DateTime?            @map("release_date") @db.Date
   runtimeMinutes Int?                 @map("runtime_minutes")
+  genreNames     String[]             @default([]) @map("genre_names")
   createdAt      DateTime             @default(now()) @map("created_at")
   updatedAt      DateTime             @updatedAt @map("updated_at")
   preferences    MoviePreference[]

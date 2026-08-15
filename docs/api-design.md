@@ -1350,11 +1350,13 @@ Response:
   "basis": {
     "averageShowRating": 4.5,
     "averageMovieRating": 3.8,
+    "preferredGenreNames": ["Drama", "Mystery"],
     "ratedTitleCount": 8
   },
   "items": [
     {
       "mediaType": "show",
+      "genreNames": ["Drama", "Sci-Fi"],
       "id": "uuid",
       "title": "Severance",
       "overview": "Mark leads a team...",
@@ -1363,6 +1365,7 @@ Response:
     },
     {
       "mediaType": "movie",
+      "genreNames": ["Drama"],
       "id": "uuid",
       "title": "Arrival",
       "overview": "Taking place after alien crafts land...",
@@ -1384,6 +1387,7 @@ Business validation:
 
 - The endpoint excludes titles the user has already rated, watched, or saved to watchlist.
 - The first heuristic prioritizes the media type with the user's higher average rating.
+- Highly rated titles contribute preferred genre names, and candidates sharing those genres are ordered first.
 - Results are limited to catalog rows already persisted in TVLore; the MVP does not call TMDB from this endpoint.
 - If the user has no rating preferences yet, `items` is empty.
 

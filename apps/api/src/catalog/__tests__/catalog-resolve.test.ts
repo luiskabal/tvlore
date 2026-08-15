@@ -29,6 +29,7 @@ describe("resolved TMDB detail mapping", () => {
     expect(toResolvedShow({
       backdrop_path: "/backdrop.jpg",
       first_air_date: "2017-12-01",
+      genres: [{ id: 18, name: "Drama" }, { id: 9648, name: "Mystery" }],
       name: "Dark",
       original_name: "Dark",
       overview: "A family saga.",
@@ -37,6 +38,7 @@ describe("resolved TMDB detail mapping", () => {
       backdropPath: "/backdrop.jpg",
       externalRef: { provider: "tmdb", providerId: "70523" },
       firstAirDate: "2017-12-01",
+      genreNames: ["Drama", "Mystery"],
       mediaType: "show",
       originalTitle: "Dark",
       overview: "A family saga.",
@@ -50,11 +52,13 @@ describe("resolved TMDB detail mapping", () => {
 
   it("maps a movie detail response", () => {
     expect(toResolvedMovie({
+      genres: [{ id: 18, name: "Drama" }, { name: "" }, null],
       release_date: "2008-07-16",
       runtime: 152,
       title: "The Dark Knight",
     }, "155")).toMatchObject({
       externalRef: { provider: "tmdb", providerId: "155" },
+      genreNames: ["Drama"],
       mediaType: "movie",
       releaseDate: "2008-07-16",
       runtimeMinutes: 152,

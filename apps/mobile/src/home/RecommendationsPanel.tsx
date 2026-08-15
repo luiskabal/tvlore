@@ -94,7 +94,7 @@ function RecommendationRow({
   return (
     <View style={styles.listItem}>
       <MediaRow
-        detail={getReasonText(item.reason)}
+        detail={getRecommendationDetail(item)}
         frame={false}
         onPress={openItem}
         posterLabel={item.mediaType === "movie" ? "M" : "TV"}
@@ -109,6 +109,13 @@ function RecommendationRow({
       />
     </View>
   );
+}
+
+function getRecommendationDetail(item: RecommendationItem) {
+  const genres = item.genreNames.slice(0, 2).join(", ");
+  const reason = getReasonText(item.reason);
+
+  return genres ? `${genres} - ${reason}` : reason;
 }
 
 function getReasonText(reason: RecommendationItem["reason"]) {

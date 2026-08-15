@@ -146,7 +146,7 @@ Recommendations follow the same shape:
 
 - `RecommendationsController`: HTTP route only.
 - `RecommendationsService`: resolves the authenticated TVLore user.
-- `RecommendationsRepository`: reads existing ratings, watched state, watchlist rows, and hydrated catalog candidates.
+- `RecommendationsRepository`: reads existing ratings, watched state, watchlist rows, preferred genres, and hydrated catalog candidates.
 - The current MVP heuristic stays database-backed and does not call TMDB from the recommendation endpoint.
 
 Watch Paths follow the same shape without adding new persistence yet:

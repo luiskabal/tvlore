@@ -40,7 +40,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Holographic mobile profile summary card with Google avatar and library stats.
 - Continue-watching and recently-watched data from the backend.
 - Rated show/movie list from the backend.
-- First-pass recommendations from stored rating preferences and hydrated catalog data.
+- First-pass recommendations from stored rating preferences, hydrated catalog data, and persisted genre names.
 - Recommendation rows can be saved directly to the watchlist with optimistic feedback.
 - Library recommendations live in their own `For you` filter, and rows navigate back into movie and show detail screens.
 - Library/Profile keeps prior data during refresh and shows skeletons on first load.
@@ -86,7 +86,7 @@ Use `corepack pnpm api:check` for local/Vercel HTTP smoke checks.
 
 ## Next Backlog Items
 
-- Refine recommendation quality after storing richer catalog signals such as genres or providers.
+- Refine recommendation quality with provider/country signals after the genre baseline.
 - Add user-owned imported watch paths after approving persistence/schema shape.
 - Store the user's preferred availability country instead of relying on device-locale fallback.
 

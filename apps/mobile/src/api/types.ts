@@ -31,12 +31,14 @@ export type RecommendationsResponse = {
   basis: {
     averageMovieRating: number | null;
     averageShowRating: number | null;
+    preferredGenreNames: string[];
     ratedTitleCount: number;
   };
   items: RecommendationItem[];
 };
 
 export type RecommendationItem = {
+  genreNames: string[];
   id: string;
   mediaType: MediaType;
   overview: string;

@@ -43,6 +43,7 @@ export function toResolvedShow(value: unknown, providerId: string): CatalogResol
     backdropPath: getString(value.backdrop_path),
     externalRef: { provider: "tmdb", providerId },
     firstAirDate: getDateString(value.first_air_date),
+    genreNames: getGenreNames(value.genres),
     mediaType: "show",
     originalTitle: getString(value.original_name),
     overview: getString(value.overview) ?? "",
@@ -69,6 +70,7 @@ export function toResolvedMovie(value: unknown, providerId: string): CatalogReso
     backdropPath: getString(value.backdrop_path),
     externalRef: { provider: "tmdb", providerId },
     firstAirDate: null,
+    genreNames: getGenreNames(value.genres),
     mediaType: "movie",
     originalTitle: getString(value.original_title),
     overview: getString(value.overview) ?? "",
@@ -78,6 +80,16 @@ export function toResolvedMovie(value: unknown, providerId: string): CatalogReso
     seasons: [],
     title,
   };
+}
+
+function getGenreNames(value: unknown) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .map((genre) => isRecord(genre) ? getString(genre.name) : null)
+    .filter((name): name is string => Boolean(name));
 }
 
 function getResolvedSeasonSummaries(value: unknown): CatalogResolvedSeasonSummary[] {

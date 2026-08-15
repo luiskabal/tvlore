@@ -39,6 +39,7 @@ export type CatalogResolvedItem = {
   backdropPath: string | null;
   externalRef: CatalogExternalRefDto;
   firstAirDate: string | null;
+  genreNames: string[];
   mediaType: MediaType;
   originalTitle: string | null;
   overview: string;

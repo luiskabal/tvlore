@@ -1,10 +1,12 @@
 export type RecommendationBasisDto = {
   averageMovieRating: number | null;
   averageShowRating: number | null;
+  preferredGenreNames: string[];
   ratedTitleCount: number;
 };
 
 export type RecommendationItemDto = {
+  genreNames: string[];
   id: string;
   mediaType: "movie" | "show";
   overview: string;
