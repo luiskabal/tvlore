@@ -113,7 +113,6 @@ function toRecommendation(
     ...item,
     mediaType,
     reason: averageRating === null ? "from_catalog" : mediaType === "movie" ? "based_on_movie_ratings" : "based_on_show_ratings",
-    streamingAvailable: false,
   };
 }
 

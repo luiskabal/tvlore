@@ -56,9 +56,9 @@ describe("RecommendationsService", () => {
     await expect(service.getRecommendations("Bearer token")).resolves.toMatchObject({
       basis: { availabilityCountry: "CL" },
       items: [
-        { id: "movie-available", mediaType: "movie", streamingAvailable: true },
-        { id: "movie-unavailable", mediaType: "movie", streamingAvailable: false },
-        { id: "show-available", mediaType: "show", streamingAvailable: true },
+        { id: "movie-available", mediaType: "movie" },
+        { id: "movie-unavailable", mediaType: "movie" },
+        { id: "show-available", mediaType: "show" },
       ],
     });
 
@@ -77,7 +77,6 @@ function recommendation(id: string, mediaType: "movie" | "show") {
     overview: `${id} overview`,
     posterPath: null,
     reason: mediaType === "movie" ? "based_on_movie_ratings" : "based_on_show_ratings",
-    streamingAvailable: false,
     title: id,
   };
 }

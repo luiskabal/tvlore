@@ -42,7 +42,7 @@ Implemented:
 - Mobile tracking mutations invalidate the local library data.
 - Mobile watchlist mutations invalidate the local library data.
 - Mobile Library/Profile refresh authenticated library data after tracking changes.
-- Mobile Library can show backend-owned recommendation candidates with streaming availability context.
+- Mobile Library can show backend-owned recommendation candidates, while visible streaming availability stays in detail screens.
 - Mobile recommendation rows can save titles directly to the watchlist with optimistic feedback.
 - Mobile Library shows watchlist titles and rated titles separately from watched history.
 - Mobile Library summary cards filter Cronologia, recommendations, continuing shows, recently watched movies, watched episodes grouped by show and season, watchlist, and rated titles.
@@ -816,7 +816,7 @@ Current behavior:
 - Library shows continue-watching and recently watched rows when the backend has watched data.
 - Library shows saved watchlist rows when the backend has watchlist data.
 - Library shows rated show/movie rows when the backend has rating preference data.
-- Library shows recommendation rows in a dedicated `For you` filter when the backend has eligible catalog candidates, and rows can display whether the title streams in the user's saved country.
+- Library shows recommendation rows in a dedicated `For you` filter when the backend has eligible catalog candidates. Availability is intentionally shown only after opening a title detail.
 - Recommendation rows open the matching show or movie detail screen.
 - Recommendation rows can save the title to watchlist immediately, then reconcile through the existing library refresh invalidator.
 - Library can filter from its summary cards between Cronologia, recommendations, continuing shows, recently watched movies, watched episodes grouped by show and season, saved titles, and rated titles. Cronologia shows paginated watched movies and episodes by date.

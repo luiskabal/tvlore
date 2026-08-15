@@ -115,8 +115,7 @@ function isRecommendationItem(value: unknown): value is RecommendationItem {
     typeof value.title === "string" &&
     typeof value.overview === "string" &&
     isNullableString(value.posterPath) &&
-    isRecommendationReason(value.reason) &&
-    typeof value.streamingAvailable === "boolean"
+    isRecommendationReason(value.reason)
   );
 }
 

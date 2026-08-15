@@ -13,7 +13,6 @@ export type RecommendationItemDto = {
   overview: string;
   posterPath: string | null;
   reason: "based_on_movie_ratings" | "based_on_show_ratings" | "from_catalog";
-  streamingAvailable: boolean;
   title: string;
 };
 

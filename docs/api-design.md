@@ -1414,8 +1414,7 @@ Response:
       "title": "Severance",
       "overview": "Mark leads a team...",
       "posterPath": "/path.jpg",
-      "reason": "based_on_show_ratings",
-      "streamingAvailable": true
+      "reason": "based_on_show_ratings"
     },
     {
       "mediaType": "movie",
@@ -1424,8 +1423,7 @@ Response:
       "title": "Arrival",
       "overview": "Taking place after alien crafts land...",
       "posterPath": "/path.jpg",
-      "reason": "based_on_movie_ratings",
-      "streamingAvailable": false
+      "reason": "based_on_movie_ratings"
     }
   ]
 }
@@ -1445,6 +1443,7 @@ Business validation:
 - Highly rated titles contribute preferred genre names, and candidates sharing those genres are ordered first.
 - Within each media type, titles available to stream in the user's saved availability country are ranked before titles without subscription-streaming availability.
 - Results are limited to catalog rows already persisted in TVLore; the endpoint only calls TMDB Watch Providers for the final candidate set.
+- The response does not expose provider buckets; visible availability remains in show/movie detail through the dedicated watch-provider endpoints.
 - If the user has no rating preferences yet, `items` is empty.
 
 Errors: `UNAUTHORIZED`.

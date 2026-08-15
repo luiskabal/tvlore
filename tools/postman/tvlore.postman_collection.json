@@ -1710,7 +1710,6 @@
                   "    pm.expect(item.overview).to.be.a('string');",
                   "    pm.expect(item.posterPath === null || typeof item.posterPath === 'string').to.eql(true);",
                   "    pm.expect(['based_on_movie_ratings', 'based_on_show_ratings', 'from_catalog']).to.include(item.reason);",
-                  "    pm.expect(item.streamingAvailable).to.be.a('boolean');",
                   "  });",
                   "});"
                 ]

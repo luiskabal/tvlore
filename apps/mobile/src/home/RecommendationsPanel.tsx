@@ -3,7 +3,6 @@ import { Text, View } from "react-native";
 
 import type { RecommendationItem, RecommendationsResponse } from "../api/tvlore-api";
 import { getTmdbPosterUrl } from "../catalog/posters";
-import { formatWatchCountry } from "../catalog/watch-country";
 import { Button, MediaRow } from "../ui";
 import { styles } from "./home-styles";
 import {
@@ -56,7 +55,6 @@ export function RecommendationsPanel({
         <RecommendationRow
           item={item}
           key={`${item.mediaType}-${item.id}`}
-          availabilityCountry={recommendations.basis.availabilityCountry}
           onOpenMovie={onOpenMovie}
           onSaveToWatchlist={(selectedItem) => {
             const actionKey = getRecommendationActionKey(selectedItem);
@@ -74,13 +72,11 @@ export function RecommendationsPanel({
 }
 
 function RecommendationRow({
-  availabilityCountry,
   item,
   onOpenMovie,
   onOpenShow,
   onSaveToWatchlist,
 }: {
-  availabilityCountry: string;
   item: RecommendationItem;
   onOpenMovie: (movieId: string) => void;
   onOpenShow: (showId: string) => void;
@@ -98,7 +94,7 @@ function RecommendationRow({
   return (
     <View style={styles.listItem}>
       <MediaRow
-        detail={getRecommendationDetail(item, availabilityCountry)}
+        detail={getRecommendationDetail(item)}
         frame={false}
         onPress={openItem}
         posterLabel={item.mediaType === "movie" ? "M" : "TV"}
@@ -115,12 +111,11 @@ function RecommendationRow({
   );
 }
 
-function getRecommendationDetail(item: RecommendationItem, availabilityCountry: string) {
+function getRecommendationDetail(item: RecommendationItem) {
   const genres = item.genreNames.slice(0, 2).join(", ");
-  const availability = item.streamingAvailable ? `Streaming in ${formatWatchCountry(availabilityCountry)}` : "";
   const reason = getReasonText(item.reason);
 
-  return [genres, availability, reason].filter(Boolean).join(" - ");
+  return genres ? `${genres} - ${reason}` : reason;
 }
 
 function getReasonText(reason: RecommendationItem["reason"]) {

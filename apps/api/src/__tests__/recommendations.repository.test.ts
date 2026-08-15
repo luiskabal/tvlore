@@ -74,7 +74,6 @@ describe("RecommendationsRepository", () => {
           overview: "A candidate movie.",
           posterPath: null,
           reason: "based_on_movie_ratings",
-          streamingAvailable: false,
           title: "Candidate Movie",
         },
         {
@@ -84,7 +83,6 @@ describe("RecommendationsRepository", () => {
           overview: "A candidate movie without matching genres.",
           posterPath: null,
           reason: "based_on_movie_ratings",
-          streamingAvailable: false,
           title: "Candidate Movie Without Match",
         },
         {
@@ -94,7 +92,6 @@ describe("RecommendationsRepository", () => {
           overview: "A candidate show.",
           posterPath: "/show.jpg",
           reason: "based_on_show_ratings",
-          streamingAvailable: false,
           title: "Candidate Show",
         },
       ],

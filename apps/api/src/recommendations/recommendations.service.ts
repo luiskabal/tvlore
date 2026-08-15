@@ -6,6 +6,10 @@ import { UsersService } from "../users/users.service";
 import { RecommendationsRepository } from "./recommendations.repository";
 import type { RecommendationItemDto, RecommendationsResponseDto } from "./recommendations.types";
 
+type RankedRecommendationItem = RecommendationItemDto & {
+  streamingAvailable: boolean;
+};
+
 @Injectable()
 export class RecommendationsService {
   constructor(
@@ -24,20 +28,20 @@ export class RecommendationsService {
 
     return {
       ...recommendations,
-      items: rankStreamingWithinMediaSegments(items),
+      items: rankStreamingWithinMediaSegments(items).map(toRecommendationItem),
     };
   }
 
   private async withStreamingAvailability(
     item: RecommendationItemDto,
     country: string,
-  ): Promise<RecommendationItemDto> {
+  ): Promise<RankedRecommendationItem> {
     const providerId = item.mediaType === "show"
       ? await this.catalogRepository.findShowProviderId(item.id)
       : await this.catalogRepository.findMovieProviderId(item.id);
 
     if (!providerId) {
-      return item;
+      return { ...item, streamingAvailable: false };
     }
 
     try {
@@ -48,13 +52,13 @@ export class RecommendationsService {
         streamingAvailable: availability.providers.stream.length > 0,
       };
     } catch {
-      return item;
+      return { ...item, streamingAvailable: false };
     }
   }
 }
 
-function rankStreamingWithinMediaSegments(items: RecommendationItemDto[]) {
-  const ranked: RecommendationItemDto[] = [];
+function rankStreamingWithinMediaSegments(items: RankedRecommendationItem[]) {
+  const ranked: RankedRecommendationItem[] = [];
   let index = 0;
 
   while (index < items.length) {
@@ -73,4 +77,10 @@ function rankStreamingWithinMediaSegments(items: RecommendationItemDto[]) {
   }
 
   return ranked;
+}
+
+function toRecommendationItem(item: RankedRecommendationItem): RecommendationItemDto {
+  const { streamingAvailable: _streamingAvailable, ...recommendation } = item;
+
+  return recommendation;
 }
