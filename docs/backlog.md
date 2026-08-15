@@ -20,7 +20,7 @@ No active infrastructure tasks.
 - Ratings are explicit preference signals. Keep them separate from watched state so recommendations can use both later.
 - First recommendations intentionally use only hydrated catalog data and ratings. Improve quality only after storing stronger content signals.
 - Recommendations belong in Library while it acts as the app home. Profile should stay focused on identity, stats, and account controls.
-- Cronologia uses a backend-owned paginated endpoint. Infinite scroll can replace the explicit load-more button later.
+- Cronologia uses a backend-owned paginated endpoint and loads more history as the user scrolls near the end.
 - Curated watch paths should support movies and shows in one ordered list, keep source/provenance, and resolve items into TVLore catalog IDs only when the user opens or saves the list.
 
 ## Done
@@ -94,6 +94,7 @@ No active infrastructure tasks.
 - [x] Keep recommendations out of Profile and scoped to Library.
 - [x] Add backend-owned show-level mark all watched/unwatched.
 - [x] Add backend-owned paginated Cronologia feed.
+- [x] Add infinite-scroll loading to mobile Cronologia.
 - [x] Add short-lived mobile read cache for search and catalog detail reads.
 - [x] Add an initial mobile UI component pool for repeated Library visual patterns.
 - [x] Apply the mobile UI component pool to Search results and controls.

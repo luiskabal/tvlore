@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View, type NativeScrollEvent, type NativeSyntheticEvent } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 
 import type {
@@ -19,7 +19,7 @@ import {
   type LibraryActionState,
 } from "../library/use-library-actions";
 import type { LibraryChronologyState } from "../library/use-library-chronology";
-import { Button, MediaRow, Skeleton, StatCard } from "../ui";
+import { AppText, Button, MediaRow, Skeleton, StatCard } from "../ui";
 import { styles } from "./home-styles";
 import { RecommendationsPanel } from "./RecommendationsPanel";
 import type { RecommendationActionState } from "./use-recommendation-actions";
@@ -77,6 +77,7 @@ export function LibraryOverview({
 }: LibraryOverviewProps) {
   const [selectedSection, setSelectedSection] = useState<LibrarySectionFilter | null>(null);
   const [optimisticRemovedKeys, setOptimisticRemovedKeys] = useState<Set<string>>(() => new Set());
+  const autoLoadCursorRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (libraryAction.kind !== "error") {
@@ -169,6 +170,24 @@ export function LibraryOverview({
   const hideLibraryAction = (actionKey: string) => {
     setOptimisticRemovedKeys((current) => addSetValue(current, actionKey));
   };
+  const handleLibraryScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (!shouldShowHistory || chronology.kind === "loading" || chronology.kind === "loadingMore" || !chronology.nextCursor) {
+      return;
+    }
+
+    if (!isNearScrollEnd(event.nativeEvent) || autoLoadCursorRef.current === chronology.nextCursor) {
+      return;
+    }
+
+    autoLoadCursorRef.current = chronology.nextCursor;
+    onLoadMoreChronology();
+  };
+
+  useEffect(() => {
+    if (chronology.kind !== "loadingMore") {
+      autoLoadCursorRef.current = null;
+    }
+  }, [chronology.kind, chronology.nextCursor]);
 
   return (
     <View style={styles.librarySectionFixed}>
@@ -194,6 +213,8 @@ export function LibraryOverview({
 
       <ScrollView
         contentContainerStyle={styles.libraryListContent}
+        onScroll={handleLibraryScroll}
+        scrollEventThrottle={200}
         showsVerticalScrollIndicator={false}
         style={styles.libraryListScroll}
       >
@@ -289,7 +310,6 @@ export function LibraryOverview({
             chronology={chronology}
             items={visibleChronologyItems}
             libraryAction={libraryAction}
-            onLoadMore={onLoadMoreChronology}
             onOptimisticRemove={hideLibraryAction}
             onOpenMovie={onOpenMovie}
             onOpenShowSeason={onOpenShowSeason}
@@ -459,7 +479,6 @@ function ChronologySection({
   chronology,
   items,
   libraryAction,
-  onLoadMore,
   onOptimisticRemove,
   onOpenMovie,
   onOpenShowSeason,
@@ -469,7 +488,6 @@ function ChronologySection({
   chronology: LibraryChronologyState;
   items: RecentlyWatchedItem[];
   libraryAction: LibraryActionState;
-  onLoadMore: () => void;
   onOptimisticRemove: (actionKey: string) => void;
   onOpenMovie: (movieId: string) => void;
   onOpenShowSeason: (showId: string, seasonNumber: number) => void;
@@ -514,13 +532,9 @@ function ChronologySection({
         />
       ))}
       {chronology.nextCursor ? (
-        <Button
-          disabled={chronology.kind === "loadingMore"}
-          isLoading={chronology.kind === "loadingMore"}
-          label="Load more"
-          loadingLabel="Loading"
-          onPress={onLoadMore}
-        />
+        <AppText tone="muted">
+          {chronology.kind === "loadingMore" ? "Loading more history..." : "Scroll for more history"}
+        </AppText>
       ) : null}
     </View>
   );
@@ -906,6 +920,12 @@ function noop() {}
 
 function getPosterUri(posterPath: string | null) {
   return posterPath ? getTmdbPosterUrl(posterPath) : null;
+}
+
+function isNearScrollEnd(event: NativeScrollEvent) {
+  const distanceFromEnd = event.contentSize.height - event.layoutMeasurement.height - event.contentOffset.y;
+
+  return distanceFromEnd < 180;
 }
 
 function groupEpisodesByShowAndSeason(

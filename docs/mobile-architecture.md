@@ -250,7 +250,8 @@ to movie detail and episode/show rows route to season detail.
 Cronologia, recommendations, continuing shows, recently watched movies, watched
 episodes grouped by show and season, watchlist, and rated titles. Summary stat
 cards reuse the same filter state as the only section selector. Cronologia only
-renders the chronological watch feed. `useLibraryChronology` keeps Supabase
+renders the chronological watch feed and asks for the next page when the user
+scrolls near the end. `useLibraryChronology` keeps Supabase
 token lookup, paging, and refresh invalidation out of `LibraryOverview`. Watched
 episode season subsections keep their own local collapsed state. It also owns the swipe presentation
 affordance for removable Library rows and compact poster thumbnail rendering
