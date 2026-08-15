@@ -100,6 +100,7 @@ No active infrastructure tasks.
 - [x] Apply the mobile UI component pool to Search results and controls.
 - [x] Apply the mobile UI component pool to catalog detail screens.
 - [x] Apply the mobile UI component pool to season detail screens.
+- [x] Add initial mobile Vitest coverage for pure search and chronology logic.
 
 ## Deferred
 

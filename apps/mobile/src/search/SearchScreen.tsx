@@ -7,7 +7,8 @@ import type { CatalogSearchResult, MediaType } from "../api/tvlore-api";
 import { SearchControls } from "./SearchControls";
 import { SearchResults } from "./SearchResults";
 import { styles } from "./search-styles";
-import { minSearchLength, type SearchFilter, useCatalogSearch } from "./use-catalog-search";
+import { canRunSearch, type SearchFilter } from "./search-model";
+import { useCatalogSearch } from "./use-catalog-search";
 
 const searchDebounceMs = 600;
 
@@ -16,7 +17,7 @@ export default function SearchScreen() {
   const [filter, setFilter] = useState<SearchFilter>("all");
   const { resolveResult, resolveState, runSearch, search } = useCatalogSearch();
   const skipNextDebouncedSearchRef = useRef(false);
-  const canSearch = query.trim().length >= minSearchLength;
+  const canSearch = canRunSearch(query);
   const isSearching = search.kind === "loading" || search.kind === "refreshing";
 
   useEffect(() => {

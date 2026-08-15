@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { getLibraryChronology, type RecentlyWatchedItem } from "../api/tvlore-api";
 import { getSupabaseAccessToken } from "../auth/supabase-auth";
+import { mergeChronologyItems } from "./chronology-items";
 import { useLibraryRevision } from "./library-refresh";
 
 const chronologyPageSize = 20;
@@ -89,26 +90,4 @@ export function useLibraryChronology() {
   }, [libraryRevision, loadInitialChronology]);
 
   return { chronology, loadInitialChronology, loadMoreChronology };
-}
-
-function mergeChronologyItems(current: RecentlyWatchedItem[], next: RecentlyWatchedItem[]) {
-  const seenKeys = new Set(current.map(getChronologyItemKey));
-  const mergedItems = [...current];
-
-  next.forEach((item) => {
-    const key = getChronologyItemKey(item);
-
-    if (seenKeys.has(key)) {
-      return;
-    }
-
-    seenKeys.add(key);
-    mergedItems.push(item);
-  });
-
-  return mergedItems;
-}
-
-function getChronologyItemKey(item: RecentlyWatchedItem) {
-  return `${item.mediaType}:${item.id}`;
 }

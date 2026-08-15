@@ -10,8 +10,8 @@ Normal deterministic verification:
 corepack pnpm verify
 ```
 
-This runs workspace type checking and backend unit tests. It is the default
-inner-loop command for agents and local development.
+This runs workspace type checking plus backend and mobile unit tests. It is the
+default inner-loop command for agents and local development.
 
 Full local verification:
 
@@ -26,6 +26,12 @@ Backend unit tests use Vitest:
 
 ```bash
 corepack pnpm --filter @tvlore/api test:run
+```
+
+Mobile unit tests also use Vitest for pure TypeScript logic:
+
+```bash
+corepack pnpm --filter @tvlore/mobile test:run
 ```
 
 From the monorepo root:
@@ -187,6 +193,7 @@ Test:
 
 Use focused tests where they provide confidence:
 
+- Pure screen-model helpers for filters, keys, cache-safe merges, and derived view data.
 - Component tests for key states.
 - Navigation tests for auth/protected route transitions.
 - Query-hook/service tests.
@@ -195,6 +202,13 @@ Use focused tests where they provide confidence:
 - Mutation invalidation tests.
 
 Do not test React Native, Expo Router, or TanStack Query internals.
+
+The first mobile tests cover pure search and chronology helpers:
+
+- Search filter to API media-type mapping.
+- Minimum trimmed query length.
+- Stable catalog result keys.
+- Paginated chronology merges that preserve order and skip duplicates.
 
 ## Future Match Tests
 

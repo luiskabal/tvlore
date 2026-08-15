@@ -5,11 +5,12 @@ import {
   searchCatalog,
   type CatalogResolveResponse,
   type CatalogSearchResult,
-  type MediaType,
 } from "../api/tvlore-api";
 import { getSupabaseAccessToken } from "../auth/supabase-auth";
+import { getMediaTypes, getResultKey, minSearchLength, type SearchFilter } from "./search-model";
 
-export type SearchFilter = "all" | MediaType;
+export { getResultKey, minSearchLength };
+export type { SearchFilter };
 
 export type SearchState =
   | { kind: "idle" }
@@ -17,8 +18,6 @@ export type SearchState =
   | { kind: "refreshing"; query: string; results: CatalogSearchResult[] }
   | { kind: "ready"; query: string; results: CatalogSearchResult[] }
   | { kind: "error"; message: string };
-
-export const minSearchLength = 3;
 
 export type ResolveState =
   | { kind: "idle" }
@@ -96,12 +95,4 @@ export function useCatalogSearch() {
   }, []);
 
   return { resolveResult, resolveState, runSearch, search };
-}
-
-export function getResultKey(result: CatalogSearchResult) {
-  return `${result.mediaType}-${result.externalRef.provider}-${result.externalRef.providerId}`;
-}
-
-function getMediaTypes(filter: SearchFilter): MediaType[] {
-  return filter === "all" ? ["show", "movie"] : [filter];
 }
