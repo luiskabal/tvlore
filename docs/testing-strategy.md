@@ -212,6 +212,7 @@ The first mobile tests cover pure search and chronology helpers:
 - Minimum trimmed query length.
 - Stable catalog result keys.
 - Paginated chronology merges that preserve order and skip duplicates.
+- Recommendation row detail copy for preferred-genre matches and fallbacks.
 
 ## Future Match Tests
 

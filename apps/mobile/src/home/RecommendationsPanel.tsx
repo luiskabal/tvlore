@@ -5,6 +5,7 @@ import type { RecommendationItem, RecommendationsResponse } from "../api/tvlore-
 import { getTmdbPosterUrl } from "../catalog/posters";
 import { Button, MediaRow } from "../ui";
 import { styles } from "./home-styles";
+import { getRecommendationDetail } from "./recommendation-detail";
 import {
   getRecommendationActionKey,
   type RecommendationActionState,
@@ -56,6 +57,7 @@ export function RecommendationsPanel({
           item={item}
           key={`${item.mediaType}-${item.id}`}
           onOpenMovie={onOpenMovie}
+          preferredGenreNames={recommendations.basis.preferredGenreNames}
           onSaveToWatchlist={(selectedItem) => {
             const actionKey = getRecommendationActionKey(selectedItem);
 
@@ -75,11 +77,13 @@ function RecommendationRow({
   item,
   onOpenMovie,
   onOpenShow,
+  preferredGenreNames,
   onSaveToWatchlist,
 }: {
   item: RecommendationItem;
   onOpenMovie: (movieId: string) => void;
   onOpenShow: (showId: string) => void;
+  preferredGenreNames: string[];
   onSaveToWatchlist: (item: RecommendationItem) => void;
 }) {
   const openItem = () => {
@@ -94,7 +98,7 @@ function RecommendationRow({
   return (
     <View style={styles.listItem}>
       <MediaRow
-        detail={getRecommendationDetail(item)}
+        detail={getRecommendationDetail(item, preferredGenreNames)}
         frame={false}
         onPress={openItem}
         posterLabel={item.mediaType === "movie" ? "M" : "TV"}
@@ -109,25 +113,6 @@ function RecommendationRow({
       />
     </View>
   );
-}
-
-function getRecommendationDetail(item: RecommendationItem) {
-  const genres = item.genreNames.slice(0, 2).join(", ");
-  const reason = getReasonText(item.reason);
-
-  return genres ? `${genres} - ${reason}` : reason;
-}
-
-function getReasonText(reason: RecommendationItem["reason"]) {
-  if (reason === "based_on_movie_ratings") {
-    return "Based on your movie ratings";
-  }
-
-  if (reason === "based_on_show_ratings") {
-    return "Based on your show ratings";
-  }
-
-  return "From your TVLore catalog";
 }
 
 function getEmptyRecommendationText(ratedTitleCount: number) {

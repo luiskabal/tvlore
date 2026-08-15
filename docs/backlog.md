@@ -94,6 +94,7 @@ No active infrastructure tasks.
 - [x] Start first recommendation slice from stored ratings.
 - [x] Persist catalog genre names and use them to rank recommendation candidates.
 - [x] Boost recommendation candidates available to stream in the user's saved country.
+- [x] Explain recommendation rows from preferred genre overlap.
 - [x] Let recommendation rows save directly to watchlist.
 - [x] Keep recommendations out of Profile and scoped to Library.
 - [x] Add backend-owned show-level mark all watched/unwatched.

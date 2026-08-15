@@ -262,7 +262,8 @@ then notifies the local library invalidator. The panel owns only local optimisti
 row hiding and restores the row if the save fails. Recommendation rows render
 backend-provided genre names when available, but do not calculate suggestion
 quality or render provider availability locally. Availability stays in detail
-screens.
+screens. `recommendation-detail.ts` owns the small presentation rule that turns
+preferred-genre overlap into copy such as "Because you like Drama".
 
 Library rows receive navigation callbacks from `LibraryScreen`: movies route
 to movie detail and episode/show rows route to season detail.

@@ -42,6 +42,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Continue-watching and recently-watched data from the backend.
 - Rated show/movie list from the backend.
 - First-pass recommendations from stored rating preferences, hydrated catalog data, persisted genre names, and user-country streaming availability.
+- Recommendation rows explain genre matches when the user's rated-title genres overlap with a suggested title.
 - Recommendation rows can be saved directly to the watchlist with optimistic feedback.
 - Library recommendations live in their own `For you` filter, and rows navigate back into movie and show detail screens.
 - Library/Profile keeps prior data during refresh and shows skeletons on first load.
