@@ -33,6 +33,7 @@ describe("watch paths data", () => {
     expect(detail.items[0]).toMatchObject({
       externalRef: { provider: "tmdb", providerId: "1726" },
       id: "mcu-infinity-saga-release-1",
+      posterPath: "/78lPtwv72eTNqFW9COBYI0dWDJa.jpg",
       position: 1,
       title: "Iron Man",
       tvloreId: "movie-id",

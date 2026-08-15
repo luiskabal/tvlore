@@ -53,7 +53,7 @@ function toSearchLikeItem(item: NonNullable<ReturnType<typeof getWatchPathDefini
     externalRef: item.externalRef,
     mediaType: item.mediaType,
     overview: item.note ?? "",
-    posterPath: null,
+    posterPath: item.posterPath,
     title: item.title,
     tvloreId: null,
     year: item.year,

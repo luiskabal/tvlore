@@ -691,6 +691,7 @@ function assertWatchPathDetail(body) {
     expectString(item.title, "watch path detail item.title");
     expectNullableNumber(item.year, "watch path detail item.year");
     expectNullableString(item.note, "watch path detail item.note");
+    expectNullableString(item.posterPath, "watch path detail item.posterPath");
     expect(item.tvloreId === null || uuidPattern.test(item.tvloreId), "watch path detail item.tvloreId should be null or UUID");
     expectRecord(item.externalRef, "watch path detail item.externalRef");
     expectEqual(item.externalRef.provider, "tmdb", "watch path detail item.externalRef.provider");

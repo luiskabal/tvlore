@@ -1461,6 +1461,7 @@ Response:
       "title": "Iron Man",
       "year": 2008,
       "note": "Phase 1",
+      "posterPath": "/78lPtwv72eTNqFW9COBYI0dWDJa.jpg",
       "externalRef": {
         "provider": "tmdb",
         "providerId": "1726"

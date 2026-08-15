@@ -5,7 +5,8 @@ import { ActivityIndicator, Pressable, SafeAreaView, ScrollView, View } from "re
 
 import { resolveCatalogItem, type WatchPathItem } from "../api/tvlore-api";
 import { getSupabaseAccessToken } from "../auth/supabase-auth";
-import { AppText, Badge, Button, Skeleton, ui } from "../ui";
+import { getTmdbPosterUrl } from "../catalog/posters";
+import { AppText, Badge, Button, PosterImage, Skeleton, ui } from "../ui";
 import { styles } from "./watch-paths-styles";
 import { toCatalogSearchResult, getWatchPathItemKey } from "./watch-paths-model";
 import { useWatchPath } from "./use-watch-paths";
@@ -99,8 +100,14 @@ function PathItemRow({
       onPress={() => onOpen(item)}
       style={({ pressed }) => [styles.itemRow, pressed ? styles.pressed : null]}
     >
-      <View style={styles.itemBadge}>
-        <AppText tone="accent" variant="caption">{item.position}</AppText>
+      <View style={styles.itemPosterFrame}>
+        <PosterImage
+          label={`${item.position}`}
+          uri={item.posterPath ? getTmdbPosterUrl(item.posterPath) : null}
+        />
+        <View style={styles.itemBadge}>
+          <AppText tone="accent" variant="caption">{item.position}</AppText>
+        </View>
       </View>
       <View style={styles.detailText}>
         <AppText numberOfLines={2} variant="title">{item.title}</AppText>
@@ -128,7 +135,7 @@ function WatchPathDetailSkeleton() {
       <View style={styles.list}>
         {[0, 1, 2, 3].map((item) => (
           <View key={item} style={styles.itemRow}>
-            <Skeleton height={34} width={34} />
+            <Skeleton height={64} width={44} />
             <View style={styles.detailText}>
               <Skeleton height={18} width="72%" />
               <Skeleton height={14} width="46%" />

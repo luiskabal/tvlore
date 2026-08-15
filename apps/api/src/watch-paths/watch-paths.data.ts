@@ -7,6 +7,41 @@ type WatchPathDefinition = {
   title: string;
 };
 
+const moviePosterPaths: Record<string, string> = {
+  "11": "/6FfCtAuVAW8XJjZ7eWeLibRLWTw.jpg",
+  "1724": "/gKzYx79y0AQTL4UAk1cBQJ3nvrm.jpg",
+  "1726": "/78lPtwv72eTNqFW9COBYI0dWDJa.jpg",
+  "1771": "/vSNxAJTlD0r02V9sPYpOjqDZXUK.jpg",
+  "1891": "/nNAeTmF4CtdSgMDplXTDPOpYzsX.jpg",
+  "1892": "/jQYlydvHm3kUix1f8prMucrplhm.jpg",
+  "1893": "/6wkfovpn7Eq8dYNKaG5PY3q2oq6.jpg",
+  "1894": "/oZNPzxqM2s5DyVWab09NTQScDQt.jpg",
+  "1895": "/xfSAoBEm9MNBjmlNcDYLvLSMlnq.jpg",
+  "10138": "/6WBeq4fCfn7AN0o21W9qNcRF2l9.jpg",
+  "10195": "/prSfAi1xGrhLQNxVSUFh61xQ4Qy.jpg",
+  "24428": "/RYMX2wcKCBAr24UyPD7xwmjaTn.jpg",
+  "68721": "/qhPtAc1TKbMPqNvcdXSOn9Bn7hZ.jpg",
+  "76338": "/wp6OxE4poJ4G7c0U2ZIXasTSMR7.jpg",
+  "99861": "/4ssDuvEDkSArWEdyBl2X5EHvYKU.jpg",
+  "100402": "/tVFRpFw3xTedgPGqxW0AOI8Qhh0.jpg",
+  "102899": "/rQRnQfUl3kfp78nCWq8Ks04vnq1.jpg",
+  "118340": "/r7vmZjiyZw9rpJMQJdXpjgiCOk9.jpg",
+  "140607": "/wqnLdwVXoBjKibFRR5U3y0aDUhs.jpg",
+  "181808": "/kOVEVeg59E0wsnXmF9nrh6OmWII.jpg",
+  "181812": "/db32LaOibwEliAmSL2jjDF6oDdj.jpg",
+  "271110": "/rAGiXaUfPzY7CDEyNKUofk3Kw2e.jpg",
+  "283995": "/y4MBh0EjBlMuOzv9axM4qJlmhzz.jpg",
+  "284052": "/uGBVj3bEbCoZbDjjl9wTxcygko1.jpg",
+  "284053": "/rzRwTcFvttcN1ZpX2xv4j3tSdJu.jpg",
+  "284054": "/uxzzxijgPIY7slzFvMotPv8wjKA.jpg",
+  "299534": "/ulzhLuWrPK07P1YkdWQLZnQh1JL.jpg",
+  "299536": "/7WsyChQLEftFiDOVTGkv3hFpyyt.jpg",
+  "299537": "/AtsgWhDnHTq68L0lLsUrCnM7TjG.jpg",
+  "315635": "/c24sv2weTHPsmDa7jEMN0m2P3RT.jpg",
+  "363088": "/cFQEO687n1K6umXbInzocxcnAQz.jpg",
+  "429617": "/4q2NNj4S5dG2RLF9CpXsej7yXl.jpg",
+};
+
 const watchPaths: WatchPathDefinition[] = [
   {
     description: "MCU Phase 1-3 in theatrical release order.",
@@ -96,6 +131,7 @@ function movie(title: string, year: number, providerId: string, note: string) {
     externalRef: { provider: "tmdb", providerId },
     mediaType: "movie",
     note,
+    posterPath: moviePosterPaths[providerId] ?? null,
     title,
     year,
   } as const;

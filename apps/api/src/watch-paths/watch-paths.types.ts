@@ -12,6 +12,7 @@ export type WatchPathItemDto = {
   id: string;
   mediaType: MediaType;
   note: string | null;
+  posterPath: string | null;
   position: number;
   title: string;
   tvloreId: string | null;

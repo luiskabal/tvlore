@@ -27,10 +27,18 @@ export const styles = StyleSheet.create({
   itemBadge: {
     alignItems: "center",
     backgroundColor: ui.color.accentSoft,
+    borderColor: ui.color.panel,
+    borderWidth: 1,
     borderRadius: ui.radius.pill,
-    height: 34,
+    height: 24,
     justifyContent: "center",
-    width: 34,
+    left: -8,
+    position: "absolute",
+    top: -8,
+    width: 24,
+  },
+  itemPosterFrame: {
+    position: "relative",
   },
   itemRow: {
     alignItems: "center",

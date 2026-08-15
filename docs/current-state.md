@@ -53,6 +53,7 @@ Implemented:
 - Mobile Library/Profile keep previous library data during refreshes and render skeletons on initial load.
 - Mobile has routed Library, Search, Paths, and Profile surfaces with persistent bottom app navigation.
 - Mobile Paths lists curated viewing orders and opens path items through the existing catalog resolve flow.
+- Mobile path detail rows render curated poster thumbnails.
 - Postman collection and local/Vercel environments.
 - Environment validation for local and Vercel.
 - Backend unit tests with Vitest.

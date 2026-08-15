@@ -1753,6 +1753,7 @@
                   "    pm.expect(item.title).to.be.a('string');",
                   "    pm.expect(item.year === null || typeof item.year === 'number').to.eql(true);",
                   "    pm.expect(item.note === null || typeof item.note === 'string').to.eql(true);",
+                  "    pm.expect(item.posterPath === null || typeof item.posterPath === 'string').to.eql(true);",
                   "    pm.expect(item.tvloreId === null || typeof item.tvloreId === 'string').to.eql(true);",
                   "    pm.expect(item.externalRef.provider).to.eql('tmdb');",
                   "    pm.expect(item.externalRef.providerId).to.be.a('string');",

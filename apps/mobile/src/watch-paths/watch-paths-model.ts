@@ -9,7 +9,7 @@ export function toCatalogSearchResult(item: WatchPathItem): CatalogSearchResult 
     externalRef: item.externalRef,
     mediaType: item.mediaType,
     overview: item.note ?? "",
-    posterPath: null,
+    posterPath: item.posterPath,
     title: item.title,
     tvloreId: item.tvloreId,
     year: item.year,

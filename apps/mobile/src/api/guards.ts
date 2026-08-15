@@ -183,6 +183,7 @@ function isWatchPathItem(value: unknown): value is WatchPathItem {
     typeof value.id === "string" &&
     isMediaType(value.mediaType) &&
     isNullableString(value.note) &&
+    isNullableString(value.posterPath) &&
     typeof value.position === "number" &&
     typeof value.title === "string" &&
     isNullableString(value.tvloreId) &&
