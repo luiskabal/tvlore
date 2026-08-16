@@ -38,6 +38,7 @@ Implemented:
 - Mobile show detail can mark the full show watched or unwatched through one backend-owned bulk action.
 - Mobile show/movie detail can add or remove a title from the watchlist.
 - Mobile show/movie detail can rate or clear a rating preference for a title.
+- Mobile show/movie detail compares the TMDB public rating against the user's rating in a compact spoiler-aware row.
 - Mobile show/movie detail opens an optional post-watch rating check-in after a movie or full show is marked watched.
 - Mobile show/movie detail renders country-aware watch-provider icons using the user's saved country preference.
 - Mobile tracking mutations invalidate the local library data.
@@ -455,7 +456,7 @@ Current watched-state behavior:
 - The current post-watch check-in reuses those title-level rating preferences and does not yet persist episode reactions, favorite characters, comments, spoiler state, or visibility.
 - Show progress returned by show detail, episode watch mutations, and `GET /shows/:showId/progress` is based on episodes currently persisted in TVLore. Opening a season hydrates its episode rows.
 - Show detail returns `progress.status` as `not_started`, `watching`, or `completed`.
-- Show and movie detail responses return `inWatchlist` and nullable `rating` for the authenticated user.
+- Show and movie detail responses return `inWatchlist`, nullable authenticated-user `rating`, and nullable TMDB `publicRating`.
 - `GET /library` returns summary counts, continue-watching shows, rated titles, recent movie/episode activity, full watched episode activity, and watchlist titles for the authenticated user.
 - `GET /shows/:showId/watch-providers` and `GET /movies/:movieId/watch-providers` return subscription/rent/buy/free availability for a country code using TMDB Watch Providers data; mobile now sends the authenticated user's saved `availabilityCountry`.
 
@@ -852,6 +853,7 @@ Current behavior:
 - Watchlist actions update local detail state optimistically, then reconcile from the backend mutation response.
 - Show and movie detail can set or clear a 1-5 rating preference.
 - Rating actions update local detail state optimistically, then reconcile from the backend mutation response.
+- Show and movie detail render TMDB `publicRating` as `Spoiler` until the user has watched the title or manually reveals it; the user's rating shows `--` until rated.
 - Profile lets the user choose the `Where to watch` country through flag-labelled country chips.
 - Show and movie detail show `Where to watch` provider icons for the user's saved country preference, with device country and `CL` as fallback. Tapping a provider opens the title's TMDB/JustWatch availability link for that country.
 - Show detail lists seasons and opens a season route.
@@ -905,6 +907,7 @@ Product foundation:
 - Rating preferences are stored against internal TVLore IDs and authenticated user IDs.
 - Availability country is stored on the authenticated user's TVLore profile and reused by mobile detail screens.
 - Genre names are persisted on resolved shows and movies from TMDB detail responses.
+- TMDB public ratings are persisted on resolved shows and movies and lazily refreshed for older catalog rows that do not have one yet.
 - Show progress status is calculated by the backend from persisted episode watches.
 - Mobile can render backend-owned library data through the same Supabase token used by Postman.
 - Mobile can search TMDB-backed catalog data without receiving TMDB credentials.

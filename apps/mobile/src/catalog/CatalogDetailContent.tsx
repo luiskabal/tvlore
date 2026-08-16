@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ActivityIndicator, Image, Linking, Pressable, View } from "react-native";
 
 import type { CatalogDetailResponse, MediaType, ShowDetailResponse, ShowSeasonSummary, WatchProvider } from "../api/tvlore-api";
-import { AppText, Badge, Button, PosterImage, Skeleton } from "../ui";
+import { AppText, Badge, PosterImage, Skeleton } from "../ui";
 import { ui } from "../ui";
 import { styles } from "./catalog-detail-styles";
 import { formatWatchCountry } from "./watch-country";
@@ -91,11 +91,11 @@ export function CatalogDetailContent({
       </View>
 
       <TitleActionMessages watchAction={watchAction} watchlistAction={watchlistAction} />
+      <RatingMatchPanel detail={detail} onSetRating={onSetRating} preferenceAction={preferenceAction} />
 
       <AppText style={styles.overview}>{detail.overview || "No overview available."}</AppText>
 
       <WhereToWatchPanel state={watchProvidersState} />
-      <PreferencePanel detail={detail} onSetRating={onSetRating} preferenceAction={preferenceAction} />
 
       {detail.mediaType === "show" ? (
         <>
@@ -325,7 +325,7 @@ function openWatchProviderLink(watchUrl: string | null) {
   void Linking.openURL(watchUrl).catch(() => undefined);
 }
 
-function PreferencePanel({
+function RatingMatchPanel({
   detail,
   onSetRating,
   preferenceAction,
@@ -334,44 +334,87 @@ function PreferencePanel({
   onSetRating: (mediaType: MediaType, id: string, rating: number | null) => Promise<boolean>;
   preferenceAction: PreferenceActionState;
 }) {
+  const [isPublicRatingRevealed, setPublicRatingRevealed] = useState(false);
+  const [isEditingUserRating, setEditingUserRating] = useState(false);
+  const shouldHidePublicRating = !hasUserSeenTitle(detail);
+  const canRevealPublicRating = shouldHidePublicRating && detail.publicRating !== null;
+  const showPublicRating = !canRevealPublicRating || isPublicRatingRevealed;
+  const isSaving = preferenceAction.kind === "loading";
+
   return (
-    <View style={styles.statusPanel}>
-      <AppText variant="section">Your rating</AppText>
-      <AppText tone="muted">{detail.rating ? `Rated ${detail.rating}/5.` : "Rate this title for future recommendations."}</AppText>
-      {preferenceAction.kind === "error" ? <AppText tone="danger">{preferenceAction.message}</AppText> : null}
+    <View style={styles.ratingMatchSection}>
+      <View style={styles.ratingCompareRow}>
+        <Pressable
+          accessibilityLabel={canRevealPublicRating && !isPublicRatingRevealed ? "Reveal public rating" : "Public rating"}
+          accessibilityRole={canRevealPublicRating ? "button" : "text"}
+          disabled={!canRevealPublicRating}
+          onPress={() => setPublicRatingRevealed(true)}
+          style={[
+            styles.ratingMetric,
+            canRevealPublicRating && !isPublicRatingRevealed ? styles.ratingMetricSpoiler : null,
+          ]}
+        >
+          <AppText tone="muted" variant="caption">TMDB</AppText>
+          <AppText style={styles.ratingMetricValue} variant="title">
+            {formatPublicRating(detail.publicRating, showPublicRating)}
+          </AppText>
+        </Pressable>
 
-      <View style={styles.ratingRow}>
-        {[1, 2, 3, 4, 5].map((rating) => {
-          const isSelected = detail.rating === rating;
-
-          return (
-            <Pressable
-              key={rating}
-              style={[
-                styles.ratingButton,
-                isSelected ? styles.ratingButtonSelected : null,
-              ]}
-              onPress={() => {
-                void onSetRating(detail.mediaType, detail.id, rating);
-              }}
-            >
-              <AppText style={isSelected ? styles.ratingButtonTextSelected : styles.ratingButtonText} variant="button">
-                {rating}
-              </AppText>
-            </Pressable>
-          );
-        })}
+        <Pressable
+          accessibilityLabel="Edit your rating"
+          accessibilityRole="button"
+          onPress={() => setEditingUserRating((value) => !value)}
+          style={[styles.ratingMetric, styles.ratingMetricUser]}
+        >
+          <AppText tone="muted" variant="caption">You</AppText>
+          <AppText style={styles.ratingMetricValue} variant="title">
+            {detail.rating ? `${detail.rating}/5` : "--"}
+          </AppText>
+        </Pressable>
       </View>
 
-      {detail.rating ? (
-        <Button
-          label="Clear rating"
-          onPress={() => {
-            void onSetRating(detail.mediaType, detail.id, null);
-          }}
-          size="small"
-          variant="secondary"
-        />
+      {preferenceAction.kind === "error" ? <AppText tone="danger">{preferenceAction.message}</AppText> : null}
+
+      {isEditingUserRating ? (
+        <View style={styles.inlineRatingEditor}>
+          <View style={styles.ratingRow}>
+            {[1, 2, 3, 4, 5].map((rating) => {
+              const isSelected = detail.rating === rating;
+
+              return (
+                <Pressable
+                  disabled={isSaving}
+                  key={rating}
+                  onPress={() => {
+                    void onSetRating(detail.mediaType, detail.id, rating);
+                  }}
+                  style={[
+                    styles.ratingButton,
+                    isSelected ? styles.ratingButtonSelected : null,
+                    isSaving ? styles.iconActionButtonDisabled : null,
+                  ]}
+                >
+                  <AppText style={isSelected ? styles.ratingButtonTextSelected : styles.ratingButtonText} variant="button">
+                    {rating}
+                  </AppText>
+                </Pressable>
+              );
+            })}
+          </View>
+
+          {detail.rating ? (
+            <Pressable
+              accessibilityRole="button"
+              disabled={isSaving}
+              onPress={() => {
+                void onSetRating(detail.mediaType, detail.id, null);
+              }}
+              style={[styles.clearRatingInlineButton, isSaving ? styles.iconActionButtonDisabled : null]}
+            >
+              <AppText variant="caption">Clear</AppText>
+            </Pressable>
+          ) : null}
+        </View>
       ) : null}
     </View>
   );
@@ -526,14 +569,13 @@ function ProgressPanelSkeleton() {
 
 function RatingPanelSkeleton() {
   return (
-    <View style={styles.statusPanel}>
-      <Skeleton height={22} width="38%" />
-      <Skeleton height={16} width="78%" />
-      <View style={styles.ratingRow}>
-        {[0, 1, 2, 3, 4].map((item) => (
-          <Skeleton height={42} key={item} width={42} />
-        ))}
-      </View>
+    <View style={styles.ratingCompareRow}>
+      {[0, 1].map((item) => (
+        <View key={item} style={styles.ratingMetric}>
+          <Skeleton height={12} width={44} />
+          <Skeleton height={20} width={78} />
+        </View>
+      ))}
     </View>
   );
 }
@@ -554,6 +596,22 @@ function getMetadata(detail: CatalogDetailResponse) {
 
   const year = detail.releaseDate ? new Date(detail.releaseDate).getFullYear().toString() : "Unknown year";
   return detail.runtimeMinutes ? `${year} - ${detail.runtimeMinutes} min` : year;
+}
+
+function formatPublicRating(publicRating: number | null, isRevealed: boolean) {
+  if (publicRating === null) {
+    return "--";
+  }
+
+  if (!isRevealed) {
+    return "Spoiler";
+  }
+
+  return `${publicRating.toFixed(1)}/10`;
+}
+
+function hasUserSeenTitle(detail: CatalogDetailResponse) {
+  return detail.mediaType === "movie" ? detail.watched : detail.progress.watchedEpisodeCount > 0;
 }
 
 function getStatusLine(show: ShowDetailResponse) {

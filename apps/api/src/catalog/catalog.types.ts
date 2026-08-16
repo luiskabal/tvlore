@@ -44,6 +44,7 @@ export type CatalogResolvedItem = {
   originalTitle: string | null;
   overview: string;
   posterPath: string | null;
+  publicRating: number | null;
   releaseDate: string | null;
   runtimeMinutes: number | null;
   seasons: CatalogResolvedSeasonSummary[];
@@ -98,6 +99,7 @@ export type ShowDetailResponseDto = {
   overview: string;
   posterPath: string | null;
   progress: ShowProgressResponseDto;
+  publicRating: number | null;
   rating: number | null;
   seasons: ShowSeasonSummaryDto[];
   title: string;
@@ -111,6 +113,7 @@ export type MovieDetailResponseDto = {
   originalTitle: string | null;
   overview: string;
   posterPath: string | null;
+  publicRating: number | null;
   rating: number | null;
   releaseDate: string | null;
   runtimeMinutes: number | null;

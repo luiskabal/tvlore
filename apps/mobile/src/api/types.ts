@@ -219,6 +219,7 @@ export type ShowDetailResponse = {
   overview: string;
   posterPath: string | null;
   progress: ShowProgressResponse;
+  publicRating: number | null;
   rating: number | null;
   seasons: ShowSeasonSummary[];
   title: string;
@@ -233,6 +234,7 @@ export type MovieDetailResponse = {
   originalTitle: string | null;
   overview: string;
   posterPath: string | null;
+  publicRating: number | null;
   rating: number | null;
   releaseDate: string | null;
   runtimeMinutes: number | null;

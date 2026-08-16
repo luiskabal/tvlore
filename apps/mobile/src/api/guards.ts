@@ -254,6 +254,7 @@ export function isShowDetailResponse(value: unknown): value is Omit<ShowDetailRe
     isNullableString(value.backdropPath) &&
     isNullableString(value.firstAirDate) &&
     isShowProgressResponse(value.progress) &&
+    isPublicRating(value.publicRating) &&
     isRating(value.rating) &&
     Array.isArray(value.seasons) &&
     value.seasons.every(isShowSeasonSummary)
@@ -324,6 +325,7 @@ export function isMovieDetailResponse(value: unknown): value is Omit<MovieDetail
     isNullableString(value.backdropPath) &&
     isNullableString(value.releaseDate) &&
     isNullableNumber(value.runtimeMinutes) &&
+    isPublicRating(value.publicRating) &&
     isRating(value.rating) &&
     typeof value.watched === "boolean" &&
     typeof value.watchCount === "number" &&
@@ -524,6 +526,10 @@ function isNullableNumber(value: unknown) {
 
 function isRating(value: unknown) {
   return value === null || (typeof value === "number" && Number.isInteger(value) && value >= 1 && value <= 5);
+}
+
+function isPublicRating(value: unknown) {
+  return value === null || (typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 10);
 }
 
 function isMediaType(value: unknown): value is MediaType {

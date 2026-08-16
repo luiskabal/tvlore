@@ -87,6 +87,9 @@ export const styles = StyleSheet.create({
   iconActionButtonDisabled: {
     opacity: 0.56,
   },
+  inlineRatingEditor: {
+    gap: 8,
+  },
   overview: {
     fontSize: 16,
     lineHeight: 23,
@@ -161,9 +164,48 @@ export const styles = StyleSheet.create({
   ratingButtonTextSelected: {
     color: ui.color.white,
   },
+  ratingCompareRow: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  ratingMatchSection: {
+    gap: 10,
+  },
+  ratingMetric: {
+    backgroundColor: ui.color.panel,
+    borderColor: ui.color.border,
+    borderRadius: ui.radius.md,
+    borderWidth: 1,
+    flex: 1,
+    gap: 3,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  ratingMetricSpoiler: {
+    backgroundColor: ui.color.accentSoft,
+    borderColor: "#b8ddcd",
+  },
+  ratingMetricUser: {
+    alignItems: "flex-end",
+  },
+  ratingMetricValue: {
+    fontSize: 18,
+    lineHeight: 23,
+  },
   ratingRow: {
     flexDirection: "row",
+    flexWrap: "wrap",
     gap: 8,
+  },
+  clearRatingInlineButton: {
+    alignItems: "center",
+    alignSelf: "flex-start",
+    backgroundColor: ui.color.panel,
+    borderColor: ui.color.border,
+    borderRadius: ui.radius.md,
+    borderWidth: 1,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
   },
   screen: {
     backgroundColor: ui.color.panelAlt,

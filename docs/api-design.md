@@ -435,7 +435,7 @@ Errors: `CATALOG_ITEM_NOT_FOUND`, `CATALOG_PROVIDER_UNAVAILABLE`, `VALIDATION_FA
 
 Purpose: return TVLore show details by internal ID.
 
-Current MVP status: implemented with authenticated user's progress, watchlist state, and rating preference.
+Current MVP status: implemented with authenticated user's progress, watchlist state, rating preference, and TMDB public rating.
 
 Auth: required.
 
@@ -457,6 +457,7 @@ Response:
   "posterPath": "/path.jpg",
   "firstAirDate": "2017-12-01",
   "inWatchlist": true,
+  "publicRating": 8.4,
   "rating": 5,
   "seasons": [
     {
@@ -622,7 +623,7 @@ Errors: `SHOW_NOT_FOUND`, `SEASON_NOT_FOUND`, `VALIDATION_FAILED`.
 
 Purpose: return movie details and authenticated user's watch state, watchlist state, and rating preference.
 
-Current MVP status: implemented with authenticated user's watched state, watchlist state, and rating preference.
+Current MVP status: implemented with authenticated user's watched state, watchlist state, rating preference, and TMDB public rating.
 
 Auth: required.
 
@@ -645,6 +646,7 @@ Response:
   "releaseDate": "2016-11-11",
   "runtimeMinutes": 116,
   "inWatchlist": true,
+  "publicRating": 7.9,
   "rating": 4,
   "watched": true,
   "watchCount": 1,

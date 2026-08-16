@@ -740,6 +740,7 @@ function assertShowDetail(body, showId, inWatchlist, rating) {
   expectEqual(body.id, showId, "show.id");
   expectEqual(body.inWatchlist, inWatchlist, "show.inWatchlist");
   expectEqual(body.rating, rating, "show.rating");
+  expectPublicRating(body.publicRating, "show.publicRating");
   expectString(body.title, "show.title");
   expectString(body.overview, "show.overview");
   expectArray(body.seasons, "show.seasons");
@@ -817,6 +818,7 @@ function assertMovieDetail(body, movieId, watched, inWatchlist, rating) {
   expectEqual(body.id, movieId, "movie.id");
   expectEqual(body.inWatchlist, inWatchlist, "movie.inWatchlist");
   expectEqual(body.rating, rating, "movie.rating");
+  expectPublicRating(body.publicRating, "movie.publicRating");
   expectString(body.title, "movie.title");
   expectString(body.overview, "movie.overview");
   expectEqual(body.watched, watched, "movie.watched");
@@ -1004,6 +1006,11 @@ function expectNumber(value, label) {
 
 function expectNullableNumber(value, label) {
   expect(value === null || typeof value === "number", `${label} should be null or number`);
+}
+
+function expectPublicRating(value, label) {
+  expectNullableNumber(value, label);
+  expect(value === null || (value >= 0 && value <= 10), `${label} should be null or within 0-10`);
 }
 
 function expectInteger(value, label) {

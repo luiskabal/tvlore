@@ -68,7 +68,7 @@ export class CatalogService {
       throwNotFound("SHOW_NOT_FOUND", "Show was not found");
     }
 
-    return show;
+    return this.refreshShowPublicRating(parsedShowId, user.id, show);
   }
 
   async getMovie(
@@ -84,7 +84,7 @@ export class CatalogService {
       throwNotFound("MOVIE_NOT_FOUND", "Movie was not found");
     }
 
-    return movie;
+    return this.refreshMoviePublicRating(parsedMovieId, user.id, movie);
   }
 
   async getShowWatchProviders(
@@ -164,6 +164,54 @@ export class CatalogService {
     }
 
     return storedSeason;
+  }
+
+  private async refreshShowPublicRating(showId: string, userId: string, show: ShowDetailResponseDto) {
+    if (show.publicRating !== null) {
+      return show;
+    }
+
+    const providerId = await this.catalogRepository.findShowProviderId(showId);
+
+    if (!providerId) {
+      return show;
+    }
+
+    try {
+      await this.catalogRepository.upsertResolvedItem(await this.tmdbClient.getResolvedItem({
+        mediaType: "show",
+        provider: "tmdb",
+        providerId,
+      }));
+
+      return await this.catalogRepository.findShowDetail(showId, userId) ?? show;
+    } catch {
+      return show;
+    }
+  }
+
+  private async refreshMoviePublicRating(movieId: string, userId: string, movie: MovieDetailResponseDto) {
+    if (movie.publicRating !== null) {
+      return movie;
+    }
+
+    const providerId = await this.catalogRepository.findMovieProviderId(movieId);
+
+    if (!providerId) {
+      return movie;
+    }
+
+    try {
+      await this.catalogRepository.upsertResolvedItem(await this.tmdbClient.getResolvedItem({
+        mediaType: "movie",
+        provider: "tmdb",
+        providerId,
+      }));
+
+      return await this.catalogRepository.findMovieDetail(movieId, userId) ?? movie;
+    } catch {
+      return movie;
+    }
   }
 }
 

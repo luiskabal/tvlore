@@ -62,7 +62,7 @@ POST /watch-paths/:pathId/watchlist
 `GET /health/db` verifies runtime connectivity from Vercel to PostgreSQL. If Vercel has no `DATABASE_URL`, the API fails during startup.
 `GET /users/me` validates a Supabase Auth bearer token, upserts the matching `UserIdentity`, and returns the real TVLore user. `PATCH /users/me` updates user-owned settings such as streaming availability country.
 `GET /search` validates a Supabase Auth bearer token and calls TMDB from the backend using server-side credentials.
-`POST /catalog/resolve` validates a Supabase Auth bearer token, fetches TMDB details, and upserts an internal show or movie ID.
+`POST /catalog/resolve` validates a Supabase Auth bearer token, fetches TMDB details, and upserts an internal show or movie ID plus TMDB public rating metadata.
 Show and movie detail endpoints read internal TVLore IDs. Show detail also
 returns progress for episodes already persisted in TVLore. Season detail fetches
 and persists TMDB episodes for the requested season. Watch endpoints store
@@ -77,7 +77,7 @@ library/progress endpoints read the authenticated user's viewing state.
 - ORM: Prisma.
 - Prisma schema: `apps/api/prisma/schema.prisma`
 - Initial migration: `apps/api/prisma/migrations/20260810162500_init_user/migration.sql`
-- Applied migrations: `20260810162500_init_user`, `20260810211300_add_auth_tables`, `20260811144000_add_catalog_tables`, `20260811151500_add_seasons_and_episodes`, `20260811165000_add_watch_tables`, `20260813220500_add_watchlist_tables`, `20260814101500_add_preferences`, `20260815172000_add_catalog_genres`, `20260815181000_add_user_availability_country`
+- Applied migrations: `20260810162500_init_user`, `20260810211300_add_auth_tables`, `20260811144000_add_catalog_tables`, `20260811151500_add_seasons_and_episodes`, `20260811165000_add_watch_tables`, `20260813220500_add_watchlist_tables`, `20260814101500_add_preferences`, `20260815172000_add_catalog_genres`, `20260815181000_add_user_availability_country`, `20260816102000_add_public_ratings`
 - Current database tables: `_prisma_migrations`, `users`, `user_identities`, `refresh_sessions`, `shows`, `movies`, `seasons`, `episodes`, `external_identifiers`, `episode_watches`, `movie_watches`, `show_watchlist_items`, `movie_watchlist_items`, `show_preferences`, `movie_preferences`
 
 Vercel environment variables:
@@ -243,7 +243,7 @@ the selected Postman environment.
 - Auth identity/session tables have been applied to Supabase.
 - `GET /users/me` resolves authenticated Supabase users into TVLore users.
 - `GET /search` proxies TMDB search through the backend.
-- `POST /catalog/resolve` persists provider-backed shows/movies into TVLore IDs.
+- `POST /catalog/resolve` persists provider-backed shows/movies into TVLore IDs with TMDB public ratings.
 - Show/movie detail endpoints read catalog records by internal TVLore IDs.
 - Season detail persists episode records for the requested season.
 - Watch/unwatch endpoints store authenticated movie and episode state.

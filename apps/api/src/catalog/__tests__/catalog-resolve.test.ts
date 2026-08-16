@@ -34,6 +34,7 @@ describe("resolved TMDB detail mapping", () => {
       original_name: "Dark",
       overview: "A family saga.",
       poster_path: "/poster.jpg",
+      vote_average: 8.4,
     }, "70523")).toEqual({
       backdropPath: "/backdrop.jpg",
       externalRef: { provider: "tmdb", providerId: "70523" },
@@ -43,6 +44,7 @@ describe("resolved TMDB detail mapping", () => {
       originalTitle: "Dark",
       overview: "A family saga.",
       posterPath: "/poster.jpg",
+      publicRating: 8.4,
       releaseDate: null,
       runtimeMinutes: null,
       seasons: [],
@@ -56,10 +58,12 @@ describe("resolved TMDB detail mapping", () => {
       release_date: "2008-07-16",
       runtime: 152,
       title: "The Dark Knight",
+      vote_average: 8.5,
     }, "155")).toMatchObject({
       externalRef: { provider: "tmdb", providerId: "155" },
       genreNames: ["Drama"],
       mediaType: "movie",
+      publicRating: 8.5,
       releaseDate: "2008-07-16",
       runtimeMinutes: 152,
       seasons: [],

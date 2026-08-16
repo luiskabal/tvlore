@@ -48,6 +48,7 @@ export function toResolvedShow(value: unknown, providerId: string): CatalogResol
     originalTitle: getString(value.original_name),
     overview: getString(value.overview) ?? "",
     posterPath: getString(value.poster_path),
+    publicRating: getPublicRating(value.vote_average),
     releaseDate: null,
     runtimeMinutes: null,
     seasons: getResolvedSeasonSummaries(value.seasons),
@@ -75,6 +76,7 @@ export function toResolvedMovie(value: unknown, providerId: string): CatalogReso
     originalTitle: getString(value.original_title),
     overview: getString(value.overview) ?? "",
     posterPath: getString(value.poster_path),
+    publicRating: getPublicRating(value.vote_average),
     releaseDate: getDateString(value.release_date),
     runtimeMinutes: getPositiveInteger(value.runtime),
     seasons: [],
@@ -145,6 +147,10 @@ function getDateString(value: unknown) {
 
 function getPositiveInteger(value: unknown) {
   return typeof value === "number" && Number.isInteger(value) && value > 0 ? value : null;
+}
+
+function getPublicRating(value: unknown) {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 10 ? value : null;
 }
 
 function getNonNegativeInteger(value: unknown) {

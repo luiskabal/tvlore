@@ -33,6 +33,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Season-level mark all watched/unwatched.
 - Personal show/movie watchlist.
 - Personal show/movie rating preferences.
+- Compact show/movie rating comparison in detail screens: TMDB public rating versus the user's 1-5 rating, with the public rating hidden as `Spoiler` until watched or manually revealed.
 - Optional post-watch rating check-in after marking a movie or full show watched.
 - Library summary with watched show, movie, episode, watchlist, and rated-title counts.
 - Tappable Library summary cards filter Cronologia, watching shows, movies, grouped episodes, watchlist, and rated titles.
