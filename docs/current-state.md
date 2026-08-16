@@ -69,7 +69,7 @@ Implemented:
 - Mobile Library/Profile keep previous library data during refreshes and render skeletons on initial load.
 - Mobile has routed Library, Search, Paths, and Profile surfaces with persistent bottom app navigation.
 - Mobile Paths lists curated and personal viewing orders and opens path items through the existing catalog resolve flow.
-- Mobile Paths can create a personal path from simple TMDB import lines.
+- Mobile Paths can create a personal path from simple TMDB import lines or pasted TMDB title URLs.
 - Mobile path detail can save a full path to watchlist in one action.
 - Mobile path detail rows render poster thumbnails.
 - Postman collection and local/Vercel environments.
@@ -922,7 +922,7 @@ Current behavior:
 - Library rows include compact poster thumbnails for quicker visual scanning.
 - Continue-watching rows open the next season, recently watched movies open movie detail, and recently watched episodes open episode detail.
 - Paths lists curated viewing orders such as Marvel Infinity Saga and Star Wars Skywalker Saga, plus personal paths created by the authenticated user.
-- Paths can create a personal list from TMDB import lines such as `movie,155` or `show,70523,optional note`.
+- Paths can create a personal list from TMDB import lines such as `movie,155` or pasted TMDB title URLs such as `https://www.themoviedb.org/tv/70523-dark`.
 - Path detail rows navigate by tapping the full row and resolve the selected item into TVLore identity only when needed.
 - Path detail can save all path titles into the user's watchlist through one backend-owned bulk action.
 - Path detail shows how many path titles are already saved and marks saved rows.

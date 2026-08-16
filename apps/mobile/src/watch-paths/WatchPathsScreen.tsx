@@ -9,6 +9,11 @@ import { styles } from "./watch-paths-styles";
 import { parseWatchPathImport } from "./watch-paths-model";
 import { useWatchPaths } from "./use-watch-paths";
 
+const importPlaceholder = [
+  "https://www.themoviedb.org/movie/155-the-dark-knight",
+  "https://www.themoviedb.org/tv/70523-dark",
+].join("\n");
+
 export default function WatchPathsScreen() {
   const { createPath, createState, refresh, resetCreateState, state } = useWatchPaths();
   const [isCreateOpen, setCreateOpen] = useState(false);
@@ -92,7 +97,7 @@ export default function WatchPathsScreen() {
               autoCorrect={false}
               multiline
               onChangeText={setItemsText}
-              placeholder={"movie,155\nshow,70523"}
+              placeholder={importPlaceholder}
               style={[styles.input, styles.multilineInput]}
               value={itemsText}
             />

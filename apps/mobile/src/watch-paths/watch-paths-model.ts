@@ -41,11 +41,17 @@ export function parseWatchPathImport(title: string, description: string, rawItem
 }
 
 function parseImportLine(line: string): CreateWatchPathInput["items"][number] {
+  const tmdbUrlItem = parseTmdbUrlLine(line);
+
+  if (tmdbUrlItem) {
+    return tmdbUrlItem;
+  }
+
   const [rawMediaType, rawProviderId, ...noteParts] = line.split(",").map((part) => part.trim());
-  const mediaType = rawMediaType?.toLowerCase();
+  const mediaType = normalizeMediaType(rawMediaType);
   const providerId = rawProviderId ?? "";
 
-  if (mediaType !== "movie" && mediaType !== "show") {
+  if (!mediaType) {
     throw new Error(`Invalid media type in "${line}"`);
   }
 
@@ -60,4 +66,36 @@ function parseImportLine(line: string): CreateWatchPathInput["items"][number] {
     mediaType,
     note: note || null,
   };
+}
+
+function parseTmdbUrlLine(line: string): CreateWatchPathInput["items"][number] | null {
+  const match = line.match(/themoviedb\.org\/(movie|tv)\/([1-9]\d*)/i);
+
+  if (!match) {
+    return null;
+  }
+
+  const mediaType = match[1].toLowerCase() === "tv" ? "show" : "movie";
+  const [, ...noteParts] = line.split(",").map((part) => part.trim());
+  const note = noteParts.join(",").trim();
+
+  return {
+    externalRef: { provider: "tmdb", providerId: match[2] },
+    mediaType,
+    note: note || null,
+  };
+}
+
+function normalizeMediaType(value: string | undefined) {
+  const normalized = value?.toLowerCase();
+
+  if (normalized === "tv" || normalized === "show") {
+    return "show";
+  }
+
+  if (normalized === "movie") {
+    return "movie";
+  }
+
+  return null;
 }

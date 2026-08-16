@@ -31,6 +31,26 @@ describe("watch paths model", () => {
     });
   });
 
+  it("parses pasted TMDB URLs", () => {
+    expect(parseWatchPathImport(
+      "TMDB URL list",
+      "",
+      [
+        "https://www.themoviedb.org/movie/155-the-dark-knight",
+        "https://www.themoviedb.org/tv/70523-dark, Watch after dinner",
+        "tv,1399",
+      ].join("\n"),
+    )).toEqual({
+      description: "Personal watch path.",
+      items: [
+        { externalRef: { provider: "tmdb", providerId: "155" }, mediaType: "movie", note: null },
+        { externalRef: { provider: "tmdb", providerId: "70523" }, mediaType: "show", note: "Watch after dinner" },
+        { externalRef: { provider: "tmdb", providerId: "1399" }, mediaType: "show", note: null },
+      ],
+      title: "TMDB URL list",
+    });
+  });
+
   it("rejects invalid import lines", () => {
     expect(() => parseWatchPathImport("", "", "movie,155")).toThrow("Path title is required");
     expect(() => parseWatchPathImport("Bad", "", "")).toThrow("Add at least one TMDB item");

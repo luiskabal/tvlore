@@ -10,7 +10,7 @@ No active infrastructure tasks.
 
 - [x] Split `CatalogDetailContent.tsx` into focused detail subcomponents when the next detail UX feature touches it.
 - [x] Move pure catalog response mappers out of `CatalogRepository` when catalog persistence is next edited.
-- [ ] Add fetched/import-assisted Watch Path creation from external list sources.
+- [ ] Add fetched Watch Path creation from public list sources after choosing a source format/provider.
 - [ ] Add a TVLore-native recommendation engine with house rules, explicit taste signals, availability, and explainable reasons.
 - [ ] Add a country-aware `Popular in your country` discovery section using the user's saved availability country.
 - [ ] Add a `TVLore Picks` / house-curated discovery section that is separate from personalized recommendations.
@@ -129,6 +129,7 @@ No active infrastructure tasks.
 - [x] Let curated Watch Paths save every item to the user's watchlist in one backend-owned action.
 - [x] Show saved watchlist state inside curated Watch Path detail.
 - [x] Add user-owned imported Watch Paths after approving persistence/schema shape.
+- [x] Add TMDB URL-assisted Watch Path import for pasted external list text.
 - [x] Store the user's preferred availability country and render it with flag labels in mobile.
 - [x] Add episode-level rating preferences and mobile episode rating UI.
 - [x] Add backend-owned season-level mark all watched/unwatched and simplify the mobile season hook.
