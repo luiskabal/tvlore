@@ -89,12 +89,6 @@ export default function SearchScreen() {
           query={query}
         />
 
-        <SearchResults
-          onOpenResult={openResult}
-          resolveState={resolveState}
-          search={search}
-        />
-
         <SearchRecommendations
           onOpenMovie={openMovie}
           onOpenShow={openShow}
@@ -103,6 +97,12 @@ export default function SearchScreen() {
           recommendationAction={recommendationAction}
           recommendations={recommendations}
           state={recommendationsState}
+        />
+
+        <SearchResults
+          onOpenResult={openResult}
+          resolveState={resolveState}
+          search={search}
         />
       </ScrollView>
     </SafeAreaView>
