@@ -1,43 +1,38 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Pressable, ScrollView, Text, View, type NativeScrollEvent, type NativeSyntheticEvent } from "react-native";
-import { Swipeable } from "react-native-gesture-handler";
+import { useEffect, useRef, useState } from "react";
+import { ScrollView, Text, View, type NativeScrollEvent, type NativeSyntheticEvent } from "react-native";
 
 import type {
-  ContinueWatchingShow,
-  LibraryRatedTitle,
   LibraryResponse,
   LibraryWatchlistItem,
   RecentlyWatchedItem,
-  WatchedEpisodeItem,
 } from "../api/tvlore-api";
-import { getTmdbPosterUrl } from "../catalog/posters";
 import {
   getHistoryActionKey,
-  getWatchlistActionKey,
   type LibraryActionState,
 } from "../library/use-library-actions";
 import type { LibraryChronologyState } from "../library/use-library-chronology";
-import { AppText, Button, MediaRow, Skeleton, StatCard } from "../ui";
+import { Skeleton, StatCard } from "../ui";
 import { styles } from "./home-styles";
-
-type LibrarySectionFilter =
-  | "chronology"
-  | "episodes"
-  | "movies"
-  | "rated"
-  | "watching"
-  | "watchlist";
-
-type EpisodeGroup = {
-  seasons: Array<{
-    episodes: WatchedEpisodeItem[];
-    seasonNumber: number;
-  }>;
-  showId: string;
-  showTitle: string;
-};
-
-const swipeConfirmWindowMs = 4000;
+import {
+  ChronologySection,
+  ContinueWatchingSection,
+  EmptySection,
+  EpisodesSection,
+  MoviesSection,
+  RatedSection,
+  WatchlistSection,
+} from "./LibraryOverviewSections";
+import { LibraryRowsSkeleton } from "./LibraryRows";
+import {
+  addSetValue,
+  deleteSetValue,
+  getDefaultSection,
+  getLibraryActionKeys,
+  getOptimisticLibrary,
+  groupEpisodesByShowAndSeason,
+  hasItemsForSection,
+  type LibrarySectionFilter,
+} from "./library-overview-model";
 
 type LibraryOverviewProps = {
   chronology: LibraryChronologyState;
@@ -112,6 +107,12 @@ export function LibraryOverview({
     }
   }, [library, onChronologyVisible, selectedSection]);
 
+  useEffect(() => {
+    if (chronology.kind !== "loadingMore") {
+      autoLoadCursorRef.current = null;
+    }
+  }, [chronology.kind, chronology.nextCursor]);
+
   if (!library) {
     return (
       <View style={styles.statusPanel}>
@@ -169,12 +170,6 @@ export function LibraryOverview({
     onLoadMoreChronology();
   };
 
-  useEffect(() => {
-    if (chronology.kind !== "loadingMore") {
-      autoLoadCursorRef.current = null;
-    }
-  }, [chronology.kind, chronology.nextCursor]);
-
   return (
     <View style={styles.librarySectionFixed}>
       <View style={styles.summaryGrid}>
@@ -209,76 +204,50 @@ export function LibraryOverview({
         ) : null}
 
         {shouldShowContinueWatching && hasContinueWatching ? (
-          <View style={styles.listSection}>
-            <Text style={styles.listTitle}>Continue Watching</Text>
-            {visibleLibrary.continueWatching.map((show) => (
-              <ContinueWatchingItem key={show.id} onOpenShowSeason={onOpenShowSeason} show={show} />
-            ))}
-          </View>
+          <ContinueWatchingSection
+            onOpenShowSeason={onOpenShowSeason}
+            shows={visibleLibrary.continueWatching}
+          />
         ) : null}
 
         {shouldShowWatchlist && hasWatchlist ? (
-          <View style={styles.listSection}>
-            <Text style={styles.listTitle}>Watchlist</Text>
-            {visibleLibrary.watchlist.map((item) => (
-              <WatchlistRow
-                item={item}
-                key={`${item.mediaType}-${item.id}`}
-                libraryAction={libraryAction}
-                onOptimisticRemove={hideLibraryAction}
-                onOpenMovie={onOpenMovie}
-                onOpenShow={onOpenShow}
-                onRemove={onRemoveWatchlistItem}
-              />
-            ))}
-          </View>
+          <WatchlistSection
+            items={visibleLibrary.watchlist}
+            libraryAction={libraryAction}
+            onOptimisticRemove={hideLibraryAction}
+            onOpenMovie={onOpenMovie}
+            onOpenShow={onOpenShow}
+            onRemove={onRemoveWatchlistItem}
+          />
         ) : null}
 
         {shouldShowRated && hasRatedTitles ? (
-          <View style={styles.listSection}>
-            <Text style={styles.listTitle}>Rated</Text>
-            {visibleLibrary.ratedTitles.map((item) => (
-              <RatedTitleRow
-                item={item}
-                key={`${item.mediaType}-${item.id}`}
-                onOpenMovie={onOpenMovie}
-                onOpenShow={onOpenShow}
-              />
-            ))}
-          </View>
+          <RatedSection
+            items={visibleLibrary.ratedTitles}
+            onOpenMovie={onOpenMovie}
+            onOpenShow={onOpenShow}
+          />
         ) : null}
 
         {shouldShowMovies && hasRecentlyWatchedMovies ? (
-          <View style={styles.listSection}>
-            <Text style={styles.listTitle}>Movies</Text>
-            {recentlyWatchedMovies.map((item) => (
-              <RecentlyWatchedRow
-                item={item}
-                key={`${item.mediaType}-${item.id}`}
-                libraryAction={libraryAction}
-                onOptimisticRemove={hideLibraryAction}
-                onOpenMovie={onOpenMovie}
-                onOpenShowSeason={onOpenShowSeason}
-                onRemove={onRemoveRecentlyWatchedItem}
-              />
-            ))}
-          </View>
+          <MoviesSection
+            items={recentlyWatchedMovies}
+            libraryAction={libraryAction}
+            onOptimisticRemove={hideLibraryAction}
+            onOpenMovie={onOpenMovie}
+            onOpenShowSeason={onOpenShowSeason}
+            onRemove={onRemoveRecentlyWatchedItem}
+          />
         ) : null}
 
         {shouldShowEpisodes && hasWatchedEpisodes ? (
-          <View style={styles.listSection}>
-            <Text style={styles.listTitle}>Episodes</Text>
-            {episodeGroups.map((group) => (
-              <EpisodeShowGroup
-                group={group}
-                key={group.showId}
-                libraryAction={libraryAction}
-                onOptimisticRemove={hideLibraryAction}
-                onOpenShowSeason={onOpenShowSeason}
-                onRemove={onRemoveRecentlyWatchedItem}
-              />
-            ))}
-          </View>
+          <EpisodesSection
+            groups={episodeGroups}
+            libraryAction={libraryAction}
+            onOptimisticRemove={hideLibraryAction}
+            onOpenShowSeason={onOpenShowSeason}
+            onRemove={onRemoveRecentlyWatchedItem}
+          />
         ) : null}
 
         {shouldShowHistory ? (
@@ -311,635 +280,8 @@ export function LibraryOverviewSkeleton() {
   );
 }
 
-function LibraryRowsSkeleton() {
-  return (
-    <View style={styles.listSection}>
-      <Skeleton height={22} width="46%" />
-      {[0, 1, 2].map((item) => (
-        <View key={item} style={styles.skeletonMediaRow}>
-          <Skeleton height={64} width={44} />
-          <View style={styles.skeletonMediaText}>
-            <Skeleton height={18} width="76%" />
-            <Skeleton height={14} width="58%" />
-          </View>
-          <Skeleton height={14} width={48} />
-        </View>
-      ))}
-    </View>
-  );
-}
-
-function EmptySection({ activeSection }: { activeSection: LibrarySectionFilter }) {
-  return (
-    <View style={styles.emptyPanel}>
-      <Text style={styles.statusLabel}>{getEmptySectionTitle(activeSection)}</Text>
-      <Text style={styles.statusDetail}>{getEmptySectionDetail(activeSection)}</Text>
-    </View>
-  );
-}
-
-function ContinueWatchingItem({
-  onOpenShowSeason,
-  show,
-}: {
-  onOpenShowSeason: (showId: string, seasonNumber: number) => void;
-  show: ContinueWatchingShow;
-}) {
-  return (
-    <MediaRow
-      detail={`S${show.nextEpisode.seasonNumber} E${show.nextEpisode.episodeNumber} - ${show.nextEpisode.title}`}
-      onPress={() => onOpenShowSeason(show.id, show.nextEpisode.seasonNumber)}
-      posterLabel="TV"
-      posterUri={getPosterUri(show.posterPath)}
-      title={show.title}
-      trailing={`${show.percentComplete}%`}
-    />
-  );
-}
-
-function WatchlistRow({
-  item,
-  libraryAction,
-  onOptimisticRemove,
-  onOpenMovie,
-  onRemove,
-  onOpenShow,
-}: {
-  item: LibraryWatchlistItem;
-  libraryAction: LibraryActionState;
-  onOptimisticRemove: (actionKey: string) => void;
-  onOpenMovie: (movieId: string) => void;
-  onRemove: (item: LibraryWatchlistItem) => void;
-  onOpenShow: (showId: string) => void;
-}) {
-  const actionKey = getWatchlistActionKey(item);
-  const isRemoving = libraryAction.kind === "loading" && libraryAction.actionKey === actionKey;
-  const errorMessage = libraryAction.kind === "error" && libraryAction.actionKey === actionKey
-    ? libraryAction.message
-    : null;
-  const openItem = () => {
-    if (item.mediaType === "movie") {
-      onOpenMovie(item.id);
-      return;
-    }
-
-    onOpenShow(item.id);
-  };
-
-  return (
-    <SwipeableActionRow
-      actionLabel="Remove"
-      isLoading={isRemoving}
-      loadingLabel="Removing"
-      onAction={() => {
-        onOptimisticRemove(actionKey);
-        onRemove(item);
-      }}
-    >
-      <View style={styles.actionListItem}>
-        <MediaRow
-          detail={item.mediaType === "movie" ? "Movie" : "Show"}
-          frame={false}
-          onPress={openItem}
-          posterLabel={item.mediaType === "movie" ? "M" : "TV"}
-          posterUri={getPosterUri(item.posterPath)}
-          title={item.title}
-          trailing={formatShortDate(item.createdAt)}
-        />
-        {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
-      </View>
-    </SwipeableActionRow>
-  );
-}
-
-function RecentlyWatchedRow({
-  item,
-  libraryAction,
-  onOptimisticRemove,
-  onOpenMovie,
-  onRemove,
-  onOpenShowSeason,
-}: {
-  item: RecentlyWatchedItem;
-  libraryAction: LibraryActionState;
-  onOptimisticRemove: (actionKey: string) => void;
-  onOpenMovie: (movieId: string) => void;
-  onRemove: (item: RecentlyWatchedItem) => void;
-  onOpenShowSeason: (showId: string, seasonNumber: number) => void;
-}) {
-  const actionKey = getHistoryActionKey(item);
-  const isRemoving = libraryAction.kind === "loading" && libraryAction.actionKey === actionKey;
-  const errorMessage = libraryAction.kind === "error" && libraryAction.actionKey === actionKey
-    ? libraryAction.message
-    : null;
-  const openItem = () => {
-    if (item.mediaType === "movie") {
-      onOpenMovie(item.id);
-      return;
-    }
-
-    onOpenShowSeason(item.showId, item.seasonNumber);
-  };
-
-  return (
-    <SwipeableActionRow
-      actionLabel="Undo"
-      isLoading={isRemoving}
-      loadingLabel="Undoing"
-      onAction={() => {
-        onOptimisticRemove(actionKey);
-        onRemove(item);
-      }}
-    >
-      <View style={styles.actionListItem}>
-        <MediaRow
-          detail={getRecentlyWatchedDetail(item)}
-          frame={false}
-          onPress={openItem}
-          posterLabel={item.mediaType === "movie" ? "M" : "E"}
-          posterUri={getRecentlyWatchedPosterUri(item)}
-          title={getRecentlyWatchedTitle(item)}
-          trailing={formatShortDate(item.watchedAt)}
-        />
-        {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
-      </View>
-    </SwipeableActionRow>
-  );
-}
-
-function ChronologySection({
-  chronology,
-  items,
-  libraryAction,
-  onOptimisticRemove,
-  onOpenMovie,
-  onOpenShowSeason,
-  onRemove,
-  onRetry,
-}: {
-  chronology: LibraryChronologyState;
-  items: RecentlyWatchedItem[];
-  libraryAction: LibraryActionState;
-  onOptimisticRemove: (actionKey: string) => void;
-  onOpenMovie: (movieId: string) => void;
-  onOpenShowSeason: (showId: string, seasonNumber: number) => void;
-  onRemove: (item: RecentlyWatchedItem) => void;
-  onRetry: () => void;
-}) {
-  if (chronology.kind === "loading" && items.length === 0) {
-    return <LibraryRowsSkeleton />;
-  }
-
-  if (items.length === 0) {
-    return chronology.kind === "error" ? (
-      <View style={styles.statusPanel}>
-        <Text style={styles.statusLabel}>Could not load chronology</Text>
-        <Text style={styles.errorText}>{chronology.message}</Text>
-        <Button label="Retry" onPress={onRetry} />
-      </View>
-    ) : (
-      <EmptySection activeSection="chronology" />
-    );
-  }
-
-  return (
-    <View style={styles.listSection}>
-      <Text style={styles.listTitle}>Cronologia</Text>
-      {chronology.kind === "loading" ? <Text style={styles.statusDetail}>Loading full history...</Text> : null}
-      {chronology.kind === "error" ? <Text style={styles.errorText}>{chronology.message}</Text> : null}
-      {items.map((item) => (
-        <RecentlyWatchedRow
-          item={item}
-          key={`${item.mediaType}-${item.id}`}
-          libraryAction={libraryAction}
-          onOptimisticRemove={onOptimisticRemove}
-          onOpenMovie={onOpenMovie}
-          onOpenShowSeason={onOpenShowSeason}
-          onRemove={onRemove}
-        />
-      ))}
-      {chronology.nextCursor ? (
-        <AppText tone="muted">
-          {chronology.kind === "loadingMore" ? "Loading more history..." : "Scroll for more history"}
-        </AppText>
-      ) : null}
-    </View>
-  );
-}
-
-function EpisodeShowGroup({
-  group,
-  libraryAction,
-  onOptimisticRemove,
-  onOpenShowSeason,
-  onRemove,
-}: {
-  group: EpisodeGroup;
-  libraryAction: LibraryActionState;
-  onOptimisticRemove: (actionKey: string) => void;
-  onOpenShowSeason: (showId: string, seasonNumber: number) => void;
-  onRemove: (item: RecentlyWatchedItem) => void;
-}) {
-  const [collapsedSeasons, setCollapsedSeasons] = useState<Set<number>>(() => new Set());
-  const toggleSeason = (seasonNumber: number) => {
-    setCollapsedSeasons((current) => (
-      current.has(seasonNumber)
-        ? deleteSetValue(current, seasonNumber)
-        : addSetValue(current, seasonNumber)
-    ));
-  };
-
-  return (
-    <View style={styles.groupPanel}>
-      <Text style={styles.groupTitle}>{group.showTitle}</Text>
-      {group.seasons.map((season) => (
-        <EpisodeSeasonGroup
-          episodes={season.episodes}
-          isCollapsed={collapsedSeasons.has(season.seasonNumber)}
-          key={`${group.showId}-${season.seasonNumber}`}
-          libraryAction={libraryAction}
-          onOptimisticRemove={onOptimisticRemove}
-          onOpenShowSeason={onOpenShowSeason}
-          onRemove={onRemove}
-          onToggle={() => toggleSeason(season.seasonNumber)}
-          seasonNumber={season.seasonNumber}
-        />
-      ))}
-    </View>
-  );
-}
-
-function EpisodeSeasonGroup({
-  episodes,
-  isCollapsed,
-  libraryAction,
-  onOptimisticRemove,
-  onOpenShowSeason,
-  onRemove,
-  onToggle,
-  seasonNumber,
-}: {
-  episodes: WatchedEpisodeItem[];
-  isCollapsed: boolean;
-  libraryAction: LibraryActionState;
-  onOptimisticRemove: (actionKey: string) => void;
-  onOpenShowSeason: (showId: string, seasonNumber: number) => void;
-  onRemove: (item: RecentlyWatchedItem) => void;
-  onToggle: () => void;
-  seasonNumber: number;
-}) {
-  return (
-    <View style={styles.groupSeason}>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityState={{ expanded: !isCollapsed }}
-        onPress={onToggle}
-        style={({ pressed }) => [styles.groupSeasonHeader, pressed ? styles.pressedListItem : null]}
-      >
-        <Text style={styles.groupSubtitle}>Season {seasonNumber}</Text>
-        <View style={styles.groupSeasonMeta}>
-          <Text style={styles.statusDetail}>{episodes.length} watched</Text>
-          <Text style={styles.groupSeasonToggle}>{isCollapsed ? "+" : "-"}</Text>
-        </View>
-      </Pressable>
-      {isCollapsed
-        ? null
-        : episodes.map((episode) => (
-            <RecentlyWatchedRow
-              item={episode}
-              key={episode.id}
-              libraryAction={libraryAction}
-              onOptimisticRemove={onOptimisticRemove}
-              onOpenMovie={noop}
-              onOpenShowSeason={onOpenShowSeason}
-              onRemove={onRemove}
-            />
-          ))}
-    </View>
-  );
-}
-
-function RatedTitleRow({
-  item,
-  onOpenMovie,
-  onOpenShow,
-}: {
-  item: LibraryRatedTitle;
-  onOpenMovie: (movieId: string) => void;
-  onOpenShow: (showId: string) => void;
-}) {
-  const openItem = () => {
-    if (item.mediaType === "movie") {
-      onOpenMovie(item.id);
-      return;
-    }
-
-    onOpenShow(item.id);
-  };
-
-  return (
-    <MediaRow
-      detail={`${item.mediaType === "movie" ? "Movie" : "Show"} - Updated ${formatShortDate(item.updatedAt)}`}
-      onPress={openItem}
-      posterLabel={item.mediaType === "movie" ? "M" : "TV"}
-      posterUri={getPosterUri(item.posterPath)}
-      title={item.title}
-      trailing={`${item.rating}/5`}
-    />
-  );
-}
-
-function SwipeableActionRow({
-  actionLabel,
-  children,
-  isLoading,
-  loadingLabel,
-  onAction,
-}: {
-  actionLabel: string;
-  children: ReactNode;
-  isLoading: boolean;
-  loadingLabel: string;
-  onAction: () => void;
-}) {
-  const [isArmed, setIsArmed] = useState(false);
-  const disarmTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const confirmLabel = `Confirm ${actionLabel.toLowerCase()}`;
-
-  const clearDisarmTimeout = () => {
-    if (!disarmTimeoutRef.current) {
-      return;
-    }
-
-    clearTimeout(disarmTimeoutRef.current);
-    disarmTimeoutRef.current = null;
-  };
-  const armAction = () => {
-    clearDisarmTimeout();
-    setIsArmed(true);
-    disarmTimeoutRef.current = setTimeout(() => {
-      setIsArmed(false);
-      disarmTimeoutRef.current = null;
-    }, swipeConfirmWindowMs);
-  };
-  const confirmAction = () => {
-    if (isLoading) {
-      return;
-    }
-
-    clearDisarmTimeout();
-    setIsArmed(false);
-    onAction();
-  };
-
-  useEffect(() => {
-    if (isLoading) {
-      clearDisarmTimeout();
-      setIsArmed(false);
-    }
-  }, [isLoading]);
-
-  useEffect(() => () => clearDisarmTimeout(), []);
-
-  return (
-    <Swipeable
-      containerStyle={styles.swipeableRow}
-      onSwipeableOpen={(direction) => {
-        if (direction !== "right" || isLoading) {
-          return;
-        }
-
-        if (isArmed) {
-          confirmAction();
-          return;
-        }
-
-        armAction();
-      }}
-      overshootRight={false}
-      renderRightActions={() => (
-        <View style={styles.swipeActions}>
-          <Pressable
-            accessibilityRole="button"
-            disabled={isLoading}
-            onPress={confirmAction}
-            style={[
-              styles.swipeActionButton,
-              isArmed ? styles.swipeActionButtonArmed : null,
-              isLoading ? styles.disabledButton : null,
-            ]}
-          >
-            <Text style={styles.swipeActionButtonText}>
-              {isLoading ? loadingLabel : isArmed ? confirmLabel : actionLabel}
-            </Text>
-          </Pressable>
-        </View>
-      )}
-      rightThreshold={isArmed ? 12 : 44}
-    >
-      {children}
-    </Swipeable>
-  );
-}
-
-function hasItemsForSection(activeSection: LibrarySectionFilter, library: LibraryResponse) {
-  if (activeSection === "chronology") {
-    return library.recentlyWatched.length > 0;
-  }
-
-  if (activeSection === "watching") {
-    return library.continueWatching.length > 0;
-  }
-
-  if (activeSection === "watchlist") {
-    return library.watchlist.length > 0;
-  }
-
-  if (activeSection === "movies") {
-    return library.recentlyWatched.some((item) => item.mediaType === "movie");
-  }
-
-  if (activeSection === "episodes") {
-    return library.watchedEpisodes.length > 0;
-  }
-
-  if (activeSection === "rated") {
-    return library.ratedTitles.length > 0;
-  }
-
-  return true;
-}
-
-function getOptimisticLibrary(library: LibraryResponse, removedKeys: Set<string>): LibraryResponse {
-  const recentlyWatched = library.recentlyWatched.filter((item) => !removedKeys.has(getHistoryActionKey(item)));
-  const watchlist = library.watchlist.filter((item) => !removedKeys.has(getWatchlistActionKey(item)));
-  const watchedEpisodes = library.watchedEpisodes.filter((item) => !removedKeys.has(getHistoryActionKey(item)));
-  const removedRecentlyWatchedMovies = library.recentlyWatched.filter((item) => item.mediaType === "movie" && removedKeys.has(getHistoryActionKey(item)));
-  const removedWatchedEpisodes = library.watchedEpisodes.filter((item) => removedKeys.has(getHistoryActionKey(item)));
-  const removedWatchlistCount = library.watchlist.length - watchlist.length;
-
-  return {
-    ...library,
-    recentlyWatched,
-    summary: {
-      ...library.summary,
-      watchedEpisodeCount: Math.max(0, library.summary.watchedEpisodeCount - removedWatchedEpisodes.length),
-      watchedMovieCount: Math.max(0, library.summary.watchedMovieCount - removedRecentlyWatchedMovies.length),
-      watchlistItemCount: Math.max(0, library.summary.watchlistItemCount - removedWatchlistCount),
-    },
-    watchlist,
-    watchedEpisodes,
-  };
-}
-
-function getLibraryActionKeys(library: LibraryResponse, chronologyItems: RecentlyWatchedItem[] = []) {
-  return new Set([
-    ...library.recentlyWatched.map(getHistoryActionKey),
-    ...library.watchlist.map(getWatchlistActionKey),
-    ...library.watchedEpisodes.map(getHistoryActionKey),
-    ...chronologyItems.map(getHistoryActionKey),
-  ]);
-}
-
-function addSetValue<T>(values: Set<T>, value: T) {
-  if (values.has(value)) {
-    return values;
-  }
-
-  const next = new Set(values);
-  next.add(value);
-  return next;
-}
-
-function deleteSetValue<T>(values: Set<T>, value: T) {
-  if (!values.has(value)) {
-    return values;
-  }
-
-  const next = new Set(values);
-  next.delete(value);
-  return next;
-}
-
-function getDefaultSection(library: LibraryResponse): LibrarySectionFilter {
-  return library.continueWatching.length > 0 ? "watching" : "chronology";
-}
-
-function getRecentlyWatchedTitle(item: RecentlyWatchedItem) {
-  return item.mediaType === "movie" ? item.title : item.showTitle;
-}
-
-function getRecentlyWatchedPosterUri(item: RecentlyWatchedItem) {
-  return item.mediaType === "movie" ? getPosterUri(item.posterPath) : null;
-}
-
-function getRecentlyWatchedDetail(item: RecentlyWatchedItem) {
-  return item.mediaType === "movie"
-    ? "Movie"
-    : `S${item.seasonNumber} E${item.episodeNumber} - ${item.title}`;
-}
-
-function getEmptySectionTitle(activeSection: LibrarySectionFilter) {
-  if (activeSection === "chronology") {
-    return "No watch history";
-  }
-
-  if (activeSection === "watching") {
-    return "Nothing in progress";
-  }
-
-  if (activeSection === "watchlist") {
-    return "No saved titles";
-  }
-
-  if (activeSection === "movies") {
-    return "No recent movies";
-  }
-
-  if (activeSection === "episodes") {
-    return "No recent episodes";
-  }
-
-  if (activeSection === "rated") {
-    return "No rated titles";
-  }
-
-  return "No activity";
-}
-
-function getEmptySectionDetail(activeSection: LibrarySectionFilter) {
-  if (activeSection === "chronology") {
-    return "Watched movies and episodes will appear here by date.";
-  }
-
-  if (activeSection === "watching") {
-    return "Shows appear here after you mark at least one episode watched.";
-  }
-
-  if (activeSection === "watchlist") {
-    return "Saved shows and movies will appear here.";
-  }
-
-  if (activeSection === "movies") {
-    return "Watched movies will appear here.";
-  }
-
-  if (activeSection === "episodes") {
-    return "Watched episodes will appear here.";
-  }
-
-  if (activeSection === "rated") {
-    return "Rated shows and movies will appear here.";
-  }
-
-  return "Library activity will appear here.";
-}
-
-function formatShortDate(value: string) {
-  return new Date(value).toLocaleDateString(undefined, { month: "short", day: "numeric" });
-}
-
-function noop() {}
-
-function getPosterUri(posterPath: string | null) {
-  return posterPath ? getTmdbPosterUrl(posterPath) : null;
-}
-
 function isNearScrollEnd(event: NativeScrollEvent) {
   const distanceFromEnd = event.contentSize.height - event.layoutMeasurement.height - event.contentOffset.y;
 
   return distanceFromEnd < 180;
-}
-
-function groupEpisodesByShowAndSeason(
-  episodes: WatchedEpisodeItem[],
-): EpisodeGroup[] {
-  const groups = new Map<string, EpisodeGroup>();
-
-  episodes.forEach((episode) => {
-    const showGroup = groups.get(episode.showId) ?? {
-      seasons: [],
-      showId: episode.showId,
-      showTitle: episode.showTitle,
-    };
-    const seasonGroup = showGroup.seasons.find((season) => season.seasonNumber === episode.seasonNumber);
-
-    if (seasonGroup) {
-      seasonGroup.episodes.push(episode);
-    } else {
-      showGroup.seasons.push({ episodes: [episode], seasonNumber: episode.seasonNumber });
-    }
-
-    groups.set(episode.showId, showGroup);
-  });
-
-  return Array.from(groups.values()).map((group) => ({
-    ...group,
-    seasons: group.seasons
-      .map((season) => ({
-        ...season,
-        episodes: [...season.episodes].sort((left, right) => left.episodeNumber - right.episodeNumber),
-      }))
-      .sort((left, right) => left.seasonNumber - right.seasonNumber),
-  }));
 }

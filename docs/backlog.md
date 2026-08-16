@@ -8,7 +8,6 @@ No active infrastructure tasks.
 
 ## Next
 
-- [ ] Split `LibraryOverview.tsx` by visible Library section when the next Library UX feature touches it.
 - [ ] Split `CatalogDetailContent.tsx` into focused detail subcomponents when the next detail UX feature touches it.
 - [ ] Move pure catalog response mappers out of `CatalogRepository` when catalog persistence is next edited.
 - [ ] Add user-owned imported or fetched watch paths after approving persistence/schema shape.
@@ -133,6 +132,7 @@ No active infrastructure tasks.
 - [x] Add backend-owned season-level mark all watched/unwatched and simplify the mobile season hook.
 - [x] Harden the mobile API client for non-JSON, empty, or proxy-shaped error responses.
 - [x] Normalize incoming `x-correlation-id` values before returning/logging them.
+- [x] Split `LibraryOverview.tsx` by visible Library section.
 
 ## Deferred
 
