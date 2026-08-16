@@ -3,18 +3,18 @@ import { View } from "react-native";
 import { RecommendationsPanel, type RecommendationsPanelProps } from "../home/RecommendationsPanel";
 import { AppText, Button, Skeleton } from "../ui";
 import { styles } from "./search-styles";
-import type { DiscoverRecommendationsState } from "./use-discover-recommendations";
+import type { SearchRecommendationsState } from "./use-search-recommendations";
 
-type DiscoverRecommendationsProps = RecommendationsPanelProps & {
+type SearchRecommendationsProps = RecommendationsPanelProps & {
   onRetry: () => void;
-  state: DiscoverRecommendationsState;
+  state: SearchRecommendationsState;
 };
 
-export function DiscoverRecommendations({
+export function SearchRecommendations({
   onRetry,
   state,
   ...recommendationsProps
-}: DiscoverRecommendationsProps) {
+}: SearchRecommendationsProps) {
   if (state.kind === "loading" || state.kind === "idle") {
     return (
       <View style={styles.recommendationsSkeleton}>

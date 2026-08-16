@@ -32,7 +32,7 @@ This structure is a starting point, not a permanent requirement.
 
 - Root layout owns the stack shell and persistent primary tab bar.
 - `/` redirects to `/library`.
-- Library, Discover, Paths, and Profile are primary user surfaces. Discover currently uses the `/search` route.
+- Library, Search, Paths, and Profile are primary user surfaces.
 - Detail routes are stack screens above tabs and do not render the primary tab bar.
 - Protected routes require an authenticated TVLore session.
 - Deep links should route through backend validation where private data is involved.
@@ -252,8 +252,8 @@ visual patterns. These components are presentation-only. They do not fetch
 data, resolve catalog IDs, calculate progress, or own domain-specific mutation
 logic.
 
-`RecommendationsPanel` is presentation-only and currently belongs to Discover.
-`useDiscoverRecommendations` loads only `GET /recommendations`; Library does not
+`RecommendationsPanel` is presentation-only and currently belongs to Search.
+`useSearchRecommendations` loads only `GET /recommendations`; Library does not
 fetch recommendation data. The API guard layer owns the response-shape
 validation. Recommendation rows receive navigation and save-to-watchlist
 callbacks from the route screen. `useRecommendationActions` reuses the existing
@@ -291,18 +291,18 @@ Profile render skeletons only when no home data has loaded yet.
 
 `HomeScreen` remains as a compatibility export to the Library route while `/`
 redirects to `/library`. The primary product surfaces are now route-level
-screens: Library, Discover, Paths, and Profile.
+screens: Library, Search, Paths, and Profile.
 
-`AppTabBar` is mounted once in `app/_layout.tsx`, not inside Library, Discover, or
+`AppTabBar` is mounted once in `app/_layout.tsx`, not inside Library, Search, or
 Profile screens. This keeps primary navigation stable while route content
 changes underneath it.
 
-Discover/search and detail now follow the same boundary:
+Search and detail now follow the same boundary:
 
 ```text
 SearchScreen
   -> useCatalogSearch()
-  -> useDiscoverRecommendations()
+  -> useSearchRecommendations()
   -> GET /search
   -> GET /recommendations
   -> POST /catalog/resolve

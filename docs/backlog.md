@@ -24,7 +24,7 @@ No active infrastructure tasks.
 - First recommendations intentionally use hydrated catalog data, ratings, genres, and a small provider-availability boost. Improve quality only after storing stronger content signals.
 - Keep recommendation surfaces separate: personalized `For you`, contextual `Popular in your country`, utility `Available in your country`, and editorial `TVLore Picks`.
 - TVLore-native recommendations should stay explainable before adding opaque ML or collaborative filtering.
-- Personalized recommendations belong in Discover. Library should stay focused on user-owned watched, saved, rated, and in-progress content; Profile should stay focused on identity, stats, and account controls.
+- Personalized recommendations belong in Search for now. Library should stay focused on user-owned watched, saved, rated, and in-progress content; Profile should stay focused on identity, stats, and account controls.
 - Cronologia uses a backend-owned paginated endpoint and loads more history as the user scrolls near the end.
 - Curated watch paths should support movies and shows in one ordered list, keep source/provenance, and resolve items into TVLore catalog IDs only when the user opens or saves the list.
 - Where to Watch should stay backend-owned: provider API keys stay server-side, results are normalized by country, and mobile only renders availability badges/icons plus allowed attribution or links.
@@ -103,7 +103,7 @@ No active infrastructure tasks.
 - [x] Explain recommendation rows from preferred genre overlap.
 - [x] Let recommendation rows save directly to watchlist.
 - [x] Keep recommendations out of Profile and user-owned Library sections.
-- [x] Move personalized recommendations from Library into Discover.
+- [x] Move personalized recommendations from Library into Search.
 - [x] Add backend-owned show-level mark all watched/unwatched.
 - [x] Add backend-owned paginated Cronologia feed.
 - [x] Add infinite-scroll loading to mobile Cronologia.

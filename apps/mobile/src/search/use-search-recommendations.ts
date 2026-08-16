@@ -4,14 +4,14 @@ import { getRecommendations, type RecommendationsResponse } from "../api/tvlore-
 import { getSupabaseAccessToken } from "../auth/supabase-auth";
 import { useLibraryRevision } from "../library/library-refresh";
 
-export type DiscoverRecommendationsState =
+export type SearchRecommendationsState =
   | { kind: "idle" }
   | { kind: "loading" }
   | { kind: "ready"; recommendations: RecommendationsResponse | null }
   | { kind: "error"; message: string };
 
-export function useDiscoverRecommendations() {
-  const [recommendationsState, setRecommendationsState] = useState<DiscoverRecommendationsState>({ kind: "idle" });
+export function useSearchRecommendations() {
+  const [recommendationsState, setRecommendationsState] = useState<SearchRecommendationsState>({ kind: "idle" });
   const libraryRevision = useLibraryRevision();
 
   const loadRecommendations = useCallback(async () => {

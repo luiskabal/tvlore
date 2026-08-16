@@ -5,13 +5,13 @@ import { SafeAreaView, ScrollView } from "react-native";
 
 import type { CatalogSearchResult, MediaType } from "../api/tvlore-api";
 import { useRecommendationActions } from "../home/use-recommendation-actions";
-import { DiscoverRecommendations } from "./DiscoverRecommendations";
 import { SearchControls } from "./SearchControls";
+import { SearchRecommendations } from "./SearchRecommendations";
 import { SearchResults } from "./SearchResults";
 import { styles } from "./search-styles";
 import { canRunSearch, type SearchFilter } from "./search-model";
 import { useCatalogSearch } from "./use-catalog-search";
-import { useDiscoverRecommendations } from "./use-discover-recommendations";
+import { useSearchRecommendations } from "./use-search-recommendations";
 
 const searchDebounceMs = 600;
 
@@ -20,7 +20,7 @@ export default function SearchScreen() {
   const [filter, setFilter] = useState<SearchFilter>("all");
   const { resolveResult, resolveState, runSearch, search } = useCatalogSearch();
   const { recommendationAction, saveRecommendation } = useRecommendationActions();
-  const { recommendations, recommendationsState, retryRecommendations } = useDiscoverRecommendations();
+  const { recommendations, recommendationsState, retryRecommendations } = useSearchRecommendations();
   const skipNextDebouncedSearchRef = useRef(false);
   const canSearch = canRunSearch(query);
   const isSearching = search.kind === "loading" || search.kind === "refreshing";
@@ -95,7 +95,7 @@ export default function SearchScreen() {
           search={search}
         />
 
-        <DiscoverRecommendations
+        <SearchRecommendations
           onOpenMovie={openMovie}
           onOpenShow={openShow}
           onRetry={retryRecommendations}

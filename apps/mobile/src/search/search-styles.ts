@@ -149,5 +149,6 @@ export const styles = StyleSheet.create({
   title: {
     fontSize: 42,
     fontWeight: "800",
+    lineHeight: 50,
   },
 });

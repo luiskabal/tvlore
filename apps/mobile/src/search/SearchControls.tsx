@@ -30,8 +30,8 @@ export function SearchControls({
   return (
     <>
       <View style={styles.header}>
-        <AppText style={styles.title}>Discover</AppText>
-        <AppText style={styles.subtitle} tone="muted">Search, save, and find your next title.</AppText>
+        <AppText style={styles.title}>Search</AppText>
+        <AppText style={styles.subtitle} tone="muted">Find shows, movies, and suggestions.</AppText>
       </View>
 
       <View style={styles.searchPanel}>
