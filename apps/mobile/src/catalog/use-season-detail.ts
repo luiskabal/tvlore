@@ -3,8 +3,9 @@ import { useCallback, useEffect, useRef, useState, type Dispatch, type SetStateA
 import {
   getShowSeasonDetail,
   markEpisodeWatched,
+  markSeasonWatched,
   unmarkEpisodeWatched,
-  type EpisodeWatchResponse,
+  unmarkSeasonWatched,
   type ShowEpisode,
   type ShowProgressResponse,
   type ShowSeasonDetailResponse,
@@ -96,7 +97,7 @@ export function useSeasonDetail(showId: string | null, seasonNumber: number | nu
   }, [state]);
 
   const setSeasonWatched = useCallback(async (watched: boolean) => {
-    if (state.kind !== "ready") {
+    if (state.kind !== "ready" || !showId || seasonNumber === null) {
       return;
     }
 
@@ -110,17 +111,11 @@ export function useSeasonDetail(showId: string | null, seasonNumber: number | nu
 
     try {
       const token = await getSupabaseAccessToken();
-      const responses = new Map<string, EpisodeWatchResponse>();
-      let showProgress: ShowProgressResponse | null = null;
-
-      for (const episode of targetEpisodes) {
-        const response = watched
-          ? await markEpisodeWatched(token, episode.id)
-          : await unmarkEpisodeWatched(token, episode.id);
-
-        responses.set(episode.id, response);
-        showProgress = response.showProgress;
-      }
+      const showProgress = watched
+        ? await markSeasonWatched(token, showId, seasonNumber)
+        : await unmarkSeasonWatched(token, showId, seasonNumber);
+      const targetEpisodeIds = new Set(targetEpisodes.map((episode) => episode.id));
+      const watchedAt = watched ? new Date().toISOString() : null;
 
       setState((current) => {
         if (current.kind !== "ready") {
@@ -131,14 +126,12 @@ export function useSeasonDetail(showId: string | null, seasonNumber: number | nu
           detail: {
             ...current.detail,
             episodes: current.detail.episodes.map((episode) => {
-              const response = responses.get(episode.id);
-
-              return response
+              return targetEpisodeIds.has(episode.id)
                 ? {
                     ...episode,
-                    lastWatchedAt: response.lastWatchedAt,
-                    watchCount: response.watchCount,
-                    watched: response.watched,
+                    lastWatchedAt: watchedAt,
+                    watchCount: getOptimisticWatchCount(episode.watchCount, episode.watched, watched),
+                    watched,
                   }
                 : episode;
             }),
@@ -156,7 +149,7 @@ export function useSeasonDetail(showId: string | null, seasonNumber: number | nu
         watched,
       });
     }
-  }, [state]);
+  }, [seasonNumber, showId, state]);
 
   useEffect(() => {
     void refresh();

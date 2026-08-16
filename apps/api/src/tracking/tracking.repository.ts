@@ -162,6 +162,61 @@ export class TrackingRepository {
     return this.getShowProgress(userId, showId);
   }
 
+  async markSeasonWatched(
+    userId: string,
+    showId: string,
+    seasonNumber: number,
+    watchedAt: Date,
+  ): Promise<ShowProgressResponseDto> {
+    const client = this.prismaService.getClient();
+    const season = await client.season.findUnique({
+      select: {
+        episodes: {
+          select: { id: true },
+        },
+        id: true,
+      },
+      where: { showId_seasonNumber: { seasonNumber, showId } },
+    });
+
+    if (!season) {
+      throwNotFound("SEASON_NOT_FOUND", "Season was not found");
+    }
+
+    await client.$transaction(async (transaction) => {
+      for (const episode of season.episodes) {
+        await transaction.episodeWatch.upsert({
+          create: { episodeId: episode.id, userId, watchedAt },
+          update: { watchedAt },
+          where: { userId_episodeId: { episodeId: episode.id, userId } },
+        });
+      }
+    });
+
+    return this.getShowProgress(userId, showId);
+  }
+
+  async unmarkSeasonWatched(userId: string, showId: string, seasonNumber: number): Promise<ShowProgressResponseDto> {
+    const client = this.prismaService.getClient();
+    const season = await client.season.findUnique({
+      select: { id: true },
+      where: { showId_seasonNumber: { seasonNumber, showId } },
+    });
+
+    if (!season) {
+      throwNotFound("SEASON_NOT_FOUND", "Season was not found");
+    }
+
+    await client.episodeWatch.deleteMany({
+      where: {
+        episode: { seasonId: season.id },
+        userId,
+      },
+    });
+
+    return this.getShowProgress(userId, showId);
+  }
+
   private async getShowProgress(userId: string, showId: string): Promise<ShowProgressResponseDto> {
     const client = this.prismaService.getClient();
     const show = await client.show.findUnique({

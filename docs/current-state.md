@@ -430,6 +430,8 @@ POST /episodes/:episodeId/watches
 DELETE /episodes/:episodeId/watches
 POST /shows/:showId/watches
 DELETE /shows/:showId/watches
+POST /shows/:showId/seasons/:seasonNumber/watches
+DELETE /shows/:showId/seasons/:seasonNumber/watches
 POST /movies/:movieId/watches
 DELETE /movies/:movieId/watches
 POST /shows/:showId/watchlist
@@ -788,6 +790,8 @@ Expected behavior:
 - `POST /watch-paths/:pathId/watchlist` resolves every path item and saves the resulting shows or movies to the authenticated user's watchlist.
 - `POST /shows/:showId/watches` hydrates the show seasons, marks every episode watched, and returns completed show progress.
 - `DELETE /shows/:showId/watches` removes every episode watch marker for that show and returns not-started show progress.
+- `POST /shows/:showId/seasons/:seasonNumber/watches` hydrates that season, marks every episode in it watched, and returns show progress.
+- `DELETE /shows/:showId/seasons/:seasonNumber/watches` removes every episode watch marker for that season and returns show progress.
 - `DELETE /movies/:movieId/watches` marks that movie unwatched for the authenticated user.
 - `GET /movies/:movieId` returns movie detail with authenticated user's watched state.
 - `GET /shows/:showId/watch-providers?country=CL` and `GET /movies/:movieId/watch-providers?country=CL` return country-aware streaming availability buckets.
@@ -944,7 +948,7 @@ Product foundation:
 - Mobile can remove watchlist/history rows immediately after swipe confirmation backed by existing backend watchlist and tracking endpoints.
 - Mobile can render library thumbnails from existing poster data without extra API calls.
 - Mobile can open a show season, hydrate episode IDs, and mark episodes watched/unwatched through backend tracking endpoints.
-- Mobile can bulk-mark the loaded episodes in a season by orchestrating existing idempotent episode tracking endpoints.
+- Mobile can bulk-mark a loaded season through a backend-owned tracking endpoint instead of issuing one request per episode.
 - Mobile can bulk-mark a full show through a backend-owned tracking endpoint instead of issuing one request per episode.
 - Mobile has primary Library, Search, Paths, and Profile surfaces over the same authenticated API session.
 
@@ -970,6 +974,7 @@ Search screen
 -> movie detail can POST/DELETE /movies/:movieId/watches
 -> show detail can POST/DELETE /shows/:showId/watches
 -> show detail can navigate to a season
+-> season detail can POST/DELETE /shows/:id/seasons/:seasonNumber/watches
 -> season detail can POST/DELETE /episodes/:episodeId/watches
 -> episode detail can PUT/DELETE /episodes/:episodeId/preference
 ```

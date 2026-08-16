@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { CatalogRepository } from "../catalog/catalog.repository";
-import { parseTvloreId } from "../catalog/catalog-detail";
+import { parseSeasonNumber, parseTvloreId } from "../catalog/catalog-detail";
 import { TmdbClient } from "../catalog/tmdb-client";
 import type { ShowProgressResponseDto } from "../progress";
 import { UsersService } from "../users/users.service";
 import { parseWatchInput } from "./tracking-input";
 import { TrackingRepository } from "./tracking.repository";
-import type { EpisodeWatchResponseDto, MovieWatchResponseDto } from "./tracking.types";
+import type { EpisodeWatchResponseDto, MovieWatchResponseDto, SeasonWatchResponseDto } from "./tracking.types";
 
 @Injectable()
 export class TrackingService {
@@ -81,6 +81,36 @@ export class TrackingService {
     return this.trackingRepository.unmarkShowWatched(user.id, parseTvloreId(showId, "showId"));
   }
 
+  async markSeasonWatched(
+    authorizationHeader: string | undefined,
+    showId: string | undefined,
+    seasonNumber: string | undefined,
+    body: unknown,
+  ): Promise<SeasonWatchResponseDto> {
+    const user = await this.usersService.getMe(authorizationHeader);
+    const input = parseWatchInput(body);
+    const parsedShowId = parseTvloreId(showId, "showId");
+    const parsedSeasonNumber = parseSeasonNumber(seasonNumber);
+
+    await this.hydrateShowSeason(parsedShowId, parsedSeasonNumber);
+
+    return this.trackingRepository.markSeasonWatched(user.id, parsedShowId, parsedSeasonNumber, input.watchedAt);
+  }
+
+  async unmarkSeasonWatched(
+    authorizationHeader: string | undefined,
+    showId: string | undefined,
+    seasonNumber: string | undefined,
+  ): Promise<SeasonWatchResponseDto> {
+    const user = await this.usersService.getMe(authorizationHeader);
+
+    return this.trackingRepository.unmarkSeasonWatched(
+      user.id,
+      parseTvloreId(showId, "showId"),
+      parseSeasonNumber(seasonNumber),
+    );
+  }
+
   private async hydrateShowSeasons(showId: string) {
     const [providerShowId, seasons] = await Promise.all([
       this.catalogRepository.findShowProviderId(showId),
@@ -99,6 +129,17 @@ export class TrackingService {
       const seasonDetail = await this.tmdbClient.getResolvedSeason(providerShowId, season.seasonNumber);
       await this.catalogRepository.upsertSeasonDetail(showId, seasonDetail);
     }
+  }
+
+  private async hydrateShowSeason(showId: string, seasonNumber: number) {
+    const providerShowId = await this.catalogRepository.findShowProviderId(showId);
+
+    if (!providerShowId) {
+      throwNotFound("SHOW_NOT_FOUND", "Show was not found");
+    }
+
+    const seasonDetail = await this.tmdbClient.getResolvedSeason(providerShowId, seasonNumber);
+    await this.catalogRepository.upsertSeasonDetail(showId, seasonDetail);
   }
 }
 

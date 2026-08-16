@@ -412,6 +412,15 @@ The app does not issue one request per episode for full-show actions. It sends
 the user's intent once, and the backend hydrates seasons and recalculates
 progress.
 
+Season bulk tracking uses the same boundary:
+
+```text
+SeasonDetailScreen
+  -> useSeasonDetail()
+  -> POST /shows/:showId/seasons/:seasonNumber/watches or DELETE /shows/:showId/seasons/:seasonNumber/watches
+  -> Reconcile local season rows and show progress from backend response
+```
+
 Episode tracking uses the same boundary:
 
 ```text

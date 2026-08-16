@@ -69,4 +69,48 @@ describe("TrackingService", () => {
     expect(catalogRepository.upsertSeasonDetail.mock.invocationCallOrder[1])
       .toBeLessThan(trackingRepository.markShowWatched.mock.invocationCallOrder[0]);
   });
+
+  it("hydrates the selected season before marking it watched", async () => {
+    const watchedAt = "2026-08-14T00:00:00.000Z";
+    const seasonOne = { seasonNumber: 1 };
+    const catalogRepository = {
+      findShowProviderId: vi.fn().mockResolvedValue(providerShowId),
+      upsertSeasonDetail: vi.fn().mockResolvedValue(undefined),
+    };
+    const tmdbClient = {
+      getResolvedSeason: vi.fn().mockResolvedValue(seasonOne),
+    };
+    const trackingRepository = {
+      markSeasonWatched: vi.fn().mockResolvedValue({
+        isComplete: false,
+        nextEpisode: null,
+        percentComplete: 50,
+        seasons: [],
+        showId,
+        status: "watching",
+        totalEpisodeCount: 2,
+        watchedEpisodeCount: 1,
+      }),
+    };
+    const usersService = {
+      getMe: vi.fn().mockResolvedValue({ id: userId }),
+    };
+    const service = new TrackingService(
+      catalogRepository as unknown as CatalogRepository,
+      trackingRepository as unknown as TrackingRepository,
+      tmdbClient as unknown as TmdbClient,
+      usersService as unknown as UsersService,
+    );
+
+    await expect(service.markSeasonWatched("Bearer token", showId, "1", { watchedAt })).resolves.toMatchObject({
+      showId,
+      status: "watching",
+    });
+
+    expect(tmdbClient.getResolvedSeason).toHaveBeenCalledWith(providerShowId, 1);
+    expect(catalogRepository.upsertSeasonDetail).toHaveBeenCalledWith(showId, seasonOne);
+    expect(trackingRepository.markSeasonWatched).toHaveBeenCalledWith(userId, showId, 1, new Date(watchedAt));
+    expect(catalogRepository.upsertSeasonDetail.mock.invocationCallOrder[0])
+      .toBeLessThan(trackingRepository.markSeasonWatched.mock.invocationCallOrder[0]);
+  });
 });

@@ -8,7 +8,6 @@ No active infrastructure tasks.
 
 ## Next
 
-- [ ] Add backend-owned season-level `Mark all watched` / `Mark all unwatched`, then simplify the mobile season hook so it no longer loops through episode mutations.
 - [ ] Harden the mobile API client for non-JSON, empty, or proxy-shaped error responses.
 - [ ] Normalize incoming `x-correlation-id` values before returning/logging them.
 - [ ] Split `LibraryOverview.tsx` by visible Library section when the next Library UX feature touches it.
@@ -24,8 +23,7 @@ No active infrastructure tasks.
 
 ## Notes
 
-- Season bulk watched is needed because marking episodes one by one is too slow for real use.
-- Show-level bulk watched has a backend use case. Season-level bulk currently exists as mobile orchestration and should move backend-side next.
+- Show-level and season-level bulk watched actions are backend-owned so mobile does not issue one request per episode for those user intents.
 - Mobile cleanup should start with the largest screens: `SeasonDetailScreen`, `CatalogDetailScreen`, `SearchScreen`, then `HomeScreen`.
 - Keep the current screen -> hook -> API client boundary. The cleanup goal is readability, not a new state-management layer yet.
 - Ratings are explicit preference signals. Keep them separate from watched state so recommendations can use both later.
@@ -134,6 +132,7 @@ No active infrastructure tasks.
 - [x] Show saved watchlist state inside curated Watch Path detail.
 - [x] Store the user's preferred availability country and render it with flag labels in mobile.
 - [x] Add episode-level rating preferences and mobile episode rating UI.
+- [x] Add backend-owned season-level mark all watched/unwatched and simplify the mobile season hook.
 
 ## Deferred
 

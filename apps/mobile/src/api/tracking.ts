@@ -70,6 +70,42 @@ export async function unmarkShowWatched(
   );
 }
 
+export async function markSeasonWatched(
+  accessToken: string | null,
+  showId: string,
+  seasonNumber: number,
+): Promise<ShowProgressResponse> {
+  return fetchMutationJson(
+    `/shows/${showId}/seasons/${seasonNumber}/watches`,
+    isShowProgressResponse,
+    "Unexpected season watch response",
+    {
+      body: JSON.stringify({ watchedAt: new Date().toISOString() }),
+      headers: {
+        ...getAuthHeaders(accessToken),
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+    },
+  );
+}
+
+export async function unmarkSeasonWatched(
+  accessToken: string | null,
+  showId: string,
+  seasonNumber: number,
+): Promise<ShowProgressResponse> {
+  return fetchMutationJson(
+    `/shows/${showId}/seasons/${seasonNumber}/watches`,
+    isShowProgressResponse,
+    "Unexpected season unwatch response",
+    {
+      headers: getAuthHeaders(accessToken),
+      method: "DELETE",
+    },
+  );
+}
+
 export async function markMovieWatched(
   accessToken: string | null,
   movieId: string,

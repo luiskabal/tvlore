@@ -47,6 +47,8 @@ PUT /episodes/:episodeId/preference
 DELETE /episodes/:episodeId/preference
 POST /episodes/:episodeId/watches
 DELETE /episodes/:episodeId/watches
+POST /shows/:showId/seasons/:seasonNumber/watches
+DELETE /shows/:showId/seasons/:seasonNumber/watches
 POST /movies/:movieId/watches
 DELETE /movies/:movieId/watches
 POST /shows/:showId/watchlist

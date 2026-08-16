@@ -62,6 +62,8 @@ async function checkUnauthorizedRoutes() {
   await checkUnauthorized(`/shows/${missingUuid}/progress`);
   await checkUnauthorized(`/shows/${missingUuid}/watches`, { method: "POST" });
   await checkUnauthorized(`/shows/${missingUuid}/watches`, { method: "DELETE" });
+  await checkUnauthorized(`/shows/${missingUuid}/seasons/1/watches`, { method: "POST" });
+  await checkUnauthorized(`/shows/${missingUuid}/seasons/1/watches`, { method: "DELETE" });
   await checkUnauthorized(`/shows/${missingUuid}/watchlist`, { method: "POST" });
   await checkUnauthorized(`/shows/${missingUuid}/watchlist`, { method: "DELETE" });
   await checkUnauthorized(`/shows/${missingUuid}/preference`, {
@@ -470,6 +472,30 @@ async function checkAuthenticatedProductFlow(token) {
     },
     expectedStatus: 200,
     headers: authHeaders,
+  });
+  await check(`/shows/${resolvedShow.id}/seasons/1/watches`, {
+    assert: (body) => {
+      assertShowProgress(body, resolvedShow.id);
+      const season = body.seasons.find((item) => item.seasonNumber === 1);
+      expect(Boolean(season), "season bulk unwatch should include season progress");
+      expectEqual(season.watchedEpisodeCount, 0, "season bulk unwatch count");
+    },
+    expectedStatus: 200,
+    headers: authHeaders,
+    method: "DELETE",
+  });
+  await check(`/shows/${resolvedShow.id}/seasons/1/watches`, {
+    assert: (body) => {
+      assertShowProgress(body, resolvedShow.id);
+      const season = body.seasons.find((item) => item.seasonNumber === 1);
+      expect(Boolean(season), "season bulk watch should include season progress");
+      expectEqual(season.watchedEpisodeCount, season.totalEpisodeCount, "season bulk watch count");
+      expect(season.totalEpisodeCount > 0, "season bulk watch should persist episodes");
+    },
+    body: JSON.stringify({ watchedAt: episodeWatchedAt }),
+    expectedStatus: 200,
+    headers: jsonAuthHeaders,
+    method: "POST",
   });
 
   const resolvedMovie = await check("/catalog/resolve", {

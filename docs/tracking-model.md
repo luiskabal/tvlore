@@ -62,6 +62,8 @@ For MVP UI toggles:
 
 - Mark watched: ensure at least one watch record exists.
 - Mark unwatched: remove the user's watch records for that episode or movie.
+- Mark season watched/unwatched: backend applies the same episode watch semantics to every persisted episode in that season.
+- Mark show watched/unwatched: backend applies the same episode watch semantics to every persisted episode in that show.
 
 This keeps the initial product behavior intuitive.
 

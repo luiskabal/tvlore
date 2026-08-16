@@ -20,3 +20,5 @@ export type MovieWatchResponseDto = {
 };
 
 export type ShowWatchResponseDto = ShowProgressResponseDto;
+
+export type SeasonWatchResponseDto = ShowProgressResponseDto;

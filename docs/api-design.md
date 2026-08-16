@@ -1150,6 +1150,100 @@ Business validation:
 
 Errors: `SHOW_NOT_FOUND`, `VALIDATION_FAILED`, `UNAUTHORIZED`.
 
+### `POST /shows/:showId/seasons/:seasonNumber/watches`
+
+Purpose: mark every episode in a single show season watched for the authenticated user.
+
+Current MVP status: implemented as a backend-owned bulk action. The backend hydrates the selected provider-backed season before writing episode watch rows.
+
+Auth: required.
+
+Route parameters:
+
+- `showId` UUID.
+- `seasonNumber` non-negative integer.
+
+Query parameters: none.
+
+Request:
+
+```json
+{
+  "watchedAt": "2026-08-09T00:00:00.000Z"
+}
+```
+
+`watchedAt` is optional. If omitted, the backend uses server time.
+
+Response: `ShowProgressResponse`.
+
+Status codes:
+
+- `200 OK` if already watched and endpoint is idempotent
+- `400 BAD_REQUEST`
+- `401 UNAUTHORIZED`
+- `404 NOT_FOUND`
+- `502 BAD_GATEWAY`
+
+Authorization: authenticated user may only create their own episode watch records.
+
+Transport validation:
+
+- `showId` UUID.
+- `seasonNumber` non-negative integer.
+- `watchedAt` ISO datetime if present.
+
+Business validation:
+
+- Show exists.
+- Backend resolves the show's catalog provider ID.
+- Backend hydrates the requested season before writing watches.
+- One active watch row per user/episode in that season is upserted.
+- Progress is recalculated server-side from persisted episode rows.
+
+Errors: `SHOW_NOT_FOUND`, `SEASON_NOT_FOUND`, `CATALOG_PROVIDER_UNAVAILABLE`, `VALIDATION_FAILED`, `UNAUTHORIZED`.
+
+### `DELETE /shows/:showId/seasons/:seasonNumber/watches`
+
+Purpose: mark every episode in a single show season unwatched for the authenticated user.
+
+Current MVP status: implemented as a backend-owned bulk action.
+
+Auth: required.
+
+Route parameters:
+
+- `showId` UUID.
+- `seasonNumber` non-negative integer.
+
+Query parameters: none.
+
+Request: none.
+
+Response: `ShowProgressResponse`.
+
+Status codes:
+
+- `200 OK`
+- `400 BAD_REQUEST`
+- `401 UNAUTHORIZED`
+- `404 NOT_FOUND`
+
+Authorization: authenticated user may only remove their own episode watch records.
+
+Transport validation:
+
+- `showId` UUID.
+- `seasonNumber` non-negative integer.
+
+Business validation:
+
+- Season exists for that show.
+- All authenticated user's episode watch rows for that season are removed.
+- Progress is recalculated server-side from persisted episode rows.
+
+Errors: `SEASON_NOT_FOUND`, `VALIDATION_FAILED`, `UNAUTHORIZED`.
+
 ### `POST /movies/:movieId/watches`
 
 Purpose: mark a movie watched for the authenticated user.
