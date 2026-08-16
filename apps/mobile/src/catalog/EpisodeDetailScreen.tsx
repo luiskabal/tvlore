@@ -1,21 +1,31 @@
-import { useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { useEffect, useRef } from "react";
 import { Image, Pressable, SafeAreaView, ScrollView, View } from "react-native";
 
-import type { EpisodeDetailResponse, WatchReflectionInput } from "../api/tvlore-api";
+import type { EpisodeDetailResponse } from "../api/tvlore-api";
+import { useLibraryRevision } from "../library/library-refresh";
 import { AppText, Button, Skeleton } from "../ui";
 import { getTmdbPosterUrl } from "./posters";
-import type { PostWatchCastState } from "./post-watch-check-in-model";
 import { styles } from "./episode-detail-styles";
-import { PostWatchCheckIn, type PostWatchCheckInTarget } from "./PostWatchCheckIn";
-import type { EpisodeDetailPreferenceActionState, EpisodeDetailReflectionActionState, EpisodeDetailWatchActionState } from "./use-episode-detail";
+import type { EpisodeDetailPreferenceActionState, EpisodeDetailWatchActionState } from "./use-episode-detail";
 import { useEpisodeDetail } from "./use-episode-detail";
 
 export default function EpisodeDetailScreen() {
   const params = useLocalSearchParams<{ id?: string | string[] }>();
   const episodeId = typeof params.id === "string" ? params.id : null;
-  const { castState, loadCast, preferenceAction, reflectionAction, refresh, setRating, setReflection, setWatched, state, watchAction } = useEpisodeDetail(episodeId);
+  const libraryRevision = useLibraryRevision();
+  const didMountRevisionRef = useRef(false);
+  const { preferenceAction, refresh, setRating, setWatched, state, watchAction } = useEpisodeDetail(episodeId);
+
+  useEffect(() => {
+    if (!didMountRevisionRef.current) {
+      didMountRevisionRef.current = true;
+      return;
+    }
+
+    void refresh();
+  }, [libraryRevision, refresh]);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -37,14 +47,11 @@ export default function EpisodeDetailScreen() {
 
         {state.kind === "ready" ? (
           <EpisodeDetailContent
-            castState={castState}
             detail={state.detail}
-            onLoadCast={loadCast}
+            onOpenCheckIn={openEpisodeCheckIn}
             onSetRating={setRating}
-            onSetReflection={setReflection}
             onSetWatched={setWatched}
             preferenceAction={preferenceAction}
-            reflectionAction={reflectionAction}
             watchAction={watchAction}
           />
         ) : null}
@@ -54,39 +61,26 @@ export default function EpisodeDetailScreen() {
 }
 
 function EpisodeDetailContent({
-  castState,
   detail,
-  onLoadCast,
+  onOpenCheckIn,
   onSetRating,
-  onSetReflection,
   onSetWatched,
   preferenceAction,
-  reflectionAction,
   watchAction,
 }: {
-  castState: PostWatchCastState;
   detail: EpisodeDetailResponse;
-  onLoadCast: () => void;
+  onOpenCheckIn: (episodeId: string) => void;
   onSetRating: (rating: number | null) => Promise<boolean>;
-  onSetReflection: (input: WatchReflectionInput) => Promise<boolean>;
   onSetWatched: (watched: boolean) => Promise<boolean>;
   preferenceAction: EpisodeDetailPreferenceActionState;
-  reflectionAction: EpisodeDetailReflectionActionState;
   watchAction: EpisodeDetailWatchActionState;
 }) {
-  const [checkInTarget, setCheckInTarget] = useState<PostWatchCheckInTarget | null>(null);
   const isSaving = watchAction.kind === "loading";
   const setWatched = async (watched: boolean) => {
     const saved = await onSetWatched(watched);
 
     if (saved && watched) {
-      setCheckInTarget({
-        id: detail.id,
-        mediaType: "episode",
-        rating: detail.rating,
-        reflection: detail.reflection,
-        title: `${detail.showTitle} - ${detail.title}`,
-      });
+      onOpenCheckIn(detail.id);
     }
   };
 
@@ -138,16 +132,15 @@ function EpisodeDetailContent({
         />
       </View>
 
-      <PostWatchCheckIn
-        actionState={reflectionAction}
-        castState={castState}
-        onClose={() => setCheckInTarget(null)}
-        onLoadCast={() => onLoadCast()}
-        onSave={(_mediaType, _id, input) => onSetReflection(input)}
-        target={checkInTarget}
-      />
     </View>
   );
+}
+
+function openEpisodeCheckIn(id: string) {
+  router.push({
+    pathname: "/check-in",
+    params: { id, mediaType: "episode" },
+  });
 }
 
 function EpisodeRatingPanel({

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Image, Modal, Pressable, ScrollView, TextInput, View } from "react-native";
+import { Image, Pressable, ScrollView, TextInput, View } from "react-native";
 
 import type { PreferenceMediaType, WatchReflection, WatchReflectionInput } from "../api/tvlore-api";
 import { AppText, Button } from "../ui";
@@ -23,32 +23,32 @@ export type PostWatchCheckInActionState =
 export function PostWatchCheckIn({
   actionState,
   castState,
-  onClose,
+  onCancel,
   onLoadCast,
   onSave,
   target,
 }: {
   actionState: PostWatchCheckInActionState;
   castState: PostWatchCastState;
-  onClose: () => void;
+  onCancel: () => void;
   onLoadCast: (mediaType: PreferenceMediaType, id: string) => void;
   onSave: (mediaType: PreferenceMediaType, id: string, input: WatchReflectionInput) => Promise<boolean>;
-  target: PostWatchCheckInTarget | null;
+  target: PostWatchCheckInTarget;
 }) {
-  const [draft, setDraft] = useState(() => createCheckInDraft(target?.rating ?? null, target?.reflection ?? null));
+  const [draft, setDraft] = useState(() => createCheckInDraft(target.rating, target.reflection));
+  const [isManualCharacterOpen, setManualCharacterOpen] = useState(false);
   const isSaving = actionState.kind === "loading";
+  const hasCastSelection = castState.kind === "ready" && castState.items.some((member) => member.characterName === draft.favoriteCharacter);
+  const showManualCharacterInput = isManualCharacterOpen || (Boolean(draft.favoriteCharacter) && !hasCastSelection);
 
   useEffect(() => {
-    setDraft(createCheckInDraft(target?.rating ?? null, target?.reflection ?? null));
+    setDraft(createCheckInDraft(target.rating, target.reflection));
+    setManualCharacterOpen(false);
+  }, [target.id, target.rating, target.reflection]);
 
-    if (target) {
-      onLoadCast(target.mediaType, target.id);
-    }
-  }, [onLoadCast, target]);
-
-  if (!target) {
-    return null;
-  }
+  useEffect(() => {
+    onLoadCast(target.mediaType, target.id);
+  }, [onLoadCast, target.id, target.mediaType]);
 
   const submit = async () => {
     if (isSaving) {
@@ -58,135 +58,133 @@ export function PostWatchCheckIn({
     const saved = await onSave(target.mediaType, target.id, normalizeCheckInDraft(draft));
 
     if (saved) {
-      onClose();
+      onCancel();
     }
   };
 
   return (
-    <Modal
-      animationType="slide"
-      onRequestClose={onClose}
-      transparent
-      visible={Boolean(target)}
-    >
-      <View style={styles.checkInOverlay}>
-        <Pressable
-          accessibilityLabel="Close check-in"
-          accessibilityRole="button"
+    <View style={styles.checkInPage}>
+      <AppText tone="accent" variant="caption">Watched</AppText>
+      <AppText variant="section">How was it?</AppText>
+      <AppText numberOfLines={2} tone="muted">{target.title}</AppText>
+
+      {actionState.kind === "error" ? <AppText tone="danger">{actionState.message}</AppText> : null}
+
+      <View style={styles.ratingRow}>
+        {[1, 2, 3, 4, 5].map((rating) => {
+          const isSelected = draft.rating === rating;
+
+          return (
+            <Pressable
+              accessibilityLabel={`Rate ${rating} out of 5`}
+              accessibilityRole="button"
+              accessibilityState={{ disabled: isSaving, selected: isSelected }}
+              disabled={isSaving}
+              key={rating}
+              onPress={() => {
+                setDraft((current) => ({ ...current, rating }));
+              }}
+              style={[
+                styles.ratingButton,
+                isSelected ? styles.ratingButtonSelected : null,
+                isSaving ? styles.iconActionButtonDisabled : null,
+              ]}
+            >
+              <AppText style={isSelected ? styles.ratingButtonTextSelected : styles.ratingButtonText} variant="button">
+                {rating}
+              </AppText>
+            </Pressable>
+          );
+        })}
+      </View>
+
+      <View style={styles.reactionRow}>
+        {reactionOptions.map((option) => {
+          const isSelected = draft.reaction === option.value;
+
+          return (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ disabled: isSaving, selected: isSelected }}
+              disabled={isSaving}
+              key={option.value}
+              onPress={() => {
+                setDraft((current) => ({ ...current, reaction: option.value }));
+              }}
+              style={[
+                styles.reactionPill,
+                isSelected ? styles.reactionPillSelected : null,
+                isSaving ? styles.iconActionButtonDisabled : null,
+              ]}
+            >
+              <AppText style={isSelected ? styles.reactionPillTextSelected : styles.reactionPillText} variant="caption">
+                {option.label}
+              </AppText>
+            </Pressable>
+          );
+        })}
+      </View>
+
+      <View style={styles.castPickerSection}>
+        <AppText variant="button">Favorite character</AppText>
+        <CastPicker
+          castState={castState}
           disabled={isSaving}
-          onPress={onClose}
-          style={styles.checkInBackdrop}
+          onSelect={(favoriteCharacter) => {
+            setManualCharacterOpen(false);
+            setDraft((current) => ({ ...current, favoriteCharacter }));
+          }}
+          selectedCharacter={draft.favoriteCharacter}
         />
 
-        <View style={styles.checkInSheet}>
-          <View style={styles.checkInHandle} />
-          <AppText tone="accent" variant="caption">Watched</AppText>
-          <AppText variant="section">How was it?</AppText>
-          <AppText numberOfLines={2} tone="muted">{target.title}</AppText>
+        <Pressable
+          accessibilityRole="button"
+          disabled={isSaving}
+          onPress={() => setManualCharacterOpen((current) => !current)}
+          style={[styles.manualCharacterButton, isSaving ? styles.iconActionButtonDisabled : null]}
+        >
+          <AppText style={styles.manualCharacterButtonText} variant="caption">
+            {showManualCharacterInput ? "Hide manual entry" : "Character not listed"}
+          </AppText>
+        </Pressable>
 
-          {actionState.kind === "error" ? <AppText tone="danger">{actionState.message}</AppText> : null}
-
-          <View style={styles.ratingRow}>
-            {[1, 2, 3, 4, 5].map((rating) => {
-              const isSelected = draft.rating === rating;
-
-              return (
-                <Pressable
-                  accessibilityLabel={`Rate ${rating} out of 5`}
-                  accessibilityRole="button"
-                  accessibilityState={{ disabled: isSaving, selected: isSelected }}
-                  disabled={isSaving}
-                  key={rating}
-                  onPress={() => {
-                    setDraft((current) => ({ ...current, rating }));
-                  }}
-                  style={[
-                    styles.ratingButton,
-                    isSelected ? styles.ratingButtonSelected : null,
-                    isSaving ? styles.iconActionButtonDisabled : null,
-                  ]}
-                >
-                  <AppText style={isSelected ? styles.ratingButtonTextSelected : styles.ratingButtonText} variant="button">
-                    {rating}
-                  </AppText>
-                </Pressable>
-              );
-            })}
-          </View>
-
-          <View style={styles.reactionRow}>
-            {reactionOptions.map((option) => {
-              const isSelected = draft.reaction === option.value;
-
-              return (
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityState={{ disabled: isSaving, selected: isSelected }}
-                  disabled={isSaving}
-                  key={option.value}
-                  onPress={() => {
-                    setDraft((current) => ({ ...current, reaction: option.value }));
-                  }}
-                  style={[
-                    styles.reactionPill,
-                    isSelected ? styles.reactionPillSelected : null,
-                    isSaving ? styles.iconActionButtonDisabled : null,
-                  ]}
-                >
-                  <AppText style={isSelected ? styles.reactionPillTextSelected : styles.reactionPillText} variant="caption">
-                    {option.label}
-                  </AppText>
-                </Pressable>
-              );
-            })}
-          </View>
-
-          <View style={styles.castPickerSection}>
-            <AppText variant="button">Favorite character</AppText>
-            <CastPicker
-              castState={castState}
-              disabled={isSaving}
-              onSelect={(favoriteCharacter) => setDraft((current) => ({ ...current, favoriteCharacter }))}
-              selectedCharacter={draft.favoriteCharacter}
-            />
-          </View>
-
+        {showManualCharacterInput ? (
           <TextInput
             editable={!isSaving}
             onChangeText={(favoriteCharacter) => setDraft((current) => ({ ...current, favoriteCharacter }))}
-            placeholder="Or type someone not listed"
+            placeholder="Type character name"
             style={styles.checkInInput}
             value={draft.favoriteCharacter ?? ""}
           />
-
-          <TextInput
-            editable={!isSaving}
-            multiline
-            onChangeText={(comment) => setDraft((current) => ({ ...current, comment }))}
-            placeholder="Optional comment"
-            style={[styles.checkInInput, styles.checkInCommentInput]}
-            value={draft.comment ?? ""}
-          />
-
-          <Button
-            disabled={isSaving}
-            isLoading={isSaving}
-            label="Save check-in"
-            loadingLabel="Saving"
-            onPress={submit}
-            size="small"
-          />
-
-          <Button
-            disabled={isSaving}
-            label="Skip"
-            onPress={onClose}
-            size="small"
-            variant="secondary"
-          />
-        </View>
+        ) : null}
       </View>
-    </Modal>
+
+      <TextInput
+        editable={!isSaving}
+        multiline
+        onChangeText={(comment) => setDraft((current) => ({ ...current, comment }))}
+        placeholder="Optional comment"
+        style={[styles.checkInInput, styles.checkInCommentInput]}
+        value={draft.comment ?? ""}
+      />
+
+      <Button
+        disabled={isSaving}
+        isLoading={isSaving}
+        label="Save check-in"
+        loadingLabel="Saving"
+        onPress={submit}
+        size="small"
+      />
+
+      <Button
+        disabled={isSaving}
+        label="Skip"
+        onPress={onCancel}
+        size="small"
+        variant="secondary"
+      />
+    </View>
   );
 }
 

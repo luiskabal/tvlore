@@ -1,72 +1,53 @@
-import { useState } from "react";
 import { View } from "react-native";
 
-import type { CatalogDetailResponse, MediaType, PreferenceMediaType, WatchReflectionInput } from "../api/tvlore-api";
+import type { CatalogDetailResponse, MediaType } from "../api/tvlore-api";
 import { AppText, Badge, PosterImage } from "../ui";
 import { styles } from "./catalog-detail-styles";
 import { TitleActionMessages, TitleActionRow } from "./CatalogDetailActions";
 import { RatingMatchPanel, ShowProgressPanel, ShowSeasonsPanel, WhereToWatchPanel } from "./CatalogDetailPanels";
 import { getMetadata } from "./catalog-detail-format";
-import type { PostWatchCastState } from "./post-watch-check-in-model";
 import { getTmdbPosterUrl } from "./posters";
-import { PostWatchCheckIn, type PostWatchCheckInTarget } from "./PostWatchCheckIn";
-import type { PreferenceActionState, ReflectionActionState, WatchActionState, WatchlistActionState, WatchProvidersState } from "./use-catalog-detail";
+import type { PreferenceActionState, WatchActionState, WatchlistActionState, WatchProvidersState } from "./use-catalog-detail";
 
 export { CatalogDetailSkeleton } from "./CatalogDetailSkeleton";
 
 export function CatalogDetailContent({
-  castState,
   detail,
-  onLoadCast,
+  onOpenCheckIn,
   onOpenShowSeason,
   onSetInWatchlist,
   onSetMovieWatched,
   onSetRating,
-  onSetReflection,
   onSetShowWatched,
   preferenceAction,
-  reflectionAction,
   watchAction,
   watchlistAction,
   watchProvidersState,
 }: {
-  castState: PostWatchCastState;
   detail: CatalogDetailResponse;
-  onLoadCast: (mediaType: PreferenceMediaType, id: string) => void;
+  onOpenCheckIn: (mediaType: MediaType, id: string) => void;
   onOpenShowSeason: (showId: string, seasonNumber: number) => void;
   onSetInWatchlist: (mediaType: MediaType, id: string, inWatchlist: boolean) => void;
   onSetMovieWatched: (movieId: string, watched: boolean) => Promise<boolean>;
   onSetRating: (mediaType: MediaType, id: string, rating: number | null) => Promise<boolean>;
-  onSetReflection: (mediaType: PreferenceMediaType, id: string, input: WatchReflectionInput) => Promise<boolean>;
   onSetShowWatched: (showId: string, watched: boolean) => Promise<boolean>;
   preferenceAction: PreferenceActionState;
-  reflectionAction: ReflectionActionState;
   watchAction: WatchActionState;
   watchlistAction: WatchlistActionState;
   watchProvidersState: WatchProvidersState;
 }) {
-  const [checkInTarget, setCheckInTarget] = useState<PostWatchCheckInTarget | null>(null);
-  const openCheckIn = () => {
-    setCheckInTarget({
-      id: detail.id,
-      mediaType: detail.mediaType,
-      rating: detail.rating,
-      reflection: detail.reflection,
-      title: detail.title,
-    });
-  };
   const setMovieWatched = async (movieId: string, watched: boolean) => {
     const saved = await onSetMovieWatched(movieId, watched);
 
     if (saved && watched) {
-      openCheckIn();
+      onOpenCheckIn("movie", movieId);
     }
   };
   const setShowWatched = async (showId: string, watched: boolean) => {
     const saved = await onSetShowWatched(showId, watched);
 
     if (saved && watched) {
-      openCheckIn();
+      onOpenCheckIn("show", showId);
     }
   };
 
@@ -113,14 +94,6 @@ export function CatalogDetailContent({
         </>
       ) : null}
 
-      <PostWatchCheckIn
-        actionState={reflectionAction}
-        castState={castState}
-        onClose={() => setCheckInTarget(null)}
-        onLoadCast={onLoadCast}
-        onSave={onSetReflection}
-        target={checkInTarget}
-      />
     </View>
   );
 }

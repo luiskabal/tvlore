@@ -15,6 +15,7 @@ No active infrastructure tasks.
 - [ ] Add a country-aware `Popular in your country` discovery section using the user's saved availability country.
 - [ ] Add a `TVLore Picks` / house-curated discovery section that is separate from personalized recommendations.
 - [ ] Add an `Available in your country` discovery section for streamable titles, separate from recommendation ranking.
+- [ ] Add aggregate favorite-character voting percentages to post-watch check-in, sorted by community popularity.
 
 ## Notes
 
@@ -26,6 +27,7 @@ No active infrastructure tasks.
 - Post-watch check-in now persists a rating plus a separate reflection for shows, movies, and episodes: reaction, favorite character, and optional comment.
 - Keep watched state, rating preferences, and per-watch reflections as separate concepts so rewatches, comments, and recommendations do not fight the same row later.
 - Reaction tags, favorite-character picks, and comments are private product data for now. Spoiler/privacy rules are still required before any social surface.
+- Favorite-character percentages need structured character votes first: provider person ID, actor name, character name, profile path, aggregate counts, and privacy-safe voter visibility rules.
 - First recommendations intentionally use hydrated catalog data, ratings, genres, and a small provider-availability boost. Improve quality only after storing stronger content signals.
 - Keep recommendation surfaces separate: personalized `For you`, contextual `Popular in your country`, utility `Available in your country`, and editorial `TVLore Picks`.
 - TVLore-native recommendations should stay explainable before adding opaque ML or collaborative filtering.
@@ -136,6 +138,7 @@ No active infrastructure tasks.
 - [x] Design watch reflection persistence separately from watched state and rating preferences.
 - [x] Expand post-watch check-in to show/movie/episode reflections with sensation, favorite character, and optional comment.
 - [x] Add TMDB-backed cast endpoints and visual favorite-character picker for post-watch check-ins.
+- [x] Move post-watch check-in from modal to a dedicated mobile screen.
 
 ## Deferred
 

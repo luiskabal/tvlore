@@ -463,21 +463,24 @@ Post-watch check-in uses the same boundary:
 CatalogDetailScreen(movie/show) or EpisodeDetailScreen(episode)
   -> useCatalogDetail()
   -> mark watched succeeds
-  -> PostWatchCheckIn opens as optional UI
+  -> router.push(/check-in?mediaType=...&id=...)
+  -> PostWatchCheckInScreen loads the target detail
   -> GET /movies/:movieId/cast, GET /shows/:showId/cast, or GET /episodes/:episodeId/cast
   -> PUT /movies/:movieId/reflection
   -> PUT /shows/:showId/reflection
   -> PUT /episodes/:episodeId/reflection
 ```
 
-`PostWatchCheckIn` is presentation-only. It builds a small draft for rating,
-sensation, favorite character, and optional comment, then the screen hook sends
-that draft through the API client. Cast is loaded lazily only after the modal
-opens so detail navigation stays fast; the chosen character is still persisted
-as the existing reflection `favoriteCharacter` string. The backend persists the
-rating in the existing preference model and stores the richer reflection
-separately. The flow is skip-friendly: watched state is already saved before
-the modal appears.
+`PostWatchCheckIn` is presentation-only. The `/check-in` route owns loading the
+target detail, cast, and save action through the existing catalog or episode
+hooks. The form builds a small draft for rating, sensation, favorite character,
+and optional comment, then the screen hook sends that draft through the API
+client. Cast is loaded lazily only after the check-in screen opens so detail
+navigation stays fast; the chosen character is still persisted as the existing
+reflection `favoriteCharacter` string. Manual character entry is a fallback for
+unlisted cast, not the primary path. The backend persists the rating in the
+existing preference model and stores the richer reflection separately. The flow
+is skip-friendly: watched state is already saved before the check-in route opens.
 
 Catalog and season detail routes render content-shaped skeletons while their
 initial API requests are pending. This keeps detail screens visually stable

@@ -1,8 +1,10 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { useEffect, useRef } from "react";
 import { Pressable, SafeAreaView, ScrollView, View } from "react-native";
 
 import type { MediaType } from "../api/tvlore-api";
+import { useLibraryRevision } from "../library/library-refresh";
 import { AppText, Button } from "../ui";
 import { CatalogDetailContent, CatalogDetailSkeleton } from "./CatalogDetailContent";
 import { styles } from "./catalog-detail-styles";
@@ -11,22 +13,29 @@ import { useCatalogDetail } from "./use-catalog-detail";
 export default function CatalogDetailScreen({ mediaType }: { mediaType: MediaType }) {
   const params = useLocalSearchParams<{ id?: string | string[] }>();
   const id = typeof params.id === "string" ? params.id : null;
+  const libraryRevision = useLibraryRevision();
+  const didMountRevisionRef = useRef(false);
   const {
-    castState,
-    loadCast,
     preferenceAction,
-    reflectionAction,
     refresh,
     setInWatchlist,
     setMovieWatched,
     setRating,
-    setReflection,
     setShowWatched,
     state,
     watchAction,
     watchlistAction,
     watchProvidersState,
   } = useCatalogDetail(mediaType, id);
+
+  useEffect(() => {
+    if (!didMountRevisionRef.current) {
+      didMountRevisionRef.current = true;
+      return;
+    }
+
+    void refresh();
+  }, [libraryRevision, refresh]);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -50,17 +59,14 @@ export default function CatalogDetailScreen({ mediaType }: { mediaType: MediaTyp
 
         {state.kind === "ready" ? (
           <CatalogDetailContent
-            castState={castState}
             detail={state.detail}
-            onLoadCast={loadCast}
+            onOpenCheckIn={openCheckIn}
             onOpenShowSeason={openShowSeason}
             onSetInWatchlist={setInWatchlist}
             onSetMovieWatched={setMovieWatched}
             onSetRating={setRating}
-            onSetReflection={setReflection}
             onSetShowWatched={setShowWatched}
             preferenceAction={preferenceAction}
-            reflectionAction={reflectionAction}
             watchAction={watchAction}
             watchlistAction={watchlistAction}
             watchProvidersState={watchProvidersState}
@@ -69,6 +75,13 @@ export default function CatalogDetailScreen({ mediaType }: { mediaType: MediaTyp
       </ScrollView>
     </SafeAreaView>
   );
+}
+
+function openCheckIn(mediaType: MediaType, id: string) {
+  router.push({
+    pathname: "/check-in",
+    params: { id, mediaType },
+  });
 }
 
 function openShowSeason(showId: string, seasonNumber: number) {
