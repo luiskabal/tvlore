@@ -60,10 +60,10 @@ Implemented:
 - Mobile Library summary cards filter Cronologia, continuing shows, recently watched movies, watched episodes grouped by show and season, watchlist, and rated titles.
 - Mobile Cronologia loads a backend-owned paginated movie/episode watch-history feed.
 - Mobile Library rows render catalog poster thumbnails when available, with stable placeholders otherwise.
-- Mobile Library episode season subsections can be expanded or collapsed with a tap.
+- Mobile Library grouped episode rows open episode detail; their season headings open season detail and keep a separate expand/collapse control.
 - Mobile Profile renders a touch-driven holo profile card with Google avatar and library stats.
 - Mobile Profile lets the user choose the watch-provider country with flag labels.
-- Mobile library rows navigate back to movie detail or show season detail screens.
+- Mobile library rows navigate back to movie detail, show season detail, or episode detail screens depending on the row type.
 - Mobile Library rows can remove watchlist items and undo recent watched markers through confirmable swipe actions.
 - Mobile Library applies optimistic row removal after swipe confirmation and rolls back on API error.
 - Mobile Library/Profile keep previous library data during refreshes and render skeletons on initial load.
@@ -918,9 +918,9 @@ Current behavior:
 - Recommendation row copy can explain simple genre overlap, such as "Because you like Drama", from backend-provided preferred genres and item genres.
 - Recommendation rows open the matching show or movie detail screen; watchlist actions stay on the detail screen.
 - Library can filter from its summary cards between Cronologia, continuing shows, recently watched movies, watched episodes grouped by show and season, saved titles, and rated titles. Cronologia shows paginated watched movies and episodes by date.
-- Episode groups keep each season collapsible so long watched histories stay scannable.
+- Episode groups keep each season collapsible so long watched histories stay scannable; the season label opens season detail and the +/- control expands or collapses the group.
 - Library rows include compact poster thumbnails for quicker visual scanning.
-- Continue-watching rows open the next season, recently watched movies open movie detail, and recently watched episodes open the matching season.
+- Continue-watching rows open the next season, recently watched movies open movie detail, and recently watched episodes open episode detail.
 - Paths lists curated viewing orders such as Marvel Infinity Saga and Star Wars Skywalker Saga, plus personal paths created by the authenticated user.
 - Paths can create a personal list from TMDB import lines such as `movie,155` or `show,70523,optional note`.
 - Path detail rows navigate by tapping the full row and resolve the selected item into TVLore identity only when needed.

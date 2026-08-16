@@ -38,6 +38,7 @@ export default function LibraryScreen() {
             onChronologyVisible={loadInitialChronology}
             onLoadMoreChronology={loadMoreChronology}
             onOpenMovie={openMovie}
+            onOpenEpisode={openEpisode}
             onOpenShow={openShow}
             onOpenShowSeason={openShowSeason}
             onRemoveRecentlyWatchedItem={removeRecentlyWatchedItem}
@@ -90,6 +91,10 @@ function LibraryHeader({ showSearchButton }: { showSearchButton: boolean }) {
 
 function openMovie(id: string) {
   router.push({ pathname: "/movies/[id]", params: { id } });
+}
+
+function openEpisode(id: string) {
+  router.push({ pathname: "/episodes/[id]", params: { id } });
 }
 
 function openShow(id: string) {

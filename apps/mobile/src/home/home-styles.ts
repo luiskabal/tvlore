@@ -100,6 +100,10 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: 2,
   },
+  groupSeasonLink: {
+    flex: 1,
+    paddingVertical: 6,
+  },
   groupSeasonMeta: {
     alignItems: "center",
     flexDirection: "row",
@@ -116,6 +120,12 @@ export const styles = StyleSheet.create({
     fontWeight: "900",
     minWidth: 18,
     textAlign: "right",
+  },
+  groupSeasonToggleButton: {
+    alignItems: "flex-end",
+    justifyContent: "center",
+    minHeight: 32,
+    minWidth: 32,
   },
   groupTitle: {
     color: "#171412",

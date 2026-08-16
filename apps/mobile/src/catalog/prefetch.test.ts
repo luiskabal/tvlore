@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getUniqueCatalogDetailRefs, getUniqueShowSeasonRefs } from "./prefetch-model";
+import { getUniqueCatalogDetailRefs, getUniqueEpisodeDetailRefs, getUniqueShowSeasonRefs } from "./prefetch-model";
 
 describe("catalog prefetch", () => {
   it("keeps first unique catalog refs inside the lookahead limit", () => {
@@ -26,6 +26,19 @@ describe("catalog prefetch", () => {
     ], 2)).toEqual([
       { seasonNumber: 1, showId: "show-1" },
       { seasonNumber: 2, showId: "show-1" },
+    ]);
+  });
+
+  it("keeps first unique episode refs inside the lookahead limit", () => {
+    expect(getUniqueEpisodeDetailRefs([
+      { episodeId: "episode-1" },
+      { episodeId: "episode-1" },
+      { episodeId: null },
+      { episodeId: "episode-2" },
+      { episodeId: "episode-3" },
+    ], 2)).toEqual([
+      { episodeId: "episode-1" },
+      { episodeId: "episode-2" },
     ]);
   });
 });

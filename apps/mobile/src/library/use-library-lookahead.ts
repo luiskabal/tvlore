@@ -1,7 +1,11 @@
 import { useEffect } from "react";
 
 import type { LibraryResponse, RecentlyWatchedItem } from "../api/tvlore-api";
-import { prefetchCatalogDetails, prefetchShowSeasonDetails } from "../catalog/prefetch";
+import {
+  prefetchCatalogDetails,
+  prefetchEpisodeDetails,
+  prefetchShowSeasonDetails,
+} from "../catalog/prefetch";
 
 export function useLibraryLookahead(library: LibraryResponse | null, enabled: boolean) {
   useEffect(() => {
@@ -27,6 +31,15 @@ export function useLibraryLookahead(library: LibraryResponse | null, enabled: bo
       ...library.watchedEpisodes.map((episode) => ({
         seasonNumber: episode.seasonNumber,
         showId: episode.showId,
+      })),
+    ]);
+
+    void prefetchEpisodeDetails([
+      ...library.recentlyWatched.filter(isRecentlyWatchedEpisode).map((episode) => ({
+        episodeId: episode.id,
+      })),
+      ...library.watchedEpisodes.map((episode) => ({
+        episodeId: episode.id,
       })),
     ]);
   }, [enabled, library]);

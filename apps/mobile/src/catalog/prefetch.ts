@@ -1,9 +1,11 @@
-import { getCatalogDetail, getShowSeasonDetail } from "../api/tvlore-api";
+import { getCatalogDetail, getEpisodeDetail, getShowSeasonDetail } from "../api/tvlore-api";
 import { getSupabaseAccessToken } from "../auth/supabase-auth";
 import {
   getUniqueCatalogDetailRefs,
+  getUniqueEpisodeDetailRefs,
   getUniqueShowSeasonRefs,
   type CatalogDetailLookaheadRef,
+  type EpisodeDetailLookaheadRef,
   type ShowSeasonLookaheadRef,
 } from "./prefetch-model";
 
@@ -53,6 +55,29 @@ export async function prefetchShowSeasonDetails(
     }
 
     await Promise.allSettled(items.map((item) => getShowSeasonDetail(token, item.showId, item.seasonNumber)));
+  } catch {
+    return;
+  }
+}
+
+export async function prefetchEpisodeDetails(
+  refs: readonly EpisodeDetailLookaheadRef[],
+  options: PrefetchOptions = {},
+) {
+  const items = getUniqueEpisodeDetailRefs(refs, options.limit);
+
+  if (items.length === 0) {
+    return;
+  }
+
+  try {
+    const token = await getAccessToken(options.accessToken);
+
+    if (!token) {
+      return;
+    }
+
+    await Promise.allSettled(items.map((item) => getEpisodeDetail(token, item.episodeId)));
   } catch {
     return;
   }

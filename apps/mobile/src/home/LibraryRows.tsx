@@ -121,6 +121,7 @@ export function RecentlyWatchedRow({
   item,
   libraryAction,
   onOptimisticRemove,
+  onOpenEpisode,
   onOpenMovie,
   onRemove,
   onOpenShowSeason,
@@ -128,6 +129,7 @@ export function RecentlyWatchedRow({
   item: RecentlyWatchedItem;
   libraryAction: LibraryActionState;
   onOptimisticRemove: (actionKey: string) => void;
+  onOpenEpisode?: (episodeId: string) => void;
   onOpenMovie: (movieId: string) => void;
   onRemove: (item: RecentlyWatchedItem) => void;
   onOpenShowSeason: (showId: string, seasonNumber: number) => void;
@@ -140,6 +142,11 @@ export function RecentlyWatchedRow({
   const openItem = () => {
     if (item.mediaType === "movie") {
       onOpenMovie(item.id);
+      return;
+    }
+
+    if (onOpenEpisode) {
+      onOpenEpisode(item.id);
       return;
     }
 
@@ -176,12 +183,14 @@ export function EpisodeShowGroup({
   group,
   libraryAction,
   onOptimisticRemove,
+  onOpenEpisode,
   onOpenShowSeason,
   onRemove,
 }: {
   group: EpisodeGroup;
   libraryAction: LibraryActionState;
   onOptimisticRemove: (actionKey: string) => void;
+  onOpenEpisode: (episodeId: string) => void;
   onOpenShowSeason: (showId: string, seasonNumber: number) => void;
   onRemove: (item: RecentlyWatchedItem) => void;
 }) {
@@ -204,8 +213,10 @@ export function EpisodeShowGroup({
           key={`${group.showId}-${season.seasonNumber}`}
           libraryAction={libraryAction}
           onOptimisticRemove={onOptimisticRemove}
+          onOpenEpisode={onOpenEpisode}
           onOpenShowSeason={onOpenShowSeason}
           onRemove={onRemove}
+          showId={group.showId}
           onToggle={() => toggleSeason(season.seasonNumber)}
           seasonNumber={season.seasonNumber}
         />
@@ -219,34 +230,49 @@ function EpisodeSeasonGroup({
   isCollapsed,
   libraryAction,
   onOptimisticRemove,
+  onOpenEpisode,
   onOpenShowSeason,
   onRemove,
   onToggle,
+  showId,
   seasonNumber,
 }: {
   episodes: WatchedEpisodeItem[];
   isCollapsed: boolean;
   libraryAction: LibraryActionState;
   onOptimisticRemove: (actionKey: string) => void;
+  onOpenEpisode: (episodeId: string) => void;
   onOpenShowSeason: (showId: string, seasonNumber: number) => void;
   onRemove: (item: RecentlyWatchedItem) => void;
   onToggle: () => void;
+  showId: string;
   seasonNumber: number;
 }) {
   return (
     <View style={styles.groupSeason}>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityState={{ expanded: !isCollapsed }}
-        onPress={onToggle}
-        style={({ pressed }) => [styles.groupSeasonHeader, pressed ? styles.pressedListItem : null]}
-      >
-        <Text style={styles.groupSubtitle}>Season {seasonNumber}</Text>
+      <View style={styles.groupSeasonHeader}>
+        <Pressable
+          accessibilityLabel={`Open season ${seasonNumber}`}
+          accessibilityRole="button"
+          onPress={() => onOpenShowSeason(showId, seasonNumber)}
+          style={({ pressed }) => [styles.groupSeasonLink, pressed ? styles.pressedListItem : null]}
+        >
+          <Text style={styles.groupSubtitle}>Season {seasonNumber}</Text>
+        </Pressable>
         <View style={styles.groupSeasonMeta}>
           <Text style={styles.statusDetail}>{episodes.length} watched</Text>
-          <Text style={styles.groupSeasonToggle}>{isCollapsed ? "+" : "-"}</Text>
+          <Pressable
+            accessibilityLabel={`${isCollapsed ? "Expand" : "Collapse"} season ${seasonNumber}`}
+            accessibilityRole="button"
+            accessibilityState={{ expanded: !isCollapsed }}
+            hitSlop={8}
+            onPress={onToggle}
+            style={({ pressed }) => [styles.groupSeasonToggleButton, pressed ? styles.pressedListItem : null]}
+          >
+            <Text style={styles.groupSeasonToggle}>{isCollapsed ? "+" : "-"}</Text>
+          </Pressable>
         </View>
-      </Pressable>
+      </View>
       {isCollapsed
         ? null
         : episodes.map((episode) => (
@@ -255,6 +281,7 @@ function EpisodeSeasonGroup({
               key={episode.id}
               libraryAction={libraryAction}
               onOptimisticRemove={onOptimisticRemove}
+              onOpenEpisode={onOpenEpisode}
               onOpenMovie={noop}
               onOpenShowSeason={onOpenShowSeason}
               onRemove={onRemove}

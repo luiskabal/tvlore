@@ -143,12 +143,14 @@ export function EpisodesSection({
   groups,
   libraryAction,
   onOptimisticRemove,
+  onOpenEpisode,
   onOpenShowSeason,
   onRemove,
 }: {
   groups: EpisodeGroup[];
   libraryAction: LibraryActionState;
   onOptimisticRemove: (actionKey: string) => void;
+  onOpenEpisode: (episodeId: string) => void;
   onOpenShowSeason: (showId: string, seasonNumber: number) => void;
   onRemove: (item: RecentlyWatchedItem) => void;
 }) {
@@ -161,6 +163,7 @@ export function EpisodesSection({
           key={group.showId}
           libraryAction={libraryAction}
           onOptimisticRemove={onOptimisticRemove}
+          onOpenEpisode={onOpenEpisode}
           onOpenShowSeason={onOpenShowSeason}
           onRemove={onRemove}
         />
@@ -174,6 +177,7 @@ export function ChronologySection({
   items,
   libraryAction,
   onOptimisticRemove,
+  onOpenEpisode,
   onOpenMovie,
   onOpenShowSeason,
   onRemove,
@@ -183,6 +187,7 @@ export function ChronologySection({
   items: RecentlyWatchedItem[];
   libraryAction: LibraryActionState;
   onOptimisticRemove: (actionKey: string) => void;
+  onOpenEpisode: (episodeId: string) => void;
   onOpenMovie: (movieId: string) => void;
   onOpenShowSeason: (showId: string, seasonNumber: number) => void;
   onRemove: (item: RecentlyWatchedItem) => void;
@@ -215,6 +220,7 @@ export function ChronologySection({
           key={`${item.mediaType}-${item.id}`}
           libraryAction={libraryAction}
           onOptimisticRemove={onOptimisticRemove}
+          onOpenEpisode={onOpenEpisode}
           onOpenMovie={onOpenMovie}
           onOpenShowSeason={onOpenShowSeason}
           onRemove={onRemove}

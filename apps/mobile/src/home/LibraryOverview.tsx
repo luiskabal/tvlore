@@ -41,6 +41,7 @@ type LibraryOverviewProps = {
   onChronologyVisible: () => void;
   onLoadMoreChronology: () => void;
   onOpenMovie: (movieId: string) => void;
+  onOpenEpisode: (episodeId: string) => void;
   onOpenShow: (showId: string) => void;
   onOpenShowSeason: (showId: string, seasonNumber: number) => void;
   onRemoveRecentlyWatchedItem: (item: RecentlyWatchedItem) => void;
@@ -54,6 +55,7 @@ export function LibraryOverview({
   onChronologyVisible,
   onLoadMoreChronology,
   onOpenMovie,
+  onOpenEpisode,
   onOpenShow,
   onOpenShowSeason,
   onRemoveRecentlyWatchedItem,
@@ -245,6 +247,7 @@ export function LibraryOverview({
             groups={episodeGroups}
             libraryAction={libraryAction}
             onOptimisticRemove={hideLibraryAction}
+            onOpenEpisode={onOpenEpisode}
             onOpenShowSeason={onOpenShowSeason}
             onRemove={onRemoveRecentlyWatchedItem}
           />
@@ -256,6 +259,7 @@ export function LibraryOverview({
             items={visibleChronologyItems}
             libraryAction={libraryAction}
             onOptimisticRemove={hideLibraryAction}
+            onOpenEpisode={onOpenEpisode}
             onOpenMovie={onOpenMovie}
             onOpenShowSeason={onOpenShowSeason}
             onRemove={onRemoveRecentlyWatchedItem}

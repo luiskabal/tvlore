@@ -12,6 +12,10 @@ export type ShowSeasonLookaheadRef = {
   showId: string | null;
 };
 
+export type EpisodeDetailLookaheadRef = {
+  episodeId: string | null;
+};
+
 export function getUniqueCatalogDetailRefs(
   refs: readonly CatalogDetailLookaheadRef[],
   limit = lookaheadPrefetchLimit,
@@ -32,6 +36,29 @@ export function getUniqueCatalogDetailRefs(
 
     seen.add(key);
     items.push({ id: ref.id, mediaType: ref.mediaType });
+  }
+
+  return items;
+}
+
+export function getUniqueEpisodeDetailRefs(
+  refs: readonly EpisodeDetailLookaheadRef[],
+  limit = lookaheadPrefetchLimit,
+) {
+  const seen = new Set<string>();
+  const items: Array<{ episodeId: string }> = [];
+
+  for (const ref of refs) {
+    if (!ref.episodeId || items.length >= limit) {
+      continue;
+    }
+
+    if (seen.has(ref.episodeId)) {
+      continue;
+    }
+
+    seen.add(ref.episodeId);
+    items.push({ episodeId: ref.episodeId });
   }
 
   return items;
