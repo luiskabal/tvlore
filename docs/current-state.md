@@ -853,7 +853,7 @@ Current behavior:
 - Watchlist actions update local detail state optimistically, then reconcile from the backend mutation response.
 - Show and movie detail can set or clear a 1-5 rating preference.
 - Rating actions update local detail state optimistically, then reconcile from the backend mutation response.
-- Show and movie detail render TMDB `publicRating` as `Spoiler` until the user has watched the title or manually reveals it; the user's rating shows `--` until rated.
+- Show and movie detail render TMDB `publicRating` as `Spoiler` until the user rates the title or manually reveals it; the user's rating shows `--` until rated.
 - Profile lets the user choose the `Where to watch` country through flag-labelled country chips.
 - Show and movie detail show `Where to watch` provider icons for the user's saved country preference, with device country and `CL` as fallback. Tapping a provider opens the title's TMDB/JustWatch availability link for that country.
 - Show detail lists seasons and opens a season route.

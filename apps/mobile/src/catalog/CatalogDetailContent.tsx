@@ -336,7 +336,7 @@ function RatingMatchPanel({
 }) {
   const [isPublicRatingRevealed, setPublicRatingRevealed] = useState(false);
   const [isEditingUserRating, setEditingUserRating] = useState(false);
-  const shouldHidePublicRating = !hasUserSeenTitle(detail);
+  const shouldHidePublicRating = detail.rating === null;
   const canRevealPublicRating = shouldHidePublicRating && detail.publicRating !== null;
   const showPublicRating = !canRevealPublicRating || isPublicRatingRevealed;
   const isSaving = preferenceAction.kind === "loading";
@@ -608,10 +608,6 @@ function formatPublicRating(publicRating: number | null, isRevealed: boolean) {
   }
 
   return `${publicRating.toFixed(1)}/10`;
-}
-
-function hasUserSeenTitle(detail: CatalogDetailResponse) {
-  return detail.mediaType === "movie" ? detail.watched : detail.progress.watchedEpisodeCount > 0;
 }
 
 function getStatusLine(show: ShowDetailResponse) {
