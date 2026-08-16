@@ -2,6 +2,7 @@ import { fetchCachedJson, fetchJson, fetchMutationJson, getAuthHeaders } from ".
 import {
   isCatalogResolveResponse,
   isCatalogSearchResponse,
+  isCatalogCastResponse,
   isEpisodeDetailResponse,
   isMovieDetailResponse,
   isShowDetailResponse,
@@ -10,11 +11,13 @@ import {
 } from "./guards";
 import type {
   CatalogDetailResponse,
+  CatalogCastResponse,
   CatalogResolveResponse,
   CatalogSearchResponse,
   CatalogSearchResult,
   EpisodeDetailResponse,
   MediaType,
+  PreferenceMediaType,
   ShowSeasonDetailResponse,
   WatchProvidersResponse,
 } from "./types";
@@ -125,6 +128,21 @@ export async function getWatchProviders(
     `${path}?${params.toString()}`,
     isWatchProvidersResponse,
     "Unexpected watch providers response",
+    { headers: getAuthHeaders(accessToken) },
+  );
+}
+
+export async function getCatalogCast(
+  accessToken: string | null,
+  mediaType: PreferenceMediaType,
+  id: string,
+): Promise<CatalogCastResponse> {
+  const segment = mediaType === "episode" ? "episodes" : mediaType === "show" ? "shows" : "movies";
+
+  return fetchCachedJson(
+    `/${segment}/${id}/cast`,
+    isCatalogCastResponse,
+    "Unexpected cast response",
     { headers: getAuthHeaders(accessToken) },
   );
 }

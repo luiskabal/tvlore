@@ -6,6 +6,7 @@ import { Image, Pressable, SafeAreaView, ScrollView, View } from "react-native";
 import type { EpisodeDetailResponse, WatchReflectionInput } from "../api/tvlore-api";
 import { AppText, Button, Skeleton } from "../ui";
 import { getTmdbPosterUrl } from "./posters";
+import type { PostWatchCastState } from "./post-watch-check-in-model";
 import { styles } from "./episode-detail-styles";
 import { PostWatchCheckIn, type PostWatchCheckInTarget } from "./PostWatchCheckIn";
 import type { EpisodeDetailPreferenceActionState, EpisodeDetailReflectionActionState, EpisodeDetailWatchActionState } from "./use-episode-detail";
@@ -14,7 +15,7 @@ import { useEpisodeDetail } from "./use-episode-detail";
 export default function EpisodeDetailScreen() {
   const params = useLocalSearchParams<{ id?: string | string[] }>();
   const episodeId = typeof params.id === "string" ? params.id : null;
-  const { preferenceAction, reflectionAction, refresh, setRating, setReflection, setWatched, state, watchAction } = useEpisodeDetail(episodeId);
+  const { castState, loadCast, preferenceAction, reflectionAction, refresh, setRating, setReflection, setWatched, state, watchAction } = useEpisodeDetail(episodeId);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -36,7 +37,9 @@ export default function EpisodeDetailScreen() {
 
         {state.kind === "ready" ? (
           <EpisodeDetailContent
+            castState={castState}
             detail={state.detail}
+            onLoadCast={loadCast}
             onSetRating={setRating}
             onSetReflection={setReflection}
             onSetWatched={setWatched}
@@ -51,7 +54,9 @@ export default function EpisodeDetailScreen() {
 }
 
 function EpisodeDetailContent({
+  castState,
   detail,
+  onLoadCast,
   onSetRating,
   onSetReflection,
   onSetWatched,
@@ -59,7 +64,9 @@ function EpisodeDetailContent({
   reflectionAction,
   watchAction,
 }: {
+  castState: PostWatchCastState;
   detail: EpisodeDetailResponse;
+  onLoadCast: () => void;
   onSetRating: (rating: number | null) => Promise<boolean>;
   onSetReflection: (input: WatchReflectionInput) => Promise<boolean>;
   onSetWatched: (watched: boolean) => Promise<boolean>;
@@ -133,7 +140,9 @@ function EpisodeDetailContent({
 
       <PostWatchCheckIn
         actionState={reflectionAction}
+        castState={castState}
         onClose={() => setCheckInTarget(null)}
+        onLoadCast={() => onLoadCast()}
         onSave={(_mediaType, _id, input) => onSetReflection(input)}
         target={checkInTarget}
       />

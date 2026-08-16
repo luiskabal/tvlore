@@ -7,6 +7,7 @@ import { styles } from "./catalog-detail-styles";
 import { TitleActionMessages, TitleActionRow } from "./CatalogDetailActions";
 import { RatingMatchPanel, ShowProgressPanel, ShowSeasonsPanel, WhereToWatchPanel } from "./CatalogDetailPanels";
 import { getMetadata } from "./catalog-detail-format";
+import type { PostWatchCastState } from "./post-watch-check-in-model";
 import { getTmdbPosterUrl } from "./posters";
 import { PostWatchCheckIn, type PostWatchCheckInTarget } from "./PostWatchCheckIn";
 import type { PreferenceActionState, ReflectionActionState, WatchActionState, WatchlistActionState, WatchProvidersState } from "./use-catalog-detail";
@@ -14,7 +15,9 @@ import type { PreferenceActionState, ReflectionActionState, WatchActionState, Wa
 export { CatalogDetailSkeleton } from "./CatalogDetailSkeleton";
 
 export function CatalogDetailContent({
+  castState,
   detail,
+  onLoadCast,
   onOpenShowSeason,
   onSetInWatchlist,
   onSetMovieWatched,
@@ -27,7 +30,9 @@ export function CatalogDetailContent({
   watchlistAction,
   watchProvidersState,
 }: {
+  castState: PostWatchCastState;
   detail: CatalogDetailResponse;
+  onLoadCast: (mediaType: PreferenceMediaType, id: string) => void;
   onOpenShowSeason: (showId: string, seasonNumber: number) => void;
   onSetInWatchlist: (mediaType: MediaType, id: string, inWatchlist: boolean) => void;
   onSetMovieWatched: (movieId: string, watched: boolean) => Promise<boolean>;
@@ -110,7 +115,9 @@ export function CatalogDetailContent({
 
       <PostWatchCheckIn
         actionState={reflectionAction}
+        castState={castState}
         onClose={() => setCheckInTarget(null)}
+        onLoadCast={onLoadCast}
         onSave={onSetReflection}
         target={checkInTarget}
       />

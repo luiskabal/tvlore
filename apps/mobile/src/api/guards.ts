@@ -1,4 +1,5 @@
 import type {
+  CatalogCastResponse,
   CatalogResolveResponse,
   CatalogSearchResponse,
   CatalogSearchResult,
@@ -511,6 +512,14 @@ export function isWatchReflectionResponse(value: unknown): value is WatchReflect
   );
 }
 
+export function isCatalogCastResponse(value: unknown): value is CatalogCastResponse {
+  return (
+    isRecord(value) &&
+    Array.isArray(value.items) &&
+    value.items.every(isCatalogCastMember)
+  );
+}
+
 function isLibraryWatchlistItem(value: unknown): value is LibraryWatchlistItem {
   if (!isRecord(value)) {
     return false;
@@ -567,6 +576,19 @@ function isWatchReflection(value: unknown): value is WatchReflection {
 
 function isWatchReaction(value: unknown) {
   return value === "loved" || value === "liked" || value === "mixed" || value === "not_for_me";
+}
+
+function isCatalogCastMember(value: unknown) {
+  return (
+    isRecord(value) &&
+    typeof value.actorName === "string" &&
+    typeof value.characterName === "string" &&
+    typeof value.id === "string" &&
+    typeof value.order === "number" &&
+    Number.isInteger(value.order) &&
+    value.order >= 0 &&
+    isNullableString(value.profilePath)
+  );
 }
 
 function isString(value: unknown): value is string {

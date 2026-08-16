@@ -12,6 +12,8 @@ export default function CatalogDetailScreen({ mediaType }: { mediaType: MediaTyp
   const params = useLocalSearchParams<{ id?: string | string[] }>();
   const id = typeof params.id === "string" ? params.id : null;
   const {
+    castState,
+    loadCast,
     preferenceAction,
     reflectionAction,
     refresh,
@@ -48,7 +50,9 @@ export default function CatalogDetailScreen({ mediaType }: { mediaType: MediaTyp
 
         {state.kind === "ready" ? (
           <CatalogDetailContent
+            castState={castState}
             detail={state.detail}
+            onLoadCast={loadCast}
             onOpenShowSeason={openShowSeason}
             onSetInWatchlist={setInWatchlist}
             onSetMovieWatched={setMovieWatched}

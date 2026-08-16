@@ -1,6 +1,12 @@
-import type { WatchReaction, WatchReflection, WatchReflectionInput } from "../api/tvlore-api";
+import type { CatalogCastMember, WatchReaction, WatchReflection, WatchReflectionInput } from "../api/tvlore-api";
 
 export type PostWatchCheckInDraft = WatchReflectionInput;
+
+export type PostWatchCastState =
+  | { kind: "idle" }
+  | { kind: "loading" }
+  | { items: CatalogCastMember[]; kind: "ready" }
+  | { kind: "error"; message: string };
 
 export const reactionOptions: Array<{ label: string; value: WatchReaction }> = [
   { label: "Loved", value: "loved" },

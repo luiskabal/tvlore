@@ -166,6 +166,18 @@ export type WatchReflectionResponse = WatchReflection & {
   rating: number;
 };
 
+export type CatalogCastMember = {
+  actorName: string;
+  characterName: string;
+  id: string;
+  order: number;
+  profilePath: string | null;
+};
+
+export type CatalogCastResponse = {
+  items: CatalogCastMember[];
+};
+
 export type WatchPathSummary = {
   description: string;
   id: string;

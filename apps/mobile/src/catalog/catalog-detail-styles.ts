@@ -44,6 +44,77 @@ export const styles = StyleSheet.create({
     padding: 24,
     paddingBottom: 34,
   },
+  castChoice: {
+    alignItems: "center",
+    backgroundColor: ui.color.panel,
+    borderColor: ui.color.border,
+    borderRadius: ui.radius.md,
+    borderWidth: 1,
+    gap: 6,
+    padding: 8,
+    width: 112,
+  },
+  castChoiceActor: {
+    color: ui.color.muted,
+    maxWidth: "100%",
+  },
+  castChoiceSelected: {
+    backgroundColor: ui.color.accentSoft,
+    borderColor: ui.color.accent,
+  },
+  castChoiceSelectedText: {
+    color: ui.color.accent,
+    textAlign: "center",
+  },
+  castChoiceText: {
+    color: ui.color.ink,
+    textAlign: "center",
+  },
+  castImage: {
+    backgroundColor: ui.color.panelAlt,
+    borderRadius: ui.radius.md,
+    height: 64,
+    width: 64,
+  },
+  castImagePlaceholder: {
+    alignItems: "center",
+    backgroundColor: ui.color.panelAlt,
+    borderRadius: ui.radius.md,
+    height: 64,
+    justifyContent: "center",
+    width: 64,
+  },
+  castImagePlaceholderText: {
+    color: ui.color.muted,
+    fontSize: 18,
+    fontWeight: "800",
+  },
+  castPickerRow: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  castPickerScroll: {
+    marginHorizontal: -2,
+  },
+  castPickerSection: {
+    gap: 8,
+  },
+  castSkeleton: {
+    alignItems: "center",
+    backgroundColor: ui.color.panel,
+    borderColor: ui.color.border,
+    borderRadius: ui.radius.md,
+    borderWidth: 1,
+    gap: 8,
+    padding: 8,
+    width: 112,
+  },
+  castSkeletonText: {
+    backgroundColor: ui.color.border,
+    borderRadius: ui.radius.pill,
+    height: 12,
+    width: 74,
+  },
   checkInCommentInput: {
     minHeight: 84,
     textAlignVertical: "top",

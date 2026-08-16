@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { Modal, Pressable, TextInput, View } from "react-native";
+import { Image, Modal, Pressable, ScrollView, TextInput, View } from "react-native";
 
 import type { PreferenceMediaType, WatchReflection, WatchReflectionInput } from "../api/tvlore-api";
 import { AppText, Button } from "../ui";
 import { styles } from "./catalog-detail-styles";
-import { createCheckInDraft, normalizeCheckInDraft, reactionOptions } from "./post-watch-check-in-model";
+import { createCheckInDraft, normalizeCheckInDraft, type PostWatchCastState, reactionOptions } from "./post-watch-check-in-model";
+import { getTmdbProfileUrl } from "./posters";
 
 export type PostWatchCheckInTarget = {
   id: string;
@@ -21,12 +22,16 @@ export type PostWatchCheckInActionState =
 
 export function PostWatchCheckIn({
   actionState,
+  castState,
   onClose,
+  onLoadCast,
   onSave,
   target,
 }: {
   actionState: PostWatchCheckInActionState;
+  castState: PostWatchCastState;
   onClose: () => void;
+  onLoadCast: (mediaType: PreferenceMediaType, id: string) => void;
   onSave: (mediaType: PreferenceMediaType, id: string, input: WatchReflectionInput) => Promise<boolean>;
   target: PostWatchCheckInTarget | null;
 }) {
@@ -35,7 +40,11 @@ export function PostWatchCheckIn({
 
   useEffect(() => {
     setDraft(createCheckInDraft(target?.rating ?? null, target?.reflection ?? null));
-  }, [target]);
+
+    if (target) {
+      onLoadCast(target.mediaType, target.id);
+    }
+  }, [onLoadCast, target]);
 
   if (!target) {
     return null;
@@ -132,10 +141,20 @@ export function PostWatchCheckIn({
             })}
           </View>
 
+          <View style={styles.castPickerSection}>
+            <AppText variant="button">Favorite character</AppText>
+            <CastPicker
+              castState={castState}
+              disabled={isSaving}
+              onSelect={(favoriteCharacter) => setDraft((current) => ({ ...current, favoriteCharacter }))}
+              selectedCharacter={draft.favoriteCharacter}
+            />
+          </View>
+
           <TextInput
             editable={!isSaving}
             onChangeText={(favoriteCharacter) => setDraft((current) => ({ ...current, favoriteCharacter }))}
-            placeholder="Favorite character"
+            placeholder="Or type someone not listed"
             style={styles.checkInInput}
             value={draft.favoriteCharacter ?? ""}
           />
@@ -169,4 +188,103 @@ export function PostWatchCheckIn({
       </View>
     </Modal>
   );
+}
+
+function CastPicker({
+  castState,
+  disabled,
+  onSelect,
+  selectedCharacter,
+}: {
+  castState: PostWatchCastState;
+  disabled: boolean;
+  onSelect: (favoriteCharacter: string) => void;
+  selectedCharacter: string | null;
+}) {
+  if (castState.kind === "loading" || castState.kind === "idle") {
+    return (
+      <View style={styles.castPickerRow}>
+        {[0, 1, 2].map((item) => (
+          <View key={item} style={styles.castSkeleton}>
+            <View style={styles.castImagePlaceholder} />
+            <View style={styles.castSkeletonText} />
+          </View>
+        ))}
+      </View>
+    );
+  }
+
+  if (castState.kind === "error") {
+    return <AppText tone="danger">{castState.message}</AppText>;
+  }
+
+  if (castState.items.length === 0) {
+    return <AppText tone="muted">No cast found.</AppText>;
+  }
+
+  return (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      style={styles.castPickerScroll}
+    >
+      <View style={styles.castPickerRow}>
+        {castState.items.map((member) => {
+          const isSelected = selectedCharacter === member.characterName;
+
+          return (
+            <Pressable
+              accessibilityLabel={`Choose ${member.characterName}`}
+              accessibilityRole="button"
+              accessibilityState={{ disabled, selected: isSelected }}
+              disabled={disabled}
+              key={`${member.id}:${member.characterName}`}
+              onPress={() => onSelect(member.characterName)}
+              style={[
+                styles.castChoice,
+                isSelected ? styles.castChoiceSelected : null,
+                disabled ? styles.iconActionButtonDisabled : null,
+              ]}
+            >
+              {member.profilePath ? (
+                <Image
+                  accessibilityIgnoresInvertColors
+                  resizeMode="cover"
+                  source={{ uri: getTmdbProfileUrl(member.profilePath) }}
+                  style={styles.castImage}
+                />
+              ) : (
+                <View style={styles.castImagePlaceholder}>
+                  <AppText style={styles.castImagePlaceholderText}>{getInitials(member.actorName)}</AppText>
+                </View>
+              )}
+
+              <AppText
+                numberOfLines={2}
+                style={isSelected ? styles.castChoiceSelectedText : styles.castChoiceText}
+                variant="caption"
+              >
+                {member.characterName}
+              </AppText>
+              <AppText numberOfLines={1} style={styles.castChoiceActor} variant="caption">
+                {member.actorName}
+              </AppText>
+            </Pressable>
+          );
+        })}
+      </View>
+    </ScrollView>
+  );
+}
+
+function getInitials(value: string) {
+  const initials = value
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+
+  return initials || "?";
 }

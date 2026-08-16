@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState, type Dispatch, type SetStateA
 import {
   addToWatchlist,
   clearPreferenceRating,
+  getCatalogCast,
   getCatalogDetail,
   getCurrentUser,
   getWatchProviders,
@@ -21,6 +22,7 @@ import {
 } from "../api/tvlore-api";
 import { getSupabaseAccessToken } from "../auth/supabase-auth";
 import { notifyLibraryChanged } from "../library/library-refresh";
+import type { PostWatchCastState } from "./post-watch-check-in-model";
 import { getDeviceWatchCountry } from "./watch-country";
 
 export type CatalogDetailState =
@@ -60,9 +62,11 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
   const [watchlistAction, setWatchlistAction] = useState<WatchlistActionState>({ kind: "idle" });
   const [preferenceAction, setPreferenceAction] = useState<PreferenceActionState>({ kind: "idle" });
   const [reflectionAction, setReflectionAction] = useState<ReflectionActionState>({ kind: "idle" });
+  const [castState, setCastState] = useState<PostWatchCastState>({ kind: "idle" });
   const movieWatchRequestId = useRef(0);
   const ratingRequestId = useRef(0);
   const reflectionRequestId = useRef(0);
+  const castRequestId = useRef(0);
 
   const refresh = useCallback(async () => {
     if (!id) {
@@ -86,6 +90,7 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
       setWatchlistAction({ kind: "idle" });
       setPreferenceAction({ kind: "idle" });
       setReflectionAction({ kind: "idle" });
+      setCastState({ kind: "idle" });
 
       try {
         const providers = await getWatchProviders(token, mediaType, id, user.availabilityCountry || getDeviceWatchCountry());
@@ -388,11 +393,40 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
     }
   }, [state]);
 
+  const loadCast = useCallback(async (targetMediaType: PreferenceMediaType, targetId: string) => {
+    const requestId = castRequestId.current + 1;
+
+    castRequestId.current = requestId;
+    setCastState({ kind: "loading" });
+
+    try {
+      const token = await getSupabaseAccessToken();
+      const response = await getCatalogCast(token, targetMediaType, targetId);
+
+      if (castRequestId.current !== requestId) {
+        return;
+      }
+
+      setCastState({ items: response.items, kind: "ready" });
+    } catch (error) {
+      if (castRequestId.current !== requestId) {
+        return;
+      }
+
+      setCastState({
+        kind: "error",
+        message: error instanceof Error ? error.message : "Cast unavailable",
+      });
+    }
+  }, []);
+
   useEffect(() => {
     void refresh();
   }, [refresh]);
 
   return {
+    castState,
+    loadCast,
     preferenceAction,
     reflectionAction,
     refresh,

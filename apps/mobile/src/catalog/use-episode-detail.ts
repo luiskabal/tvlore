@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   clearEpisodePreferenceRating,
+  getCatalogCast,
   getEpisodeDetail,
   markEpisodeWatched,
   setEpisodePreferenceRating,
@@ -12,6 +13,7 @@ import {
 } from "../api/tvlore-api";
 import { getSupabaseAccessToken } from "../auth/supabase-auth";
 import { notifyLibraryChanged } from "../library/library-refresh";
+import type { PostWatchCastState } from "./post-watch-check-in-model";
 
 export type EpisodeDetailState =
   | { kind: "loading" }
@@ -38,8 +40,10 @@ export function useEpisodeDetail(episodeId: string | null) {
   const [watchAction, setWatchAction] = useState<EpisodeDetailWatchActionState>({ kind: "idle" });
   const [preferenceAction, setPreferenceAction] = useState<EpisodeDetailPreferenceActionState>({ kind: "idle" });
   const [reflectionAction, setReflectionAction] = useState<EpisodeDetailReflectionActionState>({ kind: "idle" });
+  const [castState, setCastState] = useState<PostWatchCastState>({ kind: "idle" });
   const ratingRequestId = useRef(0);
   const reflectionRequestId = useRef(0);
+  const castRequestId = useRef(0);
   const requestId = useRef(0);
 
   const refresh = useCallback(async () => {
@@ -56,6 +60,7 @@ export function useEpisodeDetail(episodeId: string | null) {
       setPreferenceAction({ kind: "idle" });
       setReflectionAction({ kind: "idle" });
       setWatchAction({ kind: "idle" });
+      setCastState({ kind: "idle" });
     } catch (error) {
       setState({
         kind: "error",
@@ -231,11 +236,43 @@ export function useEpisodeDetail(episodeId: string | null) {
     }
   }, [state]);
 
+  const loadCast = useCallback(async () => {
+    if (state.kind !== "ready") {
+      return;
+    }
+
+    const previousDetail = state.detail;
+    const nextRequestId = castRequestId.current + 1;
+
+    castRequestId.current = nextRequestId;
+    setCastState({ kind: "loading" });
+
+    try {
+      const token = await getSupabaseAccessToken();
+      const response = await getCatalogCast(token, "episode", previousDetail.id);
+
+      if (castRequestId.current !== nextRequestId) {
+        return;
+      }
+
+      setCastState({ items: response.items, kind: "ready" });
+    } catch (error) {
+      if (castRequestId.current !== nextRequestId) {
+        return;
+      }
+
+      setCastState({
+        kind: "error",
+        message: error instanceof Error ? error.message : "Episode cast unavailable",
+      });
+    }
+  }, [state]);
+
   useEffect(() => {
     void refresh();
   }, [refresh]);
 
-  return { preferenceAction, reflectionAction, refresh, setRating, setReflection, setWatched, state, watchAction };
+  return { castState, loadCast, preferenceAction, reflectionAction, refresh, setRating, setReflection, setWatched, state, watchAction };
 }
 
 function getOptimisticWatchCount(currentCount: number, currentWatched: boolean, nextWatched: boolean) {
