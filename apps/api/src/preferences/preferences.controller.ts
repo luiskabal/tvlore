@@ -50,3 +50,27 @@ export class MoviePreferencesController {
     return this.preferencesService.clearMovieRating(authorizationHeader, movieId);
   }
 }
+
+@Controller("episodes")
+export class EpisodePreferencesController {
+  constructor(private readonly preferencesService: PreferencesService) {}
+
+  @Put(":episodeId/preference")
+  @HttpCode(HttpStatus.OK)
+  setRating(
+    @Headers("authorization") authorizationHeader: string | undefined,
+    @Param("episodeId") episodeId: string | undefined,
+    @Body() body: unknown,
+  ): Promise<PreferenceMutationResponseDto> {
+    return this.preferencesService.setEpisodeRating(authorizationHeader, episodeId, body);
+  }
+
+  @Delete(":episodeId/preference")
+  @HttpCode(HttpStatus.OK)
+  clearRating(
+    @Headers("authorization") authorizationHeader: string | undefined,
+    @Param("episodeId") episodeId: string | undefined,
+  ): Promise<PreferenceMutationResponseDto> {
+    return this.preferencesService.clearEpisodeRating(authorizationHeader, episodeId);
+  }
+}

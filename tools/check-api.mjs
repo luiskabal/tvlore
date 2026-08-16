@@ -87,6 +87,12 @@ async function checkUnauthorizedRoutes() {
   await checkUnauthorized("/watch-paths/mcu-infinity-saga-release");
   await checkUnauthorized("/watch-paths/mcu-infinity-saga-release/watchlist", { method: "POST" });
   await checkUnauthorized(`/episodes/${missingUuid}`);
+  await checkUnauthorized(`/episodes/${missingUuid}/preference`, {
+    body: JSON.stringify({ rating: 4 }),
+    headers: { "content-type": "application/json" },
+    method: "PUT",
+  });
+  await checkUnauthorized(`/episodes/${missingUuid}/preference`, { method: "DELETE" });
   await checkUnauthorized(`/episodes/${missingUuid}/watches`, { method: "POST" });
   await checkUnauthorized(`/episodes/${missingUuid}/watches`, { method: "DELETE" });
   await checkUnauthorized(`/movies/${missingUuid}/watches`, { method: "POST" });
@@ -238,6 +244,13 @@ async function checkAuthenticatedProductFlow(token) {
     expectedStatus: 400,
     headers: authHeaders,
   });
+  await check("/episodes/not-a-uuid/preference", {
+    assert: assertValidationError,
+    body: JSON.stringify({ rating: 4 }),
+    expectedStatus: 400,
+    headers: jsonAuthHeaders,
+    method: "PUT",
+  });
   await check(`/episodes/${missingUuid}`, {
     assert: (body) => assertError(body, "EPISODE_NOT_FOUND"),
     expectedStatus: 404,
@@ -274,6 +287,19 @@ async function checkAuthenticatedProductFlow(token) {
     expectedStatus: 400,
     headers: jsonAuthHeaders,
     method: "POST",
+  });
+  await check(`/episodes/${missingUuid}/preference`, {
+    assert: (body) => assertError(body, "EPISODE_NOT_FOUND"),
+    body: JSON.stringify({ rating: 4 }),
+    expectedStatus: 404,
+    headers: jsonAuthHeaders,
+    method: "PUT",
+  });
+  await check(`/episodes/${missingUuid}/preference`, {
+    assert: (body) => assertError(body, "EPISODE_NOT_FOUND"),
+    expectedStatus: 404,
+    headers: authHeaders,
+    method: "DELETE",
   });
 
   const resolvedShow = await check("/catalog/resolve", {
@@ -370,8 +396,33 @@ async function checkAuthenticatedProductFlow(token) {
 
   expectUuid(firstEpisodeId, "first episode id");
 
+  await check(`/episodes/${firstEpisodeId}/preference`, {
+    assert: (body) => assertPreferenceResponse(body, firstEpisodeId, "episode", null),
+    expectedStatus: 200,
+    headers: authHeaders,
+    method: "DELETE",
+  });
   await check(`/episodes/${firstEpisodeId}`, {
-    assert: (body) => assertEpisodeDetail(body, firstEpisodeId, resolvedShow.id, false),
+    assert: (body) => assertEpisodeDetail(body, firstEpisodeId, resolvedShow.id, false, null),
+    expectedStatus: 200,
+    headers: authHeaders,
+  });
+  await check(`/episodes/${firstEpisodeId}/preference`, {
+    assert: assertValidationError,
+    body: JSON.stringify({ rating: 6 }),
+    expectedStatus: 400,
+    headers: jsonAuthHeaders,
+    method: "PUT",
+  });
+  await check(`/episodes/${firstEpisodeId}/preference`, {
+    assert: (body) => assertPreferenceResponse(body, firstEpisodeId, "episode", 4),
+    body: JSON.stringify({ rating: 4 }),
+    expectedStatus: 200,
+    headers: jsonAuthHeaders,
+    method: "PUT",
+  });
+  await check(`/episodes/${firstEpisodeId}`, {
+    assert: (body) => assertEpisodeDetail(body, firstEpisodeId, resolvedShow.id, false, 4),
     expectedStatus: 200,
     headers: authHeaders,
   });
@@ -396,7 +447,7 @@ async function checkAuthenticatedProductFlow(token) {
     method: "POST",
   });
   await check(`/episodes/${firstEpisodeId}`, {
-    assert: (body) => assertEpisodeDetail(body, firstEpisodeId, resolvedShow.id, true),
+    assert: (body) => assertEpisodeDetail(body, firstEpisodeId, resolvedShow.id, true, 4),
     expectedStatus: 200,
     headers: authHeaders,
   });
@@ -611,6 +662,12 @@ async function checkAuthenticatedProductFlow(token) {
     headers: authHeaders,
     method: "DELETE",
   });
+  await check(`/episodes/${firstEpisodeId}/preference`, {
+    assert: (body) => assertPreferenceResponse(body, firstEpisodeId, "episode", null),
+    expectedStatus: 200,
+    headers: authHeaders,
+    method: "DELETE",
+  });
   await check(`/movies/${resolvedMovie.id}/watches`, {
     assert: (body) => assertMovieWatchResponse(body, resolvedMovie.id, false),
     expectedStatus: 200,
@@ -798,7 +855,7 @@ function assertSeasonDetail(body, showId, seasonNumber) {
   }
 }
 
-function assertEpisodeDetail(body, episodeId, showId, watched) {
+function assertEpisodeDetail(body, episodeId, showId, watched, rating) {
   expectRecord(body, "episode detail");
   expectEqual(body.id, episodeId, "episode detail.id");
   expectEqual(body.showId, showId, "episode detail.showId");
@@ -812,6 +869,7 @@ function assertEpisodeDetail(body, episodeId, showId, watched) {
   expectNullableString(body.showPosterPath, "episode detail.showPosterPath");
   expectNullableString(body.stillPath, "episode detail.stillPath");
   expectNullableNumber(body.runtimeMinutes, "episode detail.runtimeMinutes");
+  expectEqual(body.rating, rating, "episode detail.rating");
   expectEqual(body.watched, watched, "episode detail.watched");
   expectEqual(body.watchCount, watched ? 1 : 0, "episode detail.watchCount");
   expect(body.lastWatchedAt === null || isIsoString(body.lastWatchedAt), "episode detail.lastWatchedAt should be null or ISO string");

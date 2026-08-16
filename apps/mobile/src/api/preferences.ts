@@ -38,3 +38,38 @@ export async function clearPreferenceRating(
     },
   );
 }
+
+export async function setEpisodePreferenceRating(
+  accessToken: string | null,
+  episodeId: string,
+  rating: number,
+): Promise<PreferenceMutationResponse> {
+  return fetchMutationJson(
+    `/episodes/${episodeId}/preference`,
+    isPreferenceMutationResponse,
+    "Unexpected preference response",
+    {
+      body: JSON.stringify({ rating }),
+      headers: {
+        ...getAuthHeaders(accessToken),
+        "Content-Type": "application/json",
+      },
+      method: "PUT",
+    },
+  );
+}
+
+export async function clearEpisodePreferenceRating(
+  accessToken: string | null,
+  episodeId: string,
+): Promise<PreferenceMutationResponse> {
+  return fetchMutationJson(
+    `/episodes/${episodeId}/preference`,
+    isPreferenceMutationResponse,
+    "Unexpected preference response",
+    {
+      headers: getAuthHeaders(accessToken),
+      method: "DELETE",
+    },
+  );
+}

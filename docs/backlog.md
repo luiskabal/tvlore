@@ -127,6 +127,7 @@ No active infrastructure tasks.
 - [x] Let curated Watch Paths save every item to the user's watchlist in one backend-owned action.
 - [x] Show saved watchlist state inside curated Watch Path detail.
 - [x] Store the user's preferred availability country and render it with flag labels in mobile.
+- [x] Add episode-level rating preferences and mobile episode rating UI.
 
 ## Deferred
 

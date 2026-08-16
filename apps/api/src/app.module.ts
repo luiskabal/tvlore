@@ -11,7 +11,7 @@ import { HealthController } from "./health.controller";
 import { LibraryController, ShowProgressController } from "./library/library.controller";
 import { LibraryRepository } from "./library/library.repository";
 import { LibraryService } from "./library/library.service";
-import { MoviePreferencesController, ShowPreferencesController } from "./preferences/preferences.controller";
+import { EpisodePreferencesController, MoviePreferencesController, ShowPreferencesController } from "./preferences/preferences.controller";
 import { PreferencesRepository } from "./preferences/preferences.repository";
 import { PreferencesService } from "./preferences/preferences.service";
 import { PrismaService } from "./prisma.service";
@@ -48,6 +48,7 @@ import { WatchPathsService } from "./watch-paths/watch-paths.service";
     MovieWatchlistController,
     ShowPreferencesController,
     MoviePreferencesController,
+    EpisodePreferencesController,
     LibraryController,
     ShowProgressController,
     RecommendationsController,

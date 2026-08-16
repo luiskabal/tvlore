@@ -133,6 +133,7 @@ export type ShowSeasonDetailResponseDto = ShowSeasonSummaryDto & {
 };
 
 export type EpisodeDetailResponseDto = ShowEpisodeDto & {
+  rating: number | null;
   seasonId: string;
   seasonTitle: string;
   showId: string;

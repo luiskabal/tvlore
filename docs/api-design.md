@@ -652,6 +652,7 @@ Response:
   "stillPath": "/still.jpg",
   "airDate": "2017-12-01",
   "runtimeMinutes": 52,
+  "rating": 4,
   "watched": true,
   "watchCount": 1,
   "lastWatchedAt": "2026-08-09T00:00:00.000Z"
@@ -676,6 +677,66 @@ Business validation:
 - Episode exists.
 
 Errors: `EPISODE_NOT_FOUND`, `VALIDATION_FAILED`.
+
+### `PUT /episodes/:episodeId/preference`
+
+Purpose: set a 1-5 rating preference for an episode for the authenticated user.
+
+Auth: required.
+
+Route parameters:
+
+- `episodeId` UUID.
+
+Request:
+
+```json
+{
+  "rating": 4
+}
+```
+
+Response:
+
+```json
+{
+  "id": "uuid",
+  "mediaType": "episode",
+  "rating": 4,
+  "updatedAt": "2026-08-16T00:00:00.000Z"
+}
+```
+
+Status codes: `200 OK`, `400 BAD_REQUEST`, `401 UNAUTHORIZED`, `404 NOT_FOUND`.
+
+Validation: `rating` must be an integer from 1 to 5. Repeated calls update the same user/episode preference row.
+
+Errors: `EPISODE_NOT_FOUND`, `VALIDATION_FAILED`, `UNAUTHORIZED`.
+
+### `DELETE /episodes/:episodeId/preference`
+
+Purpose: clear an episode rating preference for the authenticated user.
+
+Auth: required.
+
+Route parameters:
+
+- `episodeId` UUID.
+
+Response:
+
+```json
+{
+  "id": "uuid",
+  "mediaType": "episode",
+  "rating": null,
+  "updatedAt": null
+}
+```
+
+Status codes: `200 OK`, `400 BAD_REQUEST`, `401 UNAUTHORIZED`, `404 NOT_FOUND`.
+
+Errors: `EPISODE_NOT_FOUND`, `VALIDATION_FAILED`, `UNAUTHORIZED`.
 
 ### `GET /movies/:movieId`
 

@@ -12,6 +12,7 @@ import type {
   MediaType,
   MovieDetailResponse,
   MovieWatchResponse,
+  PreferenceMediaType,
   PreferenceMutationResponse,
   RecommendationItem,
   RecommendationsResponse,
@@ -304,7 +305,8 @@ export function isEpisodeDetailResponse(value: unknown): value is EpisodeDetailR
     typeof candidate.seasonTitle === "string" &&
     typeof candidate.showId === "string" &&
     isNullableString(candidate.showPosterPath) &&
-    typeof candidate.showTitle === "string"
+    typeof candidate.showTitle === "string" &&
+    isRating(candidate.rating)
   );
 }
 
@@ -438,7 +440,7 @@ export function isPreferenceMutationResponse(value: unknown): value is Preferenc
 
   return (
     typeof value.id === "string" &&
-    isMediaType(value.mediaType) &&
+    isPreferenceMediaType(value.mediaType) &&
     isRating(value.rating) &&
     isNullableString(value.updatedAt)
   );
@@ -551,4 +553,8 @@ function isPublicRating(value: unknown) {
 
 function isMediaType(value: unknown): value is MediaType {
   return value === "movie" || value === "show";
+}
+
+function isPreferenceMediaType(value: unknown): value is PreferenceMediaType {
+  return value === "episode" || isMediaType(value);
 }

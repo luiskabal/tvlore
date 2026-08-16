@@ -66,11 +66,41 @@ export class PreferencesRepository {
 
     return toPreferenceResponse(movieId, "movie", null, null);
   }
+
+  async setEpisodeRating(userId: string, episodeId: string, rating: number): Promise<PreferenceMutationResponseDto> {
+    const client = this.prismaService.getClient();
+    const episode = await client.episode.findUnique({ select: { id: true }, where: { id: episodeId } });
+
+    if (!episode) {
+      throwNotFound("EPISODE_NOT_FOUND", "Episode was not found");
+    }
+
+    const preference = await client.episodePreference.upsert({
+      create: { episodeId, rating, userId },
+      update: { rating },
+      where: { userId_episodeId: { episodeId, userId } },
+    });
+
+    return toPreferenceResponse(episodeId, "episode", preference.rating, preference.updatedAt);
+  }
+
+  async clearEpisodeRating(userId: string, episodeId: string): Promise<PreferenceMutationResponseDto> {
+    const client = this.prismaService.getClient();
+    const episode = await client.episode.findUnique({ select: { id: true }, where: { id: episodeId } });
+
+    if (!episode) {
+      throwNotFound("EPISODE_NOT_FOUND", "Episode was not found");
+    }
+
+    await client.episodePreference.deleteMany({ where: { episodeId, userId } });
+
+    return toPreferenceResponse(episodeId, "episode", null, null);
+  }
 }
 
 function toPreferenceResponse(
   id: string,
-  mediaType: "movie" | "show",
+  mediaType: "episode" | "movie" | "show",
   rating: number | null,
   updatedAt: Date | null,
 ): PreferenceMutationResponseDto {

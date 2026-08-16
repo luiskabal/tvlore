@@ -23,7 +23,10 @@ app/
 |       `-- seasons/
 |           `-- [seasonNumber].tsx
 |
-`-- movies/
+|-- movies/
+|   `-- [id].tsx
+|
+`-- episodes/
     `-- [id].tsx
 ```
 
@@ -108,6 +111,8 @@ app/
 |   `-- [id].tsx
 |-- movies/
 |   `-- [id].tsx
+|-- episodes/
+|   `-- [id].tsx
 `-- shows/
     |-- [id].tsx
     `-- [id]/
@@ -142,11 +147,14 @@ src/
 |   |-- CatalogDetailContent.tsx
 |   |-- CatalogDetailScreen.tsx
 |   |-- catalog-detail-styles.ts
+|   |-- EpisodeDetailScreen.tsx
+|   |-- episode-detail-styles.ts
 |   |-- posters.ts
 |   |-- SeasonContent.tsx
 |   |-- SeasonDetailScreen.tsx
 |   |-- season-detail-styles.ts
 |   |-- watch-country.ts
+|   |-- use-episode-detail.ts
 |   |-- use-season-detail.ts
 |   `-- use-catalog-detail.ts
 |
@@ -407,15 +415,19 @@ progress.
 Episode tracking uses the same boundary:
 
 ```text
-SeasonDetailScreen
-  -> useSeasonDetail()
+EpisodeDetailScreen
+  -> useEpisodeDetail()
   -> POST /episodes/:episodeId/watches or DELETE /episodes/:episodeId/watches
-  -> Update touched episode watched state from backend response
+  -> PUT /episodes/:episodeId/preference or DELETE /episodes/:episodeId/preference
+  -> Optimistically update touched episode watched/rating state
   -> Display returned show progress
 ```
 
-The app still does not calculate watched state. It renders the returned
-`watched`, `watchCount`, and `lastWatchedAt` values.
+SeasonDetailScreen still mutates watched state for rows inside a season list.
+Opening an episode route gives the episode the movie-like detail treatment:
+watch/unwatch plus a per-episode 1-5 rating. The app still does not calculate
+watched state. It renders the returned `watched`, `watchCount`,
+`lastWatchedAt`, and `rating` values.
 
 Watchlist uses the same boundary:
 

@@ -1,4 +1,5 @@
 export type MediaType = "movie" | "show";
+export type PreferenceMediaType = "episode" | MediaType;
 
 export type UserResponse = {
   availabilityCountry: string;
@@ -210,6 +211,7 @@ export type ShowSeasonDetailResponse = ShowSeasonSummary & {
 };
 
 export type EpisodeDetailResponse = ShowEpisode & {
+  rating: number | null;
   seasonId: string;
   seasonTitle: string;
   showId: string;
@@ -314,7 +316,7 @@ export type WatchlistMutationResponse = {
 
 export type PreferenceMutationResponse = {
   id: string;
-  mediaType: MediaType;
+  mediaType: PreferenceMediaType;
   rating: number | null;
   updatedAt: string | null;
 };

@@ -12,6 +12,7 @@ const user = {
 };
 const showId = "00000000-0000-4000-8000-000000000002";
 const movieId = "00000000-0000-4000-8000-000000000003";
+const episodeId = "00000000-0000-4000-8000-000000000004";
 
 describe("PreferencesService", () => {
   it("sets a show rating for the authenticated user", async () => {
@@ -38,11 +39,24 @@ describe("PreferencesService", () => {
     expect(repository.clearMovieRating).toHaveBeenCalledWith(user.id, movieId);
   });
 
+  it("sets an episode rating for the authenticated user", async () => {
+    const { repository, service } = createService();
+
+    await expect(service.setEpisodeRating("Bearer token", episodeId, { rating: 4 })).resolves.toEqual({
+      id: episodeId,
+      mediaType: "episode",
+      rating: 4,
+      updatedAt: "2026-08-14T00:00:00.000Z",
+    });
+    expect(repository.setEpisodeRating).toHaveBeenCalledWith(user.id, episodeId, 4);
+  });
+
   it("rejects malformed route ids and invalid ratings", async () => {
     const { service } = createService();
 
     await expect(service.setShowRating("Bearer token", "tmdb-70523", { rating: 5 })).rejects.toThrow(BadRequestException);
     await expect(service.setMovieRating("Bearer token", movieId, { rating: 6 })).rejects.toThrow(BadRequestException);
+    await expect(service.setEpisodeRating("Bearer token", episodeId, { rating: 0 })).rejects.toThrow(BadRequestException);
   });
 });
 
@@ -51,8 +65,15 @@ function createService() {
     getMe: vi.fn().mockResolvedValue(user),
   };
   const repository = {
+    clearEpisodeRating: vi.fn().mockResolvedValue({ id: episodeId, mediaType: "episode", rating: null, updatedAt: null }),
     clearMovieRating: vi.fn().mockResolvedValue({ id: movieId, mediaType: "movie", rating: null, updatedAt: null }),
     clearShowRating: vi.fn().mockResolvedValue({ id: showId, mediaType: "show", rating: null, updatedAt: null }),
+    setEpisodeRating: vi.fn().mockResolvedValue({
+      id: episodeId,
+      mediaType: "episode",
+      rating: 4,
+      updatedAt: "2026-08-14T00:00:00.000Z",
+    }),
     setMovieRating: vi.fn().mockResolvedValue({
       id: movieId,
       mediaType: "movie",

@@ -136,6 +136,12 @@ Watchlist follows the same shape:
 - `WatchlistService`: resolves the authenticated TVLore user and validates route IDs.
 - `WatchlistRepository`: owns idempotent Prisma writes for show/movie watchlist rows.
 
+Preferences follows the same shape:
+
+- `ShowPreferencesController`, `MoviePreferencesController`, and `EpisodePreferencesController`: HTTP routes for explicit ratings.
+- `PreferencesService`: resolves the authenticated TVLore user and validates route IDs plus 1-5 rating input.
+- `PreferencesRepository`: owns idempotent Prisma writes for show/movie/episode preference rows.
+
 Tracking follows the same shape:
 
 - `EpisodeTrackingController`, `MovieTrackingController`, and `ShowTrackingController`: HTTP routes for watched state.

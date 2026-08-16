@@ -58,4 +58,27 @@ export class PreferencesService {
 
     return this.preferencesRepository.clearMovieRating(user.id, parseTvloreId(movieId, "movieId"));
   }
+
+  async setEpisodeRating(
+    authorizationHeader: string | undefined,
+    episodeId: string | undefined,
+    body: unknown,
+  ): Promise<PreferenceMutationResponseDto> {
+    const user = await this.usersService.getMe(authorizationHeader);
+
+    return this.preferencesRepository.setEpisodeRating(
+      user.id,
+      parseTvloreId(episodeId, "episodeId"),
+      parseRatingInput(body),
+    );
+  }
+
+  async clearEpisodeRating(
+    authorizationHeader: string | undefined,
+    episodeId: string | undefined,
+  ): Promise<PreferenceMutationResponseDto> {
+    const user = await this.usersService.getMe(authorizationHeader);
+
+    return this.preferencesRepository.clearEpisodeRating(user.id, parseTvloreId(episodeId, "episodeId"));
+  }
 }

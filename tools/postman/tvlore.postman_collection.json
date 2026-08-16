@@ -1097,8 +1097,71 @@
                   "  pm.expect(body.showId).to.eql(pm.environment.get('resolvedShowId'));",
                   "  pm.expect(body.showTitle).to.be.a('string');",
                   "  pm.expect(body.seasonTitle).to.be.a('string');",
+                  "  pm.expect(body.rating === null || typeof body.rating === 'number').to.eql(true);",
                   "  pm.expect(body.watched).to.be.a('boolean');",
                   "  pm.expect(body.watchCount).to.be.a('number');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT /episodes/:episodeId/preference",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "postman-{{$guid}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 4\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/episodes/{{resolvedEpisodeId}}/preference",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "episodes",
+                "{{resolvedEpisodeId}}",
+                "preference"
+              ]
+            },
+            "description": "Sets a 1-5 rating preference for the resolved episode."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('episode rating is stored', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.id).to.eql(pm.environment.get('resolvedEpisodeId'));",
+                  "  pm.expect(body.mediaType).to.eql('episode');",
+                  "  pm.expect(body.rating).to.eql(4);",
+                  "  pm.expect(body.updatedAt).to.be.a('string');",
                   "});"
                 ]
               }
@@ -2115,6 +2178,60 @@
                   "  pm.expect(body.watchCount).to.eql(0);",
                   "  pm.expect(body.lastWatchedAt).to.eql(null);",
                   "  pm.expect(body.showProgress.showId).to.eql(pm.environment.get('resolvedShowId'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE /episodes/:episodeId/preference",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "postman-{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/episodes/{{resolvedEpisodeId}}/preference",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "episodes",
+                "{{resolvedEpisodeId}}",
+                "preference"
+              ]
+            },
+            "description": "Clears the authenticated user's rating preference for the resolved episode."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('episode rating is cleared', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.id).to.eql(pm.environment.get('resolvedEpisodeId'));",
+                  "  pm.expect(body.mediaType).to.eql('episode');",
+                  "  pm.expect(body.rating).to.eql(null);",
+                  "  pm.expect(body.updatedAt).to.eql(null);",
                   "});"
                 ]
               }

@@ -33,7 +33,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Show-level mark all watched/unwatched backed by the API.
 - Season-level mark all watched/unwatched.
 - Personal show/movie watchlist.
-- Personal show/movie rating preferences.
+- Personal show/movie/episode rating preferences.
 - Compact show/movie rating comparison in detail screens: TMDB public rating versus the user's 1-5 rating, with the public rating hidden as `Spoiler` until the user rates it or manually reveals it.
 - Optional post-watch rating check-in after marking a movie or full show watched.
 - Library summary with watched show, movie, episode, watchlist, and rated-title counts.
@@ -71,6 +71,8 @@ Google login
 -> Save a full Watch Path to watchlist
 -> Save show or movie to watchlist
 -> Rate show or movie
+-> Open episode detail
+-> Rate episode
 -> Mark movie watched
 -> Optional post-watch rating check-in
 -> Open show season

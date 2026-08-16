@@ -21,6 +21,19 @@ export const styles = StyleSheet.create({
   detail: {
     gap: 20,
   },
+  clearRatingButton: {
+    alignItems: "center",
+    alignSelf: "flex-start",
+    backgroundColor: ui.color.panel,
+    borderColor: ui.color.border,
+    borderRadius: ui.radius.md,
+    borderWidth: 1,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+  },
+  disabledAction: {
+    opacity: 0.56,
+  },
   hero: {
     gap: 14,
   },
@@ -36,6 +49,41 @@ export const styles = StyleSheet.create({
   overview: {
     fontSize: 16,
     lineHeight: 23,
+  },
+  ratingButton: {
+    alignItems: "center",
+    backgroundColor: ui.color.panel,
+    borderColor: ui.color.border,
+    borderRadius: ui.radius.md,
+    borderWidth: 1,
+    height: 42,
+    justifyContent: "center",
+    width: 42,
+  },
+  ratingButtonSelected: {
+    backgroundColor: ui.color.accent,
+    borderColor: ui.color.accent,
+  },
+  ratingButtonText: {
+    color: ui.color.ink,
+  },
+  ratingButtonTextSelected: {
+    color: ui.color.white,
+  },
+  ratingHeaderRow: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  ratingRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  ratingValue: {
+    fontSize: 20,
+    lineHeight: 25,
   },
   screen: {
     backgroundColor: ui.color.panelAlt,

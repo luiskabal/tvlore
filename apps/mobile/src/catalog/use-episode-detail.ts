@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
+  clearEpisodePreferenceRating,
   getEpisodeDetail,
   markEpisodeWatched,
+  setEpisodePreferenceRating,
   unmarkEpisodeWatched,
   type EpisodeDetailResponse,
 } from "../api/tvlore-api";
@@ -19,9 +21,16 @@ export type EpisodeDetailWatchActionState =
   | { kind: "loading" }
   | { kind: "error"; message: string };
 
+export type EpisodeDetailPreferenceActionState =
+  | { kind: "idle" }
+  | { kind: "loading" }
+  | { kind: "error"; message: string };
+
 export function useEpisodeDetail(episodeId: string | null) {
   const [state, setState] = useState<EpisodeDetailState>({ kind: "loading" });
   const [watchAction, setWatchAction] = useState<EpisodeDetailWatchActionState>({ kind: "idle" });
+  const [preferenceAction, setPreferenceAction] = useState<EpisodeDetailPreferenceActionState>({ kind: "idle" });
+  const ratingRequestId = useRef(0);
   const requestId = useRef(0);
 
   const refresh = useCallback(async () => {
@@ -35,6 +44,7 @@ export function useEpisodeDetail(episodeId: string | null) {
     try {
       const token = await getSupabaseAccessToken();
       setState({ detail: await getEpisodeDetail(token, episodeId), kind: "ready" });
+      setPreferenceAction({ kind: "idle" });
       setWatchAction({ kind: "idle" });
     } catch (error) {
       setState({
@@ -74,15 +84,11 @@ export function useEpisodeDetail(episodeId: string | null) {
         return;
       }
 
-      setState({
-        detail: {
-          ...previousDetail,
-          lastWatchedAt: response.lastWatchedAt,
-          watchCount: response.watchCount,
-          watched: response.watched,
-        },
-        kind: "ready",
-      });
+      setState((current) => updateDetail(current, {
+        lastWatchedAt: response.lastWatchedAt,
+        watchCount: response.watchCount,
+        watched: response.watched,
+      }));
       notifyLibraryChanged();
       setWatchAction({ kind: "idle" });
     } catch (error) {
@@ -90,7 +96,11 @@ export function useEpisodeDetail(episodeId: string | null) {
         return;
       }
 
-      setState({ detail: previousDetail, kind: "ready" });
+      setState((current) => updateDetail(current, {
+        lastWatchedAt: previousDetail.lastWatchedAt,
+        watchCount: previousDetail.watchCount,
+        watched: previousDetail.watched,
+      }));
       setWatchAction({
         kind: "error",
         message: error instanceof Error ? error.message : "Episode watch update failed",
@@ -98,11 +108,59 @@ export function useEpisodeDetail(episodeId: string | null) {
     }
   }, [state]);
 
+  const setRating = useCallback(async (rating: number | null) => {
+    if (state.kind !== "ready") {
+      return false;
+    }
+
+    const previousDetail = state.detail;
+    const nextRequestId = ratingRequestId.current + 1;
+
+    ratingRequestId.current = nextRequestId;
+    setPreferenceAction({ kind: "loading" });
+    setState({
+      detail: {
+        ...previousDetail,
+        rating,
+      },
+      kind: "ready",
+    });
+
+    try {
+      const token = await getSupabaseAccessToken();
+      const response = rating === null
+        ? await clearEpisodePreferenceRating(token, previousDetail.id)
+        : await setEpisodePreferenceRating(token, previousDetail.id, rating);
+
+      if (ratingRequestId.current !== nextRequestId) {
+        return false;
+      }
+
+      setState((current) => updateDetail(current, { rating: response.rating }));
+      notifyLibraryChanged();
+      setPreferenceAction({ kind: "idle" });
+
+      return true;
+    } catch (error) {
+      if (ratingRequestId.current !== nextRequestId) {
+        return false;
+      }
+
+      setState((current) => updateDetail(current, { rating: previousDetail.rating }));
+      setPreferenceAction({
+        kind: "error",
+        message: error instanceof Error ? error.message : "Episode rating update failed",
+      });
+
+      return false;
+    }
+  }, [state]);
+
   useEffect(() => {
     void refresh();
   }, [refresh]);
 
-  return { refresh, setWatched, state, watchAction };
+  return { preferenceAction, refresh, setRating, setWatched, state, watchAction };
 }
 
 function getOptimisticWatchCount(currentCount: number, currentWatched: boolean, nextWatched: boolean) {
@@ -111,4 +169,21 @@ function getOptimisticWatchCount(currentCount: number, currentWatched: boolean, 
   }
 
   return Math.max(0, currentCount + (nextWatched ? 1 : -1));
+}
+
+function updateDetail(
+  current: EpisodeDetailState,
+  patch: Partial<Pick<EpisodeDetailResponse, "lastWatchedAt" | "rating" | "watchCount" | "watched">>,
+): EpisodeDetailState {
+  if (current.kind !== "ready") {
+    return current;
+  }
+
+  return {
+    detail: {
+      ...current.detail,
+      ...patch,
+    },
+    kind: "ready",
+  };
 }

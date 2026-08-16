@@ -1,4 +1,4 @@
-export type PreferenceMediaType = "movie" | "show";
+export type PreferenceMediaType = "episode" | "movie" | "show";
 
 export type PreferenceMutationResponseDto = {
   id: string;

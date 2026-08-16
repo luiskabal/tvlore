@@ -14,6 +14,7 @@ model User {
   availabilityCountry String               @default("CL") @map("availability_country")
   createdAt           DateTime             @default(now()) @map("created_at")
   updatedAt           DateTime             @updatedAt @map("updated_at")
+  episodePreferences  EpisodePreference[]
   episodeWatches      EpisodeWatch[]
   identities          UserIdentity[]
   moviePreferences    MoviePreference[]
@@ -145,6 +146,7 @@ model Episode {
   updatedAt      DateTime       @updatedAt @map("updated_at")
   season         Season         @relation(fields: [seasonId], references: [id], onDelete: Cascade)
   show           Show           @relation(fields: [showId], references: [id], onDelete: Cascade)
+  preferences    EpisodePreference[]
   watches        EpisodeWatch[]
 
   @@unique([showId, seasonNumber, episodeNumber])
@@ -241,4 +243,20 @@ model MoviePreference {
   @@index([movieId])
   @@index([userId])
   @@map("movie_preferences")
+}
+
+model EpisodePreference {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  episodeId String   @map("episode_id") @db.Uuid
+  rating    Int
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  episode   Episode  @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, episodeId])
+  @@index([episodeId])
+  @@index([userId])
+  @@map("episode_preferences")
 }

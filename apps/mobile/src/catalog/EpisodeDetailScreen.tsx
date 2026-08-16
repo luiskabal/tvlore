@@ -6,13 +6,13 @@ import type { EpisodeDetailResponse } from "../api/tvlore-api";
 import { AppText, Button, Skeleton } from "../ui";
 import { getTmdbPosterUrl } from "./posters";
 import { styles } from "./episode-detail-styles";
-import type { EpisodeDetailWatchActionState } from "./use-episode-detail";
+import type { EpisodeDetailPreferenceActionState, EpisodeDetailWatchActionState } from "./use-episode-detail";
 import { useEpisodeDetail } from "./use-episode-detail";
 
 export default function EpisodeDetailScreen() {
   const params = useLocalSearchParams<{ id?: string | string[] }>();
   const episodeId = typeof params.id === "string" ? params.id : null;
-  const { refresh, setWatched, state, watchAction } = useEpisodeDetail(episodeId);
+  const { preferenceAction, refresh, setRating, setWatched, state, watchAction } = useEpisodeDetail(episodeId);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -35,7 +35,9 @@ export default function EpisodeDetailScreen() {
         {state.kind === "ready" ? (
           <EpisodeDetailContent
             detail={state.detail}
+            onSetRating={setRating}
             onSetWatched={setWatched}
+            preferenceAction={preferenceAction}
             watchAction={watchAction}
           />
         ) : null}
@@ -46,11 +48,15 @@ export default function EpisodeDetailScreen() {
 
 function EpisodeDetailContent({
   detail,
+  onSetRating,
   onSetWatched,
+  preferenceAction,
   watchAction,
 }: {
   detail: EpisodeDetailResponse;
+  onSetRating: (rating: number | null) => Promise<boolean>;
   onSetWatched: (watched: boolean) => void;
+  preferenceAction: EpisodeDetailPreferenceActionState;
   watchAction: EpisodeDetailWatchActionState;
 }) {
   const isSaving = watchAction.kind === "loading";
@@ -80,6 +86,12 @@ function EpisodeDetailContent({
 
       <AppText style={styles.overview}>{detail.overview || "No overview available."}</AppText>
 
+      <EpisodeRatingPanel
+        detail={detail}
+        onSetRating={onSetRating}
+        preferenceAction={preferenceAction}
+      />
+
       <View style={styles.statusPanel}>
         <AppText variant="section">Tracking</AppText>
         <AppText tone="muted">
@@ -94,6 +106,68 @@ function EpisodeDetailContent({
           variant={detail.watched ? "secondary" : "primary"}
         />
       </View>
+    </View>
+  );
+}
+
+function EpisodeRatingPanel({
+  detail,
+  onSetRating,
+  preferenceAction,
+}: {
+  detail: EpisodeDetailResponse;
+  onSetRating: (rating: number | null) => Promise<boolean>;
+  preferenceAction: EpisodeDetailPreferenceActionState;
+}) {
+  const isSaving = preferenceAction.kind === "loading";
+
+  return (
+    <View style={styles.statusPanel}>
+      <View style={styles.ratingHeaderRow}>
+        <AppText variant="section">Your rating</AppText>
+        <AppText style={styles.ratingValue} variant="title">{detail.rating ? `${detail.rating}/5` : "--"}</AppText>
+      </View>
+
+      {preferenceAction.kind === "error" ? <AppText tone="danger">{preferenceAction.message}</AppText> : null}
+
+      <View style={styles.ratingRow}>
+        {[1, 2, 3, 4, 5].map((rating) => {
+          const isSelected = detail.rating === rating;
+
+          return (
+            <Pressable
+              accessibilityRole="button"
+              disabled={isSaving}
+              key={rating}
+              onPress={() => {
+                void onSetRating(rating);
+              }}
+              style={[
+                styles.ratingButton,
+                isSelected ? styles.ratingButtonSelected : null,
+                isSaving ? styles.disabledAction : null,
+              ]}
+            >
+              <AppText style={isSelected ? styles.ratingButtonTextSelected : styles.ratingButtonText} variant="button">
+                {rating}
+              </AppText>
+            </Pressable>
+          );
+        })}
+      </View>
+
+      {detail.rating ? (
+        <Pressable
+          accessibilityRole="button"
+          disabled={isSaving}
+          onPress={() => {
+            void onSetRating(null);
+          }}
+          style={[styles.clearRatingButton, isSaving ? styles.disabledAction : null]}
+        >
+          <AppText variant="caption">Clear rating</AppText>
+        </Pressable>
+      ) : null}
     </View>
   );
 }
@@ -114,6 +188,18 @@ function EpisodeDetailSkeleton() {
         <Skeleton height={15} />
         <Skeleton height={15} />
         <Skeleton height={15} width="64%" />
+      </View>
+
+      <View style={styles.statusPanel}>
+        <View style={styles.ratingHeaderRow}>
+          <Skeleton height={22} width="36%" />
+          <Skeleton height={24} width={48} />
+        </View>
+        <View style={styles.ratingRow}>
+          {[0, 1, 2, 3, 4].map((item) => (
+            <Skeleton height={42} key={item} width={42} />
+          ))}
+        </View>
       </View>
 
       <View style={styles.statusPanel}>

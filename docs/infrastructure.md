@@ -43,6 +43,8 @@ GET /shows/:showId/seasons
 GET /shows/:showId/seasons/:seasonNumber
 GET /episodes/:episodeId
 GET /movies/:movieId
+PUT /episodes/:episodeId/preference
+DELETE /episodes/:episodeId/preference
 POST /episodes/:episodeId/watches
 DELETE /episodes/:episodeId/watches
 POST /movies/:movieId/watches
@@ -69,7 +71,8 @@ returns progress for episodes already persisted in TVLore. Season detail fetches
 and persists TMDB episodes for the requested season. Episode detail reads one
 persisted episode with show/season context. Watch endpoints store
 per-user watched state, watchlist endpoints store saved intent, and
-library/progress endpoints read the authenticated user's viewing state.
+preference endpoints store user ratings. Library/progress endpoints read the
+authenticated user's viewing state.
 
 ## Database
 
@@ -79,8 +82,8 @@ library/progress endpoints read the authenticated user's viewing state.
 - ORM: Prisma.
 - Prisma schema: `apps/api/prisma/schema.prisma`
 - Initial migration: `apps/api/prisma/migrations/20260810162500_init_user/migration.sql`
-- Applied migrations: `20260810162500_init_user`, `20260810211300_add_auth_tables`, `20260811144000_add_catalog_tables`, `20260811151500_add_seasons_and_episodes`, `20260811165000_add_watch_tables`, `20260813220500_add_watchlist_tables`, `20260814101500_add_preferences`, `20260815172000_add_catalog_genres`, `20260815181000_add_user_availability_country`, `20260816102000_add_public_ratings`
-- Current database tables: `_prisma_migrations`, `users`, `user_identities`, `refresh_sessions`, `shows`, `movies`, `seasons`, `episodes`, `external_identifiers`, `episode_watches`, `movie_watches`, `show_watchlist_items`, `movie_watchlist_items`, `show_preferences`, `movie_preferences`
+- Applied migrations: `20260810162500_init_user`, `20260810211300_add_auth_tables`, `20260811144000_add_catalog_tables`, `20260811151500_add_seasons_and_episodes`, `20260811165000_add_watch_tables`, `20260813220500_add_watchlist_tables`, `20260814101500_add_preferences`, `20260815172000_add_catalog_genres`, `20260815181000_add_user_availability_country`, `20260816102000_add_public_ratings`, `20260816110000_add_episode_preferences`
+- Current database tables: `_prisma_migrations`, `users`, `user_identities`, `refresh_sessions`, `shows`, `movies`, `seasons`, `episodes`, `external_identifiers`, `episode_watches`, `movie_watches`, `show_watchlist_items`, `movie_watchlist_items`, `show_preferences`, `movie_preferences`, `episode_preferences`
 
 Vercel environment variables:
 
@@ -251,6 +254,7 @@ the selected Postman environment.
 - Episode detail reads persisted episode records with show/season context.
 - Watch/unwatch endpoints store authenticated movie and episode state.
 - Watchlist endpoints store authenticated show/movie saved intent.
+- Preference endpoints store authenticated show/movie/episode ratings.
 - `GET /library` feeds the mobile home library summary.
 - `GET /library/chronology` feeds the paginated Cronologia watch-history view.
 - `GET /recommendations` feeds Library suggestion rows from stored ratings, hydrated catalog rows, genre names, and user-country streaming availability.

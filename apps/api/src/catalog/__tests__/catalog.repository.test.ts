@@ -18,6 +18,7 @@ describe("CatalogRepository", () => {
           episodeNumber: 1,
           id: episodeId,
           overview: "Pilot overview.",
+          preferences: [{ rating: 4 }],
           runtimeMinutes: 50,
           season: {
             id: seasonId,
@@ -43,6 +44,7 @@ describe("CatalogRepository", () => {
       id: episodeId,
       lastWatchedAt: watchedAt.toISOString(),
       overview: "Pilot overview.",
+      rating: 4,
       runtimeMinutes: 50,
       seasonId,
       seasonNumber: 1,

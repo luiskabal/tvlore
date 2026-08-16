@@ -188,6 +188,11 @@ export class CatalogRepository {
   async findEpisodeDetail(episodeId: string, userId: string): Promise<EpisodeDetailResponseDto | null> {
     const episode = await this.prismaService.getClient().episode.findUnique({
       include: {
+        preferences: {
+          select: { rating: true },
+          take: 1,
+          where: { userId },
+        },
         season: true,
         show: {
           select: {
@@ -542,6 +547,7 @@ function toEpisodeResponse(episode: {
 }
 
 function toEpisodeDetailResponse(episode: Parameters<typeof toEpisodeResponse>[0] & {
+  preferences: Array<{ rating: number }>;
   season: {
     id: string;
     title: string;
@@ -554,6 +560,7 @@ function toEpisodeDetailResponse(episode: Parameters<typeof toEpisodeResponse>[0
 }): EpisodeDetailResponseDto {
   return {
     ...toEpisodeResponse(episode),
+    rating: episode.preferences[0]?.rating ?? null,
     seasonId: episode.season.id,
     seasonTitle: episode.season.title,
     showId: episode.show.id,
