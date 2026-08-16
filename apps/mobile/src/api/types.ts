@@ -41,6 +41,12 @@ export type RecommendationsResponse = {
   items: RecommendationItem[];
 };
 
+export type PopularDiscoveryResponse = {
+  country: string;
+  items: CatalogSearchResult[];
+  section: "popular_in_country";
+};
+
 export type RecommendationItem = {
   genreNames: string[];
   id: string;

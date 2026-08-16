@@ -5,11 +5,13 @@ import { SafeAreaView, ScrollView } from "react-native";
 
 import type { CatalogSearchResult, MediaType } from "../api/tvlore-api";
 import { SearchControls } from "./SearchControls";
+import { SearchPopular } from "./SearchPopular";
 import { SearchRecommendations } from "./SearchRecommendations";
 import { SearchResults } from "./SearchResults";
 import { styles } from "./search-styles";
 import { canRunSearch, type SearchFilter } from "./search-model";
 import { useCatalogSearch } from "./use-catalog-search";
+import { usePopularDiscovery } from "./use-popular-discovery";
 import { useSearchRecommendations } from "./use-search-recommendations";
 
 const searchDebounceMs = 600;
@@ -19,6 +21,7 @@ export default function SearchScreen() {
   const [filter, setFilter] = useState<SearchFilter>("all");
   const { resolveResult, resolveState, runSearch, search } = useCatalogSearch();
   const { recommendations, recommendationsState, retryRecommendations } = useSearchRecommendations();
+  const { popular, popularState, retryPopular } = usePopularDiscovery();
   const skipNextDebouncedSearchRef = useRef(false);
   const canSearch = canRunSearch(query);
   const isSearching = search.kind === "loading" || search.kind === "refreshing";
@@ -91,6 +94,12 @@ export default function SearchScreen() {
           onRetry={retryRecommendations}
           recommendations={recommendations}
           state={recommendationsState}
+        />
+
+        <SearchPopular
+          onRetry={retryPopular}
+          popular={popular}
+          state={popularState}
         />
 
         <SearchResults

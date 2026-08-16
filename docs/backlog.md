@@ -12,7 +12,6 @@ No active infrastructure tasks.
 - [x] Move pure catalog response mappers out of `CatalogRepository` when catalog persistence is next edited.
 - [ ] Add fetched Watch Path creation from public list sources after choosing a source format/provider.
 - [ ] Add a TVLore-native recommendation engine with house rules, explicit taste signals, availability, and explainable reasons.
-- [ ] Add a country-aware `Popular in your country` discovery section using the user's saved availability country.
 - [ ] Add a `TVLore Picks` / house-curated discovery section that is separate from personalized recommendations.
 - [ ] Add an `Available in your country` discovery section for streamable titles, separate from recommendation ranking.
 - [ ] Add aggregate favorite-character voting percentages to post-watch check-in, sorted by community popularity.
@@ -140,6 +139,7 @@ No active infrastructure tasks.
 - [x] Expand post-watch check-in to show/movie/episode reflections with sensation, favorite character, and optional comment.
 - [x] Add TMDB-backed cast endpoints and visual favorite-character picker for post-watch check-ins.
 - [x] Move post-watch check-in from modal to a dedicated mobile screen.
+- [x] Add a country-aware `Popular in your country` discovery section using the user's saved availability country.
 
 ## Deferred
 

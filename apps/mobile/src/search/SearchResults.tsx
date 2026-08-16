@@ -99,7 +99,7 @@ function SearchSkeleton() {
   );
 }
 
-function SearchResultRow({
+export function SearchResultRow({
   onResolve,
   resolveState,
   result,

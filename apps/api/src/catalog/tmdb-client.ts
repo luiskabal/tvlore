@@ -5,12 +5,21 @@ import type { CatalogResolveInput, CatalogSearchInput, MediaType } from "./catal
 import { toEpisodeCastResponse, toMovieCastResponse, toShowCastResponse } from "./catalog-cast";
 import { toResolvedSeason } from "./catalog-detail";
 import { toResolvedMovie, toResolvedShow } from "./catalog-resolve";
-import { toCatalogSearchResults } from "./catalog-search";
+import { toCatalogSearchResults, toCatalogSearchResultsForMediaType } from "./catalog-search";
 import { toWatchProvidersResponse } from "./catalog-watch-providers";
 
 @Injectable()
 export class TmdbClient {
   constructor(@Inject(API_CONFIG) private readonly config: ApiConfig) {}
+
+  async getPopularByCountry(country: string) {
+    const [shows, movies] = await Promise.all([
+      this.getPopularDiscoverResults("show", country),
+      this.getPopularDiscoverResults("movie", country),
+    ]);
+
+    return interleave(shows.slice(0, 6), movies.slice(0, 6)).slice(0, 12);
+  }
 
   async search(input: CatalogSearchInput) {
     const url = new URL("https://api.themoviedb.org/3/search/multi");
@@ -65,6 +74,24 @@ export class TmdbClient {
     return toWatchProvidersResponse(await this.getJson(url), country);
   }
 
+  private async getPopularDiscoverResults(mediaType: MediaType, country: string) {
+    const path = mediaType === "show" ? "tv" : "movie";
+    const url = new URL(`https://api.themoviedb.org/3/discover/${path}`);
+
+    url.searchParams.set("include_adult", "false");
+    url.searchParams.set("language", "en-US");
+    url.searchParams.set("page", "1");
+    url.searchParams.set("sort_by", "popularity.desc");
+    url.searchParams.set("watch_region", country);
+    url.searchParams.set("with_watch_monetization_types", "flatrate|free|ads");
+
+    if (mediaType === "movie") {
+      url.searchParams.set("include_video", "false");
+    }
+
+    return toCatalogSearchResultsForMediaType(await this.getJson(url), mediaType);
+  }
+
   async getMovieCast(providerId: string) {
     const url = new URL(`https://api.themoviedb.org/3/movie/${providerId}/credits`);
     url.searchParams.set("language", "en-US");
@@ -109,6 +136,23 @@ export class TmdbClient {
       });
     }
   }
+}
+
+function interleave<T>(left: T[], right: T[]) {
+  const items: T[] = [];
+  const length = Math.max(left.length, right.length);
+
+  for (let index = 0; index < length; index += 1) {
+    if (left[index]) {
+      items.push(left[index]);
+    }
+
+    if (right[index]) {
+      items.push(right[index]);
+    }
+  }
+
+  return items;
 }
 
 function throwProviderError(status: number): never {

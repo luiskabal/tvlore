@@ -15,6 +15,7 @@ import type {
   MovieWatchResponse,
   PreferenceMediaType,
   PreferenceMutationResponse,
+  PopularDiscoveryResponse,
   RecommendationItem,
   RecommendationsResponse,
   RecentlyWatchedItem,
@@ -104,6 +105,19 @@ export function isRecommendationsResponse(value: unknown): value is Recommendati
     typeof value.basis.ratedTitleCount === "number" &&
     Array.isArray(value.items) &&
     value.items.every(isRecommendationItem)
+  );
+}
+
+export function isPopularDiscoveryResponse(value: unknown): value is PopularDiscoveryResponse {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.country === "string" &&
+    value.section === "popular_in_country" &&
+    Array.isArray(value.items) &&
+    value.items.every(isCatalogSearchResult)
   );
 }
 

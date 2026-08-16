@@ -73,6 +73,19 @@ export function toCatalogSearchResults(value: unknown, mediaTypes: MediaType[]) 
     .filter((result) => mediaTypes.includes(result.mediaType));
 }
 
+export function toCatalogSearchResultsForMediaType(value: unknown, mediaType: MediaType) {
+  if (!isRecord(value) || !Array.isArray(value.results)) {
+    return [];
+  }
+
+  const providerMediaType = mediaType === "show" ? "tv" : "movie";
+
+  return value.results
+    .map((result) => isRecord(result) ? { ...result, media_type: providerMediaType } : result)
+    .map(toCatalogSearchResult)
+    .filter((result): result is CatalogSearchResultDto => Boolean(result));
+}
+
 function parseMediaTypes(value: string | undefined): MediaType[] {
   if (!value?.trim()) {
     return defaultMediaTypes;

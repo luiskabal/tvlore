@@ -97,6 +97,7 @@ async function checkUnauthorizedRoutes() {
   await checkUnauthorized("/library");
   await checkUnauthorized("/library/chronology");
   await checkUnauthorized("/recommendations");
+  await checkUnauthorized("/discovery/popular");
   await checkUnauthorized("/watch-paths");
   await checkUnauthorized("/watch-paths/mcu-infinity-saga-release");
   await checkUnauthorized("/watch-paths/mcu-infinity-saga-release/watchlist", { method: "POST" });
@@ -795,6 +796,11 @@ async function checkAuthenticatedProductFlow(token) {
     expectedStatus: 200,
     headers: authHeaders,
   });
+  await check("/discovery/popular", {
+    assert: assertPopularDiscovery,
+    expectedStatus: 200,
+    headers: authHeaders,
+  });
   await check(`/shows/${resolvedShow.id}/watches`, {
     assert: (body) => {
       assertShowProgress(body, resolvedShow.id);
@@ -914,17 +920,33 @@ function assertSearchResponse(body) {
   expectArray(body.results, "search.results");
 
   for (const result of body.results) {
-    expectRecord(result, "search result");
-    expectMediaType(result.mediaType, "search result.mediaType");
-    expectString(result.title, "search result.title");
-    expectString(result.overview, "search result.overview");
-    expectNullableString(result.posterPath, "search result.posterPath");
-    expectNullableNumber(result.year, "search result.year");
-    expect(result.tvloreId === null || uuidPattern.test(result.tvloreId), "search result.tvloreId should be null or UUID");
-    expectRecord(result.externalRef, "search result.externalRef");
-    expectEqual(result.externalRef.provider, "tmdb", "search result.externalRef.provider");
-    expectString(result.externalRef.providerId, "search result.externalRef.providerId");
+    assertCatalogSearchResult(result, "search result");
   }
+}
+
+function assertPopularDiscovery(body) {
+  expectRecord(body, "popular discovery");
+  expectCountryCode(body.country, "popular discovery.country");
+  expectEqual(body.section, "popular_in_country", "popular discovery.section");
+  expectArray(body.items, "popular discovery.items");
+  expect(body.items.length > 0, "popular discovery should include items");
+
+  for (const item of body.items) {
+    assertCatalogSearchResult(item, "popular discovery item");
+  }
+}
+
+function assertCatalogSearchResult(result, label) {
+  expectRecord(result, label);
+  expectMediaType(result.mediaType, `${label}.mediaType`);
+  expectString(result.title, `${label}.title`);
+  expectString(result.overview, `${label}.overview`);
+  expectNullableString(result.posterPath, `${label}.posterPath`);
+  expectNullableNumber(result.year, `${label}.year`);
+  expect(result.tvloreId === null || uuidPattern.test(result.tvloreId), `${label}.tvloreId should be null or UUID`);
+  expectRecord(result.externalRef, `${label}.externalRef`);
+  expectEqual(result.externalRef.provider, "tmdb", `${label}.externalRef.provider`);
+  expectString(result.externalRef.providerId, `${label}.externalRef.providerId`);
 }
 
 function assertResolveResponse(body, mediaType) {

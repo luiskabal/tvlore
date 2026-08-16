@@ -14,7 +14,7 @@ export function getActiveTab(pathname: string): AppTab | null {
     return "library";
   }
 
-  if (pathname === "/search" || pathname === "/recommendations") {
+  if (pathname === "/search" || pathname === "/recommendations" || pathname === "/popular") {
     return "search";
   }
 

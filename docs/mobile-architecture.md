@@ -277,6 +277,13 @@ Availability and watchlist actions stay in detail screens.
 `recommendation-detail.ts` owns the small presentation rule that turns
 preferred-genre overlap into copy such as "Because you like Drama".
 
+Search also renders a `Popular in your country` entry card. The full country
+popular list lives in `PopularDiscoveryScreen`. `usePopularDiscovery` loads
+only `GET /discovery/popular`, which returns search-shaped TMDB refs plus any
+existing TVLore IDs. The screen reuses Search result rows and the same resolve
+flow as catalog search, so unopened popular titles become internal TVLore
+titles only when the user taps them.
+
 Library rows receive navigation callbacks from `LibraryScreen`: movies route
 to movie detail, watched episode show headings route to show detail,
 continue-watching and season headings route to season detail, and watched
@@ -321,9 +328,12 @@ Search and detail now follow the same boundary:
 SearchScreen
   -> useCatalogSearch()
   -> useSearchRecommendations()
+  -> usePopularDiscovery()
   -> GET /search
   -> GET /recommendations
   -> RecommendationsScreen
+  -> GET /discovery/popular
+  -> PopularDiscoveryScreen
   -> POST /catalog/resolve
   -> router.push(/shows/:id or /movies/:id)
   -> CatalogDetailScreen

@@ -1844,6 +1844,59 @@ Business validation:
 
 Errors: `UNAUTHORIZED`.
 
+### `GET /discovery/popular`
+
+Purpose: return country-aware popular shows and movies for the authenticated user.
+
+Current MVP status: implemented with TMDB Discover, using the authenticated user's saved availability country as `watch_region`.
+
+Auth: required.
+
+Route parameters: none.
+
+Query parameters: none in the MVP.
+
+Request: none.
+
+Response:
+
+```json
+{
+  "country": "CL",
+  "section": "popular_in_country",
+  "items": [
+    {
+      "externalRef": {
+        "provider": "tmdb",
+        "providerId": "70523"
+      },
+      "mediaType": "show",
+      "overview": "A missing child sets four families...",
+      "posterPath": "/apbrbWs8M9lyOpJYU5WXrpFbk1Z.jpg",
+      "title": "Dark",
+      "tvloreId": "uuid-or-null",
+      "year": 2017
+    }
+  ]
+}
+```
+
+Status codes:
+
+- `200 OK`
+- `401 UNAUTHORIZED`
+
+Authorization: popular discovery is personalized only by the authenticated user's saved country.
+
+Business validation:
+
+- The endpoint asks TMDB Discover for popular shows and movies, scoped by the user's saved availability country.
+- The response uses the same search-result row shape as `GET /search`, so mobile can resolve unopened TMDB refs through `POST /catalog/resolve`.
+- Existing TVLore IDs are hydrated when the TMDB item was already resolved before.
+- Personalized ranking remains in `GET /recommendations`; this endpoint is contextual discovery, not a taste model.
+
+Errors: `UNAUTHORIZED`.
+
 ### `GET /watch-paths`
 
 Purpose: return backend-owned curated and personal viewing paths for the authenticated user.

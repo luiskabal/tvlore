@@ -7,6 +7,8 @@ import { CatalogService } from "./catalog/catalog.service";
 import { TmdbClient } from "./catalog/tmdb-client";
 import { CorrelationIdMiddleware } from "./correlation-id.middleware";
 import { ApiConfigProvider } from "./config";
+import { DiscoveryController } from "./discovery/discovery.controller";
+import { DiscoveryService } from "./discovery/discovery.service";
 import { HealthController } from "./health.controller";
 import { LibraryController, ShowProgressController } from "./library/library.controller";
 import { LibraryRepository } from "./library/library.repository";
@@ -59,6 +61,7 @@ import { WatchPathsService } from "./watch-paths/watch-paths.service";
     LibraryController,
     ShowProgressController,
     RecommendationsController,
+    DiscoveryController,
     WatchPathsController,
   ],
   providers: [
@@ -81,6 +84,7 @@ import { WatchPathsService } from "./watch-paths/watch-paths.service";
     ReflectionsService,
     LibraryService,
     RecommendationsService,
+    DiscoveryService,
     WatchPathsService,
     UsersRepository,
     UsersService,

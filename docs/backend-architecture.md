@@ -100,6 +100,12 @@ src/
 |   |-- recommendations.service.ts
 |   `-- recommendations.types.ts
 |
+|-- discovery/
+|   |-- discovery.controller.ts
+|   |-- discovery.service.ts
+|   |-- discovery.types.ts
+|   `-- __tests__/
+|
 |-- watch-paths/
 |   |-- watch-paths.controller.ts
 |   |-- watch-paths.data.ts

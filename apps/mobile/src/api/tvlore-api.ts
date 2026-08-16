@@ -1,4 +1,5 @@
 export * from "./catalog";
+export * from "./discovery";
 export * from "./home";
 export * from "./library";
 export * from "./preferences";

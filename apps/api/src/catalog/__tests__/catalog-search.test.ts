@@ -1,7 +1,12 @@
 import { BadRequestException } from "@nestjs/common";
 import { describe, expect, it } from "vitest";
 
-import { parseCatalogSearchInput, toCatalogSearchResult, toCatalogSearchResults } from "../catalog-search";
+import {
+  parseCatalogSearchInput,
+  toCatalogSearchResult,
+  toCatalogSearchResults,
+  toCatalogSearchResultsForMediaType,
+} from "../catalog-search";
 
 describe("parseCatalogSearchInput", () => {
   it("normalizes the search query", () => {
@@ -66,5 +71,27 @@ describe("toCatalogSearchResults", () => {
         { id: 2, media_type: "movie", title: "Dark City" },
       ],
     }, ["show"])).toHaveLength(1);
+  });
+
+  it("maps discover results by assigning the known media type", () => {
+    expect(toCatalogSearchResultsForMediaType({
+      results: [
+        { first_air_date: "2024-01-01", id: 1, name: "Popular Show" },
+        { id: 2, name: "Missing year" },
+      ],
+    }, "show")).toEqual([
+      expect.objectContaining({
+        externalRef: { provider: "tmdb", providerId: "1" },
+        mediaType: "show",
+        title: "Popular Show",
+        year: 2024,
+      }),
+      expect.objectContaining({
+        externalRef: { provider: "tmdb", providerId: "2" },
+        mediaType: "show",
+        title: "Missing year",
+        year: null,
+      }),
+    ]);
   });
 });

@@ -848,6 +848,7 @@ Expected behavior:
 - `GET /library` returns personal summary, rated titles, continue-watching, watchlist, recently watched activity, and full watched episode activity.
 - `GET /library/chronology` returns paginated personal movie/episode watch-history activity.
 - `GET /recommendations` returns unrated, unwatched, unsaved catalog candidates ordered by the user's stronger rated media type, preferred genre matches, and streaming availability in the user's saved country.
+- `GET /discovery/popular` returns popular country-aware TMDB Discover results in the same row shape as search, with existing TVLore IDs hydrated when already resolved.
 - `GET /watch-paths` returns curated ordered viewing paths, and `GET /watch-paths/:pathId` returns path items with existing TVLore IDs plus per-user watchlist saved state when already resolved.
 - `POST /watch-paths/:pathId/watchlist` resolves every path item and saves the resulting shows or movies to the authenticated user's watchlist.
 - `POST /shows/:showId/watches` hydrates the show seasons, marks every episode watched, and returns completed show progress.
@@ -879,6 +880,8 @@ Search
 -> GET /search
 -> GET /recommendations
 -> Recommended picks route for the full recommendation list
+-> GET /discovery/popular
+-> Popular in your country route for contextual country-aware discovery
 -> POST /catalog/resolve
 -> Show or movie detail route
 -> GET /shows/:id or GET /movies/:id
@@ -914,7 +917,7 @@ Current behavior:
 - Library shows continue-watching and recently watched rows when the backend has watched data.
 - Library shows saved watchlist rows when the backend has watchlist data.
 - Library shows rated show/movie rows when the backend has title-level rating preference data. Episode ratings live on episode detail for now.
-- Search shows a `Recommended picks` entry when the backend has eligible catalog candidates; the dedicated recommendations route shows the full list. Availability is intentionally shown only after opening a title detail.
+- Search shows a `Recommended picks` entry when the backend has eligible catalog candidates; the dedicated recommendations route shows the full list. Search also shows `Popular in your country`, backed by TMDB Discover and the user's saved availability country. Availability is intentionally shown only after opening a title detail.
 - Recommendation row copy can explain simple genre overlap, such as "Because you like Drama", from backend-provided preferred genres and item genres.
 - Recommendation rows open the matching show or movie detail screen; watchlist actions stay on the detail screen.
 - Library can filter from its summary cards between Cronologia, continuing shows, recently watched movies, watched episodes grouped by show and season, saved titles, and rated titles. Cronologia shows paginated watched movies and episodes by date.
