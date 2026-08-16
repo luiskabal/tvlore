@@ -59,6 +59,29 @@ export const styles = StyleSheet.create({
   list: {
     gap: 10,
   },
+  formActionsRow: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: ui.space.md,
+  },
+  formPanel: {
+    backgroundColor: ui.color.panel,
+    borderColor: ui.color.border,
+    borderRadius: ui.radius.md,
+    borderWidth: 1,
+    gap: ui.space.md,
+    padding: ui.space.xl,
+  },
+  input: {
+    backgroundColor: ui.color.panel,
+    borderColor: ui.color.border,
+    borderRadius: ui.radius.md,
+    borderWidth: 1,
+    color: ui.color.ink,
+    fontSize: 16,
+    paddingHorizontal: ui.space.lg,
+    paddingVertical: ui.space.md,
+  },
   pathCard: {
     backgroundColor: ui.color.panel,
     borderColor: ui.color.border,
@@ -66,6 +89,19 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     gap: 8,
     padding: ui.space.xl,
+  },
+  pathHeaderRow: {
+    alignItems: "flex-start",
+    flexDirection: "row",
+    gap: ui.space.md,
+    justifyContent: "space-between",
+  },
+  pathTitle: {
+    flex: 1,
+  },
+  multilineInput: {
+    minHeight: 110,
+    textAlignVertical: "top",
   },
   pressed: {
     opacity: 0.72,

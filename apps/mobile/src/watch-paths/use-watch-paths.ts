@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { getWatchPath, getWatchPaths, type WatchPathDetailResponse, type WatchPathSummary } from "../api/tvlore-api";
+import {
+  createWatchPath,
+  getWatchPath,
+  getWatchPaths,
+  type CreateWatchPathInput,
+  type WatchPathDetailResponse,
+  type WatchPathSummary,
+} from "../api/tvlore-api";
 import { getSupabaseAccessToken } from "../auth/supabase-auth";
 import { prefetchCatalogDetails } from "../catalog/prefetch";
 
@@ -14,10 +21,16 @@ export type WatchPathState =
   | { kind: "ready"; path: WatchPathDetailResponse }
   | { kind: "error"; message: string };
 
+export type CreateWatchPathState =
+  | { kind: "idle" }
+  | { kind: "loading" }
+  | { kind: "error"; message: string };
+
 const pathPrefetchLimit = 2;
 
 export function useWatchPaths() {
   const [state, setState] = useState<WatchPathsState>({ kind: "loading" });
+  const [createState, setCreateState] = useState<CreateWatchPathState>({ kind: "idle" });
 
   const refresh = useCallback(async () => {
     setState({ kind: "loading" });
@@ -39,7 +52,33 @@ export function useWatchPaths() {
     void refresh();
   }, [refresh]);
 
-  return { refresh, state };
+  const createPath = useCallback(async (input: CreateWatchPathInput) => {
+    setCreateState({ kind: "loading" });
+
+    try {
+      const token = await getSupabaseAccessToken();
+      const path = await createWatchPath(token, input);
+      setState((current) => current.kind === "ready"
+        ? { kind: "ready", paths: [toSummary(path), ...current.paths.filter((item) => item.id !== path.id)] }
+        : current);
+      setCreateState({ kind: "idle" });
+
+      return path;
+    } catch (error) {
+      setCreateState({
+        kind: "error",
+        message: error instanceof Error ? error.message : "Could not create watch path",
+      });
+
+      return null;
+    }
+  }, []);
+
+  const resetCreateState = useCallback(() => {
+    setCreateState({ kind: "idle" });
+  }, []);
+
+  return { createPath, createState, refresh, resetCreateState, state };
 }
 
 export function useWatchPath(pathId: string | null) {
@@ -84,4 +123,14 @@ async function prefetchWatchPathDetails(accessToken: string | null, paths: Watch
   await Promise.allSettled(
     paths.slice(0, pathPrefetchLimit).map((path) => getWatchPath(accessToken, path.id)),
   );
+}
+
+function toSummary(path: WatchPathDetailResponse): WatchPathSummary {
+  return {
+    description: path.description,
+    id: path.id,
+    itemCount: path.itemCount,
+    source: path.source,
+    title: path.title,
+  };
 }

@@ -27,9 +27,10 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Episode detail screens opened from season episode rows.
 - Show detail progress state: not started, watching, or completed.
 - Country-aware `Where to watch` provider icons on show/movie detail using the user's saved country preference and TMDB Watch Providers.
-- Curated Watch Paths with backend-owned ordered viewing lists, including Marvel Infinity Saga and Star Wars Skywalker Saga.
-- Curated Watch Paths can be saved to the user's watchlist in one backend-owned action.
-- Curated Watch Path detail shows saved count and saved row state for the authenticated user.
+- Curated and user-owned Watch Paths with backend-owned ordered viewing lists, including Marvel Infinity Saga and Star Wars Skywalker Saga.
+- Mobile can create personal Watch Paths from simple TMDB import lines such as `movie,155` or `show,70523,optional note`.
+- Watch Paths can be saved to the user's watchlist in one backend-owned action.
+- Watch Path detail shows saved count and saved row state for the authenticated user.
 - Show-level mark all watched/unwatched backed by the API.
 - Season-level mark all watched/unwatched.
 - Personal show/movie watchlist.
@@ -66,7 +67,8 @@ Google login
 -> Search catalog
 -> Open show or movie
 -> Resolve catalog item
--> Open curated Watch Path
+-> Open curated or personal Watch Path
+-> Create a personal Watch Path from TMDB refs
 -> Resolve a path item on tap
 -> Save a full Watch Path to watchlist
 -> Save show or movie to watchlist
@@ -96,7 +98,7 @@ Use `corepack pnpm api:check` for local/Vercel HTTP smoke checks.
 ## Next Backlog Items
 
 - Refine recommendation quality with stronger taste signals after the provider/country baseline.
-- Add user-owned imported watch paths after approving persistence/schema shape.
+- Add fetched/import-assisted Watch Path creation from external list sources.
 
 ## Workspace Layout
 

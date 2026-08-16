@@ -149,6 +149,7 @@ export type WatchPathSummary = {
   description: string;
   id: string;
   itemCount: number;
+  source: "curated" | "user";
   title: string;
 };
 
@@ -178,6 +179,16 @@ export type WatchPathWatchlistResponse = {
   id: string;
   itemCount: number;
   savedItemCount: number;
+  title: string;
+};
+
+export type CreateWatchPathInput = {
+  description: string;
+  items: Array<{
+    externalRef: CatalogExternalRef;
+    mediaType: MediaType;
+    note?: string | null;
+  }>;
   title: string;
 };
 

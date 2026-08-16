@@ -1665,9 +1665,9 @@ Errors: `UNAUTHORIZED`.
 
 ### `GET /watch-paths`
 
-Purpose: return backend-owned curated viewing paths for the authenticated user.
+Purpose: return backend-owned curated and personal viewing paths for the authenticated user.
 
-Current MVP status: implemented with static curated paths and no user-owned persistence.
+Current MVP status: implemented with static curated paths and user-owned persisted paths.
 
 Auth: required.
 
@@ -1686,7 +1686,8 @@ Response:
       "id": "mcu-infinity-saga-release",
       "title": "Marvel Infinity Saga",
       "description": "MCU Phase 1-3 in theatrical release order.",
-      "itemCount": 23
+      "itemCount": 23,
+      "source": "curated"
     }
   ]
 }
@@ -1694,20 +1695,64 @@ Response:
 
 Status codes: `200 OK`, `401 UNAUTHORIZED`.
 
-Authorization: paths are currently shared curated data, but the endpoint still requires auth so the product surface stays aligned with the authenticated app.
+Authorization: curated paths are shared. User paths are returned only for the authenticated owner.
 
 Business validation:
 
 - The backend owns the curated path definitions.
-- Mobile does not persist, sort, or mutate path definitions.
+- The backend owns user path persistence.
+- Mobile does not sort or mutate path definitions locally.
 
 Errors: `UNAUTHORIZED`.
 
+### `POST /watch-paths`
+
+Purpose: create a user-owned viewing path from ordered TMDB refs.
+
+Current MVP status: implemented with simple manual import input.
+
+Auth: required.
+
+Request:
+
+```json
+{
+  "title": "Nolan Batman",
+  "description": "The Dark Knight trilogy in release order.",
+  "items": [
+    {
+      "mediaType": "movie",
+      "note": "Start here",
+      "externalRef": {
+        "provider": "tmdb",
+        "providerId": "272"
+      }
+    }
+  ]
+}
+```
+
+Response: same shape as `GET /watch-paths/:pathId`.
+
+Status codes: `201 CREATED`, `400 BAD_REQUEST`, `401 UNAUTHORIZED`.
+
+Authorization: created paths belong to the authenticated user.
+
+Business validation:
+
+- `title` is required.
+- At least one item is required.
+- Items must use `mediaType` `show` or `movie`.
+- Items currently support TMDB refs only.
+- The backend hydrates missing title, poster, and year before persisting the path.
+
+Errors: `BAD_REQUEST`, `UNAUTHORIZED`.
+
 ### `GET /watch-paths/:pathId`
 
-Purpose: return one curated viewing path with ordered provider-backed items.
+Purpose: return one curated or user-owned viewing path with ordered provider-backed items.
 
-Current MVP status: implemented for Marvel Infinity Saga and Star Wars Skywalker Saga.
+Current MVP status: implemented for curated paths and authenticated user-owned paths.
 
 Auth: required.
 
@@ -1727,6 +1772,7 @@ Response:
   "title": "Marvel Infinity Saga",
   "description": "MCU Phase 1-3 in theatrical release order.",
   "itemCount": 23,
+  "source": "curated",
   "savedItemCount": 1,
   "items": [
     {
@@ -1750,11 +1796,11 @@ Response:
 
 Status codes: `200 OK`, `401 UNAUTHORIZED`, `404 NOT_FOUND`.
 
-Authorization: authenticated users may read curated paths.
+Authorization: authenticated users may read curated paths. User-owned paths are readable only by the owner.
 
 Business validation:
 
-- Unknown path IDs return `WATCH_PATH_NOT_FOUND`.
+- Unknown path IDs and user paths owned by another user return `WATCH_PATH_NOT_FOUND`.
 - `tvloreId` is populated only when TVLore already has a resolved catalog row for the item's provider ref.
 - `savedItemCount` and each item's `inWatchlist` are calculated for the authenticated user from existing watchlist rows.
 - If `tvloreId` is null, the client opens the item by calling `POST /catalog/resolve` with the item's TMDB ref.
@@ -1763,9 +1809,9 @@ Errors: `WATCH_PATH_NOT_FOUND`, `UNAUTHORIZED`.
 
 ### `POST /watch-paths/:pathId/watchlist`
 
-Purpose: resolve every item in a curated path and save each show or movie to the authenticated user's watchlist.
+Purpose: resolve every item in a path and save each show or movie to the authenticated user's watchlist.
 
-Current MVP status: implemented for curated backend-owned paths.
+Current MVP status: implemented for curated and user-owned backend-owned paths.
 
 Auth: required.
 
@@ -1790,7 +1836,7 @@ Response:
 
 Status codes: `200 OK`, `401 UNAUTHORIZED`, `404 NOT_FOUND`.
 
-Authorization: authenticated users may save curated paths to their own watchlist.
+Authorization: authenticated users may save curated paths and their own user-owned paths to their own watchlist.
 
 Business validation:
 

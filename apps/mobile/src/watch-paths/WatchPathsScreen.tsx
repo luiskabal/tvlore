@@ -1,13 +1,54 @@
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Pressable, SafeAreaView, ScrollView, View } from "react-native";
+import { useState } from "react";
+import { Pressable, SafeAreaView, ScrollView, TextInput, View } from "react-native";
 
-import { AppText, Button, Skeleton } from "../ui";
+import type { CreateWatchPathInput } from "../api/tvlore-api";
+import { AppText, Badge, Button, Skeleton } from "../ui";
 import { styles } from "./watch-paths-styles";
+import { parseWatchPathImport } from "./watch-paths-model";
 import { useWatchPaths } from "./use-watch-paths";
 
 export default function WatchPathsScreen() {
-  const { refresh, state } = useWatchPaths();
+  const { createPath, createState, refresh, resetCreateState, state } = useWatchPaths();
+  const [isCreateOpen, setCreateOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [itemsText, setItemsText] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
+  const isCreating = createState.kind === "loading";
+
+  const closeCreate = () => {
+    setCreateOpen(false);
+    setFormError(null);
+    resetCreateState();
+  };
+
+  const submitCreate = async () => {
+    setFormError(null);
+    resetCreateState();
+
+    let input: CreateWatchPathInput;
+
+    try {
+      input = parseWatchPathImport(title, description, itemsText);
+    } catch (error) {
+      setFormError(error instanceof Error ? error.message : "Invalid path import");
+      return;
+    }
+
+    const path = await createPath(input);
+
+    if (!path) {
+      return;
+    }
+
+    setTitle("");
+    setDescription("");
+    setItemsText("");
+    closeCreate();
+    router.push({ pathname: "/paths/[id]", params: { id: path.id } });
+  };
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -16,7 +57,59 @@ export default function WatchPathsScreen() {
         <View style={styles.header}>
           <AppText style={styles.title}>Paths</AppText>
           <AppText tone="muted">Follow curated watch orders without rebuilding the list yourself.</AppText>
+          <Button
+            label={isCreateOpen ? "Cancel" : "New path"}
+            onPress={() => {
+              if (isCreateOpen) {
+                closeCreate();
+                return;
+              }
+
+              setCreateOpen(true);
+            }}
+            size="small"
+            variant={isCreateOpen ? "secondary" : "primary"}
+          />
         </View>
+
+        {isCreateOpen ? (
+          <View style={styles.formPanel}>
+            <TextInput
+              autoCapitalize="words"
+              onChangeText={setTitle}
+              placeholder="Path title"
+              style={styles.input}
+              value={title}
+            />
+            <TextInput
+              onChangeText={setDescription}
+              placeholder="Description"
+              style={styles.input}
+              value={description}
+            />
+            <TextInput
+              autoCapitalize="none"
+              autoCorrect={false}
+              multiline
+              onChangeText={setItemsText}
+              placeholder={"movie,155\nshow,70523"}
+              style={[styles.input, styles.multilineInput]}
+              value={itemsText}
+            />
+            {formError ? <AppText tone="danger">{formError}</AppText> : null}
+            {createState.kind === "error" ? <AppText tone="danger">{createState.message}</AppText> : null}
+            <View style={styles.formActionsRow}>
+              <Button
+                disabled={isCreating}
+                isLoading={isCreating}
+                label="Create"
+                loadingLabel="Creating"
+                onPress={submitCreate}
+                size="small"
+              />
+            </View>
+          </View>
+        ) : null}
 
         {state.kind === "loading" ? <WatchPathsSkeleton /> : null}
 
@@ -37,7 +130,10 @@ export default function WatchPathsScreen() {
                 onPress={() => router.push({ pathname: "/paths/[id]", params: { id: path.id } })}
                 style={({ pressed }) => [styles.pathCard, pressed ? styles.pressed : null]}
               >
-                <AppText variant="section">{path.title}</AppText>
+                <View style={styles.pathHeaderRow}>
+                  <AppText style={styles.pathTitle} variant="section">{path.title}</AppText>
+                  <Badge label={path.source === "user" ? "Yours" : "Curated"} tone={path.source === "user" ? "accent" : "neutral"} />
+                </View>
                 <AppText tone="muted">{path.description}</AppText>
                 <AppText tone="accent" variant="caption">{path.itemCount} titles</AppText>
               </Pressable>

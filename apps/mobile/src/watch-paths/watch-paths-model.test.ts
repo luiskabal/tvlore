@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { WatchPathItem } from "../api/tvlore-api";
-import { getWatchPathItemKey, toCatalogSearchResult } from "./watch-paths-model";
+import { getWatchPathItemKey, parseWatchPathImport, toCatalogSearchResult } from "./watch-paths-model";
 
 describe("watch paths model", () => {
   it("builds stable item keys from provider refs", () => {
@@ -18,6 +18,24 @@ describe("watch paths model", () => {
       tvloreId: null,
       year: 2008,
     });
+  });
+
+  it("parses a simple TMDB import list", () => {
+    expect(parseWatchPathImport("Dark list", "", "movie,155\nshow,70523,Watch after dinner")).toEqual({
+      description: "Personal watch path.",
+      items: [
+        { externalRef: { provider: "tmdb", providerId: "155" }, mediaType: "movie", note: null },
+        { externalRef: { provider: "tmdb", providerId: "70523" }, mediaType: "show", note: "Watch after dinner" },
+      ],
+      title: "Dark list",
+    });
+  });
+
+  it("rejects invalid import lines", () => {
+    expect(() => parseWatchPathImport("", "", "movie,155")).toThrow("Path title is required");
+    expect(() => parseWatchPathImport("Bad", "", "")).toThrow("Add at least one TMDB item");
+    expect(() => parseWatchPathImport("Bad", "", "book,155")).toThrow("Invalid media type");
+    expect(() => parseWatchPathImport("Bad", "", "movie,0")).toThrow("Invalid TMDB id");
   });
 });
 

@@ -10,7 +10,7 @@ No active infrastructure tasks.
 
 - [x] Split `CatalogDetailContent.tsx` into focused detail subcomponents when the next detail UX feature touches it.
 - [x] Move pure catalog response mappers out of `CatalogRepository` when catalog persistence is next edited.
-- [ ] Add user-owned imported or fetched watch paths after approving persistence/schema shape.
+- [ ] Add fetched/import-assisted Watch Path creation from external list sources.
 - [ ] Add a TVLore-native recommendation engine with house rules, explicit taste signals, availability, and explainable reasons.
 - [ ] Expand post-watch check-in to episode-level reflections after approving persistence/schema shape: reaction tags, favorite character, and optional comment.
 - [ ] Design watch reflection persistence separately from watched state and rating preferences before storing reactions, favorite characters, or comments.
@@ -33,7 +33,8 @@ No active infrastructure tasks.
 - TVLore-native recommendations should stay explainable before adding opaque ML or collaborative filtering.
 - Personalized recommendations belong in Search for now. Library should stay focused on user-owned watched, saved, rated, and in-progress content; Profile should stay focused on identity, stats, and account controls.
 - Cronologia uses a backend-owned paginated endpoint and loads more history as the user scrolls near the end.
-- Curated watch paths should support movies and shows in one ordered list, keep source/provenance, and resolve items into TVLore catalog IDs only when the user opens or saves the list.
+- Watch Paths should support movies and shows in one ordered list, keep source/provenance, and resolve items into TVLore catalog IDs only when the user opens or saves the list.
+- User-owned Watch Paths are persisted by the backend. Mobile imports the minimal provider refs and notes; the backend hydrates title, poster, and year from TMDB before storing the list.
 - Where to Watch should stay backend-owned: provider API keys stay server-side, results are normalized by country, and mobile only renders availability badges/icons plus allowed attribution or links.
 - Start by evaluating TMDB Watch Providers because TVLore already resolves TMDB refs. It gives country-specific subscription/rent/buy/free provider data, but JustWatch attribution is required and TMDB does not return full deep links.
 - Evaluate Watchmode, JustWatch Partner API, or Streaming Availability API only if TVLore needs richer coverage, direct/deep links, episode-level availability, or better commercial terms.
@@ -127,6 +128,7 @@ No active infrastructure tasks.
 - [x] Add first backend-owned curated Watch Paths slice with Marvel and Star Wars paths.
 - [x] Let curated Watch Paths save every item to the user's watchlist in one backend-owned action.
 - [x] Show saved watchlist state inside curated Watch Path detail.
+- [x] Add user-owned imported Watch Paths after approving persistence/schema shape.
 - [x] Store the user's preferred availability country and render it with flag labels in mobile.
 - [x] Add episode-level rating preferences and mobile episode rating UI.
 - [x] Add backend-owned season-level mark all watched/unwatched and simplify the mobile season hook.

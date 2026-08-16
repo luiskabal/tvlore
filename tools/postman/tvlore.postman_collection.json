@@ -1995,7 +1995,7 @@
                   "  pm.response.to.have.status(200);",
                   "});",
                   "",
-                  "pm.test('response is curated watch paths', function () {",
+                  "pm.test('response is watch paths', function () {",
                   "  var body = pm.response.json();",
                   "  pm.expect(body.paths).to.be.an('array');",
                   "  pm.expect(body.paths.length).to.be.greaterThan(0);",
@@ -2004,7 +2004,75 @@
                   "    pm.expect(path.title).to.be.a('string');",
                   "    pm.expect(path.description).to.be.a('string');",
                   "    pm.expect(path.itemCount).to.be.a('number');",
+                  "    pm.expect(['curated', 'user']).to.include(path.source);",
                   "  });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /watch-paths",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "postman-{{$guid}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Postman imported path {{$timestamp}}\",\n  \"description\": \"Created from the TVLore Postman collection.\",\n  \"items\": [\n    {\n      \"mediaType\": \"movie\",\n      \"note\": \"Start here\",\n      \"externalRef\": {\n        \"provider\": \"tmdb\",\n        \"providerId\": \"155\"\n      }\n    },\n    {\n      \"mediaType\": \"show\",\n      \"note\": \"Then switch format\",\n      \"externalRef\": {\n        \"provider\": \"tmdb\",\n        \"providerId\": \"70523\"\n      }\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/watch-paths",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "watch-paths"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 201', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('response is user watch path detail', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.id).to.be.a('string');",
+                  "  pm.expect(body.source).to.eql('user');",
+                  "  pm.expect(body.itemCount).to.eql(2);",
+                  "  pm.expect(body.savedItemCount).to.eql(0);",
+                  "  pm.expect(body.items).to.be.an('array');",
+                  "  pm.expect(body.items.length).to.eql(2);",
+                  "  body.items.forEach(function (item) {",
+                  "    pm.expect(item.title).to.be.a('string');",
+                  "    pm.expect(item.externalRef.provider).to.eql('tmdb');",
+                  "    pm.expect(item.externalRef.providerId).to.be.a('string');",
+                  "  });",
+                  "  pm.environment.set('userWatchPathId', body.id);",
                   "});"
                 ]
               }
@@ -2055,6 +2123,7 @@
                   "  var body = pm.response.json();",
                   "  pm.expect(body.id).to.eql('mcu-infinity-saga-release');",
                   "  pm.expect(body.itemCount).to.eql(23);",
+                  "  pm.expect(body.source).to.eql('curated');",
                   "  pm.expect(body.savedItemCount).to.be.a('number');",
                   "  pm.expect(body.savedItemCount).to.be.at.least(0);",
                   "  pm.expect(body.savedItemCount).to.be.at.most(body.itemCount);",

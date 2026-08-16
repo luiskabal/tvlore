@@ -26,7 +26,8 @@ Implemented:
 - Authenticated rating preference endpoints for shows, movies, and episodes.
 - Authenticated personal library and show progress read endpoints.
 - Authenticated first-pass recommendation endpoint from stored ratings, hydrated catalog rows, persisted genre names, and country-aware streaming availability.
-- Authenticated curated Watch Paths endpoint with backend-owned ordered viewing lists.
+- Authenticated curated and user-owned Watch Paths endpoints with backend-owned ordered viewing lists.
+- Authenticated Watch Path creation endpoint that persists personal TMDB-ref lists for the user.
 - Authenticated Watch Path save-to-watchlist endpoint that resolves every path item and saves it for the user.
 - Authenticated Watch Path detail includes per-user saved count and item saved state.
 - Mobile Library/Profile routes read the authenticated user and personal library summary from the API.
@@ -63,9 +64,10 @@ Implemented:
 - Mobile Library applies optimistic row removal after swipe confirmation and rolls back on API error.
 - Mobile Library/Profile keep previous library data during refreshes and render skeletons on initial load.
 - Mobile has routed Library, Search, Paths, and Profile surfaces with persistent bottom app navigation.
-- Mobile Paths lists curated viewing orders and opens path items through the existing catalog resolve flow.
-- Mobile path detail can save a full curated path to watchlist in one action.
-- Mobile path detail rows render curated poster thumbnails.
+- Mobile Paths lists curated and personal viewing orders and opens path items through the existing catalog resolve flow.
+- Mobile Paths can create a personal path from simple TMDB import lines.
+- Mobile path detail can save a full path to watchlist in one action.
+- Mobile path detail rows render poster thumbnails.
 - Postman collection and local/Vercel environments.
 - Environment validation for local and Vercel.
 - Backend unit tests with Vitest.
@@ -187,7 +189,7 @@ Current backend modules:
 - `users`: resolves the authenticated Supabase user into a TVLore user.
 - `catalog`: searches TMDB, resolves TMDB items, and persists TVLore catalog IDs.
 - `preferences`: stores explicit per-user ratings for shows, movies, and episodes.
-- `watch-paths`: exposes backend-owned curated viewing lists, hydrates existing TVLore IDs, and marks item saved state for the authenticated user.
+- `watch-paths`: exposes backend-owned curated and user-owned viewing lists, persists imported user paths, hydrates existing TVLore IDs, and marks item saved state for the authenticated user.
 - `health`: verifies API and database availability.
 - `config`: loads and validates environment variables at startup.
 
@@ -831,6 +833,7 @@ Search
 
 Paths
 -> GET /watch-paths
+-> POST /watch-paths when the user creates a personal path
 -> GET /watch-paths/:pathId
 -> POST /watch-paths/:pathId/watchlist when the user saves the full path
 -> Tap path item
@@ -856,7 +859,8 @@ Current behavior:
 - Episode groups keep each season collapsible so long watched histories stay scannable.
 - Library rows include compact poster thumbnails for quicker visual scanning.
 - Continue-watching rows open the next season, recently watched movies open movie detail, and recently watched episodes open the matching season.
-- Paths lists curated viewing orders such as Marvel Infinity Saga and Star Wars Skywalker Saga.
+- Paths lists curated viewing orders such as Marvel Infinity Saga and Star Wars Skywalker Saga, plus personal paths created by the authenticated user.
+- Paths can create a personal list from TMDB import lines such as `movie,155` or `show,70523,optional note`.
 - Path detail rows navigate by tapping the full row and resolve the selected item into TVLore identity only when needed.
 - Path detail can save all path titles into the user's watchlist through one backend-owned bulk action.
 - Path detail shows how many path titles are already saved and marks saved rows.

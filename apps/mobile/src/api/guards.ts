@@ -193,6 +193,7 @@ function isWatchPathSummary(value: unknown): value is WatchPathSummary {
     typeof value.description === "string" &&
     typeof value.id === "string" &&
     typeof value.itemCount === "number" &&
+    (value.source === "curated" || value.source === "user") &&
     typeof value.title === "string"
   );
 }

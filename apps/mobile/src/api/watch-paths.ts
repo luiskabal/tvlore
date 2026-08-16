@@ -1,6 +1,6 @@
 import { fetchCachedJson, fetchMutationJson, getAuthHeaders } from "./client";
 import { isWatchPathDetailResponse, isWatchPathsResponse, isWatchPathWatchlistResponse } from "./guards";
-import type { WatchPathDetailResponse, WatchPathsResponse, WatchPathWatchlistResponse } from "./types";
+import type { CreateWatchPathInput, WatchPathDetailResponse, WatchPathsResponse, WatchPathWatchlistResponse } from "./types";
 
 export async function getWatchPaths(accessToken: string | null): Promise<WatchPathsResponse> {
   return fetchCachedJson(
@@ -17,6 +17,25 @@ export async function getWatchPath(accessToken: string | null, pathId: string): 
     isWatchPathDetailResponse,
     "Unexpected watch path response",
     { headers: getAuthHeaders(accessToken) },
+  );
+}
+
+export async function createWatchPath(
+  accessToken: string | null,
+  input: CreateWatchPathInput,
+): Promise<WatchPathDetailResponse> {
+  return fetchMutationJson(
+    "/watch-paths",
+    isWatchPathDetailResponse,
+    "Unexpected create watch path response",
+    {
+      body: JSON.stringify(input),
+      headers: {
+        ...getAuthHeaders(accessToken),
+        "content-type": "application/json",
+      },
+      method: "POST",
+    },
   );
 }
 

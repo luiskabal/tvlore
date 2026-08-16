@@ -338,6 +338,8 @@ Watch Paths use the same boundary:
 WatchPathsScreen
   -> useWatchPaths()
   -> GET /watch-paths
+  -> optional create form
+  -> POST /watch-paths
   -> WatchPathDetailScreen
   -> useWatchPath(pathId)
   -> GET /watch-paths/:pathId
@@ -350,10 +352,11 @@ WatchPathsScreen
   -> notify Library data changed
 ```
 
-The app does not persist or rank curated paths locally. It renders
-backend-owned ordered lists and per-user saved state, then resolves catalog
-identity only when the user opens an item or asks the backend to save the whole
-path to watchlist.
+The app does not persist or rank paths locally. It renders backend-owned ordered
+lists and per-user saved state. For personal paths, mobile parses simple import
+lines into TMDB refs and sends them to `POST /watch-paths`; the backend hydrates
+and persists the path. Catalog identity is resolved only when the user opens an
+item or asks the backend to save the whole path to watchlist.
 `useWatchPaths` prefetches the first few path details after loading the path
 list. `useWatchPath` prefetches catalog detail reads for the first already
 resolved path items. It does not prefetch unresolved path items because
