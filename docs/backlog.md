@@ -10,6 +10,8 @@ No active infrastructure tasks.
 
 - [ ] Add user-owned imported or fetched watch paths after approving persistence/schema shape.
 - [ ] Add a TVLore-native recommendation engine with house rules, explicit taste signals, availability, and explainable reasons.
+- [ ] Add a post-watch check-in flow after marking episodes or movies watched: rating, reaction tags, favorite character, and optional comment.
+- [ ] Design watch reflection persistence separately from watched state and rating preferences before storing reactions, favorite characters, or comments.
 - [ ] Add a country-aware `Popular in your country` discovery section using the user's saved availability country.
 - [ ] Add a `TVLore Picks` / house-curated discovery section that is separate from personalized recommendations.
 - [ ] Add an `Available in your country` discovery section for streamable titles, separate from recommendation ranking.
@@ -21,6 +23,9 @@ No active infrastructure tasks.
 - Mobile cleanup should start with the largest screens: `SeasonDetailScreen`, `CatalogDetailScreen`, `SearchScreen`, then `HomeScreen`.
 - Keep the current screen -> hook -> API client boundary. The cleanup goal is readability, not a new state-management layer yet.
 - Ratings are explicit preference signals. Keep them separate from watched state so recommendations can use both later.
+- Post-watch check-in should never block `Watched`: save the watched state first, then open an optional skip-friendly flow.
+- Keep watched state, title-level rating preferences, and per-watch reflections as separate concepts so rewatches, comments, and recommendations do not fight the same row later.
+- Reaction tags, favorite-character picks, and comments need spoiler/privacy rules before they become persisted or social data.
 - First recommendations intentionally use hydrated catalog data, ratings, genres, and a small provider-availability boost. Improve quality only after storing stronger content signals.
 - Keep recommendation surfaces separate: personalized `For you`, contextual `Popular in your country`, utility `Available in your country`, and editorial `TVLore Picks`.
 - TVLore-native recommendations should stay explainable before adding opaque ML or collaborative filtering.
