@@ -37,6 +37,7 @@ export default function SeasonDetailScreen() {
           <SeasonContent
             onSetEpisodeWatched={setEpisodeWatched}
             onSetSeasonWatched={setSeasonWatched}
+            onOpenEpisode={openEpisode}
             season={state.detail}
             showProgress={state.showProgress}
             watchAction={watchAction}
@@ -45,6 +46,13 @@ export default function SeasonDetailScreen() {
       </ScrollView>
     </SafeAreaView>
   );
+}
+
+function openEpisode(episodeId: string) {
+  router.push({
+    pathname: "/episodes/[id]",
+    params: { id: episodeId },
+  });
 }
 
 function parseSeasonNumber(value: string) {

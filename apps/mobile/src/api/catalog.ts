@@ -2,6 +2,7 @@ import { fetchCachedJson, fetchJson, fetchMutationJson, getAuthHeaders } from ".
 import {
   isCatalogResolveResponse,
   isCatalogSearchResponse,
+  isEpisodeDetailResponse,
   isMovieDetailResponse,
   isShowDetailResponse,
   isShowSeasonDetailResponse,
@@ -12,6 +13,7 @@ import type {
   CatalogResolveResponse,
   CatalogSearchResponse,
   CatalogSearchResult,
+  EpisodeDetailResponse,
   MediaType,
   ShowSeasonDetailResponse,
   WatchProvidersResponse,
@@ -94,6 +96,18 @@ export async function getShowSeasonDetail(
     `/shows/${showId}/seasons/${seasonNumber}`,
     isShowSeasonDetailResponse,
     "Unexpected season detail response",
+    { headers: getAuthHeaders(accessToken) },
+  );
+}
+
+export async function getEpisodeDetail(
+  accessToken: string | null,
+  episodeId: string,
+): Promise<EpisodeDetailResponse> {
+  return fetchCachedJson(
+    `/episodes/${episodeId}`,
+    isEpisodeDetailResponse,
+    "Unexpected episode detail response",
     { headers: getAuthHeaders(accessToken) },
   );
 }

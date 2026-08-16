@@ -41,6 +41,7 @@ POST /catalog/resolve
 GET /shows/:showId
 GET /shows/:showId/seasons
 GET /shows/:showId/seasons/:seasonNumber
+GET /episodes/:episodeId
 GET /movies/:movieId
 POST /episodes/:episodeId/watches
 DELETE /episodes/:episodeId/watches
@@ -65,7 +66,8 @@ POST /watch-paths/:pathId/watchlist
 `POST /catalog/resolve` validates a Supabase Auth bearer token, fetches TMDB details, and upserts an internal show or movie ID plus TMDB public rating metadata.
 Show and movie detail endpoints read internal TVLore IDs. Show detail also
 returns progress for episodes already persisted in TVLore. Season detail fetches
-and persists TMDB episodes for the requested season. Watch endpoints store
+and persists TMDB episodes for the requested season. Episode detail reads one
+persisted episode with show/season context. Watch endpoints store
 per-user watched state, watchlist endpoints store saved intent, and
 library/progress endpoints read the authenticated user's viewing state.
 
@@ -246,6 +248,7 @@ the selected Postman environment.
 - `POST /catalog/resolve` persists provider-backed shows/movies into TVLore IDs with TMDB public ratings.
 - Show/movie detail endpoints read catalog records by internal TVLore IDs.
 - Season detail persists episode records for the requested season.
+- Episode detail reads persisted episode records with show/season context.
 - Watch/unwatch endpoints store authenticated movie and episode state.
 - Watchlist endpoints store authenticated show/movie saved intent.
 - `GET /library` feeds the mobile home library summary.

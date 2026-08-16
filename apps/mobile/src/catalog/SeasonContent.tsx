@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 
 import type { ShowEpisode, ShowProgressResponse, ShowSeasonDetailResponse } from "../api/tvlore-api";
 import { AppText, Button, Skeleton, StillImage } from "../ui";
@@ -9,12 +9,14 @@ import type { EpisodeWatchActionState } from "./use-season-detail";
 export function SeasonContent({
   onSetEpisodeWatched,
   onSetSeasonWatched,
+  onOpenEpisode,
   season,
   showProgress,
   watchAction,
 }: {
   onSetEpisodeWatched: (episodeId: string, watched: boolean) => void;
   onSetSeasonWatched: (watched: boolean) => void;
+  onOpenEpisode: (episodeId: string) => void;
   season: ShowSeasonDetailResponse;
   showProgress: ShowProgressResponse | null;
   watchAction: EpisodeWatchActionState;
@@ -33,6 +35,7 @@ export function SeasonContent({
 
       <EpisodeList
         episodes={season.episodes}
+        onOpenEpisode={onOpenEpisode}
         onSetEpisodeWatched={onSetEpisodeWatched}
         watchAction={watchAction}
       />
@@ -84,10 +87,12 @@ export function SeasonDetailSkeleton() {
 
 function EpisodeList({
   episodes,
+  onOpenEpisode,
   onSetEpisodeWatched,
   watchAction,
 }: {
   episodes: ShowEpisode[];
+  onOpenEpisode: (episodeId: string) => void;
   onSetEpisodeWatched: (episodeId: string, watched: boolean) => void;
   watchAction: EpisodeWatchActionState;
 }) {
@@ -106,6 +111,7 @@ function EpisodeList({
         <EpisodeRow
           episode={episode}
           key={episode.id}
+          onOpenEpisode={onOpenEpisode}
           onSetWatched={onSetEpisodeWatched}
           watchAction={watchAction}
         />
@@ -163,10 +169,12 @@ function SeasonBulkPanel({
 
 function EpisodeRow({
   episode,
+  onOpenEpisode,
   onSetWatched,
   watchAction,
 }: {
   episode: ShowEpisode;
+  onOpenEpisode: (episodeId: string) => void;
   onSetWatched: (episodeId: string, watched: boolean) => void;
   watchAction: EpisodeWatchActionState;
 }) {
@@ -176,7 +184,11 @@ function EpisodeRow({
     : null;
 
   return (
-    <View style={styles.episodeRow}>
+    <Pressable
+      accessibilityRole="button"
+      onPress={() => onOpenEpisode(episode.id)}
+      style={({ pressed }) => [styles.episodeRow, pressed ? styles.pressedEpisodeRow : null]}
+    >
       <StillImage
         label={`E${episode.episodeNumber}`}
         uri={episode.stillPath ? getTmdbPosterUrl(episode.stillPath) : null}
@@ -204,7 +216,7 @@ function EpisodeRow({
           variant={episode.watched ? "secondary" : "primary"}
         />
       </View>
-    </View>
+    </Pressable>
   );
 }
 

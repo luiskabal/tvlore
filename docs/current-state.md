@@ -19,6 +19,7 @@ Implemented:
 - Authenticated show/movie watch-provider availability endpoints by country.
 - Season list and season detail endpoints for shows.
 - Episode catalog persistence when a season is opened.
+- Episode detail endpoint by internal TVLore episode ID.
 - Authenticated watch/unwatch endpoints for episodes and movies.
 - Authenticated show-level watch/unwatch endpoint that hydrates seasons and updates all episode watches for the show.
 - Authenticated watchlist endpoints for shows and movies.
@@ -31,10 +32,12 @@ Implemented:
 - Mobile Library/Profile routes read the authenticated user and personal library summary from the API.
 - Mobile search resolves provider results and opens backend-owned show/movie detail screens.
 - Mobile show detail opens backend-owned season episode lists.
-- Mobile search result rows and show season rows navigate by tapping the full row.
+- Mobile season episode rows open backend-owned episode detail screens.
+- Mobile search result rows, show season rows, and season episode rows navigate by tapping the full row.
 - Mobile show detail displays backend-owned progress state for persisted episodes.
 - Mobile season detail can mark episodes watched or unwatched.
 - Mobile season detail can mark all loaded season episodes watched or unwatched.
+- Mobile episode detail can mark an episode watched or unwatched.
 - Mobile show detail can mark the full show watched or unwatched through one backend-owned bulk action.
 - Mobile show/movie detail can add or remove a title from the watchlist.
 - Mobile show/movie detail can rate or clear a rating preference for a title.

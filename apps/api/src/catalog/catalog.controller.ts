@@ -4,6 +4,7 @@ import { CatalogService } from "./catalog.service";
 import type {
   CatalogResolveResponseDto,
   CatalogSearchResponseDto,
+  EpisodeDetailResponseDto,
   MovieDetailResponseDto,
   ShowDetailResponseDto,
   ShowSeasonDetailResponseDto,
@@ -76,6 +77,19 @@ export class ShowsController {
     @Param("seasonNumber") seasonNumber: string | undefined,
   ): Promise<ShowSeasonDetailResponseDto> {
     return this.catalogService.getShowSeason(authorizationHeader, showId, seasonNumber);
+  }
+}
+
+@Controller("episodes")
+export class EpisodesController {
+  constructor(private readonly catalogService: CatalogService) {}
+
+  @Get(":episodeId")
+  getEpisode(
+    @Headers("authorization") authorizationHeader: string | undefined,
+    @Param("episodeId") episodeId: string | undefined,
+  ): Promise<EpisodeDetailResponseDto> {
+    return this.catalogService.getEpisode(authorizationHeader, episodeId);
   }
 }
 

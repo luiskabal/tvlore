@@ -24,6 +24,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Season detail screen with backend-owned episode IDs.
 - Movie watched/unwatched tracking.
 - Episode watched/unwatched tracking.
+- Episode detail screens opened from season episode rows.
 - Show detail progress state: not started, watching, or completed.
 - Country-aware `Where to watch` provider icons on show/movie detail using the user's saved country preference and TMDB Watch Providers.
 - Curated Watch Paths with backend-owned ordered viewing lists, including Marvel Infinity Saga and Star Wars Skywalker Saga.

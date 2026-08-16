@@ -3,6 +3,7 @@ import type {
   CatalogSearchResponse,
   CatalogSearchResult,
   ContinueWatchingShow,
+  EpisodeDetailResponse,
   EpisodeWatchResponse,
   LibraryChronologyResponse,
   LibraryRatedTitle,
@@ -288,6 +289,22 @@ export function isShowSeasonDetailResponse(value: unknown): value is ShowSeasonD
     typeof candidate.showId === "string" &&
     Array.isArray(candidate.episodes) &&
     candidate.episodes.every(isShowEpisode)
+  );
+}
+
+export function isEpisodeDetailResponse(value: unknown): value is EpisodeDetailResponse {
+  if (!isShowEpisode(value)) {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  return (
+    typeof candidate.seasonId === "string" &&
+    typeof candidate.seasonTitle === "string" &&
+    typeof candidate.showId === "string" &&
+    isNullableString(candidate.showPosterPath) &&
+    typeof candidate.showTitle === "string"
   );
 }
 

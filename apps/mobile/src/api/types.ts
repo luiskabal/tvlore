@@ -209,6 +209,14 @@ export type ShowSeasonDetailResponse = ShowSeasonSummary & {
   showId: string;
 };
 
+export type EpisodeDetailResponse = ShowEpisode & {
+  seasonId: string;
+  seasonTitle: string;
+  showId: string;
+  showPosterPath: string | null;
+  showTitle: string;
+};
+
 export type ShowDetailResponse = {
   backdropPath: string | null;
   firstAirDate: string | null;

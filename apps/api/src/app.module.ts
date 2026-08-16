@@ -1,7 +1,7 @@
 import { MiddlewareConsumer, Module } from "@nestjs/common";
 
 import { SupabaseAuthService } from "./auth/supabase-auth.service";
-import { CatalogController, CatalogResolveController, MoviesController, ShowsController } from "./catalog/catalog.controller";
+import { CatalogController, CatalogResolveController, EpisodesController, MoviesController, ShowsController } from "./catalog/catalog.controller";
 import { CatalogRepository } from "./catalog/catalog.repository";
 import { CatalogService } from "./catalog/catalog.service";
 import { TmdbClient } from "./catalog/tmdb-client";
@@ -38,6 +38,7 @@ import { WatchPathsService } from "./watch-paths/watch-paths.service";
     UsersController,
     CatalogController,
     CatalogResolveController,
+    EpisodesController,
     ShowsController,
     MoviesController,
     EpisodeTrackingController,

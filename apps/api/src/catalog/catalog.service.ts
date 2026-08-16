@@ -8,6 +8,7 @@ import { parseWatchCountry } from "./catalog-watch-providers";
 import type {
   CatalogResolveResponseDto,
   CatalogSearchResponseDto,
+  EpisodeDetailResponseDto,
   MovieDetailResponseDto,
   ShowDetailResponseDto,
   ShowSeasonDetailResponseDto,
@@ -164,6 +165,21 @@ export class CatalogService {
     }
 
     return storedSeason;
+  }
+
+  async getEpisode(
+    authorizationHeader: string | undefined,
+    episodeId: string | undefined,
+  ): Promise<EpisodeDetailResponseDto> {
+    const user = await this.usersService.getMe(authorizationHeader);
+    const parsedEpisodeId = parseTvloreId(episodeId, "episodeId");
+    const episode = await this.catalogRepository.findEpisodeDetail(parsedEpisodeId, user.id);
+
+    if (!episode) {
+      throwNotFound("EPISODE_NOT_FOUND", "Episode was not found");
+    }
+
+    return episode;
   }
 
   private async refreshShowPublicRating(showId: string, userId: string, show: ShowDetailResponseDto) {

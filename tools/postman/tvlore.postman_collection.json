@@ -1052,6 +1052,60 @@
           ]
         },
         {
+          "name": "GET /episodes/:episodeId",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "postman-{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/episodes/{{resolvedEpisodeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "episodes",
+                "{{resolvedEpisodeId}}"
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('response is episode detail', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.id).to.eql(pm.environment.get('resolvedEpisodeId'));",
+                  "  pm.expect(body.showId).to.eql(pm.environment.get('resolvedShowId'));",
+                  "  pm.expect(body.showTitle).to.be.a('string');",
+                  "  pm.expect(body.seasonTitle).to.be.a('string');",
+                  "  pm.expect(body.watched).to.be.a('boolean');",
+                  "  pm.expect(body.watchCount).to.be.a('number');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "POST /episodes/:episodeId/watches",
           "request": {
             "method": "POST",

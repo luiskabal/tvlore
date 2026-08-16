@@ -132,6 +132,14 @@ export type ShowSeasonDetailResponseDto = ShowSeasonSummaryDto & {
   showId: string;
 };
 
+export type EpisodeDetailResponseDto = ShowEpisodeDto & {
+  seasonId: string;
+  seasonTitle: string;
+  showId: string;
+  showPosterPath: string | null;
+  showTitle: string;
+};
+
 export type WatchProviderDto = {
   id: number;
   logoPath: string | null;

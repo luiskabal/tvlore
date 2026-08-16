@@ -619,6 +619,64 @@ Business validation:
 
 Errors: `SHOW_NOT_FOUND`, `SEASON_NOT_FOUND`, `VALIDATION_FAILED`.
 
+### `GET /episodes/:episodeId`
+
+Purpose: return one persisted episode with show/season context and the authenticated user's watch state.
+
+Current MVP status: implemented from internal TVLore episode records.
+
+Auth: required.
+
+Route parameters:
+
+- `episodeId` UUID.
+
+Query parameters: none.
+
+Request: none.
+
+Response:
+
+```json
+{
+  "id": "uuid",
+  "showId": "uuid",
+  "showTitle": "Dark",
+  "showPosterPath": "/poster.jpg",
+  "seasonId": "uuid",
+  "seasonTitle": "Season 1",
+  "seasonNumber": 1,
+  "episodeNumber": 1,
+  "title": "Secrets",
+  "overview": "A first episode.",
+  "stillPath": "/still.jpg",
+  "airDate": "2017-12-01",
+  "runtimeMinutes": 52,
+  "watched": true,
+  "watchCount": 1,
+  "lastWatchedAt": "2026-08-09T00:00:00.000Z"
+}
+```
+
+Status codes:
+
+- `200 OK`
+- `400 BAD_REQUEST`
+- `401 UNAUTHORIZED`
+- `404 NOT_FOUND`
+
+Authorization: watch state is only for the authenticated user.
+
+Transport validation:
+
+- `episodeId` UUID.
+
+Business validation:
+
+- Episode exists.
+
+Errors: `EPISODE_NOT_FOUND`, `VALIDATION_FAILED`.
+
 ### `GET /movies/:movieId`
 
 Purpose: return movie details and authenticated user's watch state, watchlist state, and rating preference.

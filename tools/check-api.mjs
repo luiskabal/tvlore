@@ -86,6 +86,7 @@ async function checkUnauthorizedRoutes() {
   await checkUnauthorized("/watch-paths");
   await checkUnauthorized("/watch-paths/mcu-infinity-saga-release");
   await checkUnauthorized("/watch-paths/mcu-infinity-saga-release/watchlist", { method: "POST" });
+  await checkUnauthorized(`/episodes/${missingUuid}`);
   await checkUnauthorized(`/episodes/${missingUuid}/watches`, { method: "POST" });
   await checkUnauthorized(`/episodes/${missingUuid}/watches`, { method: "DELETE" });
   await checkUnauthorized(`/movies/${missingUuid}/watches`, { method: "POST" });
@@ -232,6 +233,16 @@ async function checkAuthenticatedProductFlow(token) {
     headers: jsonAuthHeaders,
     method: "PUT",
   });
+  await check("/episodes/not-a-uuid", {
+    assert: assertValidationError,
+    expectedStatus: 400,
+    headers: authHeaders,
+  });
+  await check(`/episodes/${missingUuid}`, {
+    assert: (body) => assertError(body, "EPISODE_NOT_FOUND"),
+    expectedStatus: 404,
+    headers: authHeaders,
+  });
   await check(`/movies/${missingUuid}`, {
     assert: (body) => assertError(body, "MOVIE_NOT_FOUND"),
     expectedStatus: 404,
@@ -359,6 +370,11 @@ async function checkAuthenticatedProductFlow(token) {
 
   expectUuid(firstEpisodeId, "first episode id");
 
+  await check(`/episodes/${firstEpisodeId}`, {
+    assert: (body) => assertEpisodeDetail(body, firstEpisodeId, resolvedShow.id, false),
+    expectedStatus: 200,
+    headers: authHeaders,
+  });
   await check(`/episodes/${firstEpisodeId}/watches`, {
     assert: (body) => assertEpisodeWatchResponse(body, firstEpisodeId, false),
     expectedStatus: 200,
@@ -378,6 +394,11 @@ async function checkAuthenticatedProductFlow(token) {
     expectedStatus: 200,
     headers: jsonAuthHeaders,
     method: "POST",
+  });
+  await check(`/episodes/${firstEpisodeId}`, {
+    assert: (body) => assertEpisodeDetail(body, firstEpisodeId, resolvedShow.id, true),
+    expectedStatus: 200,
+    headers: authHeaders,
   });
   await check(`/shows/${resolvedShow.id}/seasons/1`, {
     assert: (body) => {
@@ -775,6 +796,25 @@ function assertSeasonDetail(body, showId, seasonNumber) {
     expectInteger(episode.watchCount, "episode.watchCount");
     expect(episode.lastWatchedAt === null || isIsoString(episode.lastWatchedAt), "episode.lastWatchedAt should be null or ISO string");
   }
+}
+
+function assertEpisodeDetail(body, episodeId, showId, watched) {
+  expectRecord(body, "episode detail");
+  expectEqual(body.id, episodeId, "episode detail.id");
+  expectEqual(body.showId, showId, "episode detail.showId");
+  expectUuid(body.seasonId, "episode detail.seasonId");
+  expectString(body.showTitle, "episode detail.showTitle");
+  expectString(body.seasonTitle, "episode detail.seasonTitle");
+  expectPositiveInteger(body.episodeNumber, "episode detail.episodeNumber");
+  expectPositiveInteger(body.seasonNumber, "episode detail.seasonNumber");
+  expectString(body.title, "episode detail.title");
+  expectString(body.overview, "episode detail.overview");
+  expectNullableString(body.showPosterPath, "episode detail.showPosterPath");
+  expectNullableString(body.stillPath, "episode detail.stillPath");
+  expectNullableNumber(body.runtimeMinutes, "episode detail.runtimeMinutes");
+  expectEqual(body.watched, watched, "episode detail.watched");
+  expectEqual(body.watchCount, watched ? 1 : 0, "episode detail.watchCount");
+  expect(body.lastWatchedAt === null || isIsoString(body.lastWatchedAt), "episode detail.lastWatchedAt should be null or ISO string");
 }
 
 function assertEpisodeWatchResponse(body, episodeId, watched) {

@@ -8,6 +8,7 @@ import type {
   CatalogResolvedSeason,
   CatalogResolvedSeasonSummary,
   CatalogSearchResultDto,
+  EpisodeDetailResponseDto,
   MovieDetailResponseDto,
   ShowDetailResponseDto,
   ShowEpisodeDto,
@@ -182,6 +183,29 @@ export class CatalogRepository {
     });
 
     return season ? toSeasonDetailResponse(season) : null;
+  }
+
+  async findEpisodeDetail(episodeId: string, userId: string): Promise<EpisodeDetailResponseDto | null> {
+    const episode = await this.prismaService.getClient().episode.findUnique({
+      include: {
+        season: true,
+        show: {
+          select: {
+            id: true,
+            posterPath: true,
+            title: true,
+          },
+        },
+        watches: {
+          orderBy: { watchedAt: "desc" },
+          take: 1,
+          where: { userId },
+        },
+      },
+      where: { id: episodeId },
+    });
+
+    return episode ? toEpisodeDetailResponse(episode) : null;
   }
 
   async upsertSeasonDetail(showId: string, season: CatalogResolvedSeason): Promise<void> {
@@ -514,6 +538,27 @@ function toEpisodeResponse(episode: {
     title: episode.title,
     watchCount: watch ? 1 : 0,
     watched: Boolean(watch),
+  };
+}
+
+function toEpisodeDetailResponse(episode: Parameters<typeof toEpisodeResponse>[0] & {
+  season: {
+    id: string;
+    title: string;
+  };
+  show: {
+    id: string;
+    posterPath: string | null;
+    title: string;
+  };
+}): EpisodeDetailResponseDto {
+  return {
+    ...toEpisodeResponse(episode),
+    seasonId: episode.season.id,
+    seasonTitle: episode.season.title,
+    showId: episode.show.id,
+    showPosterPath: episode.show.posterPath,
+    showTitle: episode.show.title,
   };
 }
 

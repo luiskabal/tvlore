@@ -62,6 +62,9 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 23,
   },
+  pressedEpisodeRow: {
+    opacity: 0.72,
+  },
   screen: {
     backgroundColor: ui.color.panelAlt,
     flex: 1,
