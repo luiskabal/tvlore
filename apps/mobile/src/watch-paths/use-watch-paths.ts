@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { getWatchPath, getWatchPaths, type WatchPathDetailResponse, type WatchPathSummary } from "../api/tvlore-api";
 import { getSupabaseAccessToken } from "../auth/supabase-auth";
+import { prefetchCatalogDetails } from "../catalog/prefetch";
 
 export type WatchPathsState =
   | { kind: "loading" }
@@ -13,6 +14,8 @@ export type WatchPathState =
   | { kind: "ready"; path: WatchPathDetailResponse }
   | { kind: "error"; message: string };
 
+const pathPrefetchLimit = 2;
+
 export function useWatchPaths() {
   const [state, setState] = useState<WatchPathsState>({ kind: "loading" });
 
@@ -23,6 +26,7 @@ export function useWatchPaths() {
       const token = await getSupabaseAccessToken();
       const response = await getWatchPaths(token);
       setState({ kind: "ready", paths: response.paths });
+      void prefetchWatchPathDetails(token, response.paths);
     } catch (error) {
       setState({
         kind: "error",
@@ -53,6 +57,10 @@ export function useWatchPath(pathId: string | null) {
       const token = await getSupabaseAccessToken();
       const path = await getWatchPath(token, pathId);
       setState({ kind: "ready", path });
+      void prefetchCatalogDetails(
+        path.items.map((item) => ({ id: item.tvloreId, mediaType: item.mediaType })),
+        { accessToken: token },
+      );
     } catch (error) {
       setState({
         kind: "error",
@@ -66,4 +74,14 @@ export function useWatchPath(pathId: string | null) {
   }, [refresh]);
 
   return { refresh, state };
+}
+
+async function prefetchWatchPathDetails(accessToken: string | null, paths: WatchPathSummary[]) {
+  if (!accessToken) {
+    return;
+  }
+
+  await Promise.allSettled(
+    paths.slice(0, pathPrefetchLimit).map((path) => getWatchPath(accessToken, path.id)),
+  );
 }

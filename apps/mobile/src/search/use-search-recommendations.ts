@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { getCatalogDetail, getRecommendations, type RecommendationItem, type RecommendationsResponse } from "../api/tvlore-api";
+import { getRecommendations, type RecommendationsResponse } from "../api/tvlore-api";
 import { getSupabaseAccessToken } from "../auth/supabase-auth";
+import { prefetchCatalogDetails } from "../catalog/prefetch";
 import { useLibraryRevision } from "../library/library-refresh";
 
 export type SearchRecommendationsState =
@@ -9,8 +10,6 @@ export type SearchRecommendationsState =
   | { kind: "loading" }
   | { kind: "ready"; recommendations: RecommendationsResponse | null }
   | { kind: "error"; message: string };
-
-const detailPrefetchLimit = 4;
 
 export function useSearchRecommendations() {
   const [recommendationsState, setRecommendationsState] = useState<SearchRecommendationsState>({ kind: "idle" });
@@ -30,7 +29,7 @@ export function useSearchRecommendations() {
       const recommendations = await getRecommendations(token);
 
       setRecommendationsState({ kind: "ready", recommendations });
-      prefetchRecommendationDetails(token, recommendations.items);
+      void prefetchCatalogDetails(recommendations.items, { accessToken: token });
     } catch (error) {
       setRecommendationsState({
         kind: "error",
@@ -48,10 +47,4 @@ export function useSearchRecommendations() {
     recommendationsState,
     retryRecommendations: loadRecommendations,
   };
-}
-
-function prefetchRecommendationDetails(accessToken: string | null, items: RecommendationItem[]) {
-  for (const item of items.slice(0, detailPrefetchLimit)) {
-    void getCatalogDetail(accessToken, item.mediaType, item.id).catch(() => undefined);
-  }
 }

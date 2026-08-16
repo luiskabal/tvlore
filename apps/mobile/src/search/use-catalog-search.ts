@@ -1,13 +1,13 @@
 import { useCallback, useRef, useState } from "react";
 
 import {
-  getCatalogDetail,
   resolveCatalogItem,
   searchCatalog,
   type CatalogResolveResponse,
   type CatalogSearchResult,
 } from "../api/tvlore-api";
 import { getSupabaseAccessToken } from "../auth/supabase-auth";
+import { prefetchCatalogDetails } from "../catalog/prefetch";
 import { getMediaTypes, getResultKey, minSearchLength, type SearchFilter } from "./search-model";
 
 export { getResultKey, minSearchLength };
@@ -29,8 +29,6 @@ export type ResolveState =
 type RunSearchOptions = {
   keepResults?: boolean;
 };
-
-const detailPrefetchLimit = 4;
 
 export function useCatalogSearch() {
   const [search, setSearch] = useState<SearchState>({ kind: "idle" });
@@ -66,7 +64,10 @@ export function useCatalogSearch() {
       }
 
       setSearch({ kind: "ready", query: response.query, results: response.results });
-      prefetchResolvedDetails(token, response.results);
+      void prefetchCatalogDetails(
+        response.results.map((result) => ({ id: result.tvloreId, mediaType: result.mediaType })),
+        { accessToken: token },
+      );
     } catch (error) {
       if (requestIdRef.current !== requestId) {
         return;
@@ -86,7 +87,7 @@ export function useCatalogSearch() {
     try {
       const token = await getSupabaseAccessToken();
       const item = await resolveCatalogItem(token, result);
-      void getCatalogDetail(token, item.mediaType, item.id).catch(() => undefined);
+      void prefetchCatalogDetails([{ id: item.id, mediaType: item.mediaType }], { accessToken: token });
       setResolveState({ item, kind: "resolved", resultKey, title: result.title });
       return item;
     } catch (error) {
@@ -100,14 +101,4 @@ export function useCatalogSearch() {
   }, []);
 
   return { resolveResult, resolveState, runSearch, search };
-}
-
-function prefetchResolvedDetails(accessToken: string | null, results: CatalogSearchResult[]) {
-  for (const result of results.slice(0, detailPrefetchLimit)) {
-    if (!result.tvloreId) {
-      continue;
-    }
-
-    void getCatalogDetail(accessToken, result.mediaType, result.tvloreId).catch(() => undefined);
-  }
 }

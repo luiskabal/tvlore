@@ -110,6 +110,7 @@ No active infrastructure tasks.
 - [x] Keep recommendations out of Profile and user-owned Library sections.
 - [x] Move personalized recommendations from Library into Search.
 - [x] Move the full recommendations list behind a dedicated Search entry route.
+- [x] Add shared mobile lookahead prefetch for Search, recommendations, Library, and Watch Paths.
 - [x] Add backend-owned show-level mark all watched/unwatched.
 - [x] Add backend-owned paginated Cronologia feed.
 - [x] Add infinite-scroll loading to mobile Cronologia.

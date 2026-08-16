@@ -8,6 +8,7 @@ import { styles } from "../home/home-styles";
 import { useHomeModel } from "../home/use-home-model";
 import { useLibraryChronology } from "./use-library-chronology";
 import { useLibraryActions } from "./use-library-actions";
+import { useLibraryLookahead } from "./use-library-lookahead";
 
 export default function LibraryScreen() {
   const { libraryAction, removeRecentlyWatchedItem, removeWatchlistItem } = useLibraryActions();
@@ -21,6 +22,8 @@ export default function LibraryScreen() {
     isAuthActionRunning,
   } = useHomeModel({ includeRecommendations: false });
   const isSignedIn = auth.kind === "signedIn";
+
+  useLibraryLookahead(homeData?.library ?? null, isSignedIn);
 
   return (
     <SafeAreaView style={styles.screen}>

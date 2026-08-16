@@ -272,6 +272,9 @@ preferred-genre overlap into copy such as "Because you like Drama".
 
 Library rows receive navigation callbacks from `LibraryScreen`: movies route
 to movie detail and episode/show rows route to season detail.
+`useLibraryLookahead` warms the short-lived read cache for likely next taps:
+watchlist/rated/recent movies use catalog detail reads, while continuing shows
+and watched episode rows use season detail reads.
 `LibraryOverview` owns only local section-filter UI state for switching between
 Cronologia, continuing shows, recently watched movies, watched episodes grouped
 by show and season, watchlist, and rated titles. Summary stat cards reuse the
@@ -345,6 +348,10 @@ The app does not persist or rank curated paths locally. It renders
 backend-owned ordered lists and per-user saved state, then resolves catalog
 identity only when the user opens an item or asks the backend to save the whole
 path to watchlist.
+`useWatchPaths` prefetches the first few path details after loading the path
+list. `useWatchPath` prefetches catalog detail reads for the first already
+resolved path items. It does not prefetch unresolved path items because
+`POST /catalog/resolve` can create catalog identity.
 
 The app still does not calculate catalog identity, progress, or watched state.
 It asks the backend, then renders the response. Detail screens also ask the
@@ -355,7 +362,7 @@ returned by the backend.
 For shows, detail progress is based on episodes already persisted by opening
 season detail routes.
 
-Search uses client-side prefetch:
+Mobile lookahead prefetch uses `src/catalog/prefetch.ts`:
 
 - `GET /search` runs after a short debounce once the query has at least three characters.
 - Repeated search/detail reads can reuse the API client's short-lived in-memory cache and in-flight request de-duplication.
@@ -364,6 +371,8 @@ Search uses client-side prefetch:
 - Older in-flight search responses are ignored if a newer query starts first.
 - Search prefetches detail reads for the first few visible results that already have TVLore IDs.
 - Recommendation loading prefetches detail reads for the first few recommended titles.
+- Library prefetches detail reads for likely visible title and season taps.
+- Watch Paths prefetches the first few path details and already resolved path items.
 - `POST /catalog/resolve` is still not bulk-prefetched because it writes catalog identity to the database.
 - Initial search loading renders skeleton result rows.
 - Typed-query refreshes keep previous results visible and show an updating indicator.
