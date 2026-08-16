@@ -1,16 +1,10 @@
-import { router, type Href } from "expo-router";
+import { router } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 
+import { tabs, type AppTab } from "./app-tabs";
 import { styles } from "./app-tab-bar-styles";
 
-export type AppTab = "library" | "paths" | "profile" | "search";
-
-const tabs: { href: Href; key: AppTab; label: string }[] = [
-  { href: "/library", key: "library", label: "Library" },
-  { href: "/search", key: "search", label: "Search" },
-  { href: "/paths", key: "paths", label: "Paths" },
-  { href: "/profile", key: "profile", label: "Profile" },
-];
+export type { AppTab } from "./app-tabs";
 
 export function AppTabBar({ active }: { active: AppTab }) {
   return (
