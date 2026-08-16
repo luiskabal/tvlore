@@ -318,11 +318,25 @@ export const styles = StyleSheet.create({
   pressedListItem: {
     opacity: 0.72,
   },
-  recommendationMain: {
+  recommendationListItem: {
+    alignItems: "center",
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: 10,
+    justifyContent: "space-between",
+    padding: 12,
+  },
+  recommendationOpenArea: {
     alignItems: "center",
     flex: 1,
     flexDirection: "row",
     gap: 12,
+  },
+  recommendationText: {
+    flex: 1,
+    gap: 4,
   },
   recommendationCountPill: {
     alignItems: "center",

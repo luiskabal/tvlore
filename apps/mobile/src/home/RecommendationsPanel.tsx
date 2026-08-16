@@ -1,11 +1,11 @@
 import type { ComponentProps } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState } from "react";
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 import type { RecommendationItem, RecommendationsResponse } from "../api/tvlore-api";
 import { getTmdbPosterUrl } from "../catalog/posters";
-import { Button, MediaRow } from "../ui";
+import { AppText, Button, PosterImage } from "../ui";
 import { styles } from "./home-styles";
 import { getRecommendationDetail } from "./recommendation-detail";
 import {
@@ -123,16 +123,26 @@ function RecommendationRow({
   };
 
   return (
-    <View style={styles.listItem}>
-      <MediaRow
-        detail={getRecommendationDetail(item, preferredGenreNames)}
-        frame={false}
+    <View style={styles.recommendationListItem}>
+      <Pressable
+        accessibilityLabel={`Open ${item.title}`}
+        accessibilityRole="button"
         onPress={openItem}
-        posterLabel={item.mediaType === "movie" ? "M" : "TV"}
-        posterUri={item.posterPath ? getTmdbPosterUrl(item.posterPath) : null}
-        style={styles.recommendationMain}
-        title={item.title}
-      />
+        style={({ pressed }) => [
+          styles.recommendationOpenArea,
+          pressed ? styles.pressedListItem : null,
+        ]}
+      >
+        <PosterImage
+          label={item.mediaType === "movie" ? "M" : "TV"}
+          uri={item.posterPath ? getTmdbPosterUrl(item.posterPath) : null}
+        />
+        <View style={styles.recommendationText}>
+          <AppText numberOfLines={2} variant="title">{item.title}</AppText>
+          <AppText tone="muted">{getRecommendationDetail(item, preferredGenreNames)}</AppText>
+        </View>
+        <Ionicons color="#5f564d" name={"chevron-forward" satisfies IconName} size={20} />
+      </Pressable>
       <Button
         label="Save"
         onPress={() => onSaveToWatchlist(item)}
