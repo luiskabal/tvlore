@@ -113,6 +113,9 @@ export function toSeasonDetailResponse(season: {
   overview: string;
   posterPath: string | null;
   seasonNumber: number;
+  show: {
+    title: string;
+  };
   showId: string;
   title: string;
 }): ShowSeasonDetailResponseDto {
@@ -120,6 +123,7 @@ export function toSeasonDetailResponse(season: {
     ...toSeasonSummaryResponse(season),
     episodes: season.episodes.map(toEpisodeResponse),
     showId: season.showId,
+    showTitle: season.show.title,
   };
 }
 

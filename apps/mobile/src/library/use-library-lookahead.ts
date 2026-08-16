@@ -17,6 +17,10 @@ export function useLibraryLookahead(library: LibraryResponse | null, enabled: bo
       ...library.watchlist,
       ...library.ratedTitles,
       ...library.recentlyWatched.filter(isRecentlyWatchedMovie),
+      ...library.watchedEpisodes.map((episode) => ({
+        id: episode.showId,
+        mediaType: "show" as const,
+      })),
     ]);
 
     void prefetchShowSeasonDetails([

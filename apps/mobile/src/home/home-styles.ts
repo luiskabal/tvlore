@@ -132,6 +132,10 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "900",
   },
+  groupTitleLink: {
+    alignSelf: "flex-start",
+    paddingVertical: 2,
+  },
   holoBadge: {
     backgroundColor: "rgba(247, 244, 238, 0.84)",
     borderRadius: 999,

@@ -252,6 +252,7 @@ export type ShowEpisode = {
 export type ShowSeasonDetailResponse = ShowSeasonSummary & {
   episodes: ShowEpisode[];
   showId: string;
+  showTitle: string;
 };
 
 export type EpisodeDetailResponse = ShowEpisode & {

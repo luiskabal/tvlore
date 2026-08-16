@@ -248,6 +248,7 @@ export function LibraryOverview({
             libraryAction={libraryAction}
             onOptimisticRemove={hideLibraryAction}
             onOpenEpisode={onOpenEpisode}
+            onOpenShow={onOpenShow}
             onOpenShowSeason={onOpenShowSeason}
             onRemove={onRemoveRecentlyWatchedItem}
           />

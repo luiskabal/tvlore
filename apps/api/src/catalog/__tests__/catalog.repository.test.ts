@@ -9,6 +9,74 @@ const showId = "00000000-0000-4000-8000-000000000003";
 const seasonId = "00000000-0000-4000-8000-000000000004";
 
 describe("CatalogRepository", () => {
+  it("returns season detail with show context", async () => {
+    const watchedAt = new Date("2026-08-14T00:00:00.000Z");
+    const client = {
+      season: {
+        findUnique: vi.fn().mockResolvedValue({
+          airDate: new Date("2022-06-11T00:00:00.000Z"),
+          episodeCount: 1,
+          episodes: [
+            {
+              airDate: new Date("2022-06-11T00:00:00.000Z"),
+              episodeNumber: 1,
+              id: episodeId,
+              overview: "Pilot overview.",
+              runtimeMinutes: 50,
+              seasonNumber: 1,
+              stillPath: "/still.jpg",
+              title: "Monster Slayer",
+              watches: [{ watchedAt }],
+            },
+          ],
+          id: seasonId,
+          overview: "Season overview.",
+          posterPath: "/season.jpg",
+          seasonNumber: 1,
+          show: {
+            title: "Dark Winds",
+          },
+          showId,
+          title: "Season 1",
+        }),
+      },
+    };
+    const repository = new CatalogRepository({ getClient: () => client } as unknown as PrismaService);
+
+    await expect(repository.findSeasonDetail(showId, 1, userId)).resolves.toEqual({
+      airDate: "2022-06-11",
+      episodeCount: 1,
+      episodes: [
+        {
+          airDate: "2022-06-11",
+          episodeNumber: 1,
+          id: episodeId,
+          lastWatchedAt: watchedAt.toISOString(),
+          overview: "Pilot overview.",
+          runtimeMinutes: 50,
+          seasonNumber: 1,
+          stillPath: "/still.jpg",
+          title: "Monster Slayer",
+          watchCount: 1,
+          watched: true,
+        },
+      ],
+      id: seasonId,
+      overview: "Season overview.",
+      posterPath: "/season.jpg",
+      seasonNumber: 1,
+      showId,
+      showTitle: "Dark Winds",
+      title: "Season 1",
+    });
+    expect(client.season.findUnique).toHaveBeenCalledWith(expect.objectContaining({
+      include: expect.objectContaining({
+        show: { select: { title: true } },
+      }),
+      where: { showId_seasonNumber: { seasonNumber: 1, showId } },
+    }));
+  });
+
   it("returns episode detail with show and season context", async () => {
     const watchedAt = new Date("2026-08-14T00:00:00.000Z");
     const client = {

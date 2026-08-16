@@ -587,6 +587,7 @@ Response:
 {
   "id": "uuid",
   "showId": "uuid",
+  "showTitle": "Dark",
   "seasonNumber": 1,
   "title": "Season 1",
   "episodes": [

@@ -52,12 +52,6 @@ export const styles = StyleSheet.create({
   header: {
     gap: 8,
   },
-  kicker: {
-    color: ui.color.accent,
-    fontSize: 13,
-    fontWeight: "900",
-    textTransform: "uppercase",
-  },
   overview: {
     fontSize: 16,
     lineHeight: 23,
@@ -71,6 +65,15 @@ export const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 20,
+  },
+  showLink: {
+    alignSelf: "flex-start",
+    paddingVertical: 2,
+  },
+  showLinkText: {
+    color: ui.color.accent,
+    fontSize: 18,
+    fontWeight: "900",
   },
   skeletonEpisodeBody: {
     flex: 1,

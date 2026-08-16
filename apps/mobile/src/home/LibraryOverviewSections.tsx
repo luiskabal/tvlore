@@ -144,6 +144,7 @@ export function EpisodesSection({
   libraryAction,
   onOptimisticRemove,
   onOpenEpisode,
+  onOpenShow,
   onOpenShowSeason,
   onRemove,
 }: {
@@ -151,6 +152,7 @@ export function EpisodesSection({
   libraryAction: LibraryActionState;
   onOptimisticRemove: (actionKey: string) => void;
   onOpenEpisode: (episodeId: string) => void;
+  onOpenShow: (showId: string) => void;
   onOpenShowSeason: (showId: string, seasonNumber: number) => void;
   onRemove: (item: RecentlyWatchedItem) => void;
 }) {
@@ -164,6 +166,7 @@ export function EpisodesSection({
           libraryAction={libraryAction}
           onOptimisticRemove={onOptimisticRemove}
           onOpenEpisode={onOpenEpisode}
+          onOpenShow={onOpenShow}
           onOpenShowSeason={onOpenShowSeason}
           onRemove={onRemove}
         />

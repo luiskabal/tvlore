@@ -38,6 +38,7 @@ export default function SeasonDetailScreen() {
             onSetEpisodeWatched={setEpisodeWatched}
             onSetSeasonWatched={setSeasonWatched}
             onOpenEpisode={openEpisode}
+            onOpenShow={openShow}
             season={state.detail}
             showProgress={state.showProgress}
             watchAction={watchAction}
@@ -52,6 +53,13 @@ function openEpisode(episodeId: string) {
   router.push({
     pathname: "/episodes/[id]",
     params: { id: episodeId },
+  });
+}
+
+function openShow(showId: string) {
+  router.push({
+    pathname: "/shows/[id]",
+    params: { id: showId },
   });
 }
 

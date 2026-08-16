@@ -40,7 +40,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Library summary with watched show, movie, episode, watchlist, and rated-title counts.
 - Tappable Library summary cards filter Cronologia, watching shows, movies, grouped episodes, watchlist, and rated titles.
 - Cronologia loads backend-paginated watched movie and episode history and fetches more as the user scrolls.
-- Grouped episode rows open episode detail; their season headings open season detail and keep a separate expand/collapse control.
+- Grouped episode sections open show detail from the show title, season detail from the season heading, episode detail from episode rows, and keep a separate expand/collapse control.
 - Holographic mobile profile summary card with Google avatar and library stats.
 - Profile country selector for streaming availability, rendered with flag labels.
 - Continue-watching and recently-watched data from the backend.

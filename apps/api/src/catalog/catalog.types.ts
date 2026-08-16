@@ -133,6 +133,7 @@ export type ShowSeasonsResponseDto = {
 export type ShowSeasonDetailResponseDto = ShowSeasonSummaryDto & {
   episodes: ShowEpisodeDto[];
   showId: string;
+  showTitle: string;
 };
 
 export type EpisodeDetailResponseDto = ShowEpisodeDto & {

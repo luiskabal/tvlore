@@ -278,12 +278,13 @@ Availability and watchlist actions stay in detail screens.
 preferred-genre overlap into copy such as "Because you like Drama".
 
 Library rows receive navigation callbacks from `LibraryScreen`: movies route
-to movie detail, continue-watching and season headings route to season detail,
-and watched episode rows route to episode detail.
+to movie detail, watched episode show headings route to show detail,
+continue-watching and season headings route to season detail, and watched
+episode rows route to episode detail.
 `useLibraryLookahead` warms the short-lived read cache for likely next taps:
-watchlist/rated/recent movies use catalog detail reads, while continuing shows
-and season headings use season detail reads, and visible watched episode rows
-use episode detail reads.
+watchlist/rated/recent movies and watched episode show headings use catalog
+detail reads, while continuing shows and season headings use season detail
+reads, and visible watched episode rows use episode detail reads.
 `LibraryOverview` owns only local section-filter UI state for switching between
 Cronologia, continuing shows, recently watched movies, watched episodes grouped
 by show and season, watchlist, and rated titles. Summary stat cards reuse the

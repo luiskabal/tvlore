@@ -210,6 +210,11 @@ export class CatalogRepository {
           },
           orderBy: { episodeNumber: "asc" },
         },
+        show: {
+          select: {
+            title: true,
+          },
+        },
       },
       where: {
         showId_seasonNumber: {

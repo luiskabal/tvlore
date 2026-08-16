@@ -293,6 +293,7 @@ export function isShowSeasonDetailResponse(value: unknown): value is ShowSeasonD
 
   return (
     typeof candidate.showId === "string" &&
+    typeof candidate.showTitle === "string" &&
     Array.isArray(candidate.episodes) &&
     candidate.episodes.every(isShowEpisode)
   );

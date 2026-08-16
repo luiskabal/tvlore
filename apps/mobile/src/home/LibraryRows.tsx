@@ -184,6 +184,7 @@ export function EpisodeShowGroup({
   libraryAction,
   onOptimisticRemove,
   onOpenEpisode,
+  onOpenShow,
   onOpenShowSeason,
   onRemove,
 }: {
@@ -191,6 +192,7 @@ export function EpisodeShowGroup({
   libraryAction: LibraryActionState;
   onOptimisticRemove: (actionKey: string) => void;
   onOpenEpisode: (episodeId: string) => void;
+  onOpenShow: (showId: string) => void;
   onOpenShowSeason: (showId: string, seasonNumber: number) => void;
   onRemove: (item: RecentlyWatchedItem) => void;
 }) {
@@ -205,7 +207,14 @@ export function EpisodeShowGroup({
 
   return (
     <View style={styles.groupPanel}>
-      <Text style={styles.groupTitle}>{group.showTitle}</Text>
+      <Pressable
+        accessibilityLabel={`Open ${group.showTitle}`}
+        accessibilityRole="button"
+        onPress={() => onOpenShow(group.showId)}
+        style={({ pressed }) => [styles.groupTitleLink, pressed ? styles.pressedListItem : null]}
+      >
+        <Text style={styles.groupTitle}>{group.showTitle}</Text>
+      </Pressable>
       {group.seasons.map((season) => (
         <EpisodeSeasonGroup
           episodes={season.episodes}

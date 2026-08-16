@@ -10,6 +10,7 @@ export function SeasonContent({
   onSetEpisodeWatched,
   onSetSeasonWatched,
   onOpenEpisode,
+  onOpenShow,
   season,
   showProgress,
   watchAction,
@@ -17,6 +18,7 @@ export function SeasonContent({
   onSetEpisodeWatched: (episodeId: string, watched: boolean) => void;
   onSetSeasonWatched: (watched: boolean) => void;
   onOpenEpisode: (episodeId: string) => void;
+  onOpenShow: (showId: string) => void;
   season: ShowSeasonDetailResponse;
   showProgress: ShowProgressResponse | null;
   watchAction: EpisodeWatchActionState;
@@ -24,9 +26,16 @@ export function SeasonContent({
   return (
     <View style={styles.detail}>
       <View style={styles.header}>
-        <AppText style={styles.kicker}>Season {season.seasonNumber}</AppText>
+        <Pressable
+          accessibilityLabel={`Open ${season.showTitle}`}
+          accessibilityRole="button"
+          onPress={() => onOpenShow(season.showId)}
+          style={({ pressed }) => [styles.showLink, pressed ? styles.pressedEpisodeRow : null]}
+        >
+          <AppText style={styles.showLinkText}>{season.showTitle}</AppText>
+        </Pressable>
         <AppText style={styles.title}>{season.title}</AppText>
-        <AppText tone="muted">{getProgressText(season, showProgress)}</AppText>
+        <AppText tone="muted">{getSeasonMeta(season, showProgress)}</AppText>
       </View>
 
       {season.overview ? <AppText style={styles.overview}>{season.overview}</AppText> : null}
@@ -47,7 +56,7 @@ export function SeasonDetailSkeleton() {
   return (
     <View style={styles.detail}>
       <View style={styles.header}>
-        <Skeleton height={16} width={90} />
+        <Skeleton height={20} width="48%" />
         <Skeleton height={36} width="82%" />
         <Skeleton height={16} width="70%" />
       </View>
@@ -227,6 +236,15 @@ function getProgressText(season: ShowSeasonDetailResponse, showProgress: ShowPro
 
   const watchedCount = season.episodes.filter((episode) => episode.watched).length;
   return `${watchedCount}/${season.episodes.length} watched in this season`;
+}
+
+function getSeasonMeta(season: ShowSeasonDetailResponse, showProgress: ShowProgressResponse | null) {
+  const progressText = getProgressText(season, showProgress);
+  const defaultTitle = `Season ${season.seasonNumber}`;
+
+  return season.title.toLowerCase() === defaultTitle.toLowerCase()
+    ? progressText
+    : `${defaultTitle} - ${progressText}`;
 }
 
 function getEpisodeMeta(episode: ShowEpisode) {
