@@ -701,9 +701,8 @@ erDiagram
 
 Current tables:
 
-The repository schema includes the reflection tables below. Production Supabase
-requires applying `20260816161000_add_watch_reflections` before those rows are
-available at runtime.
+Production Supabase has applied `20260816161000_add_watch_reflections`, so the
+reflection tables below are available at runtime.
 
 - `users`: TVLore account/profile row, including the saved streaming availability country.
 - `user_identities`: links a TVLore user to Supabase Auth.
