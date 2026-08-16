@@ -235,15 +235,15 @@ No P0 or severe blocker was found.
 
 The audit did not find exposed secrets, broken auth ownership, uncontrolled data-loss paths, production-breaking deployment state, or a reason to stop feature work.
 
-### P1 - Fix Next
+### P1 - Fixed After Audit
 
-1. Add backend-owned season-level bulk watched/unwatched.
+1. DONE: Add backend-owned season-level bulk watched/unwatched.
    Why: this removes the only meaningful domain operation currently orchestrated by mobile one episode at a time. It also reduces API latency, partial-failure risk, and UI complexity.
 
-2. Harden `fetchJson` for non-JSON and empty responses.
+2. DONE: Harden `fetchJson` for non-JSON and empty responses.
    Why: this is a small reliability fix that improves app behavior when Vercel/proxies/providers return unexpected response bodies.
 
-3. Normalize incoming `x-correlation-id`.
+3. DONE: Normalize incoming `x-correlation-id`.
    Why: this protects observability/log quality without changing product behavior.
 
 ### P2 - Refactor When Touching Related Features

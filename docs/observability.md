@@ -38,6 +38,7 @@ Do not include:
 Every request should have a correlation ID.
 
 - Accept an inbound correlation ID only if it matches a safe format.
+- Current safe format: `^[A-Za-z0-9._:-]{1,128}$`.
 - Generate one if absent.
 - Return it in response headers.
 - Include it in error responses.

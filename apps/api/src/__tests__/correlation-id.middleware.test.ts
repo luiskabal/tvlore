@@ -68,4 +68,29 @@ describe("CorrelationIdMiddleware", () => {
 
     log.mockRestore();
   });
+
+  it("generates a safe correlation ID when the incoming one is unsafe", () => {
+    const log = vi.spyOn(Logger.prototype, "log").mockImplementation(() => {});
+    const request: HttpRequestWithCorrelationId = {
+      headers: { "x-correlation-id": "bad\nid" },
+      method: "GET",
+      path: "/users/me",
+    };
+    let response: HttpResponse;
+    response = {
+      header: vi.fn(),
+      json: vi.fn(),
+      on: vi.fn(),
+      status: vi.fn(() => response),
+      statusCode: 200,
+    };
+
+    new CorrelationIdMiddleware().use(request, response, vi.fn());
+
+    expect(request.correlationId).toEqual(expect.any(String));
+    expect(request.correlationId).not.toBe("bad\nid");
+    expect(response.header).toHaveBeenCalledWith("x-correlation-id", request.correlationId);
+
+    log.mockRestore();
+  });
 });
