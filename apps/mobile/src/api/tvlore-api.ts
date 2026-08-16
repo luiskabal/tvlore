@@ -3,6 +3,7 @@ export * from "./home";
 export * from "./library";
 export * from "./preferences";
 export * from "./recommendations";
+export * from "./reflections";
 export * from "./tracking";
 export * from "./types";
 export * from "./users";

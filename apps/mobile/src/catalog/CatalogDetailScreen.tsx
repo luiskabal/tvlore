@@ -13,10 +13,12 @@ export default function CatalogDetailScreen({ mediaType }: { mediaType: MediaTyp
   const id = typeof params.id === "string" ? params.id : null;
   const {
     preferenceAction,
+    reflectionAction,
     refresh,
     setInWatchlist,
     setMovieWatched,
     setRating,
+    setReflection,
     setShowWatched,
     state,
     watchAction,
@@ -51,8 +53,10 @@ export default function CatalogDetailScreen({ mediaType }: { mediaType: MediaTyp
             onSetInWatchlist={setInWatchlist}
             onSetMovieWatched={setMovieWatched}
             onSetRating={setRating}
+            onSetReflection={setReflection}
             onSetShowWatched={setShowWatched}
             preferenceAction={preferenceAction}
+            reflectionAction={reflectionAction}
             watchAction={watchAction}
             watchlistAction={watchlistAction}
             watchProvidersState={watchProvidersState}

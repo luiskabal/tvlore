@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View } from "react-native";
 
-import type { CatalogDetailResponse, MediaType } from "../api/tvlore-api";
+import type { CatalogDetailResponse, MediaType, PreferenceMediaType, WatchReflectionInput } from "../api/tvlore-api";
 import { AppText, Badge, PosterImage } from "../ui";
 import { styles } from "./catalog-detail-styles";
 import { TitleActionMessages, TitleActionRow } from "./CatalogDetailActions";
@@ -9,7 +9,7 @@ import { RatingMatchPanel, ShowProgressPanel, ShowSeasonsPanel, WhereToWatchPane
 import { getMetadata } from "./catalog-detail-format";
 import { getTmdbPosterUrl } from "./posters";
 import { PostWatchCheckIn, type PostWatchCheckInTarget } from "./PostWatchCheckIn";
-import type { PreferenceActionState, WatchActionState, WatchlistActionState, WatchProvidersState } from "./use-catalog-detail";
+import type { PreferenceActionState, ReflectionActionState, WatchActionState, WatchlistActionState, WatchProvidersState } from "./use-catalog-detail";
 
 export { CatalogDetailSkeleton } from "./CatalogDetailSkeleton";
 
@@ -19,8 +19,10 @@ export function CatalogDetailContent({
   onSetInWatchlist,
   onSetMovieWatched,
   onSetRating,
+  onSetReflection,
   onSetShowWatched,
   preferenceAction,
+  reflectionAction,
   watchAction,
   watchlistAction,
   watchProvidersState,
@@ -30,8 +32,10 @@ export function CatalogDetailContent({
   onSetInWatchlist: (mediaType: MediaType, id: string, inWatchlist: boolean) => void;
   onSetMovieWatched: (movieId: string, watched: boolean) => Promise<boolean>;
   onSetRating: (mediaType: MediaType, id: string, rating: number | null) => Promise<boolean>;
+  onSetReflection: (mediaType: PreferenceMediaType, id: string, input: WatchReflectionInput) => Promise<boolean>;
   onSetShowWatched: (showId: string, watched: boolean) => Promise<boolean>;
   preferenceAction: PreferenceActionState;
+  reflectionAction: ReflectionActionState;
   watchAction: WatchActionState;
   watchlistAction: WatchlistActionState;
   watchProvidersState: WatchProvidersState;
@@ -42,6 +46,7 @@ export function CatalogDetailContent({
       id: detail.id,
       mediaType: detail.mediaType,
       rating: detail.rating,
+      reflection: detail.reflection,
       title: detail.title,
     });
   };
@@ -104,9 +109,9 @@ export function CatalogDetailContent({
       ) : null}
 
       <PostWatchCheckIn
+        actionState={reflectionAction}
         onClose={() => setCheckInTarget(null)}
-        onSetRating={onSetRating}
-        preferenceAction={preferenceAction}
+        onSave={onSetReflection}
         target={checkInTarget}
       />
     </View>

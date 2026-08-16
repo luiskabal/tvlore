@@ -5,8 +5,10 @@ import {
   getEpisodeDetail,
   markEpisodeWatched,
   setEpisodePreferenceRating,
+  setWatchReflection,
   unmarkEpisodeWatched,
   type EpisodeDetailResponse,
+  type WatchReflectionInput,
 } from "../api/tvlore-api";
 import { getSupabaseAccessToken } from "../auth/supabase-auth";
 import { notifyLibraryChanged } from "../library/library-refresh";
@@ -26,11 +28,18 @@ export type EpisodeDetailPreferenceActionState =
   | { kind: "loading" }
   | { kind: "error"; message: string };
 
+export type EpisodeDetailReflectionActionState =
+  | { kind: "idle" }
+  | { kind: "loading" }
+  | { kind: "error"; message: string };
+
 export function useEpisodeDetail(episodeId: string | null) {
   const [state, setState] = useState<EpisodeDetailState>({ kind: "loading" });
   const [watchAction, setWatchAction] = useState<EpisodeDetailWatchActionState>({ kind: "idle" });
   const [preferenceAction, setPreferenceAction] = useState<EpisodeDetailPreferenceActionState>({ kind: "idle" });
+  const [reflectionAction, setReflectionAction] = useState<EpisodeDetailReflectionActionState>({ kind: "idle" });
   const ratingRequestId = useRef(0);
+  const reflectionRequestId = useRef(0);
   const requestId = useRef(0);
 
   const refresh = useCallback(async () => {
@@ -45,6 +54,7 @@ export function useEpisodeDetail(episodeId: string | null) {
       const token = await getSupabaseAccessToken();
       setState({ detail: await getEpisodeDetail(token, episodeId), kind: "ready" });
       setPreferenceAction({ kind: "idle" });
+      setReflectionAction({ kind: "idle" });
       setWatchAction({ kind: "idle" });
     } catch (error) {
       setState({
@@ -56,7 +66,7 @@ export function useEpisodeDetail(episodeId: string | null) {
 
   const setWatched = useCallback(async (watched: boolean) => {
     if (state.kind !== "ready") {
-      return;
+      return false;
     }
 
     const previousDetail = state.detail;
@@ -81,7 +91,7 @@ export function useEpisodeDetail(episodeId: string | null) {
         : await unmarkEpisodeWatched(token, previousDetail.id);
 
       if (requestId.current !== nextRequestId) {
-        return;
+        return false;
       }
 
       setState((current) => updateDetail(current, {
@@ -91,9 +101,10 @@ export function useEpisodeDetail(episodeId: string | null) {
       }));
       notifyLibraryChanged();
       setWatchAction({ kind: "idle" });
+      return true;
     } catch (error) {
       if (requestId.current !== nextRequestId) {
-        return;
+        return false;
       }
 
       setState((current) => updateDetail(current, {
@@ -105,6 +116,7 @@ export function useEpisodeDetail(episodeId: string | null) {
         kind: "error",
         message: error instanceof Error ? error.message : "Episode watch update failed",
       });
+      return false;
     }
   }, [state]);
 
@@ -156,11 +168,74 @@ export function useEpisodeDetail(episodeId: string | null) {
     }
   }, [state]);
 
+  const setReflection = useCallback(async (input: WatchReflectionInput) => {
+    if (state.kind !== "ready") {
+      return false;
+    }
+
+    const previousDetail = state.detail;
+    const nextRequestId = reflectionRequestId.current + 1;
+
+    reflectionRequestId.current = nextRequestId;
+    setReflectionAction({ kind: "loading" });
+    setState({
+      detail: {
+        ...previousDetail,
+        rating: input.rating,
+        reflection: {
+          comment: input.comment,
+          favoriteCharacter: input.favoriteCharacter,
+          reaction: input.reaction,
+          updatedAt: new Date().toISOString(),
+        },
+      },
+      kind: "ready",
+    });
+
+    try {
+      const token = await getSupabaseAccessToken();
+      const response = await setWatchReflection(token, "episode", previousDetail.id, input);
+
+      if (reflectionRequestId.current !== nextRequestId) {
+        return false;
+      }
+
+      setState((current) => updateDetail(current, {
+        rating: response.rating,
+        reflection: {
+          comment: response.comment,
+          favoriteCharacter: response.favoriteCharacter,
+          reaction: response.reaction,
+          updatedAt: response.updatedAt,
+        },
+      }));
+      notifyLibraryChanged();
+      setReflectionAction({ kind: "idle" });
+
+      return true;
+    } catch (error) {
+      if (reflectionRequestId.current !== nextRequestId) {
+        return false;
+      }
+
+      setState((current) => updateDetail(current, {
+        rating: previousDetail.rating,
+        reflection: previousDetail.reflection,
+      }));
+      setReflectionAction({
+        kind: "error",
+        message: error instanceof Error ? error.message : "Episode check-in update failed",
+      });
+
+      return false;
+    }
+  }, [state]);
+
   useEffect(() => {
     void refresh();
   }, [refresh]);
 
-  return { preferenceAction, refresh, setRating, setWatched, state, watchAction };
+  return { preferenceAction, reflectionAction, refresh, setRating, setReflection, setWatched, state, watchAction };
 }
 
 function getOptimisticWatchCount(currentCount: number, currentWatched: boolean, nextWatched: boolean) {
@@ -173,7 +248,7 @@ function getOptimisticWatchCount(currentCount: number, currentWatched: boolean, 
 
 function updateDetail(
   current: EpisodeDetailState,
-  patch: Partial<Pick<EpisodeDetailResponse, "lastWatchedAt" | "rating" | "watchCount" | "watched">>,
+  patch: Partial<Pick<EpisodeDetailResponse, "lastWatchedAt" | "rating" | "reflection" | "watchCount" | "watched">>,
 ): EpisodeDetailState {
   if (current.kind !== "ready") {
     return current;

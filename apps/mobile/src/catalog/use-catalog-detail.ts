@@ -10,10 +10,13 @@ import {
   markShowWatched,
   removeFromWatchlist,
   setPreferenceRating,
+  setWatchReflection,
   unmarkMovieWatched,
   unmarkShowWatched,
   type CatalogDetailResponse,
   type MediaType,
+  type PreferenceMediaType,
+  type WatchReflectionInput,
   type WatchProvidersResponse,
 } from "../api/tvlore-api";
 import { getSupabaseAccessToken } from "../auth/supabase-auth";
@@ -40,6 +43,11 @@ export type PreferenceActionState =
   | { kind: "loading" }
   | { kind: "error"; message: string };
 
+export type ReflectionActionState =
+  | { kind: "idle" }
+  | { kind: "loading" }
+  | { kind: "error"; message: string };
+
 export type WatchProvidersState =
   | { kind: "loading" }
   | { kind: "ready"; providers: WatchProvidersResponse }
@@ -51,8 +59,10 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
   const [watchAction, setWatchAction] = useState<WatchActionState>({ kind: "idle" });
   const [watchlistAction, setWatchlistAction] = useState<WatchlistActionState>({ kind: "idle" });
   const [preferenceAction, setPreferenceAction] = useState<PreferenceActionState>({ kind: "idle" });
+  const [reflectionAction, setReflectionAction] = useState<ReflectionActionState>({ kind: "idle" });
   const movieWatchRequestId = useRef(0);
   const ratingRequestId = useRef(0);
+  const reflectionRequestId = useRef(0);
 
   const refresh = useCallback(async () => {
     if (!id) {
@@ -75,6 +85,7 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
       setWatchAction({ kind: "idle" });
       setWatchlistAction({ kind: "idle" });
       setPreferenceAction({ kind: "idle" });
+      setReflectionAction({ kind: "idle" });
 
       try {
         const providers = await getWatchProviders(token, mediaType, id, user.availabilityCountry || getDeviceWatchCountry());
@@ -321,21 +332,98 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
     }
   }, [state]);
 
+  const setReflection = useCallback(async (
+    targetMediaType: PreferenceMediaType,
+    targetId: string,
+    input: WatchReflectionInput,
+  ) => {
+    const previousDetail = state.kind === "ready" && state.detail.id === targetId && state.detail.mediaType === targetMediaType
+      ? state.detail
+      : null;
+    const requestId = reflectionRequestId.current + 1;
+
+    reflectionRequestId.current = requestId;
+    setReflectionAction({ kind: "loading" });
+    setState((current) => updateReflection(current, targetMediaType, targetId, {
+      rating: input.rating,
+      reflection: {
+        comment: input.comment,
+        favoriteCharacter: input.favoriteCharacter,
+        reaction: input.reaction,
+        updatedAt: new Date().toISOString(),
+      },
+    }));
+
+    try {
+      const token = await getSupabaseAccessToken();
+      const response = await setWatchReflection(token, targetMediaType, targetId, input);
+
+      if (reflectionRequestId.current !== requestId) {
+        return false;
+      }
+
+      setState((current) => updateReflection(current, response.mediaType, response.id, {
+        rating: response.rating,
+        reflection: {
+          comment: response.comment,
+          favoriteCharacter: response.favoriteCharacter,
+          reaction: response.reaction,
+          updatedAt: response.updatedAt,
+        },
+      }));
+      notifyLibraryChanged();
+      setReflectionAction({ kind: "idle" });
+      return true;
+    } catch (error) {
+      if (reflectionRequestId.current !== requestId) {
+        return false;
+      }
+
+      rollbackDetail(previousDetail, setState);
+      setReflectionAction({
+        kind: "error",
+        message: error instanceof Error ? error.message : "Check-in update failed",
+      });
+      return false;
+    }
+  }, [state]);
+
   useEffect(() => {
     void refresh();
   }, [refresh]);
 
   return {
     preferenceAction,
+    reflectionAction,
     refresh,
     setInWatchlist,
     setMovieWatched,
     setRating,
+    setReflection,
     setShowWatched,
     state,
     watchAction,
     watchlistAction,
     watchProvidersState,
+  };
+}
+
+function updateReflection(
+  current: CatalogDetailState,
+  mediaType: PreferenceMediaType,
+  id: string,
+  patch: Pick<CatalogDetailResponse, "rating" | "reflection">,
+): CatalogDetailState {
+  if (mediaType === "episode" || current.kind !== "ready" || current.detail.id !== id || current.detail.mediaType !== mediaType) {
+    return current;
+  }
+
+  return {
+    detail: {
+      ...current.detail,
+      ...patch,
+    },
+    kind: "ready",
   };
 }
 

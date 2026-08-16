@@ -44,6 +44,20 @@ export const styles = StyleSheet.create({
     padding: 24,
     paddingBottom: 34,
   },
+  checkInCommentInput: {
+    minHeight: 84,
+    textAlignVertical: "top",
+  },
+  checkInInput: {
+    backgroundColor: ui.color.panel,
+    borderColor: ui.color.border,
+    borderRadius: ui.radius.md,
+    borderWidth: 1,
+    color: ui.color.ink,
+    fontSize: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+  },
   detail: {
     gap: 20,
   },
@@ -143,6 +157,30 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 8,
     justifyContent: "flex-end",
+  },
+  reactionPill: {
+    alignItems: "center",
+    backgroundColor: ui.color.panel,
+    borderColor: ui.color.border,
+    borderRadius: ui.radius.pill,
+    borderWidth: 1,
+    paddingHorizontal: 13,
+    paddingVertical: 9,
+  },
+  reactionPillSelected: {
+    backgroundColor: ui.color.accentSoft,
+    borderColor: ui.color.accent,
+  },
+  reactionPillText: {
+    color: ui.color.ink,
+  },
+  reactionPillTextSelected: {
+    color: ui.color.accent,
+  },
+  reactionRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
   },
   ratingButton: {
     alignItems: "center",

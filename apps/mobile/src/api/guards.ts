@@ -30,6 +30,8 @@ import type {
   WatchPathWatchlistResponse,
   WatchProvider,
   WatchProvidersResponse,
+  WatchReflection,
+  WatchReflectionResponse,
   WatchlistMutationResponse,
   WatchedEpisodeItem,
 } from "./types";
@@ -259,6 +261,7 @@ export function isShowDetailResponse(value: unknown): value is Omit<ShowDetailRe
     isShowProgressResponse(value.progress) &&
     isPublicRating(value.publicRating) &&
     isRating(value.rating) &&
+    isNullableWatchReflection(value.reflection) &&
     Array.isArray(value.seasons) &&
     value.seasons.every(isShowSeasonSummary)
   );
@@ -307,7 +310,8 @@ export function isEpisodeDetailResponse(value: unknown): value is EpisodeDetailR
     typeof candidate.showId === "string" &&
     isNullableString(candidate.showPosterPath) &&
     typeof candidate.showTitle === "string" &&
-    isRating(candidate.rating)
+    isRating(candidate.rating) &&
+    isNullableWatchReflection(candidate.reflection)
   );
 }
 
@@ -347,6 +351,7 @@ export function isMovieDetailResponse(value: unknown): value is Omit<MovieDetail
     isNullableNumber(value.runtimeMinutes) &&
     isPublicRating(value.publicRating) &&
     isRating(value.rating) &&
+    isNullableWatchReflection(value.reflection) &&
     typeof value.watched === "boolean" &&
     typeof value.watchCount === "number" &&
     isNullableString(value.lastWatchedAt)
@@ -496,6 +501,16 @@ function isWatchedEpisodeItem(value: unknown): value is WatchedEpisodeItem {
   );
 }
 
+export function isWatchReflectionResponse(value: unknown): value is WatchReflectionResponse {
+  return (
+    isRecord(value) &&
+    typeof value.id === "string" &&
+    isPreferenceMediaType(value.mediaType) &&
+    isRating(value.rating) &&
+    isWatchReflection(value)
+  );
+}
+
 function isLibraryWatchlistItem(value: unknown): value is LibraryWatchlistItem {
   if (!isRecord(value)) {
     return false;
@@ -534,6 +549,24 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function isNullableString(value: unknown) {
   return value === null || typeof value === "string";
+}
+
+function isNullableWatchReflection(value: unknown): value is WatchReflection | null {
+  return value === null || isWatchReflection(value);
+}
+
+function isWatchReflection(value: unknown): value is WatchReflection {
+  return (
+    isRecord(value) &&
+    isNullableString(value.comment) &&
+    isNullableString(value.favoriteCharacter) &&
+    isWatchReaction(value.reaction) &&
+    typeof value.updatedAt === "string"
+  );
+}
+
+function isWatchReaction(value: unknown) {
+  return value === "loved" || value === "liked" || value === "mixed" || value === "not_for_me";
 }
 
 function isString(value: unknown): value is string {

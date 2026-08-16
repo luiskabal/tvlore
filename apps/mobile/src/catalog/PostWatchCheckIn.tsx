@@ -1,40 +1,52 @@
-import { Modal, Pressable, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Modal, Pressable, TextInput, View } from "react-native";
 
-import type { MediaType } from "../api/tvlore-api";
+import type { PreferenceMediaType, WatchReflection, WatchReflectionInput } from "../api/tvlore-api";
 import { AppText, Button } from "../ui";
 import { styles } from "./catalog-detail-styles";
-import type { PreferenceActionState } from "./use-catalog-detail";
+import { createCheckInDraft, normalizeCheckInDraft, reactionOptions } from "./post-watch-check-in-model";
 
 export type PostWatchCheckInTarget = {
   id: string;
-  mediaType: MediaType;
+  mediaType: PreferenceMediaType;
   rating: number | null;
+  reflection: WatchReflection | null;
   title: string;
 };
 
+export type PostWatchCheckInActionState =
+  | { kind: "idle" }
+  | { kind: "loading" }
+  | { kind: "error"; message: string };
+
 export function PostWatchCheckIn({
+  actionState,
   onClose,
-  onSetRating,
-  preferenceAction,
+  onSave,
   target,
 }: {
+  actionState: PostWatchCheckInActionState;
   onClose: () => void;
-  onSetRating: (mediaType: MediaType, id: string, rating: number) => Promise<boolean>;
-  preferenceAction: PreferenceActionState;
+  onSave: (mediaType: PreferenceMediaType, id: string, input: WatchReflectionInput) => Promise<boolean>;
   target: PostWatchCheckInTarget | null;
 }) {
-  const isSaving = preferenceAction.kind === "loading";
+  const [draft, setDraft] = useState(() => createCheckInDraft(target?.rating ?? null, target?.reflection ?? null));
+  const isSaving = actionState.kind === "loading";
+
+  useEffect(() => {
+    setDraft(createCheckInDraft(target?.rating ?? null, target?.reflection ?? null));
+  }, [target]);
 
   if (!target) {
     return null;
   }
 
-  const submitRating = async (rating: number) => {
+  const submit = async () => {
     if (isSaving) {
       return;
     }
 
-    const saved = await onSetRating(target.mediaType, target.id, rating);
+    const saved = await onSave(target.mediaType, target.id, normalizeCheckInDraft(draft));
 
     if (saved) {
       onClose();
@@ -63,11 +75,11 @@ export function PostWatchCheckIn({
           <AppText variant="section">How was it?</AppText>
           <AppText numberOfLines={2} tone="muted">{target.title}</AppText>
 
-          {preferenceAction.kind === "error" ? <AppText tone="danger">{preferenceAction.message}</AppText> : null}
+          {actionState.kind === "error" ? <AppText tone="danger">{actionState.message}</AppText> : null}
 
           <View style={styles.ratingRow}>
             {[1, 2, 3, 4, 5].map((rating) => {
-              const isSelected = target.rating === rating;
+              const isSelected = draft.rating === rating;
 
               return (
                 <Pressable
@@ -77,7 +89,7 @@ export function PostWatchCheckIn({
                   disabled={isSaving}
                   key={rating}
                   onPress={() => {
-                    void submitRating(rating);
+                    setDraft((current) => ({ ...current, rating }));
                   }}
                   style={[
                     styles.ratingButton,
@@ -92,6 +104,59 @@ export function PostWatchCheckIn({
               );
             })}
           </View>
+
+          <View style={styles.reactionRow}>
+            {reactionOptions.map((option) => {
+              const isSelected = draft.reaction === option.value;
+
+              return (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityState={{ disabled: isSaving, selected: isSelected }}
+                  disabled={isSaving}
+                  key={option.value}
+                  onPress={() => {
+                    setDraft((current) => ({ ...current, reaction: option.value }));
+                  }}
+                  style={[
+                    styles.reactionPill,
+                    isSelected ? styles.reactionPillSelected : null,
+                    isSaving ? styles.iconActionButtonDisabled : null,
+                  ]}
+                >
+                  <AppText style={isSelected ? styles.reactionPillTextSelected : styles.reactionPillText} variant="caption">
+                    {option.label}
+                  </AppText>
+                </Pressable>
+              );
+            })}
+          </View>
+
+          <TextInput
+            editable={!isSaving}
+            onChangeText={(favoriteCharacter) => setDraft((current) => ({ ...current, favoriteCharacter }))}
+            placeholder="Favorite character"
+            style={styles.checkInInput}
+            value={draft.favoriteCharacter ?? ""}
+          />
+
+          <TextInput
+            editable={!isSaving}
+            multiline
+            onChangeText={(comment) => setDraft((current) => ({ ...current, comment }))}
+            placeholder="Optional comment"
+            style={[styles.checkInInput, styles.checkInCommentInput]}
+            value={draft.comment ?? ""}
+          />
+
+          <Button
+            disabled={isSaving}
+            isLoading={isSaving}
+            label="Save check-in"
+            loadingLabel="Saving"
+            onPress={submit}
+            size="small"
+          />
 
           <Button
             disabled={isSaving}

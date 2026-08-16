@@ -1,5 +1,6 @@
 export type MediaType = "movie" | "show";
 export type PreferenceMediaType = "episode" | MediaType;
+export type WatchReaction = "loved" | "liked" | "mixed" | "not_for_me";
 
 export type UserResponse = {
   availabilityCountry: string;
@@ -145,6 +146,26 @@ export type CatalogResolveResponse = {
   mediaType: MediaType;
 };
 
+export type WatchReflection = {
+  comment: string | null;
+  favoriteCharacter: string | null;
+  reaction: WatchReaction;
+  updatedAt: string;
+};
+
+export type WatchReflectionInput = {
+  comment: string | null;
+  favoriteCharacter: string | null;
+  rating: number;
+  reaction: WatchReaction;
+};
+
+export type WatchReflectionResponse = WatchReflection & {
+  id: string;
+  mediaType: PreferenceMediaType;
+  rating: number;
+};
+
 export type WatchPathSummary = {
   description: string;
   id: string;
@@ -223,6 +244,7 @@ export type ShowSeasonDetailResponse = ShowSeasonSummary & {
 
 export type EpisodeDetailResponse = ShowEpisode & {
   rating: number | null;
+  reflection: WatchReflection | null;
   seasonId: string;
   seasonTitle: string;
   showId: string;
@@ -242,6 +264,7 @@ export type ShowDetailResponse = {
   progress: ShowProgressResponse;
   publicRating: number | null;
   rating: number | null;
+  reflection: WatchReflection | null;
   seasons: ShowSeasonSummary[];
   title: string;
 };
@@ -257,6 +280,7 @@ export type MovieDetailResponse = {
   posterPath: string | null;
   publicRating: number | null;
   rating: number | null;
+  reflection: WatchReflection | null;
   releaseDate: string | null;
   runtimeMinutes: number | null;
   title: string;

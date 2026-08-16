@@ -1,18 +1,20 @@
+import { useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Image, Pressable, SafeAreaView, ScrollView, View } from "react-native";
 
-import type { EpisodeDetailResponse } from "../api/tvlore-api";
+import type { EpisodeDetailResponse, WatchReflectionInput } from "../api/tvlore-api";
 import { AppText, Button, Skeleton } from "../ui";
 import { getTmdbPosterUrl } from "./posters";
 import { styles } from "./episode-detail-styles";
-import type { EpisodeDetailPreferenceActionState, EpisodeDetailWatchActionState } from "./use-episode-detail";
+import { PostWatchCheckIn, type PostWatchCheckInTarget } from "./PostWatchCheckIn";
+import type { EpisodeDetailPreferenceActionState, EpisodeDetailReflectionActionState, EpisodeDetailWatchActionState } from "./use-episode-detail";
 import { useEpisodeDetail } from "./use-episode-detail";
 
 export default function EpisodeDetailScreen() {
   const params = useLocalSearchParams<{ id?: string | string[] }>();
   const episodeId = typeof params.id === "string" ? params.id : null;
-  const { preferenceAction, refresh, setRating, setWatched, state, watchAction } = useEpisodeDetail(episodeId);
+  const { preferenceAction, reflectionAction, refresh, setRating, setReflection, setWatched, state, watchAction } = useEpisodeDetail(episodeId);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -36,8 +38,10 @@ export default function EpisodeDetailScreen() {
           <EpisodeDetailContent
             detail={state.detail}
             onSetRating={setRating}
+            onSetReflection={setReflection}
             onSetWatched={setWatched}
             preferenceAction={preferenceAction}
+            reflectionAction={reflectionAction}
             watchAction={watchAction}
           />
         ) : null}
@@ -49,17 +53,35 @@ export default function EpisodeDetailScreen() {
 function EpisodeDetailContent({
   detail,
   onSetRating,
+  onSetReflection,
   onSetWatched,
   preferenceAction,
+  reflectionAction,
   watchAction,
 }: {
   detail: EpisodeDetailResponse;
   onSetRating: (rating: number | null) => Promise<boolean>;
-  onSetWatched: (watched: boolean) => void;
+  onSetReflection: (input: WatchReflectionInput) => Promise<boolean>;
+  onSetWatched: (watched: boolean) => Promise<boolean>;
   preferenceAction: EpisodeDetailPreferenceActionState;
+  reflectionAction: EpisodeDetailReflectionActionState;
   watchAction: EpisodeDetailWatchActionState;
 }) {
+  const [checkInTarget, setCheckInTarget] = useState<PostWatchCheckInTarget | null>(null);
   const isSaving = watchAction.kind === "loading";
+  const setWatched = async (watched: boolean) => {
+    const saved = await onSetWatched(watched);
+
+    if (saved && watched) {
+      setCheckInTarget({
+        id: detail.id,
+        mediaType: "episode",
+        rating: detail.rating,
+        reflection: detail.reflection,
+        title: `${detail.showTitle} - ${detail.title}`,
+      });
+    }
+  };
 
   return (
     <View style={styles.detail}>
@@ -102,10 +124,19 @@ function EpisodeDetailContent({
           isLoading={isSaving}
           label={detail.watched ? "Mark unwatched" : "Mark watched"}
           loadingLabel="Saving"
-          onPress={() => onSetWatched(!detail.watched)}
+          onPress={() => {
+            void setWatched(!detail.watched);
+          }}
           variant={detail.watched ? "secondary" : "primary"}
         />
       </View>
+
+      <PostWatchCheckIn
+        actionState={reflectionAction}
+        onClose={() => setCheckInTarget(null)}
+        onSave={(_mediaType, _id, input) => onSetReflection(input)}
+        target={checkInTarget}
+      />
     </View>
   );
 }
