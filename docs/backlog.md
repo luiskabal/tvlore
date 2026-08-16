@@ -9,7 +9,7 @@ No active infrastructure tasks.
 ## Next
 
 - [x] Split `CatalogDetailContent.tsx` into focused detail subcomponents when the next detail UX feature touches it.
-- [ ] Move pure catalog response mappers out of `CatalogRepository` when catalog persistence is next edited.
+- [x] Move pure catalog response mappers out of `CatalogRepository` when catalog persistence is next edited.
 - [ ] Add user-owned imported or fetched watch paths after approving persistence/schema shape.
 - [ ] Add a TVLore-native recommendation engine with house rules, explicit taste signals, availability, and explainable reasons.
 - [ ] Expand post-watch check-in to episode-level reflections after approving persistence/schema shape: reaction tags, favorite character, and optional comment.
