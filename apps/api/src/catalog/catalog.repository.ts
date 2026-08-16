@@ -66,6 +66,16 @@ export class CatalogRepository {
           take: 1,
           where: { userId },
         },
+        reflections: {
+          select: {
+            comment: true,
+            favoriteCharacter: true,
+            reaction: true,
+            updatedAt: true,
+          },
+          take: 1,
+          where: { userId },
+        },
         seasons: {
           include: {
             episodes: {
@@ -102,6 +112,16 @@ export class CatalogRepository {
       include: {
         preferences: {
           select: { rating: true },
+          take: 1,
+          where: { userId },
+        },
+        reflections: {
+          select: {
+            comment: true,
+            favoriteCharacter: true,
+            reaction: true,
+            updatedAt: true,
+          },
           take: 1,
           where: { userId },
         },
@@ -194,6 +214,16 @@ export class CatalogRepository {
       include: {
         preferences: {
           select: { rating: true },
+          take: 1,
+          where: { userId },
+        },
+        reflections: {
+          select: {
+            comment: true,
+            favoriteCharacter: true,
+            reaction: true,
+            updatedAt: true,
+          },
           take: 1,
           where: { userId },
         },

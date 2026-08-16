@@ -1,4 +1,5 @@
 import type { ShowProgressResponseDto } from "../progress";
+import type { WatchReflectionDto } from "../reflections/reflections.types";
 
 export type MediaType = "movie" | "show";
 
@@ -101,6 +102,7 @@ export type ShowDetailResponseDto = {
   progress: ShowProgressResponseDto;
   publicRating: number | null;
   rating: number | null;
+  reflection: WatchReflectionDto | null;
   seasons: ShowSeasonSummaryDto[];
   title: string;
 };
@@ -115,6 +117,7 @@ export type MovieDetailResponseDto = {
   posterPath: string | null;
   publicRating: number | null;
   rating: number | null;
+  reflection: WatchReflectionDto | null;
   releaseDate: string | null;
   runtimeMinutes: number | null;
   title: string;
@@ -134,6 +137,7 @@ export type ShowSeasonDetailResponseDto = ShowSeasonSummaryDto & {
 
 export type EpisodeDetailResponseDto = ShowEpisodeDto & {
   rating: number | null;
+  reflection: WatchReflectionDto | null;
   seasonId: string;
   seasonTitle: string;
   showId: string;

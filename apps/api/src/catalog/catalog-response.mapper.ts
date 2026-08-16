@@ -17,6 +17,7 @@ export function toShowDetailResponse(show: {
   posterPath: string | null;
   preferences: Array<{ rating: number }>;
   publicRating: number | null;
+  reflections: Array<ReflectionRecord>;
   seasons: Array<Parameters<typeof toSeasonSummaryResponse>[0] & { episodes: ProgressEpisode[] }>;
   title: string;
   watchlistItems: Array<{ createdAt: Date }>;
@@ -32,6 +33,7 @@ export function toShowDetailResponse(show: {
     progress: toShowProgress(show),
     publicRating: show.publicRating,
     rating: show.preferences[0]?.rating ?? null,
+    reflection: toReflection(show.reflections),
     seasons: show.seasons.map(toSeasonSummaryResponse),
     title: show.title,
   };
@@ -45,6 +47,7 @@ export function toMovieDetailResponse(movie: {
   posterPath: string | null;
   preferences: Array<{ rating: number }>;
   publicRating: number | null;
+  reflections: Array<ReflectionRecord>;
   releaseDate: Date | null;
   runtimeMinutes: number | null;
   title: string;
@@ -63,6 +66,7 @@ export function toMovieDetailResponse(movie: {
     posterPath: movie.posterPath,
     publicRating: movie.publicRating,
     rating: movie.preferences[0]?.rating ?? null,
+    reflection: toReflection(movie.reflections),
     releaseDate: toDateString(movie.releaseDate),
     runtimeMinutes: movie.runtimeMinutes,
     title: movie.title,
@@ -121,6 +125,7 @@ export function toSeasonDetailResponse(season: {
 
 export function toEpisodeDetailResponse(episode: Parameters<typeof toEpisodeResponse>[0] & {
   preferences: Array<{ rating: number }>;
+  reflections: Array<ReflectionRecord>;
   season: {
     id: string;
     title: string;
@@ -134,6 +139,7 @@ export function toEpisodeDetailResponse(episode: Parameters<typeof toEpisodeResp
   return {
     ...toEpisodeResponse(episode),
     rating: episode.preferences[0]?.rating ?? null,
+    reflection: toReflection(episode.reflections),
     seasonId: episode.season.id,
     seasonTitle: episode.season.title,
     showId: episode.show.id,
@@ -168,6 +174,26 @@ function toEpisodeResponse(episode: {
     watchCount: watch ? 1 : 0,
     watched: Boolean(watch),
   };
+}
+
+type ReflectionRecord = {
+  comment: string | null;
+  favoriteCharacter: string | null;
+  reaction: string;
+  updatedAt: Date;
+};
+
+function toReflection(reflections: ReflectionRecord[] | undefined) {
+  const reflection = reflections?.[0];
+
+  return reflection
+    ? {
+        comment: reflection.comment,
+        favoriteCharacter: reflection.favoriteCharacter,
+        reaction: reflection.reaction as "loved" | "liked" | "mixed" | "not_for_me",
+        updatedAt: reflection.updatedAt.toISOString(),
+      }
+    : null;
 }
 
 function toDateString(value: Date | null) {

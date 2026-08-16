@@ -19,6 +19,7 @@ describe("CatalogRepository", () => {
           id: episodeId,
           overview: "Pilot overview.",
           preferences: [{ rating: 4 }],
+          reflections: [],
           runtimeMinutes: 50,
           season: {
             id: seasonId,
@@ -45,6 +46,7 @@ describe("CatalogRepository", () => {
       lastWatchedAt: watchedAt.toISOString(),
       overview: "Pilot overview.",
       rating: 4,
+      reflection: null,
       runtimeMinutes: 50,
       seasonId,
       seasonNumber: 1,
@@ -58,6 +60,11 @@ describe("CatalogRepository", () => {
       watched: true,
     });
     expect(client.episode.findUnique).toHaveBeenCalledWith(expect.objectContaining({
+      include: expect.objectContaining({
+        reflections: expect.objectContaining({
+          where: { userId },
+        }),
+      }),
       where: { id: episodeId },
     }));
   });

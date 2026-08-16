@@ -15,6 +15,9 @@ import { EpisodePreferencesController, MoviePreferencesController, ShowPreferenc
 import { PreferencesRepository } from "./preferences/preferences.repository";
 import { PreferencesService } from "./preferences/preferences.service";
 import { PrismaService } from "./prisma.service";
+import { EpisodeReflectionsController, MovieReflectionsController, ShowReflectionsController } from "./reflections/reflections.controller";
+import { ReflectionsRepository } from "./reflections/reflections.repository";
+import { ReflectionsService } from "./reflections/reflections.service";
 import { RecommendationsController } from "./recommendations/recommendations.controller";
 import { RecommendationsRepository } from "./recommendations/recommendations.repository";
 import { RecommendationsService } from "./recommendations/recommendations.service";
@@ -50,6 +53,9 @@ import { WatchPathsService } from "./watch-paths/watch-paths.service";
     ShowPreferencesController,
     MoviePreferencesController,
     EpisodePreferencesController,
+    ShowReflectionsController,
+    MovieReflectionsController,
+    EpisodeReflectionsController,
     LibraryController,
     ShowProgressController,
     RecommendationsController,
@@ -63,6 +69,7 @@ import { WatchPathsService } from "./watch-paths/watch-paths.service";
     TrackingRepository,
     WatchlistRepository,
     PreferencesRepository,
+    ReflectionsRepository,
     LibraryRepository,
     RecommendationsRepository,
     WatchPathsRepository,
@@ -71,6 +78,7 @@ import { WatchPathsService } from "./watch-paths/watch-paths.service";
     TrackingService,
     WatchlistService,
     PreferencesService,
+    ReflectionsService,
     LibraryService,
     RecommendationsService,
     WatchPathsService,

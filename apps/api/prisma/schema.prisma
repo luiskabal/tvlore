@@ -15,13 +15,16 @@ model User {
   createdAt           DateTime             @default(now()) @map("created_at")
   updatedAt           DateTime             @updatedAt @map("updated_at")
   episodePreferences  EpisodePreference[]
+  episodeReflections   EpisodeReflection[]
   episodeWatches      EpisodeWatch[]
   identities          UserIdentity[]
   moviePreferences    MoviePreference[]
+  movieReflections     MovieReflection[]
   movieWatchlistItems MovieWatchlistItem[]
   movieWatches        MovieWatch[]
   refreshSessions     RefreshSession[]
   showPreferences     ShowPreference[]
+  showReflections      ShowReflection[]
   showWatchlistItems  ShowWatchlistItem[]
   watchPaths          UserWatchPath[]
 
@@ -74,6 +77,7 @@ model Show {
   updatedAt      DateTime            @updatedAt @map("updated_at")
   episodes       Episode[]
   preferences    ShowPreference[]
+  reflections     ShowReflection[]
   seasons        Season[]
   watchlistItems ShowWatchlistItem[]
 
@@ -94,6 +98,7 @@ model Movie {
   createdAt      DateTime             @default(now()) @map("created_at")
   updatedAt      DateTime             @updatedAt @map("updated_at")
   preferences    MoviePreference[]
+  reflections     MovieReflection[]
   watchlistItems MovieWatchlistItem[]
   watches        MovieWatch[]
 
@@ -148,6 +153,7 @@ model Episode {
   season         Season         @relation(fields: [seasonId], references: [id], onDelete: Cascade)
   show           Show           @relation(fields: [showId], references: [id], onDelete: Cascade)
   preferences    EpisodePreference[]
+  reflections     EpisodeReflection[]
   watches        EpisodeWatch[]
 
   @@unique([showId, seasonNumber, episodeNumber])
@@ -260,6 +266,60 @@ model EpisodePreference {
   @@index([episodeId])
   @@index([userId])
   @@map("episode_preferences")
+}
+
+model ShowReflection {
+  id                String   @id @default(uuid()) @db.Uuid
+  userId            String   @map("user_id") @db.Uuid
+  showId            String   @map("show_id") @db.Uuid
+  reaction          String
+  favoriteCharacter String?  @map("favorite_character")
+  comment           String?
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  show              Show     @relation(fields: [showId], references: [id], onDelete: Cascade)
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, showId])
+  @@index([showId])
+  @@index([userId])
+  @@map("show_reflections")
+}
+
+model MovieReflection {
+  id                String   @id @default(uuid()) @db.Uuid
+  userId            String   @map("user_id") @db.Uuid
+  movieId           String   @map("movie_id") @db.Uuid
+  reaction          String
+  favoriteCharacter String?  @map("favorite_character")
+  comment           String?
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  movie             Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, movieId])
+  @@index([movieId])
+  @@index([userId])
+  @@map("movie_reflections")
+}
+
+model EpisodeReflection {
+  id                String   @id @default(uuid()) @db.Uuid
+  userId            String   @map("user_id") @db.Uuid
+  episodeId         String   @map("episode_id") @db.Uuid
+  reaction          String
+  favoriteCharacter String?  @map("favorite_character")
+  comment           String?
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  episode           Episode  @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, episodeId])
+  @@index([episodeId])
+  @@index([userId])
+  @@map("episode_reflections")
 }
 
 model UserWatchPath {
