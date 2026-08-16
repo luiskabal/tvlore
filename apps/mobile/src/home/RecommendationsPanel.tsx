@@ -1,3 +1,5 @@
+import type { ComponentProps } from "react";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState } from "react";
 import { Text, View } from "react-native";
 
@@ -10,6 +12,8 @@ import {
   getRecommendationActionKey,
   type RecommendationActionState,
 } from "./use-recommendation-actions";
+
+type IconName = ComponentProps<typeof Ionicons>["name"];
 
 export type RecommendationsPanelProps = {
   onOpenMovie: (movieId: string) => void;
@@ -34,9 +38,12 @@ export function RecommendationsPanel({
 
   if (recommendations.items.length === 0) {
     return (
-      <View style={styles.statusPanel}>
-        <Text style={styles.statusLabel}>Recommendations</Text>
-        <Text style={styles.statusDetail}>{getEmptyRecommendationText(recommendations.basis.ratedTitleCount)}</Text>
+      <View style={styles.listSection}>
+        <RecommendationHeader itemCount={0} />
+        <View style={styles.statusPanel}>
+          <Text style={styles.statusLabel}>Keep rating titles</Text>
+          <Text style={styles.statusDetail}>{getEmptyRecommendationText(recommendations.basis.ratedTitleCount)}</Text>
+        </View>
       </View>
     );
   }
@@ -44,7 +51,7 @@ export function RecommendationsPanel({
 
   return (
     <View style={styles.listSection}>
-      <Text style={styles.listTitle}>Recommended for you</Text>
+      <RecommendationHeader itemCount={visibleItems.length} />
       {recommendationAction.kind === "error" ? <Text style={styles.errorText}>{recommendationAction.message}</Text> : null}
       {visibleItems.length === 0 ? (
         <View style={styles.statusPanel}>
@@ -69,6 +76,26 @@ export function RecommendationsPanel({
           onOpenShow={onOpenShow}
         />
       ))}
+    </View>
+  );
+}
+
+function RecommendationHeader({ itemCount }: { itemCount: number }) {
+  return (
+    <View style={styles.recommendationHeader}>
+      <View style={styles.recommendationIconFrame}>
+        <Ionicons color="#ffffff" name={"sparkles-outline" satisfies IconName} size={24} />
+      </View>
+
+      <View style={styles.recommendationHeaderText}>
+        <Text style={styles.recommendationEyebrow}>For you</Text>
+        <Text style={styles.recommendationTitle}>Recommended picks</Text>
+        <Text style={styles.recommendationDetail}>Based on your ratings, genres, and availability country.</Text>
+      </View>
+
+      <View style={styles.recommendationCountPill}>
+        <Text style={styles.recommendationCountText}>{itemCount}</Text>
+      </View>
     </View>
   );
 }
