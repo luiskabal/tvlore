@@ -8,6 +8,12 @@ No active infrastructure tasks.
 
 ## Next
 
+- [ ] Add backend-owned season-level `Mark all watched` / `Mark all unwatched`, then simplify the mobile season hook so it no longer loops through episode mutations.
+- [ ] Harden the mobile API client for non-JSON, empty, or proxy-shaped error responses.
+- [ ] Normalize incoming `x-correlation-id` values before returning/logging them.
+- [ ] Split `LibraryOverview.tsx` by visible Library section when the next Library UX feature touches it.
+- [ ] Split `CatalogDetailContent.tsx` into focused detail subcomponents when the next detail UX feature touches it.
+- [ ] Move pure catalog response mappers out of `CatalogRepository` when catalog persistence is next edited.
 - [ ] Add user-owned imported or fetched watch paths after approving persistence/schema shape.
 - [ ] Add a TVLore-native recommendation engine with house rules, explicit taste signals, availability, and explainable reasons.
 - [ ] Expand post-watch check-in to episode-level reflections after approving persistence/schema shape: reaction tags, favorite character, and optional comment.
@@ -19,7 +25,7 @@ No active infrastructure tasks.
 ## Notes
 
 - Season bulk watched is needed because marking episodes one by one is too slow for real use.
-- Season-level bulk watched exists in season detail, and show-level bulk now has a backend use case so mobile does not fire hundreds of episode mutations.
+- Show-level bulk watched has a backend use case. Season-level bulk currently exists as mobile orchestration and should move backend-side next.
 - Mobile cleanup should start with the largest screens: `SeasonDetailScreen`, `CatalogDetailScreen`, `SearchScreen`, then `HomeScreen`.
 - Keep the current screen -> hook -> API client boundary. The cleanup goal is readability, not a new state-management layer yet.
 - Ratings are explicit preference signals. Keep them separate from watched state so recommendations can use both later.
