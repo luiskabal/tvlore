@@ -9,6 +9,7 @@ app/
 |-- _layout.tsx
 |-- index.tsx
 |-- library.tsx
+|-- recommendations.tsx
 |-- search.tsx
 |-- paths.tsx
 |-- profile.tsx
@@ -252,18 +253,19 @@ visual patterns. These components are presentation-only. They do not fetch
 data, resolve catalog IDs, calculate progress, or own domain-specific mutation
 logic.
 
-`RecommendationsPanel` is presentation-only and currently belongs to Search.
-`useSearchRecommendations` loads only `GET /recommendations`; Library does not
-fetch recommendation data. The API guard layer owns the response-shape
-validation. Recommendation rows receive navigation and save-to-watchlist
-callbacks from the route screen. `useRecommendationActions` reuses the existing
-watchlist endpoint, then notifies the local library invalidator. The panel owns
-only local optimistic row hiding and restores the row if the save fails.
-Recommendation rows render backend-provided genre names when available, but do
-not calculate suggestion quality or render provider availability locally.
-Availability stays in detail screens. `recommendation-detail.ts` owns the small
-presentation rule that turns preferred-genre overlap into copy such as "Because
-you like Drama".
+Search renders a `Recommended picks` entry card. The full recommendation list
+lives in `RecommendationsScreen`, which reuses the presentation-only
+`RecommendationsPanel`. `useSearchRecommendations` loads only
+`GET /recommendations`; Library does not fetch recommendation data. The API
+guard layer owns the response-shape validation. Recommendation rows receive
+navigation and save-to-watchlist callbacks from the route screen.
+`useRecommendationActions` reuses the existing watchlist endpoint, then notifies
+the local library invalidator. The panel owns only local optimistic row hiding
+and restores the row if the save fails. Recommendation rows render
+backend-provided genre names when available, but do not calculate suggestion
+quality or render provider availability locally. Availability stays in detail
+screens. `recommendation-detail.ts` owns the small presentation rule that turns
+preferred-genre overlap into copy such as "Because you like Drama".
 
 Library rows receive navigation callbacks from `LibraryScreen`: movies route
 to movie detail and episode/show rows route to season detail.
@@ -305,6 +307,7 @@ SearchScreen
   -> useSearchRecommendations()
   -> GET /search
   -> GET /recommendations
+  -> RecommendationsScreen
   -> POST /catalog/resolve
   -> router.push(/shows/:id or /movies/:id)
   -> CatalogDetailScreen

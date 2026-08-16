@@ -27,7 +27,7 @@ function getActiveTab(pathname: string): AppTab | null {
     return "library";
   }
 
-  if (pathname === "/search") {
+  if (pathname === "/search" || pathname === "/recommendations") {
     return "search";
   }
 

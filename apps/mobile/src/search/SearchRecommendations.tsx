@@ -1,19 +1,26 @@
-import { View } from "react-native";
+import type { ComponentProps } from "react";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { router } from "expo-router";
+import { Pressable, View } from "react-native";
 
-import { RecommendationsPanel, type RecommendationsPanelProps } from "../home/RecommendationsPanel";
+import type { RecommendationsResponse } from "../api/tvlore-api";
 import { AppText, Button, Skeleton } from "../ui";
+import { ui } from "../ui";
 import { styles } from "./search-styles";
 import type { SearchRecommendationsState } from "./use-search-recommendations";
 
-type SearchRecommendationsProps = RecommendationsPanelProps & {
+type IconName = ComponentProps<typeof Ionicons>["name"];
+
+type SearchRecommendationsProps = {
   onRetry: () => void;
+  recommendations: RecommendationsResponse | null;
   state: SearchRecommendationsState;
 };
 
 export function SearchRecommendations({
   onRetry,
+  recommendations,
   state,
-  ...recommendationsProps
 }: SearchRecommendationsProps) {
   if (state.kind === "loading" || state.kind === "idle") {
     return (
@@ -35,9 +42,31 @@ export function SearchRecommendations({
     );
   }
 
-  if (!recommendationsProps.recommendations) {
+  if (!recommendations) {
     return null;
   }
 
-  return <RecommendationsPanel {...recommendationsProps} />;
+  return (
+    <Pressable
+      accessibilityLabel="Open recommended picks"
+      accessibilityRole="button"
+      onPress={() => router.push("/recommendations")}
+      style={({ pressed }) => [styles.recommendationEntry, pressed ? styles.pressedResultRow : null]}
+    >
+      <View style={styles.recommendationEntryIcon}>
+        <Ionicons color={ui.color.white} name={"sparkles-outline" satisfies IconName} size={24} />
+      </View>
+
+      <View style={styles.recommendationEntryText}>
+        <AppText tone="accent" variant="caption">For you</AppText>
+        <AppText variant="section">Recommended picks</AppText>
+        <AppText tone="muted">Open your personalized suggestions.</AppText>
+      </View>
+
+      <View style={styles.recommendationEntryMeta}>
+        <AppText tone="accent" variant="caption">{recommendations.items.length}</AppText>
+        <Ionicons color={ui.color.muted} name={"chevron-forward" satisfies IconName} size={20} />
+      </View>
+    </Pressable>
+  );
 }

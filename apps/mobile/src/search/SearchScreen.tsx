@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { SafeAreaView, ScrollView } from "react-native";
 
 import type { CatalogSearchResult, MediaType } from "../api/tvlore-api";
-import { useRecommendationActions } from "../home/use-recommendation-actions";
 import { SearchControls } from "./SearchControls";
 import { SearchRecommendations } from "./SearchRecommendations";
 import { SearchResults } from "./SearchResults";
@@ -19,7 +18,6 @@ export default function SearchScreen() {
   const [query, setQuery] = useState("dark");
   const [filter, setFilter] = useState<SearchFilter>("all");
   const { resolveResult, resolveState, runSearch, search } = useCatalogSearch();
-  const { recommendationAction, saveRecommendation } = useRecommendationActions();
   const { recommendations, recommendationsState, retryRecommendations } = useSearchRecommendations();
   const skipNextDebouncedSearchRef = useRef(false);
   const canSearch = canRunSearch(query);
@@ -90,11 +88,7 @@ export default function SearchScreen() {
         />
 
         <SearchRecommendations
-          onOpenMovie={openMovie}
-          onOpenShow={openShow}
           onRetry={retryRecommendations}
-          onSaveToWatchlist={saveRecommendation}
-          recommendationAction={recommendationAction}
           recommendations={recommendations}
           state={recommendationsState}
         />
@@ -116,12 +110,4 @@ function pushDetail(mediaType: MediaType, id: string) {
   }
 
   router.push({ pathname: "/movies/[id]", params: { id } });
-}
-
-function openMovie(id: string) {
-  pushDetail("movie", id);
-}
-
-function openShow(id: string) {
-  pushDetail("show", id);
 }

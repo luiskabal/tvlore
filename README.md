@@ -44,7 +44,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - First-pass recommendations from stored rating preferences, hydrated catalog data, persisted genre names, and user-country streaming availability.
 - Recommendation rows explain genre matches when the user's rated-title genres overlap with a suggested title.
 - Recommendation rows can be saved directly to the watchlist with optimistic feedback.
-- Search combines catalog search with personalized recommendations, and recommendation rows navigate back into movie and show detail screens.
+- Search combines catalog search with a `Recommended picks` entry, which opens a dedicated recommendations list.
 - Library/Profile keeps prior data during refresh and shows skeletons on first load.
 - Routed Library, Search, Paths, and Profile mobile surfaces with bottom app navigation.
 - Detail screens render content-shaped skeletons while show, movie, or season data loads.

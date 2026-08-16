@@ -42,7 +42,7 @@ Implemented:
 - Mobile tracking mutations invalidate the local library data.
 - Mobile watchlist mutations invalidate the local library data.
 - Mobile Library/Profile refresh authenticated library data after tracking changes.
-- Mobile Search can show backend-owned recommendation candidates, while visible streaming availability stays in detail screens.
+- Mobile Search can show a `Recommended picks` entry that opens backend-owned recommendation candidates, while visible streaming availability stays in detail screens.
 - Mobile recommendation rows can explain preferred-genre overlap when the suggestion shares genres with highly rated titles.
 - Mobile recommendation rows can save titles directly to the watchlist with optimistic feedback.
 - Mobile Library shows watchlist titles and rated titles separately from watched history.
@@ -786,6 +786,7 @@ Profile
 Search
 -> GET /search
 -> GET /recommendations
+-> Recommended picks route for the full recommendation list
 -> POST /catalog/resolve
 -> Show or movie detail route
 -> GET /shows/:id or GET /movies/:id
@@ -818,7 +819,7 @@ Current behavior:
 - Library shows continue-watching and recently watched rows when the backend has watched data.
 - Library shows saved watchlist rows when the backend has watchlist data.
 - Library shows rated show/movie rows when the backend has rating preference data.
-- Search shows recommendation rows when the backend has eligible catalog candidates. Availability is intentionally shown only after opening a title detail.
+- Search shows a `Recommended picks` entry when the backend has eligible catalog candidates; the dedicated recommendations route shows the full list. Availability is intentionally shown only after opening a title detail.
 - Recommendation row copy can explain simple genre overlap, such as "Because you like Drama", from backend-provided preferred genres and item genres.
 - Recommendation rows open the matching show or movie detail screen.
 - Recommendation rows can save the title to watchlist immediately, then reconcile through the existing library refresh invalidator.

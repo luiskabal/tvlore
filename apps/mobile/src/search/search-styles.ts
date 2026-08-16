@@ -69,6 +69,33 @@ export const styles = StyleSheet.create({
   pressedResultRow: {
     opacity: 0.72,
   },
+  recommendationEntry: {
+    alignItems: "center",
+    backgroundColor: ui.color.accentSoft,
+    borderColor: "#b8ddcd",
+    borderRadius: ui.radius.md,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: 12,
+    padding: 14,
+  },
+  recommendationEntryIcon: {
+    alignItems: "center",
+    backgroundColor: ui.color.accent,
+    borderRadius: ui.radius.pill,
+    height: 42,
+    justifyContent: "center",
+    width: 42,
+  },
+  recommendationEntryMeta: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 4,
+  },
+  recommendationEntryText: {
+    flex: 1,
+    gap: 3,
+  },
   resultBody: {
     flex: 1,
     gap: 7,
