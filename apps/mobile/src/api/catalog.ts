@@ -1,4 +1,4 @@
-import { fetchCachedJson, fetchMutationJson, getAuthHeaders } from "./client";
+import { fetchCachedJson, fetchJson, fetchMutationJson, getAuthHeaders } from "./client";
 import {
   isCatalogResolveResponse,
   isCatalogSearchResponse,
@@ -40,7 +40,7 @@ export async function resolveCatalogItem(
   accessToken: string | null,
   result: CatalogSearchResult,
 ): Promise<CatalogResolveResponse> {
-  return fetchMutationJson(
+  return fetchJson(
     "/catalog/resolve",
     isCatalogResolveResponse,
     "Unexpected resolve response",

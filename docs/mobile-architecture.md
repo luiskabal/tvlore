@@ -209,8 +209,11 @@ validation, `types.ts` owns transport types, and the domain files own their
 endpoint groups. `supabase-auth.ts` owns Supabase session and OAuth behavior.
 `client.ts` also owns a short-lived read cache for catalog searches, movie/show
 detail, and season detail. Cache entries are keyed by request path and a hash of
-the auth header, are not persisted to AsyncStorage, and are cleared on login,
-logout, and successful POST/PUT/DELETE calls.
+the auth header, are not persisted to AsyncStorage, and duplicate in-flight
+reads share the same promise. User-state mutations clear the cache on login,
+logout, and successful POST/PUT/DELETE calls. Catalog resolve calls do not clear
+the read cache because they hydrate catalog identity and do not change the
+user's library, watched state, watchlist, or rating preferences.
 
 `LibraryScreen` and `ProfileScreen` consume shared authenticated backend state
 through `useHomeModel`, but each screen opts into only the data it renders:
@@ -355,11 +358,13 @@ season detail routes.
 Search uses client-side prefetch:
 
 - `GET /search` runs after a short debounce once the query has at least three characters.
-- Repeated search/detail reads can reuse the API client's short-lived in-memory cache.
+- Repeated search/detail reads can reuse the API client's short-lived in-memory cache and in-flight request de-duplication.
 - Changing the show/movie filter triggers an immediate request and clears stale results into skeleton rows.
 - The Search button still forces an immediate request.
 - Older in-flight search responses are ignored if a newer query starts first.
-- `POST /catalog/resolve` is never prefetched because it writes catalog identity to the database.
+- Search prefetches detail reads for the first few visible results that already have TVLore IDs.
+- Recommendation loading prefetches detail reads for the first few recommended titles.
+- `POST /catalog/resolve` is still not bulk-prefetched because it writes catalog identity to the database.
 - Initial search loading renders skeleton result rows.
 - Typed-query refreshes keep previous results visible and show an updating indicator.
 

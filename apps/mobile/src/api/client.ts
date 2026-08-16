@@ -10,6 +10,8 @@ type ReadCacheEntry = {
 };
 
 const readCache = new Map<string, ReadCacheEntry>();
+const readInflight = new Map<string, Promise<unknown>>();
+let readCacheRevision = 0;
 
 export async function fetchJson<T>(
   path: string,
@@ -46,18 +48,39 @@ export async function fetchCachedJson<T>(
     readCache.delete(cacheKey);
   }
 
-  const body = await fetchJson(path, guard, errorMessage, options);
+  const inflight = readInflight.get(cacheKey);
 
-  pruneReadCache(now);
-  if (readCache.size >= maxReadCacheEntries) {
-    const oldestKey = readCache.keys().next().value;
-
-    if (oldestKey) {
-      readCache.delete(oldestKey);
-    }
+  if (inflight) {
+    return inflight as Promise<T>;
   }
 
-  readCache.set(cacheKey, { expiresAt: now + ttlMs, value: body });
+  const revision = readCacheRevision;
+  const request = fetchJson(path, guard, errorMessage, options)
+    .then((body) => {
+      if (revision === readCacheRevision) {
+        const nextNow = Date.now();
+
+        pruneReadCache(nextNow);
+        if (readCache.size >= maxReadCacheEntries) {
+          const oldestKey = readCache.keys().next().value;
+
+          if (oldestKey) {
+            readCache.delete(oldestKey);
+          }
+        }
+
+        readCache.set(cacheKey, { expiresAt: nextNow + ttlMs, value: body });
+      }
+
+      return body;
+    })
+    .finally(() => {
+      readInflight.delete(cacheKey);
+    });
+
+  readInflight.set(cacheKey, request);
+
+  const body = await request;
 
   return body;
 }
@@ -76,7 +99,9 @@ export async function fetchMutationJson<T>(
 }
 
 export function clearApiReadCache() {
+  readCacheRevision += 1;
   readCache.clear();
+  readInflight.clear();
 }
 
 export function getAuthHeaders(accessToken: string | null) {
