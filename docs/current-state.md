@@ -17,6 +17,7 @@ Implemented:
 - Authenticated `POST /catalog/resolve` that converts TMDB refs into TVLore internal IDs.
 - Authenticated show/movie detail endpoints by internal TVLore ID.
 - Authenticated show/movie watch-provider availability endpoints by country.
+- Authenticated show/movie/episode cast endpoints by internal TVLore ID.
 - Season list and season detail endpoints for shows.
 - Episode catalog persistence when a season is opened.
 - Episode detail endpoint by internal TVLore episode ID.
@@ -41,12 +42,13 @@ Implemented:
 - Mobile season detail can mark all loaded season episodes watched or unwatched.
 - Mobile episode detail can mark an episode watched or unwatched.
 - Mobile episode detail can rate or clear a 1-5 episode preference.
-- Mobile episode detail opens an optional post-watch check-in with rating, sensation, favorite character, and optional comment.
+- Mobile episode detail opens an optional post-watch check-in with rating, sensation, cast-based favorite character, and optional comment.
 - Mobile show detail can mark the full show watched or unwatched through one backend-owned bulk action.
 - Mobile show/movie detail can add or remove a title from the watchlist.
 - Mobile show/movie detail can rate or clear a rating preference for a title.
 - Mobile show/movie detail compares the TMDB public rating against the user's rating in a compact spoiler-aware row.
 - Mobile show/movie detail opens an optional post-watch check-in after a movie or full show is marked watched.
+- Mobile post-watch check-in loads cast lazily and lets the user pick a favorite character from cast photos, with manual text fallback.
 - Mobile show/movie detail renders country-aware watch-provider icons using the user's saved country preference.
 - Mobile tracking mutations invalidate the local library data.
 - Mobile watchlist mutations invalidate the local library data.
@@ -945,7 +947,7 @@ Current behavior:
 - Show and movie detail can set or clear a 1-5 rating preference.
 - Rating actions update local detail state optimistically, then reconcile from the backend mutation response.
 - Show and movie detail render TMDB `publicRating` as `Spoiler` until the user rates the title or manually reveals it; the user's rating shows `--` until rated.
-- After marking a movie, full show, or episode watched, mobile opens an optional post-watch check-in for rating, sensation, favorite character, and comment.
+- After marking a movie, full show, or episode watched, mobile opens an optional post-watch check-in for rating, sensation, cast-based favorite character, and comment.
 - Reflection saves optimistically update the local detail rating/reflection state, then reconcile from the backend mutation response.
 - Profile lets the user choose the `Where to watch` country through flag-labelled country chips.
 - Show and movie detail show `Where to watch` provider icons for the user's saved country preference, with device country and `CL` as fallback. Tapping a provider opens the title's TMDB/JustWatch availability link for that country.

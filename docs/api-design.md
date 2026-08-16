@@ -811,6 +811,61 @@ Business validation:
 
 Errors: `MOVIE_NOT_FOUND`, `VALIDATION_FAILED`, `CATALOG_PROVIDER_UNAVAILABLE`.
 
+### `GET /shows/:showId/cast`, `GET /movies/:movieId/cast`, `GET /episodes/:episodeId/cast`
+
+Purpose: return a normalized cast list for the authenticated post-watch check-in favorite-character picker.
+
+Current MVP status: implemented through TMDB-backed provider calls. Cast is intentionally not embedded in show/movie/episode detail responses so detail navigation can stay fast.
+
+Auth: required.
+
+Route parameters:
+
+- `showId` UUID for show cast.
+- `movieId` UUID for movie cast.
+- `episodeId` UUID for episode cast.
+
+Query parameters: none.
+
+Request: none.
+
+Response:
+
+```json
+{
+  "items": [
+    {
+      "id": "tmdb-person-id",
+      "actorName": "Louis Hofmann",
+      "characterName": "Jonas Kahnwald",
+      "profilePath": "/profile.jpg",
+      "order": 0
+    }
+  ]
+}
+```
+
+Status codes:
+
+- `200 OK`
+- `400 BAD_REQUEST`
+- `401 UNAUTHORIZED`
+- `404 NOT_FOUND`
+
+Authorization: authenticated users may read cast metadata for resolved catalog items.
+
+Transport validation:
+
+- Route ID must be a UUID.
+
+Business validation:
+
+- The referenced TVLore show, movie, or episode must exist.
+- The backend resolves the related TMDB provider ID before calling TMDB.
+- Episode cast combines episode `credits.cast`, episode guest stars, and top-level guest stars when TMDB provides them.
+
+Errors: `SHOW_NOT_FOUND`, `MOVIE_NOT_FOUND`, `EPISODE_NOT_FOUND`, `VALIDATION_FAILED`, `CATALOG_PROVIDER_UNAVAILABLE`.
+
 ### `PUT /shows/:showId/preference`
 
 Purpose: set a 1-5 rating preference for a show for the authenticated user.

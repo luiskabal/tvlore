@@ -135,6 +135,7 @@ No active infrastructure tasks.
 - [x] Split `LibraryOverview.tsx` by visible Library section.
 - [x] Design watch reflection persistence separately from watched state and rating preferences.
 - [x] Expand post-watch check-in to show/movie/episode reflections with sensation, favorite character, and optional comment.
+- [x] Add TMDB-backed cast endpoints and visual favorite-character picker for post-watch check-ins.
 
 ## Deferred
 

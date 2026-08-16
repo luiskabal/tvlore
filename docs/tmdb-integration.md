@@ -14,6 +14,7 @@ The backend is the only layer that should call TMDB using server-side credential
 - Search returns provider-backed refs and includes `tvloreId` when the provider item has already been resolved.
 - `POST /catalog/resolve` calls TMDB detail endpoints and persists `shows`, `movies`, and `external_identifiers`.
 - `GET /shows/:showId/seasons/:seasonNumber` calls TMDB season detail and persists `episodes` for that season.
+- `GET /movies/:movieId/cast`, `GET /shows/:showId/cast`, and `GET /episodes/:episodeId/cast` call TMDB credits endpoints through the backend and normalize actor, character, order, and profile image path.
 
 ## Anti-Corruption Boundary
 
@@ -27,6 +28,7 @@ interface MediaCatalogProvider {
   getShow(input: ProviderShowInput): Promise<ExternalShow>;
   getMovie(input: ProviderMovieInput): Promise<ExternalMovie>;
   getSeason(input: ProviderSeasonInput): Promise<ExternalSeason>;
+  getCast(input: ProviderCastInput): Promise<ExternalCastMember[]>;
 }
 ```
 
@@ -56,6 +58,11 @@ type ProviderSeasonInput = {
   providerId: string;
   seasonNumber: number;
 };
+
+type ProviderCastInput =
+  | { mediaType: "movie"; provider: CatalogProvider; providerId: string }
+  | { mediaType: "show"; provider: CatalogProvider; providerId: string }
+  | { episodeNumber: number; mediaType: "episode"; provider: CatalogProvider; providerShowId: string; seasonNumber: number };
 ```
 
 This interface is illustrative. Implementation may refine names, but the boundary must remain.

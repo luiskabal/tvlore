@@ -464,6 +464,7 @@ CatalogDetailScreen(movie/show) or EpisodeDetailScreen(episode)
   -> useCatalogDetail()
   -> mark watched succeeds
   -> PostWatchCheckIn opens as optional UI
+  -> GET /movies/:movieId/cast, GET /shows/:showId/cast, or GET /episodes/:episodeId/cast
   -> PUT /movies/:movieId/reflection
   -> PUT /shows/:showId/reflection
   -> PUT /episodes/:episodeId/reflection
@@ -471,9 +472,12 @@ CatalogDetailScreen(movie/show) or EpisodeDetailScreen(episode)
 
 `PostWatchCheckIn` is presentation-only. It builds a small draft for rating,
 sensation, favorite character, and optional comment, then the screen hook sends
-that draft through the API client. The backend persists the rating in the
-existing preference model and stores the richer reflection separately. The flow
-is skip-friendly: watched state is already saved before the modal appears.
+that draft through the API client. Cast is loaded lazily only after the modal
+opens so detail navigation stays fast; the chosen character is still persisted
+as the existing reflection `favoriteCharacter` string. The backend persists the
+rating in the existing preference model and stores the richer reflection
+separately. The flow is skip-friendly: watched state is already saved before
+the modal appears.
 
 Catalog and season detail routes render content-shaped skeletons while their
 initial API requests are pending. This keeps detail screens visually stable

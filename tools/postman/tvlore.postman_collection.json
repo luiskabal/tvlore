@@ -763,6 +763,65 @@
           ]
         },
         {
+          "name": "GET /shows/:showId/cast",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "postman-{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/shows/{{resolvedShowId}}/cast",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "shows",
+                "{{resolvedShowId}}",
+                "cast"
+              ]
+            },
+            "description": "Returns normalized TMDB cast metadata for the post-watch favorite-character picker."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('response is catalog cast', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.items).to.be.an('array');",
+                  "  body.items.forEach(function (member) {",
+                  "    pm.expect(member.id).to.be.a('string');",
+                  "    pm.expect(member.actorName).to.be.a('string');",
+                  "    pm.expect(member.characterName).to.be.a('string');",
+                  "    pm.expect(member.order).to.be.a('number');",
+                  "    pm.expect(member.order).to.be.at.least(0);",
+                  "    pm.expect(member.profilePath === null || typeof member.profilePath === 'string').to.eql(true);",
+                  "  });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "GET /shows/:showId/watch-providers",
           "request": {
             "method": "GET",
@@ -1170,6 +1229,65 @@
                   "  pm.expect(body.rating === null || typeof body.rating === 'number').to.eql(true);",
                   "  pm.expect(body.watched).to.be.a('boolean');",
                   "  pm.expect(body.watchCount).to.be.a('number');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /episodes/:episodeId/cast",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "postman-{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/episodes/{{resolvedEpisodeId}}/cast",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "episodes",
+                "{{resolvedEpisodeId}}",
+                "cast"
+              ]
+            },
+            "description": "Returns normalized TMDB cast metadata for the post-watch favorite-character picker."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('response is catalog cast', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.items).to.be.an('array');",
+                  "  body.items.forEach(function (member) {",
+                  "    pm.expect(member.id).to.be.a('string');",
+                  "    pm.expect(member.actorName).to.be.a('string');",
+                  "    pm.expect(member.characterName).to.be.a('string');",
+                  "    pm.expect(member.order).to.be.a('number');",
+                  "    pm.expect(member.order).to.be.at.least(0);",
+                  "    pm.expect(member.profilePath === null || typeof member.profilePath === 'string').to.eql(true);",
+                  "  });",
                   "});"
                 ]
               }
@@ -1652,6 +1770,65 @@
                   "  pm.expect(body.title).to.be.a('string');",
                   "  pm.expect(body.watched).to.be.a('boolean');",
                   "  pm.expect(body.watchCount).to.be.a('number');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /movies/:movieId/cast",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "postman-{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/movies/{{resolvedMovieId}}/cast",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "movies",
+                "{{resolvedMovieId}}",
+                "cast"
+              ]
+            },
+            "description": "Returns normalized TMDB cast metadata for the post-watch favorite-character picker."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('response is catalog cast', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.items).to.be.an('array');",
+                  "  body.items.forEach(function (member) {",
+                  "    pm.expect(member.id).to.be.a('string');",
+                  "    pm.expect(member.actorName).to.be.a('string');",
+                  "    pm.expect(member.characterName).to.be.a('string');",
+                  "    pm.expect(member.order).to.be.a('number');",
+                  "    pm.expect(member.order).to.be.at.least(0);",
+                  "    pm.expect(member.profilePath === null || typeof member.profilePath === 'string').to.eql(true);",
+                  "  });",
                   "});"
                 ]
               }

@@ -39,10 +39,13 @@ PATCH /users/me
 GET /search
 POST /catalog/resolve
 GET /shows/:showId
+GET /shows/:showId/cast
 GET /shows/:showId/seasons
 GET /shows/:showId/seasons/:seasonNumber
 GET /episodes/:episodeId
+GET /episodes/:episodeId/cast
 GET /movies/:movieId
+GET /movies/:movieId/cast
 PUT /episodes/:episodeId/preference
 DELETE /episodes/:episodeId/preference
 PUT /shows/:showId/reflection
@@ -75,7 +78,8 @@ POST /watch-paths/:pathId/watchlist
 Show and movie detail endpoints read internal TVLore IDs. Show detail also
 returns progress for episodes already persisted in TVLore. Season detail fetches
 and persists TMDB episodes for the requested season. Episode detail reads one
-persisted episode with show/season context. Watch endpoints store
+persisted episode with show/season context. Cast endpoints read provider cast
+metadata through the backend for the post-watch favorite-character picker. Watch endpoints store
 per-user watched state, watchlist endpoints store saved intent, and
 preference endpoints store user ratings. Library/progress endpoints read the
 authenticated user's viewing state. Reflection endpoints store private

@@ -106,6 +106,7 @@ Authenticated `api:check` covers:
 - Movie resolve idempotency.
 - Search result `tvloreId` after resolve.
 - Show, season, episode detail contracts.
+- Show, movie, and episode cast contracts.
 - Episode watch/unwatch idempotency.
 - Movie watch/unwatch idempotency.
 - Progress after marking an episode watched.

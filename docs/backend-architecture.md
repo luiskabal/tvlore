@@ -54,6 +54,7 @@ src/
 |
 |-- catalog/
 |   |-- catalog.controller.ts
+|   |-- catalog-cast.ts
 |   |-- catalog-detail.ts
 |   |-- catalog-watch-providers.ts
 |   |-- catalog.repository.ts

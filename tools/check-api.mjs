@@ -56,6 +56,7 @@ async function checkUnauthorizedRoutes() {
     method: "POST",
   });
   await checkUnauthorized(`/shows/${missingUuid}`);
+  await checkUnauthorized(`/shows/${missingUuid}/cast`);
   await checkUnauthorized(`/shows/${missingUuid}/watch-providers?country=CL`);
   await checkUnauthorized(`/shows/${missingUuid}/seasons`);
   await checkUnauthorized(`/shows/${missingUuid}/seasons/1`);
@@ -78,6 +79,7 @@ async function checkUnauthorizedRoutes() {
     method: "PUT",
   });
   await checkUnauthorized(`/movies/${missingUuid}`);
+  await checkUnauthorized(`/movies/${missingUuid}/cast`);
   await checkUnauthorized(`/movies/${missingUuid}/watch-providers?country=CL`);
   await checkUnauthorized(`/movies/${missingUuid}/watchlist`, { method: "POST" });
   await checkUnauthorized(`/movies/${missingUuid}/watchlist`, { method: "DELETE" });
@@ -99,6 +101,7 @@ async function checkUnauthorizedRoutes() {
   await checkUnauthorized("/watch-paths/mcu-infinity-saga-release");
   await checkUnauthorized("/watch-paths/mcu-infinity-saga-release/watchlist", { method: "POST" });
   await checkUnauthorized(`/episodes/${missingUuid}`);
+  await checkUnauthorized(`/episodes/${missingUuid}/cast`);
   await checkUnauthorized(`/episodes/${missingUuid}/preference`, {
     body: JSON.stringify({ rating: 4 }),
     headers: { "content-type": "application/json" },
@@ -193,6 +196,11 @@ async function checkAuthenticatedProductFlow(token) {
     expectedStatus: 400,
     headers: authHeaders,
   });
+  await check("/shows/not-a-uuid/cast", {
+    assert: assertValidationError,
+    expectedStatus: 400,
+    headers: authHeaders,
+  });
   await check("/shows/not-a-uuid/watch-providers?country=CL", {
     assert: assertValidationError,
     expectedStatus: 400,
@@ -240,6 +248,11 @@ async function checkAuthenticatedProductFlow(token) {
     expectedStatus: 404,
     headers: authHeaders,
   });
+  await check(`/shows/${missingUuid}/cast`, {
+    assert: (body) => assertError(body, "SHOW_NOT_FOUND"),
+    expectedStatus: 404,
+    headers: authHeaders,
+  });
   await check(`/shows/${missingUuid}/watchlist`, {
     assert: (body) => assertError(body, "SHOW_NOT_FOUND"),
     expectedStatus: 404,
@@ -278,6 +291,11 @@ async function checkAuthenticatedProductFlow(token) {
     expectedStatus: 400,
     headers: authHeaders,
   });
+  await check("/episodes/not-a-uuid/cast", {
+    assert: assertValidationError,
+    expectedStatus: 400,
+    headers: authHeaders,
+  });
   await check("/episodes/not-a-uuid/preference", {
     assert: assertValidationError,
     body: JSON.stringify({ rating: 4 }),
@@ -297,7 +315,22 @@ async function checkAuthenticatedProductFlow(token) {
     expectedStatus: 404,
     headers: authHeaders,
   });
+  await check(`/episodes/${missingUuid}/cast`, {
+    assert: (body) => assertError(body, "EPISODE_NOT_FOUND"),
+    expectedStatus: 404,
+    headers: authHeaders,
+  });
   await check(`/movies/${missingUuid}`, {
+    assert: (body) => assertError(body, "MOVIE_NOT_FOUND"),
+    expectedStatus: 404,
+    headers: authHeaders,
+  });
+  await check("/movies/not-a-uuid/cast", {
+    assert: assertValidationError,
+    expectedStatus: 400,
+    headers: authHeaders,
+  });
+  await check(`/movies/${missingUuid}/cast`, {
     assert: (body) => assertError(body, "MOVIE_NOT_FOUND"),
     expectedStatus: 404,
     headers: authHeaders,
@@ -444,6 +477,11 @@ async function checkAuthenticatedProductFlow(token) {
     expectedStatus: 200,
     headers: authHeaders,
   });
+  await check(`/shows/${resolvedShow.id}/cast`, {
+    assert: assertCatalogCast,
+    expectedStatus: 200,
+    headers: authHeaders,
+  });
   await check(`/shows/${resolvedShow.id}/watch-providers?country=CL`, {
     assert: (body) => assertWatchProviders(body, "CL"),
     expectedStatus: 200,
@@ -476,6 +514,11 @@ async function checkAuthenticatedProductFlow(token) {
   });
   await check(`/episodes/${firstEpisodeId}`, {
     assert: (body) => assertEpisodeDetail(body, firstEpisodeId, resolvedShow.id, false, null),
+    expectedStatus: 200,
+    headers: authHeaders,
+  });
+  await check(`/episodes/${firstEpisodeId}/cast`, {
+    assert: assertCatalogCast,
     expectedStatus: 200,
     headers: authHeaders,
   });
@@ -609,6 +652,11 @@ async function checkAuthenticatedProductFlow(token) {
   });
   await check(`/movies/${resolvedMovie.id}`, {
     assert: (body) => assertMovieDetail(body, resolvedMovie.id, false, false, null),
+    expectedStatus: 200,
+    headers: authHeaders,
+  });
+  await check(`/movies/${resolvedMovie.id}/cast`, {
+    assert: assertCatalogCast,
     expectedStatus: 200,
     headers: authHeaders,
   });
@@ -1058,6 +1106,21 @@ function assertWatchProviders(body, country) {
       expectString(provider.name, `watch providers.${bucket}.name`);
       expectNullableString(provider.logoPath, `watch providers.${bucket}.logoPath`);
     }
+  }
+}
+
+function assertCatalogCast(body) {
+  expectRecord(body, "catalog cast");
+  expectArray(body.items, "catalog cast.items");
+
+  for (const member of body.items) {
+    expectRecord(member, "catalog cast member");
+    expectString(member.id, "catalog cast member.id");
+    expectString(member.actorName, "catalog cast member.actorName");
+    expectString(member.characterName, "catalog cast member.characterName");
+    expectInteger(member.order, "catalog cast member.order");
+    expect(member.order >= 0, "catalog cast member.order should be non-negative");
+    expectNullableString(member.profilePath, "catalog cast member.profilePath");
   }
 }
 
