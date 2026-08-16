@@ -9,6 +9,10 @@ No active infrastructure tasks.
 ## Next
 
 - [ ] Add user-owned imported or fetched watch paths after approving persistence/schema shape.
+- [ ] Add a TVLore-native recommendation engine with house rules, explicit taste signals, availability, and explainable reasons.
+- [ ] Add a country-aware `Popular in your country` discovery section using the user's saved availability country.
+- [ ] Add a `TVLore Picks` / house-curated discovery section that is separate from personalized recommendations.
+- [ ] Add an `Available in your country` discovery section for streamable titles, separate from recommendation ranking.
 
 ## Notes
 
@@ -18,6 +22,8 @@ No active infrastructure tasks.
 - Keep the current screen -> hook -> API client boundary. The cleanup goal is readability, not a new state-management layer yet.
 - Ratings are explicit preference signals. Keep them separate from watched state so recommendations can use both later.
 - First recommendations intentionally use hydrated catalog data, ratings, genres, and a small provider-availability boost. Improve quality only after storing stronger content signals.
+- Keep recommendation surfaces separate: personalized `For you`, contextual `Popular in your country`, utility `Available in your country`, and editorial `TVLore Picks`.
+- TVLore-native recommendations should stay explainable before adding opaque ML or collaborative filtering.
 - Recommendations belong in Library while it acts as the app home. Profile should stay focused on identity, stats, and account controls.
 - Cronologia uses a backend-owned paginated endpoint and loads more history as the user scrolls near the end.
 - Curated watch paths should support movies and shows in one ordered list, keep source/provenance, and resolve items into TVLore catalog IDs only when the user opens or saves the list.
