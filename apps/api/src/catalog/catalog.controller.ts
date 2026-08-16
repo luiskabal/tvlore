@@ -2,6 +2,7 @@ import { Body, Controller, Get, Headers, HttpCode, HttpStatus, Param, Post, Quer
 
 import { CatalogService } from "./catalog.service";
 import type {
+  CatalogCastResponseDto,
   CatalogResolveResponseDto,
   CatalogSearchResponseDto,
   EpisodeDetailResponseDto,
@@ -62,6 +63,14 @@ export class ShowsController {
     return this.catalogService.getShowWatchProviders(authorizationHeader, showId, country);
   }
 
+  @Get(":showId/cast")
+  getShowCast(
+    @Headers("authorization") authorizationHeader: string | undefined,
+    @Param("showId") showId: string | undefined,
+  ): Promise<CatalogCastResponseDto> {
+    return this.catalogService.getShowCast(authorizationHeader, showId);
+  }
+
   @Get(":showId/seasons")
   getShowSeasons(
     @Headers("authorization") authorizationHeader: string | undefined,
@@ -91,6 +100,14 @@ export class EpisodesController {
   ): Promise<EpisodeDetailResponseDto> {
     return this.catalogService.getEpisode(authorizationHeader, episodeId);
   }
+
+  @Get(":episodeId/cast")
+  getEpisodeCast(
+    @Headers("authorization") authorizationHeader: string | undefined,
+    @Param("episodeId") episodeId: string | undefined,
+  ): Promise<CatalogCastResponseDto> {
+    return this.catalogService.getEpisodeCast(authorizationHeader, episodeId);
+  }
 }
 
 @Controller("movies")
@@ -112,5 +129,13 @@ export class MoviesController {
     @Query("country") country: string | undefined,
   ): Promise<WatchProvidersResponseDto> {
     return this.catalogService.getMovieWatchProviders(authorizationHeader, movieId, country);
+  }
+
+  @Get(":movieId/cast")
+  getMovieCast(
+    @Headers("authorization") authorizationHeader: string | undefined,
+    @Param("movieId") movieId: string | undefined,
+  ): Promise<CatalogCastResponseDto> {
+    return this.catalogService.getMovieCast(authorizationHeader, movieId);
   }
 }

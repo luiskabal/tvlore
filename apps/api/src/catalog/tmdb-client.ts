@@ -2,6 +2,7 @@ import { BadGatewayException, HttpException, HttpStatus, Inject, Injectable, Not
 
 import { API_CONFIG, type ApiConfig } from "../config";
 import type { CatalogResolveInput, CatalogSearchInput, MediaType } from "./catalog.types";
+import { toEpisodeCastResponse, toMovieCastResponse, toShowCastResponse } from "./catalog-cast";
 import { toResolvedSeason } from "./catalog-detail";
 import { toResolvedMovie, toResolvedShow } from "./catalog-resolve";
 import { toCatalogSearchResults } from "./catalog-search";
@@ -62,6 +63,28 @@ export class TmdbClient {
     const url = new URL(`https://api.themoviedb.org/3/${path}/${providerId}/watch/providers`);
 
     return toWatchProvidersResponse(await this.getJson(url), country);
+  }
+
+  async getMovieCast(providerId: string) {
+    const url = new URL(`https://api.themoviedb.org/3/movie/${providerId}/credits`);
+    url.searchParams.set("language", "en-US");
+
+    return toMovieCastResponse(await this.getJson(url));
+  }
+
+  async getShowCast(providerId: string) {
+    const url = new URL(`https://api.themoviedb.org/3/tv/${providerId}/aggregate_credits`);
+    url.searchParams.set("language", "en-US");
+
+    return toShowCastResponse(await this.getJson(url));
+  }
+
+  async getEpisodeCast(providerShowId: string, seasonNumber: number, episodeNumber: number) {
+    const url = new URL(`https://api.themoviedb.org/3/tv/${providerShowId}/season/${seasonNumber}/episode/${episodeNumber}`);
+    url.searchParams.set("append_to_response", "credits");
+    url.searchParams.set("language", "en-US");
+
+    return toEpisodeCastResponse(await this.getJson(url));
   }
 
   private async getJson(url: URL) {

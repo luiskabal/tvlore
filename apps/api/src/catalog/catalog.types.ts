@@ -145,6 +145,18 @@ export type EpisodeDetailResponseDto = ShowEpisodeDto & {
   showTitle: string;
 };
 
+export type CatalogCastMemberDto = {
+  actorName: string;
+  characterName: string;
+  id: string;
+  order: number;
+  profilePath: string | null;
+};
+
+export type CatalogCastResponseDto = {
+  items: CatalogCastMemberDto[];
+};
+
 export type WatchProviderDto = {
   id: number;
   logoPath: string | null;

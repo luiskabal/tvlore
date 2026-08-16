@@ -168,6 +168,19 @@ export class CatalogRepository {
     return identifier?.providerId ?? null;
   }
 
+  async findEpisodeCastRef(episodeId: string): Promise<{ episodeNumber: number; seasonNumber: number; showId: string } | null> {
+    const episode = await this.prismaService.getClient().episode.findUnique({
+      select: {
+        episodeNumber: true,
+        seasonNumber: true,
+        showId: true,
+      },
+      where: { id: episodeId },
+    });
+
+    return episode;
+  }
+
   async findShowSeasons(showId: string): Promise<ShowSeasonsResponseDto | null> {
     const show = await this.prismaService.getClient().show.findUnique({
       include: {

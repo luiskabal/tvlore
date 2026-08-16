@@ -6,6 +6,7 @@ import { parseCatalogResolveInput } from "./catalog-resolve";
 import { parseCatalogSearchInput } from "./catalog-search";
 import { parseWatchCountry } from "./catalog-watch-providers";
 import type {
+  CatalogCastResponseDto,
   CatalogResolveResponseDto,
   CatalogSearchResponseDto,
   EpisodeDetailResponseDto,
@@ -106,6 +107,22 @@ export class CatalogService {
     return this.tmdbClient.getWatchProviders("show", providerShowId, parsedCountry);
   }
 
+  async getShowCast(
+    authorizationHeader: string | undefined,
+    showId: string | undefined,
+  ): Promise<CatalogCastResponseDto> {
+    await this.usersService.getMe(authorizationHeader);
+
+    const parsedShowId = parseTvloreId(showId, "showId");
+    const providerShowId = await this.catalogRepository.findShowProviderId(parsedShowId);
+
+    if (!providerShowId) {
+      throwNotFound("SHOW_NOT_FOUND", "Show was not found");
+    }
+
+    return this.tmdbClient.getShowCast(providerShowId);
+  }
+
   async getMovieWatchProviders(
     authorizationHeader: string | undefined,
     movieId: string | undefined,
@@ -122,6 +139,22 @@ export class CatalogService {
     }
 
     return this.tmdbClient.getWatchProviders("movie", providerMovieId, parsedCountry);
+  }
+
+  async getMovieCast(
+    authorizationHeader: string | undefined,
+    movieId: string | undefined,
+  ): Promise<CatalogCastResponseDto> {
+    await this.usersService.getMe(authorizationHeader);
+
+    const parsedMovieId = parseTvloreId(movieId, "movieId");
+    const providerMovieId = await this.catalogRepository.findMovieProviderId(parsedMovieId);
+
+    if (!providerMovieId) {
+      throwNotFound("MOVIE_NOT_FOUND", "Movie was not found");
+    }
+
+    return this.tmdbClient.getMovieCast(providerMovieId);
   }
 
   async getShowSeasons(
@@ -180,6 +213,28 @@ export class CatalogService {
     }
 
     return episode;
+  }
+
+  async getEpisodeCast(
+    authorizationHeader: string | undefined,
+    episodeId: string | undefined,
+  ): Promise<CatalogCastResponseDto> {
+    await this.usersService.getMe(authorizationHeader);
+
+    const parsedEpisodeId = parseTvloreId(episodeId, "episodeId");
+    const episode = await this.catalogRepository.findEpisodeCastRef(parsedEpisodeId);
+
+    if (!episode) {
+      throwNotFound("EPISODE_NOT_FOUND", "Episode was not found");
+    }
+
+    const providerShowId = await this.catalogRepository.findShowProviderId(episode.showId);
+
+    if (!providerShowId) {
+      throwNotFound("SHOW_NOT_FOUND", "Show was not found");
+    }
+
+    return this.tmdbClient.getEpisodeCast(providerShowId, episode.seasonNumber, episode.episodeNumber);
   }
 
   private async refreshShowPublicRating(showId: string, userId: string, show: ShowDetailResponseDto) {
