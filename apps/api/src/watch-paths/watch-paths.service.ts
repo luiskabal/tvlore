@@ -10,10 +10,20 @@ import {
   getWatchPathItemRefKey,
   getWatchPathSummaries,
   toWatchPathDetail,
+  type WatchPathDefinition,
 } from "./watch-paths.data";
-import type { WatchPathDetailDto, WatchPathWatchlistResponseDto, WatchPathsResponseDto } from "./watch-paths.types";
+import { parseCreateWatchPathInput } from "./watch-paths-input";
+import { WatchPathsRepository } from "./watch-paths.repository";
+import type {
+  CreateWatchPathItemInput,
+  HydratedWatchPathItemInput,
+  WatchPathDetailDto,
+  WatchPathWatchlistResponseDto,
+  WatchPathsResponseDto,
+} from "./watch-paths.types";
 
 const saveBatchSize = 4;
+const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{12}$/i;
 
 @Injectable()
 export class WatchPathsService {
@@ -22,12 +32,14 @@ export class WatchPathsService {
     private readonly tmdbClient: TmdbClient,
     private readonly usersService: UsersService,
     private readonly watchlistRepository: WatchlistRepository,
+    private readonly watchPathsRepository: WatchPathsRepository,
   ) {}
 
   async list(authorizationHeader: string | undefined): Promise<WatchPathsResponseDto> {
-    await this.usersService.getMe(authorizationHeader);
+    const user = await this.usersService.getMe(authorizationHeader);
+    const userPaths = await this.watchPathsRepository.listUserSummaries(user.id);
 
-    return { paths: getWatchPathSummaries() };
+    return { paths: [...userPaths, ...getWatchPathSummaries()] };
   }
 
   async get(authorizationHeader: string | undefined, pathId: string | undefined): Promise<WatchPathDetailDto> {
@@ -37,7 +49,7 @@ export class WatchPathsService {
       throwNotFound();
     }
 
-    const path = getWatchPathDefinition(pathId);
+    const path = await this.getAccessiblePath(user.id, pathId);
 
     if (!path) {
       throwNotFound();
@@ -54,6 +66,19 @@ export class WatchPathsService {
     return toWatchPathDetail(path, tvloreIdByRefKey, savedRefKeys);
   }
 
+  async create(authorizationHeader: string | undefined, body: unknown): Promise<WatchPathDetailDto> {
+    const input = parseCreateWatchPathInput(body);
+    const user = await this.usersService.getMe(authorizationHeader);
+    const hydratedItems = await mapInBatches(input.items, saveBatchSize, (item) => this.hydrateCreateItem(item));
+    const path = await this.watchPathsRepository.createUserPath(user.id, {
+      description: input.description,
+      items: hydratedItems,
+      title: input.title,
+    });
+
+    return toWatchPathDetail(path);
+  }
+
   async saveToWatchlist(
     authorizationHeader: string | undefined,
     pathId: string | undefined,
@@ -64,7 +89,7 @@ export class WatchPathsService {
       throwNotFound();
     }
 
-    const path = getWatchPathDefinition(pathId);
+    const path = await this.getAccessiblePath(user.id, pathId);
 
     if (!path) {
       throwNotFound();
@@ -99,7 +124,38 @@ export class WatchPathsService {
     };
   }
 
-  private async resolvePathItem(item: NonNullable<ReturnType<typeof getWatchPathDefinition>>["items"][number]): Promise<CatalogResolveResponseDto> {
+  private async getAccessiblePath(userId: string, pathId: string) {
+    const curatedPath = getWatchPathDefinition(pathId);
+
+    if (curatedPath) {
+      return curatedPath;
+    }
+
+    return uuidPattern.test(pathId) ? this.watchPathsRepository.findUserPath(userId, pathId) : null;
+  }
+
+  private async hydrateCreateItem(item: CreateWatchPathItemInput): Promise<HydratedWatchPathItemInput> {
+    if (item.title) {
+      return { ...item, title: item.title };
+    }
+
+    const resolved = await this.tmdbClient.getResolvedItem({
+      mediaType: item.mediaType,
+      provider: item.externalRef.provider,
+      providerId: item.externalRef.providerId,
+    });
+
+    return {
+      externalRef: resolved.externalRef,
+      mediaType: resolved.mediaType,
+      note: item.note,
+      posterPath: item.posterPath ?? resolved.posterPath,
+      title: resolved.title,
+      year: item.year ?? getResolvedYear(resolved),
+    };
+  }
+
+  private async resolvePathItem(item: WatchPathDefinition["items"][number]): Promise<CatalogResolveResponseDto> {
     const resolvedItem = await this.tmdbClient.getResolvedItem({
       mediaType: item.mediaType,
       provider: item.externalRef.provider,
@@ -111,7 +167,7 @@ export class WatchPathsService {
 
   private async getSavedRefKeys(
     userId: string,
-    items: NonNullable<ReturnType<typeof getWatchPathDefinition>>["items"],
+    items: WatchPathDefinition["items"],
     tvloreIdByRefKey: Map<string, string>,
   ) {
     const refs = items
@@ -135,7 +191,7 @@ export class WatchPathsService {
   }
 }
 
-function toSearchLikeItem(item: NonNullable<ReturnType<typeof getWatchPathDefinition>>["items"][number]): CatalogSearchResultDto {
+function toSearchLikeItem(item: WatchPathDefinition["items"][number]): CatalogSearchResultDto {
   return {
     externalRef: item.externalRef,
     mediaType: item.mediaType,
@@ -145,6 +201,12 @@ function toSearchLikeItem(item: NonNullable<ReturnType<typeof getWatchPathDefini
     tvloreId: null,
     year: item.year,
   };
+}
+
+function getResolvedYear(item: Awaited<ReturnType<TmdbClient["getResolvedItem"]>>) {
+  const date = item.mediaType === "show" ? item.firstAirDate : item.releaseDate;
+
+  return date ? new Date(date).getFullYear() : null;
 }
 
 function throwNotFound(): never {

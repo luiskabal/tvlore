@@ -1,4 +1,4 @@
-import { Controller, Get, Headers, Param, Post } from "@nestjs/common";
+import { Body, Controller, Get, Headers, Param, Post } from "@nestjs/common";
 
 import { WatchPathsService } from "./watch-paths.service";
 import type { WatchPathDetailDto, WatchPathWatchlistResponseDto, WatchPathsResponseDto } from "./watch-paths.types";
@@ -12,6 +12,14 @@ export class WatchPathsController {
     @Headers("authorization") authorizationHeader: string | undefined,
   ): Promise<WatchPathsResponseDto> {
     return this.watchPathsService.list(authorizationHeader);
+  }
+
+  @Post()
+  create(
+    @Headers("authorization") authorizationHeader: string | undefined,
+    @Body() body: unknown,
+  ): Promise<WatchPathDetailDto> {
+    return this.watchPathsService.create(authorizationHeader, body);
   }
 
   @Get(":pathId")

@@ -1,9 +1,10 @@
 import type { WatchPathDetailDto, WatchPathItemDto, WatchPathSummaryDto } from "./watch-paths.types";
 
-type WatchPathDefinition = {
+export type WatchPathDefinition = {
   description: string;
   id: string;
   items: Array<Omit<WatchPathItemDto, "id" | "inWatchlist" | "position" | "tvloreId">>;
+  source: "curated" | "user";
   title: string;
 };
 
@@ -71,6 +72,7 @@ const watchPaths: WatchPathDefinition[] = [
       movie("Avengers: Endgame", 2019, "299534", "Phase 3 finale"),
       movie("Spider-Man: Far From Home", 2019, "429617", "Phase 3 epilogue"),
     ],
+    source: "curated",
     title: "Marvel Infinity Saga",
   },
   {
@@ -87,6 +89,7 @@ const watchPaths: WatchPathDefinition[] = [
       movie("The Last Jedi", 2017, "181808", "Episode VIII"),
       movie("The Rise of Skywalker", 2019, "181812", "Episode IX"),
     ],
+    source: "curated",
     title: "Star Wars Skywalker Saga",
   },
 ];
@@ -96,6 +99,7 @@ export function getWatchPathSummaries(): WatchPathSummaryDto[] {
     description: path.description,
     id: path.id,
     itemCount: path.items.length,
+    source: path.source,
     title: path.title,
   }));
 }
@@ -127,6 +131,7 @@ export function toWatchPathDetail(
     itemCount: path.items.length,
     items,
     savedItemCount: items.filter((item) => item.inWatchlist).length,
+    source: path.source,
     title: path.title,
   };
 }

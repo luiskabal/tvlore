@@ -4,6 +4,7 @@ export type WatchPathSummaryDto = {
   description: string;
   id: string;
   itemCount: number;
+  source: "curated" | "user";
   title: string;
 };
 
@@ -33,5 +34,24 @@ export type WatchPathWatchlistResponseDto = {
   id: string;
   itemCount: number;
   savedItemCount: number;
+  title: string;
+};
+
+export type CreateWatchPathItemInput = {
+  externalRef: CatalogExternalRefDto;
+  mediaType: MediaType;
+  note: string | null;
+  posterPath: string | null;
+  title: string | null;
+  year: number | null;
+};
+
+export type HydratedWatchPathItemInput = Omit<CreateWatchPathItemInput, "title"> & {
+  title: string;
+};
+
+export type CreateWatchPathInput = {
+  description: string;
+  items: CreateWatchPathItemInput[];
   title: string;
 };

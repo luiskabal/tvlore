@@ -23,6 +23,7 @@ model User {
   refreshSessions     RefreshSession[]
   showPreferences     ShowPreference[]
   showWatchlistItems  ShowWatchlistItem[]
+  watchPaths          UserWatchPath[]
 
   @@map("users")
 }
@@ -259,4 +260,38 @@ model EpisodePreference {
   @@index([episodeId])
   @@index([userId])
   @@map("episode_preferences")
+}
+
+model UserWatchPath {
+  id          String              @id @default(uuid()) @db.Uuid
+  userId      String              @map("user_id") @db.Uuid
+  title       String
+  description String
+  createdAt   DateTime            @default(now()) @map("created_at")
+  updatedAt   DateTime            @updatedAt @map("updated_at")
+  items       UserWatchPathItem[]
+  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("user_watch_paths")
+}
+
+model UserWatchPathItem {
+  id         String        @id @default(uuid()) @db.Uuid
+  pathId     String        @map("path_id") @db.Uuid
+  mediaType  String        @map("media_type")
+  provider   String
+  providerId String        @map("provider_id")
+  title      String
+  note       String?
+  posterPath String?       @map("poster_path")
+  year       Int?
+  position   Int
+  createdAt  DateTime      @default(now()) @map("created_at")
+  path       UserWatchPath @relation(fields: [pathId], references: [id], onDelete: Cascade)
+
+  @@unique([pathId, position])
+  @@unique([pathId, mediaType, provider, providerId])
+  @@index([pathId])
+  @@map("user_watch_path_items")
 }

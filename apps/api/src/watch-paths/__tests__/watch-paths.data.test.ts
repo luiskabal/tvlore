@@ -13,11 +13,13 @@ describe("watch paths data", () => {
       expect.objectContaining({
         id: "mcu-infinity-saga-release",
         itemCount: 23,
+        source: "curated",
         title: "Marvel Infinity Saga",
       }),
       expect.objectContaining({
         id: "star-wars-skywalker-release",
         itemCount: 9,
+        source: "curated",
         title: "Star Wars Skywalker Saga",
       }),
     ]);
@@ -39,6 +41,7 @@ describe("watch paths data", () => {
       title: "Iron Man",
       tvloreId: "movie-id",
     });
+    expect(detail.source).toBe("curated");
     expect(detail.savedItemCount).toBe(1);
     expect(detail.items[1]?.inWatchlist).toBe(false);
   });

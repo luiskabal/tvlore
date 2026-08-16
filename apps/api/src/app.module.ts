@@ -29,6 +29,7 @@ import { MovieWatchlistController, ShowWatchlistController } from "./watchlist/w
 import { WatchlistRepository } from "./watchlist/watchlist.repository";
 import { WatchlistService } from "./watchlist/watchlist.service";
 import { WatchPathsController } from "./watch-paths/watch-paths.controller";
+import { WatchPathsRepository } from "./watch-paths/watch-paths.repository";
 import { WatchPathsService } from "./watch-paths/watch-paths.service";
 
 @Module({
@@ -64,6 +65,7 @@ import { WatchPathsService } from "./watch-paths/watch-paths.service";
     PreferencesRepository,
     LibraryRepository,
     RecommendationsRepository,
+    WatchPathsRepository,
     TmdbClient,
     CatalogService,
     TrackingService,
