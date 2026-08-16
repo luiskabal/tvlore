@@ -6,14 +6,12 @@ import { isSupabaseConfigured } from "../auth/supabase-auth";
 import { LibraryOverview, LibraryOverviewSkeleton } from "../home/LibraryOverview";
 import { styles } from "../home/home-styles";
 import { useHomeModel } from "../home/use-home-model";
-import { useRecommendationActions } from "../home/use-recommendation-actions";
 import { useLibraryChronology } from "./use-library-chronology";
 import { useLibraryActions } from "./use-library-actions";
 
 export default function LibraryScreen() {
   const { libraryAction, removeRecentlyWatchedItem, removeWatchlistItem } = useLibraryActions();
   const { chronology, loadInitialChronology, loadMoreChronology } = useLibraryChronology();
-  const { recommendationAction, saveRecommendation } = useRecommendationActions();
   const {
     auth,
     authActionMessage,
@@ -21,7 +19,7 @@ export default function LibraryScreen() {
     home,
     homeData,
     isAuthActionRunning,
-  } = useHomeModel();
+  } = useHomeModel({ includeRecommendations: false });
   const isSignedIn = auth.kind === "signedIn";
 
   return (
@@ -41,9 +39,6 @@ export default function LibraryScreen() {
             onOpenShowSeason={openShowSeason}
             onRemoveRecentlyWatchedItem={removeRecentlyWatchedItem}
             onRemoveWatchlistItem={removeWatchlistItem}
-            onSaveRecommendation={saveRecommendation}
-            recommendationAction={recommendationAction}
-            recommendations={homeData.recommendations}
           />
         </View>
       ) : (

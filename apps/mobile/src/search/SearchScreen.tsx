@@ -4,11 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import { SafeAreaView, ScrollView } from "react-native";
 
 import type { CatalogSearchResult, MediaType } from "../api/tvlore-api";
+import { useRecommendationActions } from "../home/use-recommendation-actions";
+import { DiscoverRecommendations } from "./DiscoverRecommendations";
 import { SearchControls } from "./SearchControls";
 import { SearchResults } from "./SearchResults";
 import { styles } from "./search-styles";
 import { canRunSearch, type SearchFilter } from "./search-model";
 import { useCatalogSearch } from "./use-catalog-search";
+import { useDiscoverRecommendations } from "./use-discover-recommendations";
 
 const searchDebounceMs = 600;
 
@@ -16,6 +19,8 @@ export default function SearchScreen() {
   const [query, setQuery] = useState("dark");
   const [filter, setFilter] = useState<SearchFilter>("all");
   const { resolveResult, resolveState, runSearch, search } = useCatalogSearch();
+  const { recommendationAction, saveRecommendation } = useRecommendationActions();
+  const { recommendations, recommendationsState, retryRecommendations } = useDiscoverRecommendations();
   const skipNextDebouncedSearchRef = useRef(false);
   const canSearch = canRunSearch(query);
   const isSearching = search.kind === "loading" || search.kind === "refreshing";
@@ -89,6 +94,16 @@ export default function SearchScreen() {
           resolveState={resolveState}
           search={search}
         />
+
+        <DiscoverRecommendations
+          onOpenMovie={openMovie}
+          onOpenShow={openShow}
+          onRetry={retryRecommendations}
+          onSaveToWatchlist={saveRecommendation}
+          recommendationAction={recommendationAction}
+          recommendations={recommendations}
+          state={recommendationsState}
+        />
       </ScrollView>
     </SafeAreaView>
   );
@@ -101,4 +116,12 @@ function pushDetail(mediaType: MediaType, id: string) {
   }
 
   router.push({ pathname: "/movies/[id]", params: { id } });
+}
+
+function openMovie(id: string) {
+  pushDetail("movie", id);
+}
+
+function openShow(id: string) {
+  pushDetail("show", id);
 }

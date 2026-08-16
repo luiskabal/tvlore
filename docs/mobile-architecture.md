@@ -32,7 +32,7 @@ This structure is a starting point, not a permanent requirement.
 
 - Root layout owns the stack shell and persistent primary tab bar.
 - `/` redirects to `/library`.
-- Library, Search, Paths, and Profile are primary user surfaces.
+- Library, Discover, Paths, and Profile are primary user surfaces. Discover currently uses the `/search` route.
 - Detail routes are stack screens above tabs and do not render the primary tab bar.
 - Protected routes require an authenticated TVLore session.
 - Deep links should route through backend validation where private data is involved.
@@ -216,11 +216,11 @@ through `useHomeModel`, but each screen opts into only the data it renders:
 
 ```text
 LibraryScreen
-  -> useHomeModel()
+  -> useHomeModel({ includeRecommendations: false })
   -> useHomeData()
   -> getSupabaseAccessToken()
-  -> getHomeData(accessToken)
-  -> GET /users/me, GET /library, and GET /recommendations in parallel
+  -> getHomeData(accessToken, { includeRecommendations: false })
+  -> GET /users/me and GET /library in parallel
   -> useLibraryChronology()
   -> GET /library/chronology when Cronologia is visible
 
@@ -252,27 +252,27 @@ visual patterns. These components are presentation-only. They do not fetch
 data, resolve catalog IDs, calculate progress, or own domain-specific mutation
 logic.
 
-`RecommendationsPanel` is presentation-only and currently belongs to Library
-behind its own `For you` filter. `useHomeData` loads the recommendation response
-alongside the user and library payloads only when the screen asks for it, while
-the API guard layer owns the response-shape validation.
-Recommendation rows receive navigation and save-to-watchlist callbacks from the
-route screen. `useRecommendationActions` reuses the existing watchlist endpoint,
-then notifies the local library invalidator. The panel owns only local optimistic
-row hiding and restores the row if the save fails. Recommendation rows render
-backend-provided genre names when available, but do not calculate suggestion
-quality or render provider availability locally. Availability stays in detail
-screens. `recommendation-detail.ts` owns the small presentation rule that turns
-preferred-genre overlap into copy such as "Because you like Drama".
+`RecommendationsPanel` is presentation-only and currently belongs to Discover.
+`useDiscoverRecommendations` loads only `GET /recommendations`; Library does not
+fetch recommendation data. The API guard layer owns the response-shape
+validation. Recommendation rows receive navigation and save-to-watchlist
+callbacks from the route screen. `useRecommendationActions` reuses the existing
+watchlist endpoint, then notifies the local library invalidator. The panel owns
+only local optimistic row hiding and restores the row if the save fails.
+Recommendation rows render backend-provided genre names when available, but do
+not calculate suggestion quality or render provider availability locally.
+Availability stays in detail screens. `recommendation-detail.ts` owns the small
+presentation rule that turns preferred-genre overlap into copy such as "Because
+you like Drama".
 
 Library rows receive navigation callbacks from `LibraryScreen`: movies route
 to movie detail and episode/show rows route to season detail.
 `LibraryOverview` owns only local section-filter UI state for switching between
-Cronologia, recommendations, continuing shows, recently watched movies, watched
-episodes grouped by show and season, watchlist, and rated titles. Summary stat
-cards reuse the same filter state as the only section selector. Cronologia only
-renders the chronological watch feed and asks for the next page when the user
-scrolls near the end. `useLibraryChronology` keeps Supabase
+Cronologia, continuing shows, recently watched movies, watched episodes grouped
+by show and season, watchlist, and rated titles. Summary stat cards reuse the
+same filter state as the only section selector. Cronologia only renders the
+chronological watch feed and asks for the next page when the user scrolls near
+the end. `useLibraryChronology` keeps Supabase
 token lookup, paging, and refresh invalidation out of `LibraryOverview`. Watched
 episode season subsections keep their own local collapsed state. It also owns the swipe presentation
 affordance for removable Library rows and compact poster thumbnail rendering
@@ -291,18 +291,20 @@ Profile render skeletons only when no home data has loaded yet.
 
 `HomeScreen` remains as a compatibility export to the Library route while `/`
 redirects to `/library`. The primary product surfaces are now route-level
-screens: Library, Search, Paths, and Profile.
+screens: Library, Discover, Paths, and Profile.
 
-`AppTabBar` is mounted once in `app/_layout.tsx`, not inside Library, Search, or
+`AppTabBar` is mounted once in `app/_layout.tsx`, not inside Library, Discover, or
 Profile screens. This keeps primary navigation stable while route content
 changes underneath it.
 
-Search and detail now follow the same boundary:
+Discover/search and detail now follow the same boundary:
 
 ```text
 SearchScreen
   -> useCatalogSearch()
+  -> useDiscoverRecommendations()
   -> GET /search
+  -> GET /recommendations
   -> POST /catalog/resolve
   -> router.push(/shows/:id or /movies/:id)
   -> CatalogDetailScreen

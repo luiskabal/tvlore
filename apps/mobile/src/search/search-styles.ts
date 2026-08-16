@@ -63,6 +63,9 @@ export const styles = StyleSheet.create({
   pendingFilterButton: {
     opacity: 0.72,
   },
+  recommendationsSkeleton: {
+    gap: 10,
+  },
   pressedResultRow: {
     opacity: 0.72,
   },

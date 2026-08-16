@@ -7,8 +7,6 @@ import type {
   LibraryRatedTitle,
   LibraryResponse,
   LibraryWatchlistItem,
-  RecommendationItem,
-  RecommendationsResponse,
   RecentlyWatchedItem,
   WatchedEpisodeItem,
 } from "../api/tvlore-api";
@@ -21,15 +19,12 @@ import {
 import type { LibraryChronologyState } from "../library/use-library-chronology";
 import { AppText, Button, MediaRow, Skeleton, StatCard } from "../ui";
 import { styles } from "./home-styles";
-import { RecommendationsPanel } from "./RecommendationsPanel";
-import type { RecommendationActionState } from "./use-recommendation-actions";
 
 type LibrarySectionFilter =
   | "chronology"
   | "episodes"
   | "movies"
   | "rated"
-  | "recommendations"
   | "watching"
   | "watchlist";
 
@@ -55,9 +50,6 @@ type LibraryOverviewProps = {
   onOpenShowSeason: (showId: string, seasonNumber: number) => void;
   onRemoveRecentlyWatchedItem: (item: RecentlyWatchedItem) => void;
   onRemoveWatchlistItem: (item: LibraryWatchlistItem) => void;
-  onSaveRecommendation: (item: RecommendationItem) => Promise<void>;
-  recommendationAction: RecommendationActionState;
-  recommendations: RecommendationsResponse | null;
 };
 
 export function LibraryOverview({
@@ -71,9 +63,6 @@ export function LibraryOverview({
   onOpenShowSeason,
   onRemoveRecentlyWatchedItem,
   onRemoveWatchlistItem,
-  onSaveRecommendation,
-  recommendationAction,
-  recommendations,
 }: LibraryOverviewProps) {
   const [selectedSection, setSelectedSection] = useState<LibrarySectionFilter | null>(null);
   const [optimisticRemovedKeys, setOptimisticRemovedKeys] = useState<Set<string>>(() => new Set());
@@ -148,7 +137,6 @@ export function LibraryOverview({
   const hasWatchlist = visibleLibrary.watchlist.length > 0;
   const activeSection = selectedSection ?? getDefaultSection(visibleLibrary);
   const chronologyCount = visibleLibrary.summary.watchedEpisodeCount + visibleLibrary.summary.watchedMovieCount;
-  const recommendationCount = recommendations?.items.length ?? 0;
   const summaryStats: Array<{ label: string; section: LibrarySectionFilter; value: number }> = [
     { label: "Cronologia", section: "chronology", value: chronologyCount },
     { label: "Shows", section: "watching", value: visibleLibrary.summary.watchedShowCount },
@@ -156,7 +144,6 @@ export function LibraryOverview({
     { label: "Episodes", section: "episodes", value: visibleLibrary.summary.watchedEpisodeCount },
     { label: "Watchlist", section: "watchlist", value: visibleLibrary.summary.watchlistItemCount },
     { label: "Rated", section: "rated", value: visibleLibrary.summary.ratedTitleCount },
-    { label: "For you", section: "recommendations", value: recommendationCount },
   ];
   const shouldShowWatchlist = activeSection === "watchlist";
   const shouldShowContinueWatching = activeSection === "watching";
@@ -164,7 +151,6 @@ export function LibraryOverview({
   const shouldShowHistory = activeSection === "chronology";
   const shouldShowMovies = activeSection === "movies";
   const shouldShowEpisodes = activeSection === "episodes";
-  const shouldShowRecommendations = activeSection === "recommendations";
   const chronologyItems = chronology.items.length > 0 ? chronology.items : visibleLibrary.recentlyWatched;
   const visibleChronologyItems = chronologyItems.filter((item) => !optimisticRemovedKeys.has(getHistoryActionKey(item)));
   const hideLibraryAction = (actionKey: string) => {
@@ -218,17 +204,7 @@ export function LibraryOverview({
         showsVerticalScrollIndicator={false}
         style={styles.libraryListScroll}
       >
-        {!isEmpty && shouldShowRecommendations ? (
-          <RecommendationsPanel
-            onOpenMovie={onOpenMovie}
-            onOpenShow={onOpenShow}
-            onSaveToWatchlist={onSaveRecommendation}
-            recommendationAction={recommendationAction}
-            recommendations={recommendations}
-          />
-        ) : null}
-
-        {!isEmpty && activeSection !== "recommendations" && activeSection !== "chronology" && !hasItemsForSection(activeSection, visibleLibrary) ? (
+        {!isEmpty && activeSection !== "chronology" && !hasItemsForSection(activeSection, visibleLibrary) ? (
           <EmptySection activeSection={activeSection} />
         ) : null}
 
@@ -778,10 +754,6 @@ function hasItemsForSection(activeSection: LibrarySectionFilter, library: Librar
 
   if (activeSection === "rated") {
     return library.ratedTitles.length > 0;
-  }
-
-  if (activeSection === "recommendations") {
-    return true;
   }
 
   return true;

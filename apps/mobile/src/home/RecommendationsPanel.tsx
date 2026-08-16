@@ -11,7 +11,7 @@ import {
   type RecommendationActionState,
 } from "./use-recommendation-actions";
 
-type RecommendationsPanelProps = {
+export type RecommendationsPanelProps = {
   onOpenMovie: (movieId: string) => void;
   onOpenShow: (showId: string) => void;
   onSaveToWatchlist: (item: RecommendationItem) => Promise<void>;

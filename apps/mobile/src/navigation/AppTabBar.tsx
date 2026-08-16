@@ -7,7 +7,7 @@ export type AppTab = "library" | "paths" | "profile" | "search";
 
 const tabs: { href: Href; key: AppTab; label: string }[] = [
   { href: "/library", key: "library", label: "Library" },
-  { href: "/search", key: "search", label: "Search" },
+  { href: "/search", key: "search", label: "Discover" },
   { href: "/paths", key: "paths", label: "Paths" },
   { href: "/profile", key: "profile", label: "Profile" },
 ];

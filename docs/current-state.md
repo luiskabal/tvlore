@@ -42,11 +42,11 @@ Implemented:
 - Mobile tracking mutations invalidate the local library data.
 - Mobile watchlist mutations invalidate the local library data.
 - Mobile Library/Profile refresh authenticated library data after tracking changes.
-- Mobile Library can show backend-owned recommendation candidates, while visible streaming availability stays in detail screens.
+- Mobile Discover can show backend-owned recommendation candidates, while visible streaming availability stays in detail screens.
 - Mobile recommendation rows can explain preferred-genre overlap when the suggestion shares genres with highly rated titles.
 - Mobile recommendation rows can save titles directly to the watchlist with optimistic feedback.
 - Mobile Library shows watchlist titles and rated titles separately from watched history.
-- Mobile Library summary cards filter Cronologia, recommendations, continuing shows, recently watched movies, watched episodes grouped by show and season, watchlist, and rated titles.
+- Mobile Library summary cards filter Cronologia, continuing shows, recently watched movies, watched episodes grouped by show and season, watchlist, and rated titles.
 - Mobile Cronologia loads a backend-owned paginated movie/episode watch-history feed.
 - Mobile Library rows render catalog poster thumbnails when available, with stable placeholders otherwise.
 - Mobile Library episode season subsections can be expanded or collapsed with a tap.
@@ -56,7 +56,7 @@ Implemented:
 - Mobile Library rows can remove watchlist items and undo recent watched markers through confirmable swipe actions.
 - Mobile Library applies optimistic row removal after swipe confirmation and rolls back on API error.
 - Mobile Library/Profile keep previous library data during refreshes and render skeletons on initial load.
-- Mobile has routed Library, Search, Paths, and Profile surfaces with persistent bottom app navigation.
+- Mobile has routed Library, Discover, Paths, and Profile surfaces with persistent bottom app navigation.
 - Mobile Paths lists curated viewing orders and opens path items through the existing catalog resolve flow.
 - Mobile path detail can save a full curated path to watchlist in one action.
 - Mobile path detail rows render curated poster thumbnails.
@@ -773,9 +773,9 @@ The current mobile app has these product-facing slices:
 ```text
 Library
 -> Supabase session
--> GET /users/me, GET /library, and GET /recommendations in parallel
+-> GET /users/me and GET /library in parallel
 -> GET /library/chronology when Cronologia becomes visible
--> Library summary, recommendations, watchlist, rated titles, continue-watching, recently-watched, paginated chronology
+-> Library summary, watchlist, rated titles, continue-watching, recently-watched, paginated chronology
 
 Profile
 -> Supabase session
@@ -783,8 +783,9 @@ Profile
 -> PATCH /users/me when the user changes availability country
 -> Holo profile card, library stats, availability country, account state, sign out
 
-Search
+Discover (`/search`)
 -> GET /search
+-> GET /recommendations
 -> POST /catalog/resolve
 -> Show or movie detail route
 -> GET /shows/:id or GET /movies/:id
@@ -817,11 +818,11 @@ Current behavior:
 - Library shows continue-watching and recently watched rows when the backend has watched data.
 - Library shows saved watchlist rows when the backend has watchlist data.
 - Library shows rated show/movie rows when the backend has rating preference data.
-- Library shows recommendation rows in a dedicated `For you` filter when the backend has eligible catalog candidates. Availability is intentionally shown only after opening a title detail.
+- Discover shows recommendation rows when the backend has eligible catalog candidates. Availability is intentionally shown only after opening a title detail.
 - Recommendation row copy can explain simple genre overlap, such as "Because you like Drama", from backend-provided preferred genres and item genres.
 - Recommendation rows open the matching show or movie detail screen.
 - Recommendation rows can save the title to watchlist immediately, then reconcile through the existing library refresh invalidator.
-- Library can filter from its summary cards between Cronologia, recommendations, continuing shows, recently watched movies, watched episodes grouped by show and season, saved titles, and rated titles. Cronologia shows paginated watched movies and episodes by date.
+- Library can filter from its summary cards between Cronologia, continuing shows, recently watched movies, watched episodes grouped by show and season, saved titles, and rated titles. Cronologia shows paginated watched movies and episodes by date.
 - Episode groups keep each season collapsible so long watched histories stay scannable.
 - Library rows include compact poster thumbnails for quicker visual scanning.
 - Continue-watching rows open the next season, recently watched movies open movie detail, and recently watched episodes open the matching season.
@@ -830,14 +831,14 @@ Current behavior:
 - Path detail can save all path titles into the user's watchlist through one backend-owned bulk action.
 - Path detail shows how many path titles are already saved and marks saved rows.
 - Watchlist rows can remove saved titles through confirmable swipe actions, and recently watched rows can undo the underlying movie or episode watched marker through confirmable swipe actions.
-- Bottom app navigation connects Library, Search, Paths, and Profile from the root layout, so the tab bar stays stable while route content changes.
+- Bottom app navigation connects Library, Discover, Paths, and Profile from the root layout, so the tab bar stays stable while route content changes.
 - Empty library state is expected after cleanup-oriented smoke checks.
-- Search supports all/show/movie filters.
-- Search prefetches results with a debounce after the user enters at least three characters.
+- Discover supports all/show/movie catalog filters.
+- Discover prefetches search results with a debounce after the user enters at least three characters.
 - Stale search responses are ignored so older results cannot overwrite newer queries.
-- Search renders skeleton rows on initial loading and when filters change.
-- Search keeps previous results visible during typed-query refreshes to avoid UI flicker.
-- Search code is split into route/container, controls, results, hook, and styles modules.
+- Discover renders skeleton rows on initial loading and when filters change.
+- Discover keeps previous results visible during typed-query refreshes to avoid UI flicker.
+- Discover code is split into route/container, controls, recommendations, results, hook, and styles modules.
 - Opening a search result resolves it into a TVLore ID before navigating.
 - Detail screens render backend-owned show/movie data.
 - Detail screens render content-shaped skeletons while show, movie, or season data loads.
@@ -916,7 +917,7 @@ Product foundation:
 - Mobile can open a show season, hydrate episode IDs, and mark episodes watched/unwatched through backend tracking endpoints.
 - Mobile can bulk-mark the loaded episodes in a season by orchestrating existing idempotent episode tracking endpoints.
 - Mobile can bulk-mark a full show through a backend-owned tracking endpoint instead of issuing one request per episode.
-- Mobile has primary Library, Search, Paths, and Profile routes over the same authenticated API session.
+- Mobile has primary Library, Discover, Paths, and Profile surfaces over the same authenticated API session.
 
 ## 13. Why This Backend Base Helps The Frontend
 

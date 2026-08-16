@@ -34,7 +34,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Personal show/movie watchlist.
 - Personal show/movie rating preferences.
 - Library summary with watched show, movie, episode, watchlist, and rated-title counts.
-- Tappable Library summary cards filter Cronologia, recommendations, watching shows, movies, grouped episodes, watchlist, and rated titles.
+- Tappable Library summary cards filter Cronologia, watching shows, movies, grouped episodes, watchlist, and rated titles.
 - Cronologia loads backend-paginated watched movie and episode history and fetches more as the user scrolls.
 - Grouped episode seasons can be expanded or collapsed with a tap.
 - Holographic mobile profile summary card with Google avatar and library stats.
@@ -44,13 +44,13 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - First-pass recommendations from stored rating preferences, hydrated catalog data, persisted genre names, and user-country streaming availability.
 - Recommendation rows explain genre matches when the user's rated-title genres overlap with a suggested title.
 - Recommendation rows can be saved directly to the watchlist with optimistic feedback.
-- Library recommendations live in their own `For you` filter, and rows navigate back into movie and show detail screens.
+- Discover combines catalog search with personalized recommendations, and recommendation rows navigate back into movie and show detail screens.
 - Library/Profile keeps prior data during refresh and shows skeletons on first load.
-- Routed Library, Search, Paths, and Profile mobile surfaces with bottom app navigation.
+- Routed Library, Discover, Paths, and Profile mobile surfaces with bottom app navigation.
 - Detail screens render content-shaped skeletons while show, movie, or season data loads.
 - Mobile caches search and catalog detail reads briefly in memory, then clears that cache on login, logout, and successful mutations.
 - Mobile library, profile, search, and detail screens follow a route/container, hook, presentation, and styles split.
-- Mobile has an initial reusable UI pool for tokens, text, buttons, badges, skeletons, stat cards, posters, still images, and media rows, already used by Library, Search, catalog detail, and season detail surfaces.
+- Mobile has an initial reusable UI pool for tokens, text, buttons, badges, skeletons, stat cards, posters, still images, and media rows, already used by Library, Discover, catalog detail, and season detail surfaces.
 - Mobile API calls are grouped behind a stable `tvlore-api.ts` facade with domain modules for catalog, home, tracking, watchlist, and preferences.
 - Mobile has initial Vitest coverage for pure search and chronology logic.
 - Postman collection and API smoke checks for local/Vercel validation.
@@ -59,7 +59,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 
 ```text
 Google login
--> Search catalog
+-> Discover catalog
 -> Open show or movie
 -> Resolve catalog item
 -> Open curated Watch Path
@@ -74,7 +74,7 @@ Google login
 -> Mark full show watched
 -> Return to profile
 -> Library summary auto-refreshes
--> Switch between Library, Search, and Profile
+-> Switch between Library, Discover, Paths, and Profile
 ```
 
 ## Verification
