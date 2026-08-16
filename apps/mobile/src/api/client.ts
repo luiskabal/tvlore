@@ -20,7 +20,7 @@ export async function fetchJson<T>(
   options?: RequestInit,
 ) {
   const response = await fetch(`${apiBaseUrl}${path}`, options);
-  const body: unknown = await response.json();
+  const body = await readJsonBody(response);
 
   if (!response.ok || !guard(body)) {
     throw new Error(errorMessage);
@@ -162,5 +162,19 @@ function pruneReadCache(now: number) {
     if (entry.expiresAt <= now) {
       readCache.delete(key);
     }
+  }
+}
+
+async function readJsonBody(response: Response): Promise<unknown> {
+  const text = await response.text();
+
+  if (!text.trim()) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(text) as unknown;
+  } catch {
+    return null;
   }
 }

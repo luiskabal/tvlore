@@ -8,7 +8,6 @@ No active infrastructure tasks.
 
 ## Next
 
-- [ ] Harden the mobile API client for non-JSON, empty, or proxy-shaped error responses.
 - [ ] Normalize incoming `x-correlation-id` values before returning/logging them.
 - [ ] Split `LibraryOverview.tsx` by visible Library section when the next Library UX feature touches it.
 - [ ] Split `CatalogDetailContent.tsx` into focused detail subcomponents when the next detail UX feature touches it.
@@ -133,6 +132,7 @@ No active infrastructure tasks.
 - [x] Store the user's preferred availability country and render it with flag labels in mobile.
 - [x] Add episode-level rating preferences and mobile episode rating UI.
 - [x] Add backend-owned season-level mark all watched/unwatched and simplify the mobile season hook.
+- [x] Harden the mobile API client for non-JSON, empty, or proxy-shaped error responses.
 
 ## Deferred
 
