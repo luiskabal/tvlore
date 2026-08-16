@@ -9,16 +9,27 @@ export type { AppTab } from "./app-tabs";
 export function AppTabBar({ active }: { active: AppTab }) {
   return (
     <View style={styles.tabBar}>
-      {tabs.map((tab) => (
-        <Pressable
-          accessibilityRole="button"
-          key={tab.key}
-          onPress={() => router.replace(tab.href)}
-          style={[styles.tabButton, active === tab.key ? styles.activeTabButton : null]}
-        >
-          <Text style={[styles.tabText, active === tab.key ? styles.activeTabText : null]}>{tab.label}</Text>
-        </Pressable>
-      ))}
+      {tabs.map((tab) => {
+        const isActive = active === tab.key;
+
+        return (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ selected: isActive }}
+            key={tab.key}
+            onPress={() => {
+              if (isActive) {
+                return;
+              }
+
+              router.replace(tab.href);
+            }}
+            style={[styles.tabButton, isActive ? styles.activeTabButton : null]}
+          >
+            <Text style={[styles.tabText, isActive ? styles.activeTabText : null]}>{tab.label}</Text>
+          </Pressable>
+        );
+      })}
     </View>
   );
 }
