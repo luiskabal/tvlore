@@ -126,6 +126,7 @@ src/
 |   |-- guards.ts
 |   |-- home.ts
 |   |-- preferences.ts
+|   |-- reflections.ts
 |   |-- tracking.ts
 |   |-- tvlore-api.ts
 |   |-- types.ts
@@ -459,16 +460,20 @@ value returned by detail endpoints and watchlist mutations.
 Post-watch check-in uses the same boundary:
 
 ```text
-CatalogDetailScreen(movie/show)
+CatalogDetailScreen(movie/show) or EpisodeDetailScreen(episode)
   -> useCatalogDetail()
   -> mark watched succeeds
   -> PostWatchCheckIn opens as optional UI
-  -> PUT /movies/:movieId/preference or PUT /shows/:showId/preference
+  -> PUT /movies/:movieId/reflection
+  -> PUT /shows/:showId/reflection
+  -> PUT /episodes/:episodeId/reflection
 ```
 
-This first slice reuses existing title-level rating preferences. It does not
-persist episode reactions, favorite characters, comments, spoiler state, or
-visibility because those need a separate watch-reflection model.
+`PostWatchCheckIn` is presentation-only. It builds a small draft for rating,
+sensation, favorite character, and optional comment, then the screen hook sends
+that draft through the API client. The backend persists the rating in the
+existing preference model and stores the richer reflection separately. The flow
+is skip-friendly: watched state is already saved before the modal appears.
 
 Catalog and season detail routes render content-shaped skeletons while their
 initial API requests are pending. This keeps detail screens visually stable

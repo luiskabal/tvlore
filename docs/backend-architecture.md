@@ -79,6 +79,14 @@ src/
 |   |-- watchlist.types.ts
 |   `-- __tests__/
 |
+|-- reflections/
+|   |-- reflections.controller.ts
+|   |-- reflections-input.ts
+|   |-- reflections.repository.ts
+|   |-- reflections.service.ts
+|   |-- reflections.types.ts
+|   `-- __tests__/
+|
 |-- library/
 |   |-- library.controller.ts
 |   |-- library.repository.ts
@@ -141,6 +149,18 @@ Preferences follows the same shape:
 - `ShowPreferencesController`, `MoviePreferencesController`, and `EpisodePreferencesController`: HTTP routes for explicit ratings.
 - `PreferencesService`: resolves the authenticated TVLore user and validates route IDs plus 1-5 rating input.
 - `PreferencesRepository`: owns idempotent Prisma writes for show/movie/episode preference rows.
+
+Reflections follows the same shape:
+
+- `ReflectionsController`: HTTP routes for post-watch check-ins on shows, movies, and episodes.
+- `ReflectionsService`: resolves the authenticated TVLore user, validates UUIDs, and parses rating/reaction/favorite-character/comment input.
+- `ReflectionsRepository`: writes the rating to the existing preference row and writes the richer reflection to a separate per-user/per-title table.
+
+The separation is intentional: watched state answers "did the user watch this?",
+rating preference answers "how much did the user like this?", and reflection
+answers "what did the user feel or want to remember?". Keeping those rows
+separate avoids coupling future rewatches, comments, spoilers, and recommendation
+signals to one overloaded record.
 
 Tracking follows the same shape:
 

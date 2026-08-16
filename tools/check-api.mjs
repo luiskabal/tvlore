@@ -72,6 +72,11 @@ async function checkUnauthorizedRoutes() {
     method: "PUT",
   });
   await checkUnauthorized(`/shows/${missingUuid}/preference`, { method: "DELETE" });
+  await checkUnauthorized(`/shows/${missingUuid}/reflection`, {
+    body: JSON.stringify({ rating: 5, reaction: "loved", favoriteCharacter: "Jonas", comment: "Great run." }),
+    headers: { "content-type": "application/json" },
+    method: "PUT",
+  });
   await checkUnauthorized(`/movies/${missingUuid}`);
   await checkUnauthorized(`/movies/${missingUuid}/watch-providers?country=CL`);
   await checkUnauthorized(`/movies/${missingUuid}/watchlist`, { method: "POST" });
@@ -82,6 +87,11 @@ async function checkUnauthorizedRoutes() {
     method: "PUT",
   });
   await checkUnauthorized(`/movies/${missingUuid}/preference`, { method: "DELETE" });
+  await checkUnauthorized(`/movies/${missingUuid}/reflection`, {
+    body: JSON.stringify({ rating: 4, reaction: "liked", favoriteCharacter: null, comment: "Great pacing." }),
+    headers: { "content-type": "application/json" },
+    method: "PUT",
+  });
   await checkUnauthorized("/library");
   await checkUnauthorized("/library/chronology");
   await checkUnauthorized("/recommendations");
@@ -95,6 +105,11 @@ async function checkUnauthorizedRoutes() {
     method: "PUT",
   });
   await checkUnauthorized(`/episodes/${missingUuid}/preference`, { method: "DELETE" });
+  await checkUnauthorized(`/episodes/${missingUuid}/reflection`, {
+    body: JSON.stringify({ rating: 4, reaction: "mixed", favoriteCharacter: "Martha", comment: null }),
+    headers: { "content-type": "application/json" },
+    method: "PUT",
+  });
   await checkUnauthorized(`/episodes/${missingUuid}/watches`, { method: "POST" });
   await checkUnauthorized(`/episodes/${missingUuid}/watches`, { method: "DELETE" });
   await checkUnauthorized(`/movies/${missingUuid}/watches`, { method: "POST" });
@@ -110,6 +125,9 @@ async function checkAuthenticatedProductFlow(token) {
   const episodeWatchedAt = new Date().toISOString();
   const showWatchedAt = new Date(Date.now() + 500).toISOString();
   const movieWatchedAt = new Date(Date.now() + 1000).toISOString();
+  const showReflection = { rating: 5, reaction: "loved", favoriteCharacter: "Jonas", comment: "Dense, but worth it." };
+  const episodeReflection = { rating: 4, reaction: "mixed", favoriteCharacter: "Martha", comment: null };
+  const movieReflection = { rating: 4, reaction: "liked", favoriteCharacter: null, comment: "Great pacing." };
 
   const currentUser = await check("/users/me", {
     assert: assertUser,
@@ -210,6 +228,13 @@ async function checkAuthenticatedProductFlow(token) {
     headers: jsonAuthHeaders,
     method: "PUT",
   });
+  await check("/shows/not-a-uuid/reflection", {
+    assert: assertValidationError,
+    body: JSON.stringify(showReflection),
+    expectedStatus: 400,
+    headers: jsonAuthHeaders,
+    method: "PUT",
+  });
   await check(`/shows/${missingUuid}/progress`, {
     assert: (body) => assertError(body, "SHOW_NOT_FOUND"),
     expectedStatus: 404,
@@ -241,6 +266,13 @@ async function checkAuthenticatedProductFlow(token) {
     headers: jsonAuthHeaders,
     method: "PUT",
   });
+  await check(`/shows/${missingUuid}/reflection`, {
+    assert: (body) => assertError(body, "SHOW_NOT_FOUND"),
+    body: JSON.stringify(showReflection),
+    expectedStatus: 404,
+    headers: jsonAuthHeaders,
+    method: "PUT",
+  });
   await check("/episodes/not-a-uuid", {
     assert: assertValidationError,
     expectedStatus: 400,
@@ -249,6 +281,13 @@ async function checkAuthenticatedProductFlow(token) {
   await check("/episodes/not-a-uuid/preference", {
     assert: assertValidationError,
     body: JSON.stringify({ rating: 4 }),
+    expectedStatus: 400,
+    headers: jsonAuthHeaders,
+    method: "PUT",
+  });
+  await check("/episodes/not-a-uuid/reflection", {
+    assert: assertValidationError,
+    body: JSON.stringify(episodeReflection),
     expectedStatus: 400,
     headers: jsonAuthHeaders,
     method: "PUT",
@@ -276,6 +315,13 @@ async function checkAuthenticatedProductFlow(token) {
     headers: jsonAuthHeaders,
     method: "PUT",
   });
+  await check(`/movies/${missingUuid}/reflection`, {
+    assert: (body) => assertError(body, "MOVIE_NOT_FOUND"),
+    body: JSON.stringify(movieReflection),
+    expectedStatus: 404,
+    headers: jsonAuthHeaders,
+    method: "PUT",
+  });
   await check(`/episodes/${missingUuid}/watches`, {
     assert: (body) => assertError(body, "EPISODE_NOT_FOUND"),
     body: JSON.stringify({ watchedAt: episodeWatchedAt }),
@@ -293,6 +339,13 @@ async function checkAuthenticatedProductFlow(token) {
   await check(`/episodes/${missingUuid}/preference`, {
     assert: (body) => assertError(body, "EPISODE_NOT_FOUND"),
     body: JSON.stringify({ rating: 4 }),
+    expectedStatus: 404,
+    headers: jsonAuthHeaders,
+    method: "PUT",
+  });
+  await check(`/episodes/${missingUuid}/reflection`, {
+    assert: (body) => assertError(body, "EPISODE_NOT_FOUND"),
+    body: JSON.stringify(episodeReflection),
     expectedStatus: 404,
     headers: jsonAuthHeaders,
     method: "PUT",
@@ -369,8 +422,25 @@ async function checkAuthenticatedProductFlow(token) {
     headers: jsonAuthHeaders,
     method: "PUT",
   });
+  await check(`/shows/${resolvedShow.id}/reflection`, {
+    assert: assertValidationError,
+    body: JSON.stringify({ rating: 5, reaction: "confused", favoriteCharacter: "x".repeat(81), comment: "" }),
+    expectedStatus: 400,
+    headers: jsonAuthHeaders,
+    method: "PUT",
+  });
+  await check(`/shows/${resolvedShow.id}/reflection`, {
+    assert: (body) => assertReflectionResponse(body, resolvedShow.id, "show", showReflection),
+    body: JSON.stringify(showReflection),
+    expectedStatus: 200,
+    headers: jsonAuthHeaders,
+    method: "PUT",
+  });
   await check(`/shows/${resolvedShow.id}`, {
-    assert: (body) => assertShowDetail(body, resolvedShow.id, true, 5),
+    assert: (body) => {
+      assertShowDetail(body, resolvedShow.id, true, 5);
+      assertReflection(body.reflection, "show.reflection", showReflection);
+    },
     expectedStatus: 200,
     headers: authHeaders,
   });
@@ -423,8 +493,18 @@ async function checkAuthenticatedProductFlow(token) {
     headers: jsonAuthHeaders,
     method: "PUT",
   });
+  await check(`/episodes/${firstEpisodeId}/reflection`, {
+    assert: (body) => assertReflectionResponse(body, firstEpisodeId, "episode", episodeReflection),
+    body: JSON.stringify(episodeReflection),
+    expectedStatus: 200,
+    headers: jsonAuthHeaders,
+    method: "PUT",
+  });
   await check(`/episodes/${firstEpisodeId}`, {
-    assert: (body) => assertEpisodeDetail(body, firstEpisodeId, resolvedShow.id, false, 4),
+    assert: (body) => {
+      assertEpisodeDetail(body, firstEpisodeId, resolvedShow.id, false, 4);
+      assertReflection(body.reflection, "episode detail.reflection", episodeReflection);
+    },
     expectedStatus: 200,
     headers: authHeaders,
   });
@@ -544,6 +624,13 @@ async function checkAuthenticatedProductFlow(token) {
     headers: jsonAuthHeaders,
     method: "PUT",
   });
+  await check(`/movies/${resolvedMovie.id}/reflection`, {
+    assert: (body) => assertReflectionResponse(body, resolvedMovie.id, "movie", movieReflection),
+    body: JSON.stringify(movieReflection),
+    expectedStatus: 200,
+    headers: jsonAuthHeaders,
+    method: "PUT",
+  });
   await check(`/movies/${resolvedMovie.id}/watchlist`, {
     assert: (body) => assertWatchlistResponse(body, resolvedMovie.id, "movie", true),
     expectedStatus: 200,
@@ -557,7 +644,10 @@ async function checkAuthenticatedProductFlow(token) {
     method: "POST",
   });
   await check(`/movies/${resolvedMovie.id}`, {
-    assert: (body) => assertMovieDetail(body, resolvedMovie.id, false, true, 4),
+    assert: (body) => {
+      assertMovieDetail(body, resolvedMovie.id, false, true, 4);
+      assertReflection(body.reflection, "movie.reflection", movieReflection);
+    },
     expectedStatus: 200,
     headers: authHeaders,
   });
@@ -845,6 +935,7 @@ function assertShowDetail(body, showId, inWatchlist, rating) {
   expectEqual(body.inWatchlist, inWatchlist, "show.inWatchlist");
   expectEqual(body.rating, rating, "show.rating");
   expectPublicRating(body.publicRating, "show.publicRating");
+  assertNullableReflection(body.reflection, "show.reflection");
   expectString(body.title, "show.title");
   expectString(body.overview, "show.overview");
   expectArray(body.seasons, "show.seasons");
@@ -896,6 +987,7 @@ function assertEpisodeDetail(body, episodeId, showId, watched, rating) {
   expectNullableString(body.stillPath, "episode detail.stillPath");
   expectNullableNumber(body.runtimeMinutes, "episode detail.runtimeMinutes");
   expectEqual(body.rating, rating, "episode detail.rating");
+  assertNullableReflection(body.reflection, "episode detail.reflection");
   expectEqual(body.watched, watched, "episode detail.watched");
   expectEqual(body.watchCount, watched ? 1 : 0, "episode detail.watchCount");
   expect(body.lastWatchedAt === null || isIsoString(body.lastWatchedAt), "episode detail.lastWatchedAt should be null or ISO string");
@@ -943,6 +1035,7 @@ function assertMovieDetail(body, movieId, watched, inWatchlist, rating) {
   expectEqual(body.inWatchlist, inWatchlist, "movie.inWatchlist");
   expectEqual(body.rating, rating, "movie.rating");
   expectPublicRating(body.publicRating, "movie.publicRating");
+  assertNullableReflection(body.reflection, "movie.reflection");
   expectString(body.title, "movie.title");
   expectString(body.overview, "movie.overview");
   expectEqual(body.watched, watched, "movie.watched");
@@ -989,6 +1082,36 @@ function assertPreferenceResponse(body, id, mediaType, rating) {
   expectEqual(body.mediaType, mediaType, "preference.mediaType");
   expectEqual(body.rating, rating, "preference.rating");
   expect(body.updatedAt === null || isIsoString(body.updatedAt), "preference.updatedAt should be null or ISO string");
+}
+
+function assertReflectionResponse(body, id, mediaType, expected) {
+  expectRecord(body, "reflection response");
+  expectEqual(body.id, id, "reflection.id");
+  expectEqual(body.mediaType, mediaType, "reflection.mediaType");
+  expectEqual(body.rating, expected.rating, "reflection.rating");
+  assertReflection(body, "reflection", expected);
+}
+
+function assertNullableReflection(value, label) {
+  if (value === null) {
+    return;
+  }
+
+  assertReflection(value, label);
+}
+
+function assertReflection(value, label, expected) {
+  expectRecord(value, label);
+  expect(["loved", "liked", "mixed", "not_for_me"].includes(value.reaction), `${label}.reaction`);
+  expectNullableString(value.favoriteCharacter, `${label}.favoriteCharacter`);
+  expectNullableString(value.comment, `${label}.comment`);
+  expectIsoString(value.updatedAt, `${label}.updatedAt`);
+
+  if (expected) {
+    expectEqual(value.reaction, expected.reaction, `${label}.reaction`);
+    expectEqual(value.favoriteCharacter, expected.favoriteCharacter, `${label}.favoriteCharacter`);
+    expectEqual(value.comment, expected.comment, `${label}.comment`);
+  }
 }
 
 function assertLibrary(body) {

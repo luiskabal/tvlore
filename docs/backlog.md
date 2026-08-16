@@ -12,8 +12,6 @@ No active infrastructure tasks.
 - [x] Move pure catalog response mappers out of `CatalogRepository` when catalog persistence is next edited.
 - [ ] Add fetched/import-assisted Watch Path creation from external list sources.
 - [ ] Add a TVLore-native recommendation engine with house rules, explicit taste signals, availability, and explainable reasons.
-- [ ] Expand post-watch check-in to episode-level reflections after approving persistence/schema shape: reaction tags, favorite character, and optional comment.
-- [ ] Design watch reflection persistence separately from watched state and rating preferences before storing reactions, favorite characters, or comments.
 - [ ] Add a country-aware `Popular in your country` discovery section using the user's saved availability country.
 - [ ] Add a `TVLore Picks` / house-curated discovery section that is separate from personalized recommendations.
 - [ ] Add an `Available in your country` discovery section for streamable titles, separate from recommendation ranking.
@@ -25,9 +23,9 @@ No active infrastructure tasks.
 - Keep the current screen -> hook -> API client boundary. The cleanup goal is readability, not a new state-management layer yet.
 - Ratings are explicit preference signals. Keep them separate from watched state so recommendations can use both later.
 - Post-watch check-in should never block `Watched`: save the watched state first, then open an optional skip-friendly flow.
-- First post-watch check-in uses existing show/movie rating preferences only. Episode-level ratings, reactions, favorite characters, and comments need a separate persistence model.
-- Keep watched state, title-level rating preferences, and per-watch reflections as separate concepts so rewatches, comments, and recommendations do not fight the same row later.
-- Reaction tags, favorite-character picks, and comments need spoiler/privacy rules before they become persisted or social data.
+- Post-watch check-in now persists a rating plus a separate reflection for shows, movies, and episodes: reaction, favorite character, and optional comment.
+- Keep watched state, rating preferences, and per-watch reflections as separate concepts so rewatches, comments, and recommendations do not fight the same row later.
+- Reaction tags, favorite-character picks, and comments are private product data for now. Spoiler/privacy rules are still required before any social surface.
 - First recommendations intentionally use hydrated catalog data, ratings, genres, and a small provider-availability boost. Improve quality only after storing stronger content signals.
 - Keep recommendation surfaces separate: personalized `For you`, contextual `Popular in your country`, utility `Available in your country`, and editorial `TVLore Picks`.
 - TVLore-native recommendations should stay explainable before adding opaque ML or collaborative filtering.
@@ -135,6 +133,8 @@ No active infrastructure tasks.
 - [x] Harden the mobile API client for non-JSON, empty, or proxy-shaped error responses.
 - [x] Normalize incoming `x-correlation-id` values before returning/logging them.
 - [x] Split `LibraryOverview.tsx` by visible Library section.
+- [x] Design watch reflection persistence separately from watched state and rating preferences.
+- [x] Expand post-watch check-in to show/movie/episode reflections with sensation, favorite character, and optional comment.
 
 ## Deferred
 

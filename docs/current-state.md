@@ -24,6 +24,7 @@ Implemented:
 - Authenticated show-level watch/unwatch endpoint that hydrates seasons and updates all episode watches for the show.
 - Authenticated watchlist endpoints for shows and movies.
 - Authenticated rating preference endpoints for shows, movies, and episodes.
+- Authenticated post-watch reflection endpoints for shows, movies, and episodes.
 - Authenticated personal library and show progress read endpoints.
 - Authenticated first-pass recommendation endpoint from stored ratings, hydrated catalog rows, persisted genre names, and country-aware streaming availability.
 - Authenticated curated and user-owned Watch Paths endpoints with backend-owned ordered viewing lists.
@@ -40,11 +41,12 @@ Implemented:
 - Mobile season detail can mark all loaded season episodes watched or unwatched.
 - Mobile episode detail can mark an episode watched or unwatched.
 - Mobile episode detail can rate or clear a 1-5 episode preference.
+- Mobile episode detail opens an optional post-watch check-in with rating, sensation, favorite character, and optional comment.
 - Mobile show detail can mark the full show watched or unwatched through one backend-owned bulk action.
 - Mobile show/movie detail can add or remove a title from the watchlist.
 - Mobile show/movie detail can rate or clear a rating preference for a title.
 - Mobile show/movie detail compares the TMDB public rating against the user's rating in a compact spoiler-aware row.
-- Mobile show/movie detail opens an optional post-watch rating check-in after a movie or full show is marked watched.
+- Mobile show/movie detail opens an optional post-watch check-in after a movie or full show is marked watched.
 - Mobile show/movie detail renders country-aware watch-provider icons using the user's saved country preference.
 - Mobile tracking mutations invalidate the local library data.
 - Mobile watchlist mutations invalidate the local library data.
@@ -446,6 +448,9 @@ PUT /movies/:movieId/preference
 DELETE /movies/:movieId/preference
 PUT /episodes/:episodeId/preference
 DELETE /episodes/:episodeId/preference
+PUT /shows/:showId/reflection
+PUT /movies/:movieId/reflection
+PUT /episodes/:episodeId/reflection
 GET /shows/:showId/progress
 GET /library
 GET /library/chronology
@@ -463,10 +468,12 @@ Current watched-state behavior:
 - Show-level mark watched/unwatched is a backend-owned bulk action. Mark watched hydrates all non-empty seasons first, then upserts one watch row per episode for the authenticated user.
 - Add/remove watchlist is idempotent in the MVP: one active row per user/show or user/movie.
 - Rating preferences are explicit and separate from watched state: one active row per user/show, user/movie, or user/episode, with `rating` from 1 to 5.
-- The current post-watch check-in reuses those title-level rating preferences and does not yet persist episode reactions, favorite characters, comments, spoiler state, or visibility.
+- Post-watch reflections are explicit and separate from watched state: one active row per user/show, user/movie, or user/episode, with reaction, optional favorite character, and optional comment.
+- Reflection writes also update the matching 1-5 rating preference so recommendations and library rating summaries continue reading the preference model.
 - Show progress returned by show detail, episode watch mutations, and `GET /shows/:showId/progress` is based on episodes currently persisted in TVLore. Opening a season hydrates its episode rows.
 - Show detail returns `progress.status` as `not_started`, `watching`, or `completed`.
 - Show and movie detail responses return `inWatchlist`, nullable authenticated-user `rating`, and nullable TMDB `publicRating`. Episode detail responses return nullable authenticated-user `rating`.
+- Show, movie, and episode detail responses return nullable authenticated-user `reflection` data when the user has saved a post-watch check-in.
 - `GET /library` returns summary counts, continue-watching shows, rated titles, recent movie/episode activity, full watched episode activity, and watchlist titles for the authenticated user.
 - `GET /shows/:showId/watch-providers` and `GET /movies/:movieId/watch-providers` return subscription/rent/buy/free availability for a country code using TMDB Watch Providers data; mobile now sends the authenticated user's saved `availabilityCountry`.
 
@@ -489,16 +496,22 @@ erDiagram
   USER ||--o{ SHOW_PREFERENCE : rates
   USER ||--o{ MOVIE_PREFERENCE : rates
   USER ||--o{ EPISODE_PREFERENCE : rates
+  USER ||--o{ SHOW_REFLECTION : reflects
+  USER ||--o{ MOVIE_REFLECTION : reflects
+  USER ||--o{ EPISODE_REFLECTION : reflects
   SHOW ||--o{ SEASON : has
   SHOW ||--o{ EPISODE : has
   SHOW ||--o{ SHOW_WATCHLIST_ITEM : saved
   SHOW ||--o{ SHOW_PREFERENCE : rated
+  SHOW ||--o{ SHOW_REFLECTION : reflected
   SEASON ||--o{ EPISODE : contains
   EPISODE ||--o{ EPISODE_WATCH : watched
   EPISODE ||--o{ EPISODE_PREFERENCE : rated
+  EPISODE ||--o{ EPISODE_REFLECTION : reflected
   MOVIE ||--o{ MOVIE_WATCH : watched
   MOVIE ||--o{ MOVIE_WATCHLIST_ITEM : saved
   MOVIE ||--o{ MOVIE_PREFERENCE : rated
+  MOVIE ||--o{ MOVIE_REFLECTION : reflected
   SHOW ||--o{ EXTERNAL_IDENTIFIER : maps
   MOVIE ||--o{ EXTERNAL_IDENTIFIER : maps
 
@@ -651,9 +664,46 @@ erDiagram
     datetime createdAt
     datetime updatedAt
   }
+
+  SHOW_REFLECTION {
+    uuid id PK
+    uuid userId FK
+    uuid showId FK
+    string reaction
+    string favoriteCharacter
+    string comment
+    datetime createdAt
+    datetime updatedAt
+  }
+
+  MOVIE_REFLECTION {
+    uuid id PK
+    uuid userId FK
+    uuid movieId FK
+    string reaction
+    string favoriteCharacter
+    string comment
+    datetime createdAt
+    datetime updatedAt
+  }
+
+  EPISODE_REFLECTION {
+    uuid id PK
+    uuid userId FK
+    uuid episodeId FK
+    string reaction
+    string favoriteCharacter
+    string comment
+    datetime createdAt
+    datetime updatedAt
+  }
 ```
 
 Current tables:
+
+The repository schema includes the reflection tables below. Production Supabase
+requires applying `20260816161000_add_watch_reflections` before those rows are
+available at runtime.
 
 - `users`: TVLore account/profile row, including the saved streaming availability country.
 - `user_identities`: links a TVLore user to Supabase Auth.
@@ -670,6 +720,9 @@ Current tables:
 - `show_preferences`: per-user 1-5 rating preference for a show.
 - `movie_preferences`: per-user 1-5 rating preference for a movie.
 - `episode_preferences`: per-user 1-5 rating preference for an episode.
+- `show_reflections`: per-user private post-watch reflection for a show.
+- `movie_reflections`: per-user private post-watch reflection for a movie.
+- `episode_reflections`: per-user private post-watch reflection for an episode.
 
 Important constraint:
 
@@ -682,6 +735,9 @@ movie_watchlist_items(user_id, movie_id) is unique
 show_preferences(user_id, show_id) is unique
 movie_preferences(user_id, movie_id) is unique
 episode_preferences(user_id, episode_id) is unique
+show_reflections(user_id, show_id) is unique
+movie_reflections(user_id, movie_id) is unique
+episode_reflections(user_id, episode_id) is unique
 ```
 
 Why:
@@ -694,6 +750,8 @@ Why:
 - Repeated add-to-watchlist calls stay idempotent.
 - Rating preferences reference stable TVLore UUIDs.
 - Repeated rating calls update the same preference row.
+- Reflection rows reference stable TVLore UUIDs.
+- Repeated reflection calls update the same private reflection row and the same rating preference row.
 - Watched state belongs to a user, not to the catalog row.
 
 Implementation note:
@@ -785,6 +843,7 @@ Expected behavior:
 - `DELETE /shows/:showId/preference` clears that show rating for the authenticated user.
 - `PUT /movies/:movieId/preference` stores a 1-5 movie rating for the authenticated user.
 - `DELETE /movies/:movieId/preference` clears that movie rating for the authenticated user.
+- `PUT /shows/:showId/reflection`, `PUT /movies/:movieId/reflection`, and `PUT /episodes/:episodeId/reflection` save a private post-watch check-in and update the matching rating preference.
 - `GET /library` returns personal summary, rated titles, continue-watching, watchlist, recently watched activity, and full watched episode activity.
 - `GET /library/chronology` returns paginated personal movie/episode watch-history activity.
 - `GET /recommendations` returns unrated, unwatched, unsaved catalog candidates ordered by the user's stronger rated media type, preferred genre matches, and streaming availability in the user's saved country.
@@ -825,11 +884,13 @@ Search
 -> Show detail progress state
 -> Show/movie watchlist add/remove
 -> Show/movie rating set/clear
+-> Show/movie post-watch reflection save
 -> GET /shows/:id/watch-providers or GET /movies/:id/watch-providers
 -> Show-level watched/unwatched
 -> Show season route
 -> GET /shows/:id/seasons/:seasonNumber
 -> Episode watch/unwatch
+-> Episode post-watch reflection save
 
 Paths
 -> GET /watch-paths
@@ -885,6 +946,8 @@ Current behavior:
 - Show and movie detail can set or clear a 1-5 rating preference.
 - Rating actions update local detail state optimistically, then reconcile from the backend mutation response.
 - Show and movie detail render TMDB `publicRating` as `Spoiler` until the user rates the title or manually reveals it; the user's rating shows `--` until rated.
+- After marking a movie, full show, or episode watched, mobile opens an optional post-watch check-in for rating, sensation, favorite character, and comment.
+- Reflection saves optimistically update the local detail rating/reflection state, then reconcile from the backend mutation response.
 - Profile lets the user choose the `Where to watch` country through flag-labelled country chips.
 - Show and movie detail show `Where to watch` provider icons for the user's saved country preference, with device country and `CL` as fallback. Tapping a provider opens the title's TMDB/JustWatch availability link for that country.
 - Show detail lists seasons and opens a season route.
@@ -937,6 +1000,7 @@ Product foundation:
 - Watch tracking is stored against internal TVLore IDs and authenticated user IDs.
 - Watchlist intent is stored against internal TVLore IDs and authenticated user IDs.
 - Rating preferences are stored against internal TVLore IDs and authenticated user IDs.
+- Post-watch reflections are stored against internal TVLore IDs and authenticated user IDs.
 - Availability country is stored on the authenticated user's TVLore profile and reused by mobile detail screens.
 - Genre names are persisted on resolved shows and movies from TMDB detail responses.
 - TMDB public ratings are persisted on resolved shows and movies and lazily refreshed for older catalog rows that do not have one yet.
@@ -949,6 +1013,7 @@ Product foundation:
 - Mobile can mark movies watched/unwatched through backend tracking endpoints.
 - Mobile can add/remove shows and movies from the watchlist through backend watchlist endpoints.
 - Mobile can rate shows, movies, and episodes through backend preference endpoints.
+- Mobile can save private post-watch reflections for shows, movies, and episodes through backend reflection endpoints.
 - Mobile can remove watchlist/history rows immediately after swipe confirmation backed by existing backend watchlist and tracking endpoints.
 - Mobile can render library thumbnails from existing poster data without extra API calls.
 - Mobile can open a show season, hydrate episode IDs, and mark episodes watched/unwatched through backend tracking endpoints.
@@ -981,6 +1046,7 @@ Search screen
 -> season detail can POST/DELETE /shows/:id/seasons/:seasonNumber/watches
 -> season detail can POST/DELETE /episodes/:episodeId/watches
 -> episode detail can PUT/DELETE /episodes/:episodeId/preference
+-> detail screens can PUT /shows|movies|episodes/:id/reflection after watched state is saved
 ```
 
 The remaining near-term frontend product flow is:

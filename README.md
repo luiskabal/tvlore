@@ -36,7 +36,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Personal show/movie watchlist.
 - Personal show/movie/episode rating preferences.
 - Compact show/movie rating comparison in detail screens: TMDB public rating versus the user's 1-5 rating, with the public rating hidden as `Spoiler` until the user rates it or manually reveals it.
-- Optional post-watch rating check-in after marking a movie or full show watched.
+- Optional post-watch check-in after marking a movie, full show, or episode watched, with rating, sensation, favorite character, and optional comment.
 - Library summary with watched show, movie, episode, watchlist, and rated-title counts.
 - Tappable Library summary cards filter Cronologia, watching shows, movies, grouped episodes, watchlist, and rated titles.
 - Cronologia loads backend-paginated watched movie and episode history and fetches more as the user scrolls.
@@ -56,7 +56,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Mobile uses lookahead prefetch for Search, recommendations, Library, and Watch Paths to reduce perceived navigation latency.
 - Mobile library, profile, search, and detail screens follow a route/container, hook, presentation, and styles split.
 - Mobile has an initial reusable UI pool for tokens, text, buttons, badges, skeletons, stat cards, posters, still images, and media rows, already used by Library, Search, catalog detail, and season detail surfaces.
-- Mobile API calls are grouped behind a stable `tvlore-api.ts` facade with domain modules for catalog, home, tracking, watchlist, and preferences.
+- Mobile API calls are grouped behind a stable `tvlore-api.ts` facade with domain modules for catalog, home, tracking, watchlist, preferences, and reflections.
 - Mobile has initial Vitest coverage for pure search and chronology logic.
 - Postman collection and API smoke checks for local/Vercel validation.
 
@@ -76,9 +76,10 @@ Google login
 -> Open episode detail
 -> Rate episode
 -> Mark movie watched
--> Optional post-watch rating check-in
+-> Optional post-watch check-in with rating, sensation, favorite character, and comment
 -> Open show season
 -> Mark episode watched
+-> Optional episode post-watch check-in
 -> Mark all season episodes watched
 -> Mark full show watched
 -> Return to profile

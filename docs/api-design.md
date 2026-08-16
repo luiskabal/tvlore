@@ -435,7 +435,7 @@ Errors: `CATALOG_ITEM_NOT_FOUND`, `CATALOG_PROVIDER_UNAVAILABLE`, `VALIDATION_FA
 
 Purpose: return TVLore show details by internal ID.
 
-Current MVP status: implemented with authenticated user's progress, watchlist state, rating preference, and TMDB public rating.
+Current MVP status: implemented with authenticated user's progress, watchlist state, rating preference, reflection, and TMDB public rating.
 
 Auth: required.
 
@@ -459,6 +459,12 @@ Response:
   "inWatchlist": true,
   "publicRating": 8.4,
   "rating": 5,
+  "reflection": {
+    "reaction": "loved",
+    "favoriteCharacter": "Jonas",
+    "comment": "Dense, but worth it.",
+    "updatedAt": "2026-08-16T00:00:00.000Z"
+  },
   "seasons": [
     {
       "id": "uuid",
@@ -502,7 +508,7 @@ Business validation:
 
 - Show exists.
 - Provider refresh may occur if metadata is stale.
-- Progress, watchlist state, and rating preference are calculated for authenticated user.
+- Progress, watchlist state, rating preference, and reflection are calculated for authenticated user.
 
 Errors: `SHOW_NOT_FOUND`, `VALIDATION_FAILED`, `CATALOG_PROVIDER_UNAVAILABLE`.
 
@@ -623,7 +629,7 @@ Errors: `SHOW_NOT_FOUND`, `SEASON_NOT_FOUND`, `VALIDATION_FAILED`.
 
 Purpose: return one persisted episode with show/season context and the authenticated user's watch state.
 
-Current MVP status: implemented from internal TVLore episode records.
+Current MVP status: implemented from internal TVLore episode records, including authenticated user's rating preference and reflection.
 
 Auth: required.
 
@@ -653,6 +659,12 @@ Response:
   "airDate": "2017-12-01",
   "runtimeMinutes": 52,
   "rating": 4,
+  "reflection": {
+    "reaction": "liked",
+    "favoriteCharacter": "Jonas",
+    "comment": null,
+    "updatedAt": "2026-08-16T00:00:00.000Z"
+  },
   "watched": true,
   "watchCount": 1,
   "lastWatchedAt": "2026-08-09T00:00:00.000Z"
@@ -742,7 +754,7 @@ Errors: `EPISODE_NOT_FOUND`, `VALIDATION_FAILED`, `UNAUTHORIZED`.
 
 Purpose: return movie details and authenticated user's watch state, watchlist state, and rating preference.
 
-Current MVP status: implemented with authenticated user's watched state, watchlist state, rating preference, and TMDB public rating.
+Current MVP status: implemented with authenticated user's watched state, watchlist state, rating preference, reflection, and TMDB public rating.
 
 Auth: required.
 
@@ -767,6 +779,12 @@ Response:
   "inWatchlist": true,
   "publicRating": 7.9,
   "rating": 4,
+  "reflection": {
+    "reaction": "loved",
+    "favoriteCharacter": null,
+    "comment": "Great pacing.",
+    "updatedAt": "2026-08-16T00:00:00.000Z"
+  },
   "watched": true,
   "watchCount": 1,
   "lastWatchedAt": "2026-08-09T00:00:00.000Z"
@@ -912,6 +930,113 @@ Response:
 Status codes: `200 OK`, `400 BAD_REQUEST`, `401 UNAUTHORIZED`, `404 NOT_FOUND`.
 
 Errors: `MOVIE_NOT_FOUND`, `VALIDATION_FAILED`, `UNAUTHORIZED`.
+
+### `PUT /shows/:showId/reflection`
+
+Purpose: save a private post-watch check-in for a show and update the matching show rating preference.
+
+Auth: required.
+
+Route parameters:
+
+- `showId` UUID.
+
+Request:
+
+```json
+{
+  "rating": 5,
+  "reaction": "loved",
+  "favoriteCharacter": "Jonas",
+  "comment": "Dense, but worth it."
+}
+```
+
+Response:
+
+```json
+{
+  "id": "uuid",
+  "mediaType": "show",
+  "rating": 5,
+  "reaction": "loved",
+  "favoriteCharacter": "Jonas",
+  "comment": "Dense, but worth it.",
+  "updatedAt": "2026-08-16T00:00:00.000Z"
+}
+```
+
+Status codes: `200 OK`, `400 BAD_REQUEST`, `401 UNAUTHORIZED`, `404 NOT_FOUND`.
+
+Validation: `rating` must be an integer from 1 to 5. `reaction` must be one of `loved`, `liked`, `mixed`, or `not_for_me`. `favoriteCharacter` may be null or up to 80 characters. `comment` may be null or up to 500 characters. Empty optional strings are normalized to null.
+
+Business behavior: repeated calls update the same user/show reflection row and the same user/show rating preference row.
+
+Errors: `SHOW_NOT_FOUND`, `VALIDATION_FAILED`, `UNAUTHORIZED`.
+
+### `PUT /movies/:movieId/reflection`
+
+Purpose: save a private post-watch check-in for a movie and update the matching movie rating preference.
+
+Auth: required.
+
+Route parameters:
+
+- `movieId` UUID.
+
+Request and validation: same body shape and validation as `PUT /shows/:showId/reflection`.
+
+Response:
+
+```json
+{
+  "id": "uuid",
+  "mediaType": "movie",
+  "rating": 4,
+  "reaction": "liked",
+  "favoriteCharacter": null,
+  "comment": "Great pacing.",
+  "updatedAt": "2026-08-16T00:00:00.000Z"
+}
+```
+
+Status codes: `200 OK`, `400 BAD_REQUEST`, `401 UNAUTHORIZED`, `404 NOT_FOUND`.
+
+Business behavior: repeated calls update the same user/movie reflection row and the same user/movie rating preference row.
+
+Errors: `MOVIE_NOT_FOUND`, `VALIDATION_FAILED`, `UNAUTHORIZED`.
+
+### `PUT /episodes/:episodeId/reflection`
+
+Purpose: save a private post-watch check-in for an episode and update the matching episode rating preference.
+
+Auth: required.
+
+Route parameters:
+
+- `episodeId` UUID.
+
+Request and validation: same body shape and validation as `PUT /shows/:showId/reflection`.
+
+Response:
+
+```json
+{
+  "id": "uuid",
+  "mediaType": "episode",
+  "rating": 4,
+  "reaction": "mixed",
+  "favoriteCharacter": "Martha",
+  "comment": null,
+  "updatedAt": "2026-08-16T00:00:00.000Z"
+}
+```
+
+Status codes: `200 OK`, `400 BAD_REQUEST`, `401 UNAUTHORIZED`, `404 NOT_FOUND`.
+
+Business behavior: repeated calls update the same user/episode reflection row and the same user/episode rating preference row. The endpoint does not mark the episode watched; mobile saves watched state first, then opens the optional check-in.
+
+Errors: `EPISODE_NOT_FOUND`, `VALIDATION_FAILED`, `UNAUTHORIZED`.
 
 ### `POST /episodes/:episodeId/watches`
 
