@@ -3,13 +3,11 @@ import { StatusBar } from "expo-status-bar";
 import { Pressable, SafeAreaView, ScrollView, View } from "react-native";
 
 import { RecommendationsPanel } from "../home/RecommendationsPanel";
-import { useRecommendationActions } from "../home/use-recommendation-actions";
 import { AppText, Button, Skeleton } from "../ui";
 import { styles } from "./search-styles";
 import { useSearchRecommendations } from "./use-search-recommendations";
 
 export default function RecommendationsScreen() {
-  const { recommendationAction, saveRecommendation } = useRecommendationActions();
   const { recommendations, recommendationsState, retryRecommendations } = useSearchRecommendations();
 
   return (
@@ -44,8 +42,6 @@ export default function RecommendationsScreen() {
           <RecommendationsPanel
             onOpenMovie={openMovie}
             onOpenShow={openShow}
-            onSaveToWatchlist={saveRecommendation}
-            recommendationAction={recommendationAction}
             recommendations={recommendations}
           />
         ) : null}

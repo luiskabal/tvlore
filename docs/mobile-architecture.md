@@ -261,13 +261,11 @@ lives in `RecommendationsScreen`, which reuses the presentation-only
 `RecommendationsPanel`. `useSearchRecommendations` loads only
 `GET /recommendations`; Library does not fetch recommendation data. The API
 guard layer owns the response-shape validation. Recommendation rows receive
-navigation and save-to-watchlist callbacks from the route screen.
-`useRecommendationActions` reuses the existing watchlist endpoint, then notifies
-the local library invalidator. The panel owns only local optimistic row hiding
-and restores the row if the save fails. Recommendation rows render
-backend-provided genre names when available, but do not calculate suggestion
-quality or render provider availability locally. Availability stays in detail
-screens. `recommendation-detail.ts` owns the small presentation rule that turns
+navigation callbacks from the route screen. Recommendation rows render
+backend-provided genre names when available, but do not save to watchlist,
+calculate suggestion quality, or render provider availability locally.
+Availability and watchlist actions stay in detail screens.
+`recommendation-detail.ts` owns the small presentation rule that turns
 preferred-genre overlap into copy such as "Because you like Drama".
 
 Library rows receive navigation callbacks from `LibraryScreen`: movies route

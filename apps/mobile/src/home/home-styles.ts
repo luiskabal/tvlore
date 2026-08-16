@@ -328,12 +328,6 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 12,
   },
-  recommendationOpenArea: {
-    alignItems: "center",
-    flex: 1,
-    flexDirection: "row",
-    gap: 12,
-  },
   recommendationText: {
     flex: 1,
     gap: 4,

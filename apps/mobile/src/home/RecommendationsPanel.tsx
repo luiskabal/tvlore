@@ -1,37 +1,26 @@
 import type { ComponentProps } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
 import type { RecommendationItem, RecommendationsResponse } from "../api/tvlore-api";
 import { getTmdbPosterUrl } from "../catalog/posters";
-import { AppText, Button, PosterImage } from "../ui";
+import { AppText, PosterImage } from "../ui";
 import { styles } from "./home-styles";
 import { getRecommendationDetail } from "./recommendation-detail";
-import {
-  getRecommendationActionKey,
-  type RecommendationActionState,
-} from "./use-recommendation-actions";
 
 type IconName = ComponentProps<typeof Ionicons>["name"];
 
 export type RecommendationsPanelProps = {
   onOpenMovie: (movieId: string) => void;
   onOpenShow: (showId: string) => void;
-  onSaveToWatchlist: (item: RecommendationItem) => Promise<void>;
-  recommendationAction: RecommendationActionState;
   recommendations: RecommendationsResponse | null;
 };
 
 export function RecommendationsPanel({
   onOpenMovie,
   onOpenShow,
-  onSaveToWatchlist,
-  recommendationAction,
   recommendations,
 }: RecommendationsPanelProps) {
-  const [optimisticSavedKeys, setOptimisticSavedKeys] = useState<Set<string>>(() => new Set());
-
   if (!recommendations) {
     return null;
   }
@@ -47,32 +36,16 @@ export function RecommendationsPanel({
       </View>
     );
   }
-  const visibleItems = recommendations.items.filter((item) => !optimisticSavedKeys.has(getRecommendationActionKey(item)));
 
   return (
     <View style={styles.listSection}>
-      <RecommendationHeader itemCount={visibleItems.length} />
-      {recommendationAction.kind === "error" ? <Text style={styles.errorText}>{recommendationAction.message}</Text> : null}
-      {visibleItems.length === 0 ? (
-        <View style={styles.statusPanel}>
-          <Text style={styles.statusLabel}>Saved</Text>
-          <Text style={styles.statusDetail}>Refreshing suggestions from your watchlist.</Text>
-        </View>
-      ) : null}
-      {visibleItems.map((item) => (
+      <RecommendationHeader itemCount={recommendations.items.length} />
+      {recommendations.items.map((item) => (
         <RecommendationRow
           item={item}
           key={`${item.mediaType}-${item.id}`}
           onOpenMovie={onOpenMovie}
           preferredGenreNames={recommendations.basis.preferredGenreNames}
-          onSaveToWatchlist={(selectedItem) => {
-            const actionKey = getRecommendationActionKey(selectedItem);
-
-            setOptimisticSavedKeys((current) => addSetValue(current, actionKey));
-            void onSaveToWatchlist(selectedItem).catch(() => {
-              setOptimisticSavedKeys((current) => deleteSetValue(current, actionKey));
-            });
-          }}
           onOpenShow={onOpenShow}
         />
       ))}
@@ -105,13 +78,11 @@ function RecommendationRow({
   onOpenMovie,
   onOpenShow,
   preferredGenreNames,
-  onSaveToWatchlist,
 }: {
   item: RecommendationItem;
   onOpenMovie: (movieId: string) => void;
   onOpenShow: (showId: string) => void;
   preferredGenreNames: string[];
-  onSaveToWatchlist: (item: RecommendationItem) => void;
 }) {
   const openItem = () => {
     if (item.mediaType === "movie") {
@@ -123,32 +94,25 @@ function RecommendationRow({
   };
 
   return (
-    <View style={styles.recommendationListItem}>
-      <Pressable
-        accessibilityLabel={`Open ${item.title}`}
-        accessibilityRole="button"
-        onPress={openItem}
-        style={({ pressed }) => [
-          styles.recommendationOpenArea,
-          pressed ? styles.pressedListItem : null,
-        ]}
-      >
-        <PosterImage
-          label={item.mediaType === "movie" ? "M" : "TV"}
-          uri={item.posterPath ? getTmdbPosterUrl(item.posterPath) : null}
-        />
-        <View style={styles.recommendationText}>
-          <AppText numberOfLines={2} variant="title">{item.title}</AppText>
-          <AppText tone="muted">{getRecommendationDetail(item, preferredGenreNames)}</AppText>
-        </View>
-        <Ionicons color="#5f564d" name={"chevron-forward" satisfies IconName} size={20} />
-      </Pressable>
-      <Button
-        label="Save"
-        onPress={() => onSaveToWatchlist(item)}
-        size="small"
+    <Pressable
+      accessibilityLabel={`Open ${item.title}`}
+      accessibilityRole="button"
+      onPress={openItem}
+      style={({ pressed }) => [
+        styles.recommendationListItem,
+        pressed ? styles.pressedListItem : null,
+      ]}
+    >
+      <PosterImage
+        label={item.mediaType === "movie" ? "M" : "TV"}
+        uri={item.posterPath ? getTmdbPosterUrl(item.posterPath) : null}
       />
-    </View>
+      <View style={styles.recommendationText}>
+        <AppText numberOfLines={2} variant="title">{item.title}</AppText>
+        <AppText tone="muted">{getRecommendationDetail(item, preferredGenreNames)}</AppText>
+      </View>
+      <Ionicons color="#5f564d" name={"chevron-forward" satisfies IconName} size={20} />
+    </Pressable>
   );
 }
 
@@ -156,20 +120,4 @@ function getEmptyRecommendationText(ratedTitleCount: number) {
   return ratedTitleCount === 0
     ? "Rate a few shows or movies to unlock suggestions."
     : "Search more titles so TVLore has fresh candidates to suggest.";
-}
-
-function addSetValue(current: Set<string>, value: string) {
-  const next = new Set(current);
-
-  next.add(value);
-
-  return next;
-}
-
-function deleteSetValue(current: Set<string>, value: string) {
-  const next = new Set(current);
-
-  next.delete(value);
-
-  return next;
 }

@@ -108,7 +108,7 @@ No active infrastructure tasks.
 - [x] Persist catalog genre names and use them to rank recommendation candidates.
 - [x] Boost recommendation candidates available to stream in the user's saved country.
 - [x] Explain recommendation rows from preferred genre overlap.
-- [x] Let recommendation rows save directly to watchlist.
+- [x] Keep recommendation rows focused on opening detail instead of direct watchlist mutation.
 - [x] Keep recommendations out of Profile and user-owned Library sections.
 - [x] Move personalized recommendations from Library into Search.
 - [x] Move the full recommendations list behind a dedicated Search entry route.

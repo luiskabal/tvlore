@@ -823,8 +823,7 @@ Current behavior:
 - Library shows rated show/movie rows when the backend has rating preference data.
 - Search shows a `Recommended picks` entry when the backend has eligible catalog candidates; the dedicated recommendations route shows the full list. Availability is intentionally shown only after opening a title detail.
 - Recommendation row copy can explain simple genre overlap, such as "Because you like Drama", from backend-provided preferred genres and item genres.
-- Recommendation rows open the matching show or movie detail screen.
-- Recommendation rows can save the title to watchlist immediately, then reconcile through the existing library refresh invalidator.
+- Recommendation rows open the matching show or movie detail screen; watchlist actions stay on the detail screen.
 - Library can filter from its summary cards between Cronologia, continuing shows, recently watched movies, watched episodes grouped by show and season, saved titles, and rated titles. Cronologia shows paginated watched movies and episodes by date.
 - Episode groups keep each season collapsible so long watched histories stay scannable.
 - Library rows include compact poster thumbnails for quicker visual scanning.
