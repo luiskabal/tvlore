@@ -193,6 +193,9 @@ export const styles = StyleSheet.create({
     overflow: "hidden",
     zIndex: 2,
   },
+  holoPortraitSkeleton: {
+    backgroundColor: "#e3ddd3",
+  },
   holoShine: {
     backgroundColor: "rgba(255, 255, 255, 0.28)",
     height: 260,
@@ -227,6 +230,10 @@ export const styles = StyleSheet.create({
     backgroundColor: "#ff8fc3",
     right: 20,
     top: -54,
+  },
+  holoSkeletonHeaderText: {
+    flex: 1,
+    gap: 6,
   },
   holoStat: {
     backgroundColor: "rgba(247, 244, 238, 0.9)",
@@ -432,6 +439,21 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
+  skeletonMediaRow: {
+    alignItems: "center",
+    backgroundColor: "#fffdfa",
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: 12,
+    justifyContent: "space-between",
+    padding: 14,
+  },
+  skeletonMediaText: {
+    flex: 1,
+    gap: 8,
+  },
   skeletonPortrait: {
     aspectRatio: 1.56,
   },
@@ -440,8 +462,8 @@ export const styles = StyleSheet.create({
     width: 150,
   },
   skeletonStat: {
-    flex: 1,
-    height: 58,
+    flexBasis: "30%",
+    flexGrow: 1,
   },
   statusDetail: {
     color: "#5f564d",

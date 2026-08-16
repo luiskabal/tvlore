@@ -84,9 +84,14 @@ function SearchSkeleton() {
         <View key={item} style={styles.skeletonRow}>
           <Skeleton height={112} width={76} />
           <View style={styles.skeletonBody}>
-            <Skeleton height={20} width="72%" />
-            <Skeleton height={14} width="92%" />
-            <Skeleton height={14} width="62%" />
+            <View style={styles.resultHeading}>
+              <Skeleton height={20} width="74%" />
+              <Skeleton height={24} radius={999} width={64} />
+            </View>
+            <Skeleton height={13} width={48} />
+            <Skeleton height={15} width="92%" />
+            <Skeleton height={15} width="78%" />
+            <Skeleton height={14} width={108} />
           </View>
         </View>
       ))}

@@ -5,8 +5,7 @@ import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
 import { updateCurrentUser } from "../api/tvlore-api";
 import { getSupabaseAccessToken, isSupabaseConfigured } from "../auth/supabase-auth";
 import { formatWatchCountry } from "../catalog/watch-country";
-import { HoloProfileCard } from "../home/HoloProfileCard";
-import { LibraryOverviewSkeleton } from "../home/LibraryOverview";
+import { HoloProfileCard, HoloProfileCardSkeleton } from "../home/HoloProfileCard";
 import { styles } from "../home/home-styles";
 import { useHomeModel } from "../home/use-home-model";
 
@@ -68,7 +67,7 @@ export default function ProfileScreen() {
             userName={homeData.user.displayName}
           />
         ) : home.kind === "loading" ? (
-          <LibraryOverviewSkeleton />
+          <HoloProfileCardSkeleton />
         ) : (
           <View style={styles.statusPanel}>
             <Text style={styles.statusLabel}>Sign in with Google</Text>

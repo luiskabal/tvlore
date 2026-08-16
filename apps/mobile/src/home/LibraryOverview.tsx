@@ -302,13 +302,29 @@ export function LibraryOverviewSkeleton() {
   return (
     <View style={styles.librarySection}>
       <View style={styles.summaryGrid}>
-        <Skeleton height={58} style={styles.skeletonStat} />
-        <Skeleton height={58} style={styles.skeletonStat} />
-        <Skeleton height={58} style={styles.skeletonStat} />
-        <Skeleton height={58} style={styles.skeletonStat} />
+        {[0, 1, 2, 3, 4, 5].map((item) => (
+          <Skeleton height={78} key={item} style={styles.skeletonStat} width="30%" />
+        ))}
       </View>
-      <Skeleton height={94} />
-      <Skeleton height={94} />
+      <LibraryRowsSkeleton />
+    </View>
+  );
+}
+
+function LibraryRowsSkeleton() {
+  return (
+    <View style={styles.listSection}>
+      <Skeleton height={22} width="46%" />
+      {[0, 1, 2].map((item) => (
+        <View key={item} style={styles.skeletonMediaRow}>
+          <Skeleton height={64} width={44} />
+          <View style={styles.skeletonMediaText}>
+            <Skeleton height={18} width="76%" />
+            <Skeleton height={14} width="58%" />
+          </View>
+          <Skeleton height={14} width={48} />
+        </View>
+      ))}
     </View>
   );
 }
@@ -471,12 +487,7 @@ function ChronologySection({
   onRetry: () => void;
 }) {
   if (chronology.kind === "loading" && items.length === 0) {
-    return (
-      <View style={styles.statusPanel}>
-        <Text style={styles.statusLabel}>Loading chronology</Text>
-        <Text style={styles.statusDetail}>Fetching your watched history by date.</Text>
-      </View>
-    );
+    return <LibraryRowsSkeleton />;
   }
 
   if (items.length === 0) {

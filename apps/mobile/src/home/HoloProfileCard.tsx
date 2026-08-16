@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { Animated, Image, Text, type GestureResponderEvent, View } from "react-native";
 
 import type { LibraryResponse } from "../api/tvlore-api";
+import { Skeleton } from "../ui";
 import { styles } from "./home-styles";
 
 type HoloProfileCardProps = {
@@ -130,6 +131,38 @@ export function HoloProfileCard({ avatarUrl, library, userName }: HoloProfileCar
         <HoloStat label="Rated" value={library.summary.ratedTitleCount} />
       </View>
     </Animated.View>
+  );
+}
+
+export function HoloProfileCardSkeleton() {
+  return (
+    <View style={styles.holoCard}>
+      <View style={styles.holoCardBorder} />
+      <View pointerEvents="none" style={styles.holoSpeckleLayer}>
+        <View style={[styles.holoSpeckle, styles.holoSpecklePink]} />
+        <View style={[styles.holoSpeckle, styles.holoSpeckleGreen]} />
+        <View style={[styles.holoSpeckle, styles.holoSpeckleBlue]} />
+      </View>
+
+      <View style={styles.holoCardHeader}>
+        <View style={styles.holoSkeletonHeaderText}>
+          <Skeleton height={12} width={92} />
+          <Skeleton height={28} width="72%" />
+        </View>
+        <Skeleton height={28} radius={999} width={58} />
+      </View>
+
+      <View style={[styles.holoPortraitFrame, styles.holoPortraitSkeleton]} />
+
+      <View style={styles.holoStatsRow}>
+        {[0, 1, 2, 3].map((item) => (
+          <View key={item} style={styles.holoStat}>
+            <Skeleton height={24} width={32} />
+            <Skeleton height={12} width="70%" />
+          </View>
+        ))}
+      </View>
+    </View>
   );
 }
 

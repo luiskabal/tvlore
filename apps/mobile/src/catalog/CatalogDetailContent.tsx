@@ -401,12 +401,12 @@ export function CatalogDetailSkeleton({ mediaType }: { mediaType: MediaType }) {
         <Skeleton height={16} width="70%" />
       </View>
 
-      <ActionPanelSkeleton />
-      <ActionPanelSkeleton />
+      <WhereToWatchSkeleton />
+      <RatingPanelSkeleton />
 
       {mediaType === "show" ? (
         <>
-          <ActionPanelSkeleton />
+          <ProgressPanelSkeleton />
           <ShowSeasonsSkeleton />
         </>
       ) : null}
@@ -495,12 +495,45 @@ function SeasonRow({
   );
 }
 
-function ActionPanelSkeleton() {
+function WhereToWatchSkeleton() {
   return (
-    <View style={styles.skeletonPanel}>
-      <Skeleton height={22} width="42%" />
-      <Skeleton height={16} width="70%" />
-      <Skeleton height={38} width={132} />
+    <View style={styles.statusPanel}>
+      <View style={styles.panelHeaderRow}>
+        <Skeleton height={22} width="44%" />
+        <Skeleton height={26} radius={999} width={42} />
+      </View>
+      <View style={styles.providerSection}>
+        <Skeleton height={14} width={54} />
+        <View style={styles.providerRow}>
+          <Skeleton height={54} width={54} />
+          <Skeleton height={54} width={54} />
+        </View>
+      </View>
+      <Skeleton height={14} width="74%" />
+    </View>
+  );
+}
+
+function ProgressPanelSkeleton() {
+  return (
+    <View style={styles.statusPanel}>
+      <Skeleton height={22} width="34%" />
+      <Skeleton height={16} width="76%" />
+      <Skeleton height={16} width="62%" />
+    </View>
+  );
+}
+
+function RatingPanelSkeleton() {
+  return (
+    <View style={styles.statusPanel}>
+      <Skeleton height={22} width="38%" />
+      <Skeleton height={16} width="78%" />
+      <View style={styles.ratingRow}>
+        {[0, 1, 2, 3, 4].map((item) => (
+          <Skeleton height={42} key={item} width={42} />
+        ))}
+      </View>
     </View>
   );
 }
@@ -508,8 +541,8 @@ function ActionPanelSkeleton() {
 function QuickActionSkeleton() {
   return (
     <View style={styles.quickActionRow}>
-      <Skeleton height={48} width={48} />
-      <Skeleton height={48} width={48} />
+      <Skeleton height={44} radius={999} width={44} />
+      <Skeleton height={44} radius={999} width={44} />
     </View>
   );
 }
