@@ -434,6 +434,20 @@ The app does not infer saved intent from local lists. It may render optimistic
 local state for reversible user actions, then settles on the `inWatchlist`
 value returned by detail endpoints and watchlist mutations.
 
+Post-watch check-in uses the same boundary:
+
+```text
+CatalogDetailScreen(movie/show)
+  -> useCatalogDetail()
+  -> mark watched succeeds
+  -> PostWatchCheckIn opens as optional UI
+  -> PUT /movies/:movieId/preference or PUT /shows/:showId/preference
+```
+
+This first slice reuses existing title-level rating preferences. It does not
+persist episode reactions, favorite characters, comments, spoiler state, or
+visibility because those need a separate watch-reflection model.
+
 Catalog and season detail routes render content-shaped skeletons while their
 initial API requests are pending. This keeps detail screens visually stable
 when Vercel, Supabase, or TMDB respond slowly.

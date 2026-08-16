@@ -38,6 +38,7 @@ Implemented:
 - Mobile show detail can mark the full show watched or unwatched through one backend-owned bulk action.
 - Mobile show/movie detail can add or remove a title from the watchlist.
 - Mobile show/movie detail can rate or clear a rating preference for a title.
+- Mobile show/movie detail opens an optional post-watch rating check-in after a movie or full show is marked watched.
 - Mobile show/movie detail renders country-aware watch-provider icons using the user's saved country preference.
 - Mobile tracking mutations invalidate the local library data.
 - Mobile watchlist mutations invalidate the local library data.
@@ -451,6 +452,7 @@ Current watched-state behavior:
 - Show-level mark watched/unwatched is a backend-owned bulk action. Mark watched hydrates all non-empty seasons first, then upserts one watch row per episode for the authenticated user.
 - Add/remove watchlist is idempotent in the MVP: one active row per user/show or user/movie.
 - Rating preferences are explicit and separate from watched state: one active row per user/show or user/movie, with `rating` from 1 to 5.
+- The current post-watch check-in reuses those title-level rating preferences and does not yet persist episode reactions, favorite characters, comments, spoiler state, or visibility.
 - Show progress returned by show detail, episode watch mutations, and `GET /shows/:showId/progress` is based on episodes currently persisted in TVLore. Opening a season hydrates its episode rows.
 - Show detail returns `progress.status` as `not_started`, `watching`, or `completed`.
 - Show and movie detail responses return `inWatchlist` and nullable `rating` for the authenticated user.

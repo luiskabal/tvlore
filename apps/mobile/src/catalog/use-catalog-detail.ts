@@ -126,7 +126,7 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
         : await unmarkMovieWatched(token, movieId);
 
       if (movieWatchRequestId.current !== requestId) {
-        return;
+        return false;
       }
 
       setState((current) => {
@@ -146,9 +146,10 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
       });
       notifyLibraryChanged();
       setWatchAction({ kind: "idle" });
+      return true;
     } catch (error) {
       if (movieWatchRequestId.current !== requestId) {
-        return;
+        return false;
       }
 
       rollbackDetail(previousDetail, setState);
@@ -156,6 +157,7 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
         kind: "error",
         message: error instanceof Error ? error.message : "Watch update failed",
       });
+      return false;
     }
   }, [state]);
 
@@ -187,12 +189,14 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
       });
       notifyLibraryChanged();
       setWatchAction({ kind: "idle" });
+      return true;
     } catch (error) {
       rollbackDetail(previousDetail, setState);
       setWatchAction({
         kind: "error",
         message: error instanceof Error ? error.message : "Watch update failed",
       });
+      return false;
     }
   }, [state]);
 
@@ -280,7 +284,7 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
         : await setPreferenceRating(token, targetMediaType, targetId, rating);
 
       if (ratingRequestId.current !== requestId) {
-        return;
+        return false;
       }
 
       setState((current) => {
@@ -302,9 +306,10 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
       });
       notifyLibraryChanged();
       setPreferenceAction({ kind: "idle" });
+      return true;
     } catch (error) {
       if (ratingRequestId.current !== requestId) {
-        return;
+        return false;
       }
 
       rollbackDetail(previousDetail, setState);
@@ -312,6 +317,7 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
         kind: "error",
         message: error instanceof Error ? error.message : "Rating update failed",
       });
+      return false;
     }
   }, [state]);
 

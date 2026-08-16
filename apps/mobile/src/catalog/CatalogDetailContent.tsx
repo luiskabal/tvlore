@@ -1,5 +1,6 @@
 import type { ComponentProps } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useState } from "react";
 import { ActivityIndicator, Image, Linking, Pressable, View } from "react-native";
 
 import type { CatalogDetailResponse, MediaType, ShowDetailResponse, ShowSeasonSummary, WatchProvider } from "../api/tvlore-api";
@@ -8,6 +9,7 @@ import { ui } from "../ui";
 import { styles } from "./catalog-detail-styles";
 import { formatWatchCountry } from "./watch-country";
 import { getTmdbLogoUrl, getTmdbPosterUrl } from "./posters";
+import { PostWatchCheckIn, type PostWatchCheckInTarget } from "./PostWatchCheckIn";
 import type { PreferenceActionState, WatchActionState, WatchlistActionState, WatchProvidersState } from "./use-catalog-detail";
 
 type IconName = ComponentProps<typeof Ionicons>["name"];
@@ -27,14 +29,38 @@ export function CatalogDetailContent({
   detail: CatalogDetailResponse;
   onOpenShowSeason: (showId: string, seasonNumber: number) => void;
   onSetInWatchlist: (mediaType: MediaType, id: string, inWatchlist: boolean) => void;
-  onSetMovieWatched: (movieId: string, watched: boolean) => void;
-  onSetRating: (mediaType: MediaType, id: string, rating: number | null) => void;
-  onSetShowWatched: (showId: string, watched: boolean) => void;
+  onSetMovieWatched: (movieId: string, watched: boolean) => Promise<boolean>;
+  onSetRating: (mediaType: MediaType, id: string, rating: number | null) => Promise<boolean>;
+  onSetShowWatched: (showId: string, watched: boolean) => Promise<boolean>;
   preferenceAction: PreferenceActionState;
   watchAction: WatchActionState;
   watchlistAction: WatchlistActionState;
   watchProvidersState: WatchProvidersState;
 }) {
+  const [checkInTarget, setCheckInTarget] = useState<PostWatchCheckInTarget | null>(null);
+  const openCheckIn = () => {
+    setCheckInTarget({
+      id: detail.id,
+      mediaType: detail.mediaType,
+      rating: detail.rating,
+      title: detail.title,
+    });
+  };
+  const setMovieWatched = async (movieId: string, watched: boolean) => {
+    const saved = await onSetMovieWatched(movieId, watched);
+
+    if (saved && watched) {
+      openCheckIn();
+    }
+  };
+  const setShowWatched = async (showId: string, watched: boolean) => {
+    const saved = await onSetShowWatched(showId, watched);
+
+    if (saved && watched) {
+      openCheckIn();
+    }
+  };
+
   return (
     <View style={styles.detail}>
       <View style={styles.hero}>
@@ -55,8 +81,8 @@ export function CatalogDetailContent({
             <TitleActionRow
               detail={detail}
               onSetInWatchlist={onSetInWatchlist}
-              onSetMovieWatched={onSetMovieWatched}
-              onSetShowWatched={onSetShowWatched}
+              onSetMovieWatched={setMovieWatched}
+              onSetShowWatched={setShowWatched}
               watchAction={watchAction}
               watchlistAction={watchlistAction}
             />
@@ -77,6 +103,13 @@ export function CatalogDetailContent({
           <ShowSeasonsPanel onOpenShowSeason={onOpenShowSeason} show={detail} />
         </>
       ) : null}
+
+      <PostWatchCheckIn
+        onClose={() => setCheckInTarget(null)}
+        onSetRating={onSetRating}
+        preferenceAction={preferenceAction}
+        target={checkInTarget}
+      />
     </View>
   );
 }
@@ -91,8 +124,8 @@ function TitleActionRow({
 }: {
   detail: CatalogDetailResponse;
   onSetInWatchlist: (mediaType: MediaType, id: string, inWatchlist: boolean) => void;
-  onSetMovieWatched: (movieId: string, watched: boolean) => void;
-  onSetShowWatched: (showId: string, watched: boolean) => void;
+  onSetMovieWatched: (movieId: string, watched: boolean) => Promise<void>;
+  onSetShowWatched: (showId: string, watched: boolean) => Promise<void>;
   watchAction: WatchActionState;
   watchlistAction: WatchlistActionState;
 }) {
@@ -121,11 +154,11 @@ function TitleActionRow({
         isLoading={isWatchSaving}
         onPress={() => {
           if (detail.mediaType === "movie") {
-            onSetMovieWatched(detail.id, !detail.watched);
+            void onSetMovieWatched(detail.id, !detail.watched);
             return;
           }
 
-          onSetShowWatched(detail.id, !detail.progress.isComplete);
+          void onSetShowWatched(detail.id, !detail.progress.isComplete);
         }}
       />
     </View>
@@ -166,7 +199,7 @@ function IconActionButton({
   isActive?: boolean;
   isDanger?: boolean;
   isLoading?: boolean;
-  onPress: () => void;
+  onPress: () => void | Promise<void>;
 }) {
   const isDisabled = disabled || isLoading;
   const iconColor = isActive ? ui.color.white : isDanger ? ui.color.dangerDark : ui.color.accent;
@@ -177,7 +210,9 @@ function IconActionButton({
       accessibilityRole="button"
       accessibilityState={{ disabled: isDisabled, selected: isActive }}
       disabled={isDisabled}
-      onPress={onPress}
+      onPress={() => {
+        void onPress();
+      }}
       style={({ pressed }) => [
         styles.iconActionButton,
         isActive ? styles.iconActionButtonActive : null,
@@ -296,7 +331,7 @@ function PreferencePanel({
   preferenceAction,
 }: {
   detail: CatalogDetailResponse;
-  onSetRating: (mediaType: MediaType, id: string, rating: number | null) => void;
+  onSetRating: (mediaType: MediaType, id: string, rating: number | null) => Promise<boolean>;
   preferenceAction: PreferenceActionState;
 }) {
   return (
@@ -316,7 +351,9 @@ function PreferencePanel({
                 styles.ratingButton,
                 isSelected ? styles.ratingButtonSelected : null,
               ]}
-              onPress={() => onSetRating(detail.mediaType, detail.id, rating)}
+              onPress={() => {
+                void onSetRating(detail.mediaType, detail.id, rating);
+              }}
             >
               <AppText style={isSelected ? styles.ratingButtonTextSelected : styles.ratingButtonText} variant="button">
                 {rating}
@@ -329,7 +366,9 @@ function PreferencePanel({
       {detail.rating ? (
         <Button
           label="Clear rating"
-          onPress={() => onSetRating(detail.mediaType, detail.id, null)}
+          onPress={() => {
+            void onSetRating(detail.mediaType, detail.id, null);
+          }}
           size="small"
           variant="secondary"
         />

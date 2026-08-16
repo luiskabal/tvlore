@@ -21,6 +21,29 @@ export const styles = StyleSheet.create({
     padding: 24,
     paddingTop: 48,
   },
+  checkInBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(23, 20, 18, 0.38)",
+  },
+  checkInHandle: {
+    alignSelf: "center",
+    backgroundColor: ui.color.border,
+    borderRadius: ui.radius.pill,
+    height: 4,
+    width: 48,
+  },
+  checkInOverlay: {
+    flex: 1,
+    justifyContent: "flex-end",
+  },
+  checkInSheet: {
+    backgroundColor: ui.color.panel,
+    borderTopLeftRadius: 18,
+    borderTopRightRadius: 18,
+    gap: 12,
+    padding: 24,
+    paddingBottom: 34,
+  },
   detail: {
     gap: 20,
   },

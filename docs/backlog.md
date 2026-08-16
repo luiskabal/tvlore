@@ -10,7 +10,7 @@ No active infrastructure tasks.
 
 - [ ] Add user-owned imported or fetched watch paths after approving persistence/schema shape.
 - [ ] Add a TVLore-native recommendation engine with house rules, explicit taste signals, availability, and explainable reasons.
-- [ ] Add a post-watch check-in flow after marking episodes or movies watched: rating, reaction tags, favorite character, and optional comment.
+- [ ] Expand post-watch check-in to episode-level reflections after approving persistence/schema shape: reaction tags, favorite character, and optional comment.
 - [ ] Design watch reflection persistence separately from watched state and rating preferences before storing reactions, favorite characters, or comments.
 - [ ] Add a country-aware `Popular in your country` discovery section using the user's saved availability country.
 - [ ] Add a `TVLore Picks` / house-curated discovery section that is separate from personalized recommendations.
@@ -24,6 +24,7 @@ No active infrastructure tasks.
 - Keep the current screen -> hook -> API client boundary. The cleanup goal is readability, not a new state-management layer yet.
 - Ratings are explicit preference signals. Keep them separate from watched state so recommendations can use both later.
 - Post-watch check-in should never block `Watched`: save the watched state first, then open an optional skip-friendly flow.
+- First post-watch check-in uses existing show/movie rating preferences only. Episode-level ratings, reactions, favorite characters, and comments need a separate persistence model.
 - Keep watched state, title-level rating preferences, and per-watch reflections as separate concepts so rewatches, comments, and recommendations do not fight the same row later.
 - Reaction tags, favorite-character picks, and comments need spoiler/privacy rules before they become persisted or social data.
 - First recommendations intentionally use hydrated catalog data, ratings, genres, and a small provider-availability boost. Improve quality only after storing stronger content signals.
@@ -101,6 +102,7 @@ No active infrastructure tasks.
 - [x] Add richer removal/actions from Library rows after the segmented UX settles.
 - [x] Add compact poster thumbnails to mobile Library rows.
 - [x] Add personal show/movie rating preferences.
+- [x] Add first mobile post-watch rating check-in after marking movies or whole shows watched.
 - [x] Surface rated shows and movies in Library/Profile.
 - [x] Start first recommendation slice from stored ratings.
 - [x] Persist catalog genre names and use them to rank recommendation candidates.
