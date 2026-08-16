@@ -60,6 +60,7 @@ GET /library
 GET /library/chronology
 GET /recommendations
 GET /watch-paths
+POST /watch-paths
 GET /watch-paths/:pathId
 POST /watch-paths/:pathId/watchlist
 ```
@@ -85,7 +86,9 @@ authenticated user's viewing state.
 - Prisma schema: `apps/api/prisma/schema.prisma`
 - Initial migration: `apps/api/prisma/migrations/20260810162500_init_user/migration.sql`
 - Applied migrations: `20260810162500_init_user`, `20260810211300_add_auth_tables`, `20260811144000_add_catalog_tables`, `20260811151500_add_seasons_and_episodes`, `20260811165000_add_watch_tables`, `20260813220500_add_watchlist_tables`, `20260814101500_add_preferences`, `20260815172000_add_catalog_genres`, `20260815181000_add_user_availability_country`, `20260816102000_add_public_ratings`, `20260816110000_add_episode_preferences`
+- Pending/applied for user-owned Watch Paths depending on environment: `20260816143000_add_user_watch_paths`
 - Current database tables: `_prisma_migrations`, `users`, `user_identities`, `refresh_sessions`, `shows`, `movies`, `seasons`, `episodes`, `external_identifiers`, `episode_watches`, `movie_watches`, `show_watchlist_items`, `movie_watchlist_items`, `show_preferences`, `movie_preferences`, `episode_preferences`
+- After `20260816143000_add_user_watch_paths`, the schema also includes `user_watch_paths` and `user_watch_path_items`.
 
 Vercel environment variables:
 
@@ -260,5 +263,5 @@ the selected Postman environment.
 - `GET /library` feeds the mobile home library summary.
 - `GET /library/chronology` feeds the paginated Cronologia watch-history view.
 - `GET /recommendations` feeds Library suggestion rows from stored ratings, hydrated catalog rows, genre names, and user-country streaming availability.
-- `GET /watch-paths` and `GET /watch-paths/:pathId` feed curated viewing-order screens.
-- `POST /watch-paths/:pathId/watchlist` saves a curated path into the authenticated user's watchlist using existing watchlist tables.
+- `GET /watch-paths`, `POST /watch-paths`, and `GET /watch-paths/:pathId` feed curated and user-owned viewing-order screens.
+- `POST /watch-paths/:pathId/watchlist` saves a path into the authenticated user's watchlist using existing watchlist tables.
