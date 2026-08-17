@@ -6,6 +6,7 @@ import { RateLimitGuard } from "../rate-limit.guard";
 
 const config: ApiConfig = {
   databaseUrl: "postgresql://postgres:postgres@localhost:5432/postgres",
+  nodeEnv: "test",
   port: 3000,
   rateLimit: {
     api: {

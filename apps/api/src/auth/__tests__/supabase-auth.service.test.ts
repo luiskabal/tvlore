@@ -6,6 +6,7 @@ import { SupabaseAuthService } from "../supabase-auth.service";
 
 const config: ApiConfig = {
   databaseUrl: "postgresql://postgres:postgres@localhost:5432/postgres",
+  nodeEnv: "test",
   port: 3000,
   rateLimit: {
     api: {

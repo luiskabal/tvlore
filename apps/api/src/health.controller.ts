@@ -1,12 +1,16 @@
-import { Controller, Get, InternalServerErrorException, Logger, NotFoundException, ServiceUnavailableException } from "@nestjs/common";
+import { Controller, Get, Inject, InternalServerErrorException, Logger, NotFoundException, ServiceUnavailableException } from "@nestjs/common";
 
+import { API_CONFIG, type ApiConfig } from "./config";
 import { PrismaService } from "./prisma.service";
 
 @Controller("health")
 export class HealthController {
   private readonly logger = new Logger(HealthController.name);
 
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    @Inject(API_CONFIG) private readonly config: ApiConfig,
+  ) {}
 
   @Get()
   getHealth() {
@@ -41,7 +45,7 @@ export class HealthController {
 
   @Get("error")
   getHealthError() {
-    if (process.env.NODE_ENV === "production") {
+    if (this.config.nodeEnv === "production") {
       throw new NotFoundException({
         code: "NOT_FOUND",
         message: "Not found",

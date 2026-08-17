@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 
 export type ApiConfig = {
   databaseUrl: string;
+  nodeEnv: string;
   port: number;
   rateLimit: {
     api: RateLimitConfig;
@@ -32,6 +33,7 @@ export function getConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
 
   return {
     databaseUrl: parseDatabaseUrl(env.DATABASE_URL),
+    nodeEnv: parseOptionalString(env.NODE_ENV) ?? "development",
     port: parsePort(env.PORT),
     rateLimit: {
       api: {

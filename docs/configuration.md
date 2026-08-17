@@ -10,7 +10,7 @@ Do not introduce staging or QA until there is a concrete need.
 
 ## Backend Environment Variables
 
-Conceptual variables:
+Runtime variables:
 
 ```text
 NODE_ENV
@@ -21,14 +21,22 @@ SUPABASE_URL
 SUPABASE_PUBLISHABLE_KEY
 SUPABASE_SERVICE_ROLE_KEY
 TMDB_ACCESS_TOKEN
-LOG_LEVEL
+API_RATE_LIMIT_MAX_REQUESTS
+API_RATE_LIMIT_WINDOW_SECONDS
+PROVIDER_RATE_LIMIT_MAX_REQUESTS
+PROVIDER_RATE_LIMIT_WINDOW_SECONDS
 ```
 
-Names may be refined during implementation, but the responsibilities should remain clear.
+`NODE_ENV` and `PORT` are optional runtime/platform values. `NODE_ENV`
+defaults to `development` when omitted. `PORT` defaults to `3000`.
+
+Rate-limit variables are optional tuning knobs. If omitted, the API uses `180`
+general requests per `60` seconds and `40` provider-cost requests per `60`
+seconds per client key.
 
 ## Mobile Configuration
 
-Conceptual values:
+Runtime values:
 
 ```text
 EXPO_PUBLIC_TVLORE_API_BASE_URL
@@ -71,6 +79,8 @@ Examples:
 - `SUPABASE_PUBLISHABLE_KEY` must be available to verify Supabase-authenticated flows where needed.
 - `SUPABASE_SERVICE_ROLE_KEY` is backend-only and enables `DELETE /users/me` to delete the Supabase Auth user. Never expose it to mobile.
 - `TMDB_ACCESS_TOKEN` must be present for the backend catalog provider. Use the TMDB API Read Access Token, not the shorter API key.
+- `API_RATE_LIMIT_MAX_REQUESTS` and `API_RATE_LIMIT_WINDOW_SECONDS` tune the general API rate limit.
+- `PROVIDER_RATE_LIMIT_MAX_REQUESTS` and `PROVIDER_RATE_LIMIT_WINDOW_SECONDS` tune TMDB/provider-cost route protection.
 
 ## Secrets
 
