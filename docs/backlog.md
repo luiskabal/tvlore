@@ -4,7 +4,11 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 
 ## Active
 
-No active infrastructure tasks.
+- [ ] Add in-app account deletion backed by API-owned user-data deletion or anonymization.
+- [ ] Add Sign in with Apple for iOS store readiness.
+- [ ] Add public Privacy Policy, Support, and account deletion URLs.
+- [ ] Configure production EAS build/submit profiles, app identifiers, app icon, splash, and versioning.
+- [ ] Remove release-blocking development affordances before store submission.
 
 ## Next
 
@@ -37,6 +41,8 @@ No active infrastructure tasks.
 - Where to Watch should stay backend-owned: provider API keys stay server-side, results are normalized by country, and mobile only renders availability badges/icons plus allowed attribution or links.
 - Start by evaluating TMDB Watch Providers because TVLore already resolves TMDB refs. It gives country-specific subscription/rent/buy/free provider data, but JustWatch attribution is required and TMDB does not return full deep links.
 - Evaluate Watchmode, JustWatch Partner API, or Streaming Availability API only if TVLore needs richer coverage, direct/deep links, episode-level availability, or better commercial terms.
+- v1.0 scope and release gates live in `docs/release-v1-roadmap.md`.
+- Keep new product features behind store-readiness blockers until v1.0 can enter TestFlight and Google Play internal testing.
 
 ## Done
 

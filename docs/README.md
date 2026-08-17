@@ -64,8 +64,9 @@ The MVP goal is intentionally small: authenticate with Google, search catalog co
 15. [TVLore Match](tvlore-match.md)
 16. [Infrastructure Setup](infrastructure.md)
 17. [Mobile Development Build](mobile-development-build.md)
-18. [Roadmap](roadmap.md)
-19. [Architecture Decision Records](adr/)
+18. [Release v1.0 Roadmap](release-v1-roadmap.md)
+19. [Roadmap](roadmap.md)
+20. [Architecture Decision Records](adr/)
 
 ## Documentation Index
 
@@ -87,6 +88,7 @@ The MVP goal is intentionally small: authenticate with Google, search catalog co
 - [Observability](observability.md)
 - [Privacy](privacy.md)
 - [Product Vision](product-vision.md)
+- [Release v1.0 Roadmap](release-v1-roadmap.md)
 - [Roadmap](roadmap.md)
 - [Security](security.md)
 - [Social Vision](social-vision.md)

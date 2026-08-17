@@ -1,6 +1,14 @@
 # Development Roadmap
 
-## Phase 0 - Architecture
+The MVP baseline is already implemented. The next major target is a store-ready
+v1.0 release.
+
+For the full v1.0 catalog and release plan, see
+[Release v1.0 Roadmap](release-v1-roadmap.md).
+
+## Phase 0 - Architecture Baseline
+
+Status: done.
 
 - Documentation.
 - ADRs.
@@ -9,65 +17,96 @@
 - Domain model.
 - API design.
 
-Status: current phase.
-
 ## Phase 1 - Foundation
+
+Status: done.
 
 - Monorepo workspace structure.
 - Mobile skeleton.
 - API skeleton.
-- PostgreSQL local setup.
+- PostgreSQL/Supabase setup.
 - Health endpoint.
 - Shared contracts baseline.
 - Configuration validation baseline.
 
 ## Phase 2 - Identity
 
+Status: partial for production.
+
+Done:
+
 - Google login.
 - TVLore user creation.
 - `GET /users/me`.
 - `PATCH /users/me` user settings.
-- Access token issuance.
-- Refresh flow.
 - Logout.
-- Refresh-session revocation.
+- Supabase Auth bearer-token validation.
 
-## Phase 3 - Catalog
+Missing for v1.0:
+
+- Sign in with Apple where required by App Store review.
+- In-app account deletion.
+- Public account deletion/support URL.
+
+## Phase 3 - Catalog and Tracking
+
+Status: done for v1.0.
 
 - TMDB integration.
 - Unified search.
+- Catalog resolve.
 - TV show details.
 - Movie details.
 - Seasons.
 - Episodes.
-- Local catalog identity strategy.
-
-## Phase 4 - Tracking
-
-- Mark episode watched.
-- Mark episode unwatched.
-- Mark movie watched.
-- Mark movie unwatched.
+- Internal TVLore identity strategy.
+- Mark episode/movie/season/show watched or unwatched.
 - Show progress.
-- Season progress.
 - Personal library.
 - Continue watching.
+- Cronologia.
 
-At the end of Phase 4, the MVP is usable.
+## Phase 4 - Taste and Discovery
 
-## Phase 5 - Taste Profile
+Status: done for v1.0 baseline.
 
-Potential future work:
+- Ratings for shows, movies, and episodes.
+- Post-watch reflection.
+- Cast-based favorite-character picker.
+- Where to Watch.
+- Recommended picks.
+- Popular in your country.
+- Watch Paths.
 
-- Ratings.
-- Favorites.
-- Richer statistics.
-- Genre affinity.
-- Completion patterns.
-- Rewatches.
-- Abandoned-show signals.
+Post-1.0 candidates:
 
-## Phase 6 - TVLore Match
+- TVLore Picks.
+- Available in your country discovery section.
+- Better recommendation ranking.
+- Aggregate favorite-character percentages.
+
+## Phase 5 - v1.0 Store Readiness
+
+Status: active target.
+
+Required:
+
+- Account deletion.
+- Sign in with Apple.
+- Privacy Policy, Support URL, and account deletion URL.
+- App Store privacy answers.
+- Google Play Data Safety answers.
+- Production EAS build and submit profiles.
+- Store metadata, screenshots, app icon, splash, versioning.
+- Reviewer instructions.
+- Production hardening pass.
+- TestFlight and Google Play internal/closed testing.
+
+## Phase 6 - Social / TVLore Match
+
+Status: deferred.
+
+Only start after v1.0 validates the private tracking loop.
 
 Potential future work:
 
@@ -76,15 +115,8 @@ Potential future work:
 - Ephemeral match tokens.
 - Common titles.
 - Differences.
-- Simple compatibility.
+- Compatibility.
 - Watch-together candidates.
-
-## Phase 7 - Social Expansion
-
-Only if product validation supports it:
-
 - Friends.
-- Persisted matches.
 - Shared lists.
 - Recommendation exchange.
-- Social discovery.
