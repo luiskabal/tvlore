@@ -39,13 +39,13 @@ Done:
 - TVLore user creation.
 - `GET /users/me`.
 - `PATCH /users/me` user settings.
+- `DELETE /users/me` account deletion.
 - Logout.
 - Supabase Auth bearer-token validation.
 
 Missing for v1.0:
 
 - Sign in with Apple where required by App Store review.
-- In-app account deletion.
 - Public account deletion/support URL.
 
 ## Phase 3 - Catalog and Tracking
@@ -91,7 +91,6 @@ Status: active target.
 
 Required:
 
-- Account deletion.
 - Sign in with Apple.
 - Privacy Policy, Support URL, and account deletion URL.
 - App Store privacy answers.

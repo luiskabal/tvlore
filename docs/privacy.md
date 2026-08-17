@@ -41,6 +41,19 @@ Recommended future defaults:
 - Share watch dates: off by default even if other sharing is enabled.
 - Allow friend requests: off until friend features exist.
 
+## Account Deletion
+
+The mobile Profile screen exposes a delete-account action.
+
+Current behavior:
+
+- Deletes the TVLore `User` row.
+- Cascades user-owned data such as identities, sessions, watch history, watchlist items, ratings, reflections, and personal watch paths.
+- Keeps shared catalog data such as shows, movies, seasons, episodes, external identifiers, and provider metadata.
+- Deletes the Supabase Auth user through a backend-only service-role key.
+
+The Supabase service-role key must stay server-side and must never be bundled in the mobile app.
+
 ## Match Privacy
 
 For future TVLore Match:
@@ -73,9 +86,7 @@ Only expose raw details if the owner explicitly allows that data category.
 
 Before production, define:
 
-- Account deletion behavior.
 - Watch-history deletion behavior.
 - Data export expectations.
 - Token revocation behavior.
 - Retention for future match/share logs.
-

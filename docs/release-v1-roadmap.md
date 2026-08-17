@@ -99,7 +99,7 @@ enough value to justify a first release.
 
 | Gap | Why It Blocks | Target |
 | --- | --- | --- |
-| In-app account deletion | Apple and Google require account deletion if account creation exists. | Add profile flow + backend deletion/anonymization path. |
+| In-app account deletion | Apple and Google require account deletion if account creation exists. | Implemented in Profile and `DELETE /users/me`; configure `SUPABASE_SERVICE_ROLE_KEY` in deployment before release. |
 | Web account deletion URL | Google requires a web resource for users who uninstalled the app. | Add a minimal public deletion/support page or documented request URL. |
 | Sign in with Apple | Apple requires it in many apps that use third-party login for account creation. | Add Supabase Apple provider and mobile Apple login button for iOS. |
 | Privacy Policy | Required for collected personal data and store metadata. | Public URL + in-app link. |
@@ -153,19 +153,19 @@ Goal: satisfy the rules that can block app review.
 
 Tasks:
 
-- Add Sign in with Apple for iOS.
-- Add backend account deletion flow.
-- Add mobile delete-account UI under Profile.
-- Decide deletion behavior:
+- [ ] Add Sign in with Apple for iOS.
+- [x] Add backend account deletion flow.
+- [x] Add mobile delete-account UI under Profile.
+- [x] Decide deletion behavior:
   - delete Supabase Auth user where possible,
   - delete or anonymize TVLore user records,
   - delete private watch history, watchlist, ratings, reflections, and personal paths,
   - keep catalog rows that are not user-owned.
-- Add public Privacy Policy URL.
-- Add public Support URL.
-- Add public account deletion/support URL for Google Play.
-- Add Profile links to Privacy, Terms, Support, and Delete Account.
-- Inventory data for App Store privacy and Google Play Data Safety forms.
+- [ ] Add public Privacy Policy URL.
+- [ ] Add public Support URL.
+- [ ] Add public account deletion/support URL for Google Play.
+- [ ] Add Profile links to Privacy, Terms, Support, and Delete Account.
+- [ ] Inventory data for App Store privacy and Google Play Data Safety forms.
 
 Exit criteria:
 

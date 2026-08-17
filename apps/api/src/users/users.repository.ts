@@ -4,6 +4,7 @@ import type { AuthenticatedUser } from "../auth/authenticated-user";
 import { PrismaService } from "../prisma.service";
 import { getDisplayName } from "./user-profile";
 import type { UpdateUserInput, UserDto } from "./users.types";
+import type { User } from "../generated/prisma/client";
 
 @Injectable()
 export class UsersRepository {
@@ -35,12 +36,25 @@ export class UsersRepository {
       include: { user: true },
     });
 
-    return {
-      availabilityCountry: identity.user.availabilityCountry,
-      createdAt: identity.user.createdAt.toISOString(),
-      displayName: identity.user.displayName,
-      id: identity.user.id,
-    };
+    return toUserDto(identity.user);
+  }
+
+  async findAuthenticatedUser(user: AuthenticatedUser): Promise<UserDto | null> {
+    const identity = await this.prismaService.getClient().userIdentity.findUnique({
+      include: { user: true },
+      where: {
+        provider_providerSubject: {
+          provider: "supabase",
+          providerSubject: user.id,
+        },
+      },
+    });
+
+    return identity ? toUserDto(identity.user) : null;
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    await this.prismaService.getClient().user.deleteMany({ where: { id: userId } });
   }
 
   async updateUser(userId: string, input: UpdateUserInput): Promise<UserDto> {
@@ -49,11 +63,15 @@ export class UsersRepository {
       where: { id: userId },
     });
 
-    return {
-      availabilityCountry: user.availabilityCountry,
-      createdAt: user.createdAt.toISOString(),
-      displayName: user.displayName,
-      id: user.id,
-    };
+    return toUserDto(user);
   }
+}
+
+function toUserDto(user: User): UserDto {
+  return {
+    availabilityCountry: user.availabilityCountry,
+    createdAt: user.createdAt.toISOString(),
+    displayName: user.displayName,
+    id: user.id,
+  };
 }

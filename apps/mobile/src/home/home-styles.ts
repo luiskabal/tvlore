@@ -9,6 +9,12 @@ export const styles = StyleSheet.create({
     gap: 10,
     padding: 14,
   },
+  accountActionRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    paddingTop: 4,
+  },
   content: {
     flexGrow: 1,
     gap: 20,
@@ -48,6 +54,39 @@ export const styles = StyleSheet.create({
   },
   disabledButton: {
     opacity: 0.6,
+  },
+  dangerButton: {
+    alignItems: "center",
+    backgroundColor: "#9c2f23",
+    borderRadius: 8,
+    minHeight: 44,
+    minWidth: 140,
+    justifyContent: "center",
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+  },
+  dangerButtonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "800",
+  },
+  dangerOutlineButton: {
+    alignItems: "center",
+    alignSelf: "flex-start",
+    backgroundColor: "#ffffff",
+    borderColor: "#9c2f23",
+    borderRadius: 8,
+    borderWidth: 1,
+    minHeight: 44,
+    minWidth: 140,
+    justifyContent: "center",
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+  },
+  dangerOutlineButtonText: {
+    color: "#9c2f23",
+    fontSize: 16,
+    fontWeight: "800",
   },
   errorText: {
     color: "#9c2f23",

@@ -81,6 +81,7 @@ The backend still needs authenticated user resolution:
 
 - `GET /users/me`: returns the authenticated TVLore user.
 - `PATCH /users/me`: updates authenticated user-owned settings such as availability country.
+- `DELETE /users/me`: deletes the authenticated TVLore user data and Supabase Auth account.
 
 Detailed endpoint contracts are in [API Design](api-design.md).
 
@@ -94,6 +95,9 @@ Use Supabase-managed sessions for the MVP:
 - Backend authorization on every protected route.
 - No credentials logged.
 - No database credentials, provider secrets, or service-role keys in mobile.
+
+The Supabase service-role key is backend-only and is used only for server-side
+account deletion through the Supabase Admin API.
 
 ## Logout
 

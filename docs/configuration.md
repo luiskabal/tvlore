@@ -19,6 +19,7 @@ DATABASE_URL
 MIGRATE_DATABASE_URL
 SUPABASE_URL
 SUPABASE_PUBLISHABLE_KEY
+SUPABASE_SERVICE_ROLE_KEY
 TMDB_ACCESS_TOKEN
 LOG_LEVEL
 ```
@@ -68,6 +69,7 @@ Examples:
 - `MIGRATE_DATABASE_URL` should be a direct or session PostgreSQL connection string for Prisma migrations.
 - `SUPABASE_URL` must match the Supabase project URL when backend auth verification is implemented.
 - `SUPABASE_PUBLISHABLE_KEY` must be available to verify Supabase-authenticated flows where needed.
+- `SUPABASE_SERVICE_ROLE_KEY` is backend-only and enables `DELETE /users/me` to delete the Supabase Auth user. Never expose it to mobile.
 - `TMDB_ACCESS_TOKEN` must be present for the backend catalog provider. Use the TMDB API Read Access Token, not the shorter API key.
 
 ## Secrets

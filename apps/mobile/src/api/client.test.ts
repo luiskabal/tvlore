@@ -34,6 +34,18 @@ describe("fetchJson", () => {
     await expect(fetchJson("/health", isOkResponse, "Readable failure")).rejects.toThrow("Readable failure");
   });
 
+  it("throws backend error messages for API error responses", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({
+        code: "ACCOUNT_DELETION_NOT_CONFIGURED",
+        message: "Account deletion is not configured",
+      }), { status: 503 }),
+    ));
+
+    await expect(fetchJson("/users/me", isOkResponse, "Unexpected deletion failure"))
+      .rejects.toThrow("Account deletion is not configured");
+  });
+
   it("throws the caller error for empty responses", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(
       new Response(null, { status: 204 }),

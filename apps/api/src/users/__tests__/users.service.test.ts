@@ -19,6 +19,50 @@ const currentUser = {
 };
 
 describe("UsersService", () => {
+  it("deletes the signed-in user's TVLore data before deleting their Supabase auth user", async () => {
+    const supabaseAuthService = {
+      deleteUser: vi.fn().mockResolvedValue(undefined),
+      getUserFromAuthorizationHeader: vi.fn().mockResolvedValue(authenticatedUser),
+    };
+    const usersRepository = {
+      deleteUser: vi.fn().mockResolvedValue(undefined),
+      findAuthenticatedUser: vi.fn().mockResolvedValue(currentUser),
+    };
+    const service = new UsersService(
+      supabaseAuthService as unknown as SupabaseAuthService,
+      usersRepository as unknown as UsersRepository,
+    );
+
+    await expect(service.deleteMe("Bearer token")).resolves.toEqual({ deleted: true });
+
+    expect(supabaseAuthService.getUserFromAuthorizationHeader).toHaveBeenCalledWith("Bearer token");
+    expect(usersRepository.findAuthenticatedUser).toHaveBeenCalledWith(authenticatedUser);
+    expect(usersRepository.deleteUser).toHaveBeenCalledWith(currentUser.id);
+    expect(supabaseAuthService.deleteUser).toHaveBeenCalledWith(authenticatedUser.id);
+    expect(usersRepository.deleteUser.mock.invocationCallOrder[0])
+      .toBeLessThan(supabaseAuthService.deleteUser.mock.invocationCallOrder[0]);
+  });
+
+  it("still deletes the Supabase auth user when the TVLore user is already gone", async () => {
+    const supabaseAuthService = {
+      deleteUser: vi.fn().mockResolvedValue(undefined),
+      getUserFromAuthorizationHeader: vi.fn().mockResolvedValue(authenticatedUser),
+    };
+    const usersRepository = {
+      deleteUser: vi.fn(),
+      findAuthenticatedUser: vi.fn().mockResolvedValue(null),
+    };
+    const service = new UsersService(
+      supabaseAuthService as unknown as SupabaseAuthService,
+      usersRepository as unknown as UsersRepository,
+    );
+
+    await expect(service.deleteMe("Bearer token")).resolves.toEqual({ deleted: true });
+
+    expect(usersRepository.deleteUser).not.toHaveBeenCalled();
+    expect(supabaseAuthService.deleteUser).toHaveBeenCalledWith(authenticatedUser.id);
+  });
+
   it("updates the signed-in user's availability country", async () => {
     const supabaseAuthService = {
       getUserFromAuthorizationHeader: vi.fn().mockResolvedValue(authenticatedUser),

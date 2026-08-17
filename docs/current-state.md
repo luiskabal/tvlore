@@ -11,7 +11,7 @@ Implemented:
 - Expo mobile app that can authenticate with Google through Supabase Auth.
 - Supabase Postgres database connected to the backend through Prisma.
 - Supabase Auth token validation in the backend.
-- Authenticated `GET /users/me` and `PATCH /users/me`.
+- Authenticated `GET /users/me`, `PATCH /users/me`, and `DELETE /users/me`.
 - User-owned streaming availability country preference.
 - Authenticated `GET /search` backed by TMDB.
 - Authenticated `POST /catalog/resolve` that converts TMDB refs into TVLore internal IDs.
@@ -154,6 +154,7 @@ DATABASE_URL
 MIGRATE_DATABASE_URL
 SUPABASE_URL
 SUPABASE_PUBLISHABLE_KEY
+SUPABASE_SERVICE_ROLE_KEY
 TMDB_ACCESS_TOKEN
 ```
 
@@ -163,6 +164,7 @@ Why they exist:
 - `MIGRATE_DATABASE_URL`: direct database connection for Prisma migrations.
 - `SUPABASE_URL`: Supabase project URL used to validate access tokens.
 - `SUPABASE_PUBLISHABLE_KEY`: Supabase public key used by backend token validation calls.
+- `SUPABASE_SERVICE_ROLE_KEY`: backend-only Supabase Admin key used by account deletion.
 - `TMDB_ACCESS_TOKEN`: server-side TMDB API Read Access Token.
 
 ## 4. Backend Shape
@@ -238,6 +240,7 @@ Implemented endpoint:
 ```text
 GET /users/me
 PATCH /users/me
+DELETE /users/me
 ```
 
 What it does:
@@ -251,6 +254,7 @@ What it does:
 7. Returns the TVLore user.
 
 `PATCH /users/me` additionally validates and stores user settings such as the two-letter `availabilityCountry` used by watch-provider lookups.
+`DELETE /users/me` deletes the TVLore `User`, cascades user-owned rows, keeps shared catalog rows, and then deletes the Supabase Auth user through the backend-only service-role key.
 
 Important detail:
 
@@ -769,6 +773,7 @@ flowchart TB
   Validate[Auth / Supabase / GET Supabase user]
   Me[Users / GET /users/me]
   UserCountry[Users / PATCH /users/me availability country]
+  DeleteAccount[Users / DELETE /users/me account deletion]
   Search[Catalog / GET /search]
   ResolveShow[Catalog / POST /catalog/resolve show]
   Show[Catalog / GET /shows/:showId]
@@ -795,6 +800,7 @@ flowchart TB
   Login --> Token
   Token --> Validate
   Validate --> Me
+  Me -. manual destructive .-> DeleteAccount
   Me --> UserCountry
   UserCountry --> Search
   Search --> ResolveShow
@@ -822,9 +828,10 @@ flowchart TB
 Expected behavior:
 
 - `GET /health` and `GET /health/db` return `200` without auth.
-- `GET /users/me`, `GET /search`, and `POST /catalog/resolve` return `401` without auth.
+- `GET /users/me`, `DELETE /users/me`, `GET /search`, and `POST /catalog/resolve` return `401` without auth.
 - `GET /users/me` returns the authenticated TVLore user with a valid Supabase token.
 - `PATCH /users/me` updates the authenticated user's streaming availability country.
+- `DELETE /users/me` deletes authenticated user-owned TVLore data and Supabase Auth account when the backend service-role key is configured.
 - `GET /search` returns normalized TMDB-backed results.
 - `POST /catalog/resolve` returns a TVLore UUID.
 - Running `GET /search` again after resolve should show `tvloreId` for the resolved item.
@@ -874,7 +881,8 @@ Profile
 -> Supabase session
 -> GET /users/me and GET /library in parallel
 -> PATCH /users/me when the user changes availability country
--> Holo profile card, library stats, availability country, account state, sign out
+-> DELETE /users/me from the confirmable delete-account action
+-> Holo profile card, library stats, availability country, account state, sign out, delete account
 
 Search
 -> GET /search

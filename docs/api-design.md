@@ -311,6 +311,47 @@ Business validation:
 
 Errors: `VALIDATION_FAILED`, `UNAUTHORIZED`.
 
+### `DELETE /users/me`
+
+Purpose: permanently delete the authenticated user's TVLore account.
+
+Current MVP status: implemented for API-owned user data and Supabase Auth user deletion.
+
+Auth: required.
+
+Route parameters: none.
+
+Query parameters: none.
+
+Request: none.
+
+Response:
+
+```json
+{
+  "deleted": true
+}
+```
+
+Status codes:
+
+- `200 OK`
+- `401 UNAUTHORIZED`
+- `502 BAD_GATEWAY`
+- `503 SERVICE_UNAVAILABLE`
+
+Authorization: Supabase access token must represent an active Supabase Auth user.
+
+Business behavior:
+
+- Deletes the matching TVLore `User` if it exists.
+- User-owned rows cascade through the database: identities, refresh sessions, watched episodes/movies, watchlist items, ratings, reflections, and personal watch paths.
+- Shared catalog rows are kept.
+- Deletes the Supabase Auth user through the Supabase Admin API.
+- If the TVLore user is already gone but the Supabase token still resolves, the endpoint still attempts Supabase Auth deletion.
+
+Errors: `UNAUTHORIZED`, `ACCOUNT_DELETION_NOT_CONFIGURED`, `ACCOUNT_DELETION_FAILED`.
+
 ### `GET /search`
 
 Purpose: search TV shows and movies through the backend catalog provider boundary.

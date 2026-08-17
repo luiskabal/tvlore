@@ -9,6 +9,10 @@ export type UserResponse = {
   id: string;
 };
 
+export type DeleteUserResponse = {
+  deleted: true;
+};
+
 export type LibraryResponse = {
   continueWatching: ContinueWatchingShow[];
   ratedTitles: LibraryRatedTitle[];

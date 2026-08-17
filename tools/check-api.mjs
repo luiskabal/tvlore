@@ -44,6 +44,7 @@ async function checkPublicHealth() {
 
 async function checkUnauthorizedRoutes() {
   await checkUnauthorized("/users/me");
+  await checkUnauthorized("/users/me", { method: "DELETE" });
   await checkUnauthorized("/users/me", {
     body: JSON.stringify({ availabilityCountry: "CL" }),
     headers: { "content-type": "application/json" },

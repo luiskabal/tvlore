@@ -244,6 +244,7 @@ ProfileScreen
   -> getHomeData(accessToken, { includeRecommendations: false })
   -> GET /users/me and GET /library in parallel
   -> PATCH /users/me when availability country changes
+  -> DELETE /users/me when delete account is confirmed
 ```
 
 The mobile app does not call `GET /health` during normal product refreshes. Health

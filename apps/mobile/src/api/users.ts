@@ -1,6 +1,6 @@
 import { fetchCachedJson, fetchMutationJson, getAuthHeaders } from "./client";
-import { isUserResponse } from "./guards";
-import type { UserResponse } from "./types";
+import { isDeleteUserResponse, isUserResponse } from "./guards";
+import type { DeleteUserResponse, UserResponse } from "./types";
 
 export async function getCurrentUser(accessToken: string | null): Promise<UserResponse> {
   return fetchCachedJson(
@@ -26,6 +26,18 @@ export async function updateCurrentUser(
         "Content-Type": "application/json",
       },
       method: "PATCH",
+    },
+  );
+}
+
+export async function deleteCurrentUser(accessToken: string | null): Promise<DeleteUserResponse> {
+  return fetchMutationJson(
+    "/users/me",
+    isDeleteUserResponse,
+    "Unexpected account deletion response",
+    {
+      headers: getAuthHeaders(accessToken),
+      method: "DELETE",
     },
   );
 }

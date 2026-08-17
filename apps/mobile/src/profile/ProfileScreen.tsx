@@ -2,8 +2,8 @@ import { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
 
-import { updateCurrentUser } from "../api/tvlore-api";
-import { getSupabaseAccessToken, isSupabaseConfigured } from "../auth/supabase-auth";
+import { deleteCurrentUser, updateCurrentUser } from "../api/tvlore-api";
+import { getSupabaseAccessToken, isSupabaseConfigured, signOut as signOutFromSupabase } from "../auth/supabase-auth";
 import { formatWatchCountry } from "../catalog/watch-country";
 import { HoloProfileCard, HoloProfileCardSkeleton } from "../home/HoloProfileCard";
 import { styles } from "../home/home-styles";
@@ -16,8 +16,15 @@ type CountryActionState =
   | { country: string; kind: "loading" }
   | { kind: "error"; message: string };
 
+type DeleteAccountActionState =
+  | { kind: "idle" }
+  | { kind: "confirming" }
+  | { kind: "loading" }
+  | { kind: "error"; message: string };
+
 export default function ProfileScreen() {
   const [countryAction, setCountryAction] = useState<CountryActionState>({ kind: "idle" });
+  const [deleteAction, setDeleteAction] = useState<DeleteAccountActionState>({ kind: "idle" });
   const {
     auth,
     authActionMessage,
@@ -47,6 +54,27 @@ export default function ProfileScreen() {
       setCountryAction({
         kind: "error",
         message: error instanceof Error ? error.message : "Could not update country",
+      });
+    }
+  }
+
+  async function confirmDeleteAccount() {
+    if (deleteAction.kind === "loading") {
+      return;
+    }
+
+    setDeleteAction({ kind: "loading" });
+
+    try {
+      const token = await getSupabaseAccessToken();
+
+      await deleteCurrentUser(token);
+      await signOutFromSupabase();
+      setDeleteAction({ kind: "idle" });
+    } catch (error) {
+      setDeleteAction({
+        kind: "error",
+        message: error instanceof Error ? error.message : "Could not delete account",
       });
     }
   }
@@ -112,8 +140,64 @@ export default function ProfileScreen() {
             </Text>
           </Pressable>
         ) : null}
+
+        {auth.kind === "signedIn" ? (
+          <DeleteAccountPanel
+            action={deleteAction}
+            onCancel={() => setDeleteAction({ kind: "idle" })}
+            onConfirm={confirmDeleteAccount}
+            onRequestConfirm={() => setDeleteAction({ kind: "confirming" })}
+          />
+        ) : null}
       </ScrollView>
     </SafeAreaView>
+  );
+}
+
+function DeleteAccountPanel({
+  action,
+  onCancel,
+  onConfirm,
+  onRequestConfirm,
+}: {
+  action: DeleteAccountActionState;
+  onCancel: () => void;
+  onConfirm: () => Promise<void> | void;
+  onRequestConfirm: () => void;
+}) {
+  const isLoading = action.kind === "loading";
+  const isConfirming = action.kind === "confirming" || action.kind === "error" || isLoading;
+
+  return (
+    <View style={styles.statusPanel}>
+      <Text style={styles.statusLabel}>Delete account</Text>
+      <Text style={styles.statusDetail}>
+        Permanently removes your TVLore library, watchlist, ratings, reflections, and login account.
+      </Text>
+      {action.kind === "error" ? <Text style={styles.errorText}>{action.message}</Text> : null}
+      {isConfirming ? (
+        <View style={styles.accountActionRow}>
+          <Pressable
+            disabled={isLoading}
+            style={[styles.dangerOutlineButton, isLoading ? styles.disabledButton : null]}
+            onPress={onCancel}
+          >
+            <Text style={styles.dangerOutlineButtonText}>Cancel</Text>
+          </Pressable>
+          <Pressable
+            disabled={isLoading}
+            style={[styles.dangerButton, isLoading ? styles.disabledButton : null]}
+            onPress={onConfirm}
+          >
+            <Text style={styles.dangerButtonText}>{isLoading ? "Deleting" : "Delete forever"}</Text>
+          </Pressable>
+        </View>
+      ) : (
+        <Pressable style={styles.dangerOutlineButton} onPress={onRequestConfirm}>
+          <Text style={styles.dangerOutlineButtonText}>Delete account</Text>
+        </Pressable>
+      )}
+    </View>
   );
 }
 

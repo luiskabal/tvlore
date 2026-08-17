@@ -22,7 +22,11 @@ export async function fetchJson<T>(
   const response = await fetch(`${apiBaseUrl}${path}`, options);
   const body = await readJsonBody(response);
 
-  if (!response.ok || !guard(body)) {
+  if (!response.ok) {
+    throw new Error(getApiErrorMessage(body) ?? errorMessage);
+  }
+
+  if (!guard(body)) {
     throw new Error(errorMessage);
   }
 
@@ -120,6 +124,16 @@ function getReadCacheKey(path: string, headers?: HeadersInit) {
   const authorization = getHeaderValue(headers, "authorization");
 
   return `${path}:auth=${authorization ? hashString(authorization) : "none"}`;
+}
+
+function getApiErrorMessage(value: unknown) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return null;
+  }
+
+  const message = (value as Record<string, unknown>).message;
+
+  return typeof message === "string" && message.trim() ? message : null;
 }
 
 function getHeaderValue(headers: HeadersInit | undefined, headerName: string) {

@@ -1,8 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import { isPopularDiscoveryResponse } from "./guards";
+import { isDeleteUserResponse, isPopularDiscoveryResponse } from "./guards";
 
 describe("api guards", () => {
+  it("accepts account deletion responses", () => {
+    expect(isDeleteUserResponse({ deleted: true })).toBe(true);
+    expect(isDeleteUserResponse({ deleted: false })).toBe(false);
+  });
+
   it("accepts popular discovery responses with catalog search items", () => {
     expect(isPopularDiscoveryResponse({
       country: "CL",

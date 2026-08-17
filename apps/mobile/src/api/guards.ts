@@ -4,6 +4,7 @@ import type {
   CatalogSearchResponse,
   CatalogSearchResult,
   ContinueWatchingShow,
+  DeleteUserResponse,
   EpisodeDetailResponse,
   EpisodeWatchResponse,
   LibraryChronologyResponse,
@@ -51,6 +52,10 @@ export function isUserResponse(value: unknown): value is UserResponse {
     typeof candidate.displayName === "string" &&
     typeof candidate.createdAt === "string"
   );
+}
+
+export function isDeleteUserResponse(value: unknown): value is DeleteUserResponse {
+  return isRecord(value) && value.deleted === true;
 }
 
 export function isLibraryResponse(value: unknown): value is LibraryResponse {

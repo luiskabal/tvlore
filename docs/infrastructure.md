@@ -36,6 +36,7 @@ GET /health/db
 GET /health/error
 GET /users/me
 PATCH /users/me
+DELETE /users/me
 GET /search
 POST /catalog/resolve
 GET /shows/:showId
@@ -73,7 +74,7 @@ POST /watch-paths/:pathId/watchlist
 ```
 
 `GET /health/db` verifies runtime connectivity from Vercel to PostgreSQL. If Vercel has no `DATABASE_URL`, the API fails during startup.
-`GET /users/me` validates a Supabase Auth bearer token, upserts the matching `UserIdentity`, and returns the real TVLore user. `PATCH /users/me` updates user-owned settings such as streaming availability country.
+`GET /users/me` validates a Supabase Auth bearer token, upserts the matching `UserIdentity`, and returns the real TVLore user. `PATCH /users/me` updates user-owned settings such as streaming availability country. `DELETE /users/me` deletes the authenticated user's TVLore data and Supabase Auth account.
 `GET /search` validates a Supabase Auth bearer token and calls TMDB from the backend using server-side credentials.
 `POST /catalog/resolve` validates a Supabase Auth bearer token, fetches TMDB details, and upserts an internal show or movie ID plus TMDB public rating metadata.
 Show and movie detail endpoints read internal TVLore IDs. Show detail also
@@ -104,6 +105,7 @@ DATABASE_URL
 MIGRATE_DATABASE_URL
 SUPABASE_URL
 SUPABASE_PUBLISHABLE_KEY
+SUPABASE_SERVICE_ROLE_KEY
 TMDB_ACCESS_TOKEN
 ```
 
@@ -122,6 +124,9 @@ postgresql://postgres:YOUR_PASSWORD@db.qpekdijebjzigrgcumpv.supabase.co:5432/pos
 Do not commit real database passwords.
 `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` are used by the API to validate
 Supabase Auth access tokens.
+`SUPABASE_SERVICE_ROLE_KEY` is used only by the API to call Supabase Admin
+account deletion. It must be configured in Vercel Production and Preview before
+the Profile delete-account action is considered release-ready.
 `TMDB_ACCESS_TOKEN` is the TMDB API Read Access Token used by the backend catalog provider.
 
 Migration command:
@@ -259,6 +264,7 @@ the selected Postman environment.
 - Initial Prisma migration has been applied to Supabase.
 - Auth identity/session tables have been applied to Supabase.
 - `GET /users/me` resolves authenticated Supabase users into TVLore users.
+- `DELETE /users/me` deletes user-owned TVLore data and the Supabase Auth user when `SUPABASE_SERVICE_ROLE_KEY` is configured.
 - `GET /search` proxies TMDB search through the backend.
 - `POST /catalog/resolve` persists provider-backed shows/movies into TVLore IDs with TMDB public ratings.
 - Show/movie detail endpoints read catalog records by internal TVLore IDs.

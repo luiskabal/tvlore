@@ -8,3 +8,7 @@ export type UserDto = {
 export type UpdateUserInput = {
   availabilityCountry: string;
 };
+
+export type DeleteUserResponseDto = {
+  deleted: true;
+};

@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Headers, Patch } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Headers, Patch } from "@nestjs/common";
 
 import { UsersService } from "./users.service";
-import type { UserDto } from "./users.types";
+import type { DeleteUserResponseDto, UserDto } from "./users.types";
 
 @Controller("users")
 export class UsersController {
@@ -10,6 +10,11 @@ export class UsersController {
   @Get("me")
   getMe(@Headers("authorization") authorizationHeader: string | undefined): Promise<UserDto> {
     return this.usersService.getMe(authorizationHeader);
+  }
+
+  @Delete("me")
+  deleteMe(@Headers("authorization") authorizationHeader: string | undefined): Promise<DeleteUserResponseDto> {
+    return this.usersService.deleteMe(authorizationHeader);
   }
 
   @Patch("me")

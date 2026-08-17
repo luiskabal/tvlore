@@ -6,6 +6,7 @@ export type ApiConfig = {
   databaseUrl: string;
   port: number;
   supabasePublishableKey: string;
+  supabaseServiceRoleKey: string | null;
   supabaseUrl: string;
   tmdbAccessToken: string;
 };
@@ -24,6 +25,7 @@ export function getConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
     databaseUrl: parseDatabaseUrl(env.DATABASE_URL),
     port: parsePort(env.PORT),
     supabasePublishableKey: parseRequiredString(env.SUPABASE_PUBLISHABLE_KEY, "SUPABASE_PUBLISHABLE_KEY"),
+    supabaseServiceRoleKey: parseOptionalString(env.SUPABASE_SERVICE_ROLE_KEY),
     supabaseUrl: parseUrl(env.SUPABASE_URL, "SUPABASE_URL"),
     tmdbAccessToken: parseRequiredString(env.TMDB_ACCESS_TOKEN, "TMDB_ACCESS_TOKEN"),
   };
@@ -77,6 +79,10 @@ function parseRequiredString(value: string | undefined, name: string) {
   }
 
   return value;
+}
+
+function parseOptionalString(value: string | undefined) {
+  return value?.trim() ? value : null;
 }
 
 function parseUrl(value: string | undefined, name: string) {
