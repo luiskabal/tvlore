@@ -5,10 +5,19 @@ import { resolve } from "node:path";
 export type ApiConfig = {
   databaseUrl: string;
   port: number;
+  rateLimit: {
+    api: RateLimitConfig;
+    provider: RateLimitConfig;
+  };
   supabasePublishableKey: string;
   supabaseServiceRoleKey: string | null;
   supabaseUrl: string;
   tmdbAccessToken: string;
+};
+
+export type RateLimitConfig = {
+  maxRequests: number;
+  windowMs: number;
 };
 
 export const API_CONFIG = Symbol("API_CONFIG");
@@ -24,6 +33,16 @@ export function getConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
   return {
     databaseUrl: parseDatabaseUrl(env.DATABASE_URL),
     port: parsePort(env.PORT),
+    rateLimit: {
+      api: {
+        maxRequests: parsePositiveInteger(env.API_RATE_LIMIT_MAX_REQUESTS, "API_RATE_LIMIT_MAX_REQUESTS", 180),
+        windowMs: parsePositiveInteger(env.API_RATE_LIMIT_WINDOW_SECONDS, "API_RATE_LIMIT_WINDOW_SECONDS", 60) * 1000,
+      },
+      provider: {
+        maxRequests: parsePositiveInteger(env.PROVIDER_RATE_LIMIT_MAX_REQUESTS, "PROVIDER_RATE_LIMIT_MAX_REQUESTS", 40),
+        windowMs: parsePositiveInteger(env.PROVIDER_RATE_LIMIT_WINDOW_SECONDS, "PROVIDER_RATE_LIMIT_WINDOW_SECONDS", 60) * 1000,
+      },
+    },
     supabasePublishableKey: parseRequiredString(env.SUPABASE_PUBLISHABLE_KEY, "SUPABASE_PUBLISHABLE_KEY"),
     supabaseServiceRoleKey: parseOptionalString(env.SUPABASE_SERVICE_ROLE_KEY),
     supabaseUrl: parseUrl(env.SUPABASE_URL, "SUPABASE_URL"),
@@ -83,6 +102,20 @@ function parseRequiredString(value: string | undefined, name: string) {
 
 function parseOptionalString(value: string | undefined) {
   return value?.trim() ? value : null;
+}
+
+function parsePositiveInteger(value: string | undefined, name: string, defaultValue: number) {
+  if (!value) {
+    return defaultValue;
+  }
+
+  const parsedValue = Number(value);
+
+  if (!Number.isInteger(parsedValue) || parsedValue < 1) {
+    throw new Error(`${name} must be a positive integer`);
+  }
+
+  return parsedValue;
 }
 
 function parseUrl(value: string | undefined, name: string) {

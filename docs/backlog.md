@@ -14,6 +14,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 - [x] Add in-app account deletion backed by API-owned user-data deletion and Supabase Auth deletion.
 - [x] Start Search empty instead of using a seeded development query.
 - [x] Hide `/health/error` when `NODE_ENV=production`.
+- [x] Add backend rate limiting and provider-cost guard with optional env tuning.
 
 ## Next
 

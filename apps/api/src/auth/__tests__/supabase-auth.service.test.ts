@@ -7,6 +7,16 @@ import { SupabaseAuthService } from "../supabase-auth.service";
 const config: ApiConfig = {
   databaseUrl: "postgresql://postgres:postgres@localhost:5432/postgres",
   port: 3000,
+  rateLimit: {
+    api: {
+      maxRequests: 180,
+      windowMs: 60000,
+    },
+    provider: {
+      maxRequests: 40,
+      windowMs: 60000,
+    },
+  },
   supabasePublishableKey: "publishable",
   supabaseServiceRoleKey: "service-role",
   supabaseUrl: "https://supabase.test",

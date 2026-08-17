@@ -106,6 +106,10 @@ SUPABASE_URL
 SUPABASE_PUBLISHABLE_KEY
 SUPABASE_SERVICE_ROLE_KEY
 TMDB_ACCESS_TOKEN
+API_RATE_LIMIT_MAX_REQUESTS
+API_RATE_LIMIT_WINDOW_SECONDS
+PROVIDER_RATE_LIMIT_MAX_REQUESTS
+PROVIDER_RATE_LIMIT_WINDOW_SECONDS
 ```
 
 `DATABASE_URL` is used by the API at runtime. Use the Supabase Transaction Pooler:
@@ -127,6 +131,9 @@ Supabase Auth access tokens.
 account deletion. It must be configured in Vercel Production and Preview before
 the Profile delete-account action is considered release-ready.
 `TMDB_ACCESS_TOKEN` is the TMDB API Read Access Token used by the backend catalog provider.
+The rate-limit variables are optional tuning knobs. If omitted, the API uses
+`180` general requests per `60` seconds and `40` provider-cost requests per
+`60` seconds per client key.
 
 Migration command:
 

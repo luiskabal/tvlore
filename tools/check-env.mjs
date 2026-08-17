@@ -21,6 +21,12 @@ const checks = [
 ];
 
 const placeholderPattern = /YOUR_|PROJECT_REF|CHANGE_ME|placeholder|your-/i;
+const optionalKeys = new Set([
+  "API_RATE_LIMIT_MAX_REQUESTS",
+  "API_RATE_LIMIT_WINDOW_SECONDS",
+  "PROVIDER_RATE_LIMIT_MAX_REQUESTS",
+  "PROVIDER_RATE_LIMIT_WINDOW_SECONDS",
+]);
 let hasError = false;
 
 for (const check of checks) {
@@ -54,6 +60,10 @@ function checkLocalEnv(localFile, expected) {
 
   for (const key of expectedKeys) {
     if (!actual.has(key)) {
+      if (optionalKeys.has(key)) {
+        continue;
+      }
+
       fail(`local key missing in ${localFile}: ${key}`);
       localHasError = true;
       continue;
@@ -104,6 +114,10 @@ function checkVercelEnv(vercel, keys) {
     const matchingLines = lines.filter((candidate) => candidate.trim().startsWith(`${key} `));
 
     if (matchingLines.length === 0) {
+      if (optionalKeys.has(key)) {
+        continue;
+      }
+
       fail(`vercel key missing in ${vercel.project}: ${key}`);
       vercelHasError = true;
       continue;

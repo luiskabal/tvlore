@@ -1,4 +1,5 @@
 import { MiddlewareConsumer, Module } from "@nestjs/common";
+import { APP_GUARD } from "@nestjs/core";
 
 import { SupabaseAuthService } from "./auth/supabase-auth.service";
 import { CatalogController, CatalogResolveController, EpisodesController, MoviesController, ShowsController } from "./catalog/catalog.controller";
@@ -17,6 +18,7 @@ import { EpisodePreferencesController, MoviePreferencesController, ShowPreferenc
 import { PreferencesRepository } from "./preferences/preferences.repository";
 import { PreferencesService } from "./preferences/preferences.service";
 import { PrismaService } from "./prisma.service";
+import { RateLimitGuard } from "./rate-limit.guard";
 import { EpisodeReflectionsController, MovieReflectionsController, ShowReflectionsController } from "./reflections/reflections.controller";
 import { ReflectionsRepository } from "./reflections/reflections.repository";
 import { ReflectionsService } from "./reflections/reflections.service";
@@ -66,6 +68,10 @@ import { WatchPathsService } from "./watch-paths/watch-paths.service";
   ],
   providers: [
     ApiConfigProvider,
+    {
+      provide: APP_GUARD,
+      useClass: RateLimitGuard,
+    },
     PrismaService,
     SupabaseAuthService,
     CatalogRepository,

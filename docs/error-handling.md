@@ -87,6 +87,7 @@ Example:
 
 ### Rate Limit
 
+- `RATE_LIMITED`
 - `AUTH_RATE_LIMITED`
 - `SEARCH_RATE_LIMITED`
 - `MATCH_LINK_RATE_LIMITED`
@@ -105,6 +106,7 @@ It must not duplicate backend logic that generated the code.
 Examples:
 
 - `UNAUTHORIZED`: return to auth flow.
+- `RATE_LIMITED`: show a short retry state and avoid immediate repeated requests.
 - `CATALOG_PROVIDER_UNAVAILABLE`: show retry state.
 - `VALIDATION_FAILED`: show form or input error.
 - `PRIVACY_DENIED`: explain that the comparison is not available.
@@ -121,4 +123,3 @@ Backend logs should include:
 - Provider name if provider error.
 
 Do not log sensitive tokens, Google credentials, provider secrets, or raw private history.
-

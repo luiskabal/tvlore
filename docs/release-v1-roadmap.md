@@ -114,7 +114,7 @@ enough value to justify a first release.
 | --- | --- | --- |
 | Remove dev defaults | Search previously started with a seeded dev query. | Done: Search starts empty with discovery cards. |
 | Disable/protect test error endpoint | `/health/error` is useful for development but risky in production. | Done: hidden when `NODE_ENV=production`. |
-| Rate limiting / provider cost guard | Search, resolve, providers, recommendations, and discovery can hit TMDB. | Add simple backend rate limits or provider-call throttles. |
+| Rate limiting / provider cost guard | Search, resolve, providers, recommendations, and discovery can hit TMDB. | Done: in-memory API/provider route limits with optional env tuning. |
 | Device QA matrix | Unit tests do not catch mobile store/device issues. | Test iPhone, Android, cold launch, auth, deep link, bad network. |
 | Crash/error monitoring | Store releases need faster issue diagnosis. | Add minimal Sentry or equivalent only when release candidates start. |
 | Legal/support surfaces | Users need help and policies from Profile and store listing. | Add Profile links for Privacy, Terms, Support, Delete Account. |
@@ -201,7 +201,7 @@ Tasks:
 
 - [x] Remove seeded Search query before release.
 - [x] Disable or protect `/health/error` outside development.
-- Add simple backend rate limiting or abuse guard for expensive authenticated routes.
+- [x] Add simple backend rate limiting or abuse guard for expensive authenticated routes.
 - Add a small release smoke script/checklist for mobile manual QA.
 - Run `corepack pnpm verify:full`.
 - Run authenticated `corepack pnpm api:check` against Vercel.
