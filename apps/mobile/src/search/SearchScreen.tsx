@@ -17,7 +17,7 @@ import { useSearchRecommendations } from "./use-search-recommendations";
 const searchDebounceMs = 600;
 
 export default function SearchScreen() {
-  const [query, setQuery] = useState("dark");
+  const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<SearchFilter>("all");
   const { resolveResult, resolveState, runSearch, search } = useCatalogSearch();
   const { recommendations, recommendationsState, retryRecommendations } = useSearchRecommendations();

@@ -380,6 +380,7 @@
               ]
             }
           },
+          "description": "Development-only synthetic error route. Production should hide it with 404.",
           "response": [],
           "event": [
             {
@@ -387,14 +388,18 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('status is 500', function () {",
-                  "  pm.response.to.have.status(500);",
+                  "pm.test('status is 500 in dev or 404 in production', function () {",
+                  "  pm.expect([500, 404]).to.include(pm.response.code);",
                   "});",
                   "",
                   "pm.test('response uses TVLore error contract', function () {",
                   "  var body = pm.response.json();",
-                  "  pm.expect(body.code).to.eql('HEALTH_CHECK_ERROR');",
-                  "  pm.expect(body.message).to.eql('Health check error');",
+                  "  if (pm.response.code === 500) {",
+                  "    pm.expect(body.code).to.eql('HEALTH_CHECK_ERROR');",
+                  "    pm.expect(body.message).to.eql('Health check error');",
+                  "  } else {",
+                  "    pm.expect(body.code).to.eql('NOT_FOUND');",
+                  "  }",
                   "  pm.expect(body.details).to.eql(null);",
                   "  pm.expect(body.correlationId).to.eql('postman-error');",
                   "});"

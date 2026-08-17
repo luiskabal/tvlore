@@ -54,7 +54,7 @@ Status: done
 
 4. NON_BLOCKING: `RecommendationsService` checks streaming availability by calling TMDB Watch Providers once per recommended item. The logic is useful, but lacks caching/TTL and may make recommendations feel slower. Reference: `apps/api/src/recommendations/recommendations.service.ts`.
 
-5. NON_BLOCKING: `HealthController.getHealthError` exposes a deliberate `/health/error` route. Useful for validating the global error shape, but keep it disabled or protected before production. Reference: `apps/api/src/health.controller.ts`.
+5. RESOLVED: `HealthController.getHealthError` is hidden when `NODE_ENV=production`; it remains available outside production for validating the global error shape. Reference: `apps/api/src/health.controller.ts`.
 
 6. NON_BLOCKING: `CatalogRepository` is large because it owns persistence plus DTO mapping for shows, movies, seasons, episodes, and provider identifiers. The logic is coherent, but future feature work would be easier if response mappers are split into pure files. Reference: `apps/api/src/catalog/catalog.repository.ts`.
 
@@ -92,7 +92,7 @@ Status: done
 
 2. NON_BLOCKING: `fetchJson` assumes every response body is JSON. This is the same risk found in Corte 0 from the mobile side: API-shaped errors are fine, but HTML/empty/proxy errors can throw before the response guard runs. Reference: `apps/mobile/src/api/client.ts`.
 
-3. NON_BLOCKING: `SearchScreen` still starts with `"dark"` as the default query. Useful during development, but it makes Search feel seeded rather than user-led. Before release, default should likely be empty plus recommendations/picks. Reference: `apps/mobile/src/search/SearchScreen.tsx`.
+3. RESOLVED: `SearchScreen` starts empty and lets recommendations/popular discovery carry the initial surface. Reference: `apps/mobile/src/search/SearchScreen.tsx`.
 
 4. NON_BLOCKING: Recommended picks entry renders a count and navigation even when the recommendation response may contain zero items. The destination handles empty state, but the entry should probably hide or change copy when count is zero. Reference: `apps/mobile/src/search/SearchRecommendations.tsx`.
 

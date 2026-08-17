@@ -33,7 +33,6 @@ Current deployed endpoints:
 GET /
 GET /health
 GET /health/db
-GET /health/error
 GET /users/me
 PATCH /users/me
 DELETE /users/me
@@ -73,7 +72,7 @@ GET /watch-paths/:pathId
 POST /watch-paths/:pathId/watchlist
 ```
 
-`GET /health/db` verifies runtime connectivity from Vercel to PostgreSQL. If Vercel has no `DATABASE_URL`, the API fails during startup.
+`GET /health/db` verifies runtime connectivity from Vercel to PostgreSQL. If Vercel has no `DATABASE_URL`, the API fails during startup. `GET /health/error` exists only outside `NODE_ENV=production` to validate the global error contract during development.
 `GET /users/me` validates a Supabase Auth bearer token, upserts the matching `UserIdentity`, and returns the real TVLore user. `PATCH /users/me` updates user-owned settings such as streaming availability country. `DELETE /users/me` deletes the authenticated user's TVLore data and Supabase Auth account.
 `GET /search` validates a Supabase Auth bearer token and calls TMDB from the backend using server-side credentials.
 `POST /catalog/resolve` validates a Supabase Auth bearer token, fetches TMDB details, and upserts an internal show or movie ID plus TMDB public rating metadata.

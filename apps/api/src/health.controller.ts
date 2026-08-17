@@ -1,4 +1,4 @@
-import { Controller, Get, InternalServerErrorException, Logger, ServiceUnavailableException } from "@nestjs/common";
+import { Controller, Get, InternalServerErrorException, Logger, NotFoundException, ServiceUnavailableException } from "@nestjs/common";
 
 import { PrismaService } from "./prisma.service";
 
@@ -41,6 +41,14 @@ export class HealthController {
 
   @Get("error")
   getHealthError() {
+    if (process.env.NODE_ENV === "production") {
+      throw new NotFoundException({
+        code: "NOT_FOUND",
+        message: "Not found",
+        details: null,
+      });
+    }
+
     throw new InternalServerErrorException({
       code: "HEALTH_CHECK_ERROR",
       message: "Health check error",
