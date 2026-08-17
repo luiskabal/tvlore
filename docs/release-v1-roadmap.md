@@ -140,7 +140,7 @@ Tasks:
 - Treat this document as the release source of truth.
 - Keep social/match out of v1.0.
 - Keep TVLore Picks and richer recommendations as post-1.0 unless all blockers are cleared.
-- Add a release checklist template for TestFlight/closed testing.
+- [x] Add a release checklist template for TestFlight/closed testing.
 
 Exit criteria:
 
@@ -202,7 +202,7 @@ Tasks:
 - [x] Remove seeded Search query before release.
 - [x] Disable or protect `/health/error` outside development.
 - [x] Add simple backend rate limiting or abuse guard for expensive authenticated routes.
-- Add a small release smoke script/checklist for mobile manual QA.
+- [x] Add a small release smoke script/checklist for mobile manual QA.
 - Run `corepack pnpm verify:full`.
 - Run authenticated `corepack pnpm api:check` against Vercel.
 - Add minimal crash/error monitoring if release candidates expose hard-to-debug mobile failures.
@@ -272,7 +272,8 @@ Skip for now:
 
 ## 6. Release Readiness Checklist
 
-Use this as a quick gate before TestFlight/closed testing:
+Use [Release Smoke Checklist](release-smoke-checklist.md) as the detailed gate
+before TestFlight/closed testing. Quick gate:
 
 - [ ] `corepack pnpm verify` passes.
 - [ ] `corepack pnpm verify:full` passes.

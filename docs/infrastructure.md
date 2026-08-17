@@ -174,6 +174,15 @@ Public API verification command:
 corepack pnpm api:check
 ```
 
+Release smoke command:
+
+```bash
+corepack pnpm release:smoke
+```
+
+Use [Release Smoke Checklist](release-smoke-checklist.md) for the required
+manual iPhone/Android QA matrix before beta builds.
+
 For local verification, point the smoke test at the local API:
 
 ```powershell

@@ -16,6 +16,7 @@
     "typecheck": "corepack pnpm -r typecheck",
     "verify": "corepack pnpm typecheck && corepack pnpm test:run",
     "verify:full": "corepack pnpm verify && corepack pnpm build",
+    "release:smoke": "corepack pnpm verify:full && corepack pnpm api:check",
     "build": "corepack pnpm -r --if-present build"
   },
   "workspaces": [

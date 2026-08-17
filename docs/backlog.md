@@ -15,6 +15,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 - [x] Start Search empty instead of using a seeded development query.
 - [x] Hide `/health/error` when `NODE_ENV=production`.
 - [x] Add backend rate limiting and provider-cost guard with optional env tuning.
+- [x] Add release smoke script and mobile QA checklist for beta readiness.
 
 ## Next
 
