@@ -5,7 +5,7 @@ import { Image, Pressable, SafeAreaView, ScrollView, View } from "react-native";
 
 import type { EpisodeDetailResponse } from "../api/tvlore-api";
 import { useLibraryRevision } from "../library/library-refresh";
-import { AppText, Button, Skeleton } from "../ui";
+import { AppText, Button, RatingStars, Skeleton } from "../ui";
 import { getTmdbPosterUrl } from "./posters";
 import { styles } from "./episode-detail-styles";
 import type { EpisodeDetailPreferenceActionState, EpisodeDetailWatchActionState } from "./use-episode-detail";
@@ -163,31 +163,13 @@ function EpisodeRatingPanel({
 
       {preferenceAction.kind === "error" ? <AppText tone="danger">{preferenceAction.message}</AppText> : null}
 
-      <View style={styles.ratingRow}>
-        {[1, 2, 3, 4, 5].map((rating) => {
-          const isSelected = detail.rating === rating;
-
-          return (
-            <Pressable
-              accessibilityRole="button"
-              disabled={isSaving}
-              key={rating}
-              onPress={() => {
-                void onSetRating(rating);
-              }}
-              style={[
-                styles.ratingButton,
-                isSelected ? styles.ratingButtonSelected : null,
-                isSaving ? styles.disabledAction : null,
-              ]}
-            >
-              <AppText style={isSelected ? styles.ratingButtonTextSelected : styles.ratingButtonText} variant="button">
-                {rating}
-              </AppText>
-            </Pressable>
-          );
-        })}
-      </View>
+      <RatingStars
+        disabled={isSaving}
+        onChange={(rating) => {
+          void onSetRating(rating);
+        }}
+        value={detail.rating}
+      />
 
       {detail.rating ? (
         <Pressable

@@ -50,26 +50,6 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 23,
   },
-  ratingButton: {
-    alignItems: "center",
-    backgroundColor: ui.color.panel,
-    borderColor: ui.color.border,
-    borderRadius: ui.radius.md,
-    borderWidth: 1,
-    height: 42,
-    justifyContent: "center",
-    width: 42,
-  },
-  ratingButtonSelected: {
-    backgroundColor: ui.color.accent,
-    borderColor: ui.color.accent,
-  },
-  ratingButtonText: {
-    color: ui.color.ink,
-  },
-  ratingButtonTextSelected: {
-    color: ui.color.white,
-  },
   ratingHeaderRow: {
     alignItems: "center",
     flexDirection: "row",

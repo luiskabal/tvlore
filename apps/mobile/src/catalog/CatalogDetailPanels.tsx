@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Image, Linking, Pressable, View } from "react-native";
 
 import type { CatalogDetailResponse, MediaType, ShowDetailResponse, ShowSeasonSummary, WatchProvider } from "../api/tvlore-api";
-import { AppText, Badge, Skeleton } from "../ui";
+import { AppText, Badge, RatingStars, Skeleton } from "../ui";
 import { styles } from "./catalog-detail-styles";
 import { formatCount, formatDate, formatPublicRating, getProviderInitials, getShowProgressLine, getStatusLine } from "./catalog-detail-format";
 import { getTmdbLogoUrl } from "./posters";
@@ -121,30 +121,13 @@ export function RatingMatchPanel({
 
       {isEditingUserRating ? (
         <View style={styles.inlineRatingEditor}>
-          <View style={styles.ratingRow}>
-            {[1, 2, 3, 4, 5].map((rating) => {
-              const isSelected = detail.rating === rating;
-
-              return (
-                <Pressable
-                  disabled={isSaving}
-                  key={rating}
-                  onPress={() => {
-                    void onSetRating(detail.mediaType, detail.id, rating);
-                  }}
-                  style={[
-                    styles.ratingButton,
-                    isSelected ? styles.ratingButtonSelected : null,
-                    isSaving ? styles.iconActionButtonDisabled : null,
-                  ]}
-                >
-                  <AppText style={isSelected ? styles.ratingButtonTextSelected : styles.ratingButtonText} variant="button">
-                    {rating}
-                  </AppText>
-                </Pressable>
-              );
-            })}
-          </View>
+          <RatingStars
+            disabled={isSaving}
+            onChange={(rating) => {
+              void onSetRating(detail.mediaType, detail.id, rating);
+            }}
+            value={detail.rating}
+          />
 
           {detail.rating ? (
             <Pressable

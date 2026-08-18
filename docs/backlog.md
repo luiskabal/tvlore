@@ -12,6 +12,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 
 ## Done Recently
 
+- [x] Replace numeric mobile rating controls with shared star rating UI and make emotion explicit before favorite character.
 - [x] Add a `TVLore Picks` editorial discovery section backed by curated TMDB refs.
 - [x] Configure EAS development, preview, production, remote build-number increment, and minimal submit profiles.
 - [x] Add public Privacy Policy, Terms, Support, and account deletion URLs with Profile links.
@@ -38,7 +39,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 - Keep the current screen -> hook -> API client boundary. The cleanup goal is readability, not a new state-management layer yet.
 - Ratings are explicit preference signals. Keep them separate from watched state so recommendations can use both later.
 - Post-watch check-in should never block `Watched`: save the watched state first, then open an optional skip-friendly flow.
-- Post-watch check-in now persists a rating plus a separate reflection for shows, movies, and episodes: reaction, favorite character, and optional comment.
+- Post-watch check-in now persists a rating plus a separate reflection for shows, movies, and episodes: reaction/emotion, favorite character, and optional comment.
 - Keep watched state, rating preferences, and per-watch reflections as separate concepts so rewatches, comments, and recommendations do not fight the same row later.
 - Reaction tags, favorite-character picks, and comments are private product data for now. Spoiler/privacy rules are still required before any social surface.
 - Favorite-character percentages need structured character votes first: provider person ID, actor name, character name, profile path, aggregate counts, and privacy-safe voter visibility rules.
@@ -154,9 +155,10 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 - [x] Normalize incoming `x-correlation-id` values before returning/logging them.
 - [x] Split `LibraryOverview.tsx` by visible Library section.
 - [x] Design watch reflection persistence separately from watched state and rating preferences.
-- [x] Expand post-watch check-in to show/movie/episode reflections with sensation, favorite character, and optional comment.
+- [x] Expand post-watch check-in to show/movie/episode reflections with emotion, favorite character, and optional comment.
 - [x] Add TMDB-backed cast endpoints and visual favorite-character picker for post-watch check-ins.
 - [x] Move post-watch check-in from modal to a dedicated mobile screen.
+- [x] Replace numeric mobile rating controls with shared star rating UI and make emotion explicit before favorite character.
 - [x] Add a country-aware `Popular in your country` discovery section using the user's saved availability country.
 
 ## Deferred

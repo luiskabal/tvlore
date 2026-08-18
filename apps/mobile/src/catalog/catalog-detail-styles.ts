@@ -24,6 +24,9 @@ export const styles = StyleSheet.create({
   checkInPage: {
     gap: 16,
   },
+  checkInSection: {
+    gap: 8,
+  },
   castChoice: {
     alignItems: "center",
     backgroundColor: ui.color.panel,
@@ -227,6 +230,8 @@ export const styles = StyleSheet.create({
     borderColor: ui.color.border,
     borderRadius: ui.radius.pill,
     borderWidth: 1,
+    flexDirection: "row",
+    gap: 6,
     paddingHorizontal: 13,
     paddingVertical: 9,
   },
@@ -244,26 +249,6 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
-  },
-  ratingButton: {
-    alignItems: "center",
-    backgroundColor: ui.color.panel,
-    borderColor: ui.color.border,
-    borderRadius: ui.radius.md,
-    borderWidth: 1,
-    height: 42,
-    justifyContent: "center",
-    width: 42,
-  },
-  ratingButtonSelected: {
-    backgroundColor: ui.color.accent,
-    borderColor: ui.color.accent,
-  },
-  ratingButtonText: {
-    color: ui.color.ink,
-  },
-  ratingButtonTextSelected: {
-    color: ui.color.white,
   },
   ratingCompareRow: {
     flexDirection: "row",

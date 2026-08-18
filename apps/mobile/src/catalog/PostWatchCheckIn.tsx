@@ -1,11 +1,15 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
+import type { ComponentProps } from "react";
 import { useEffect, useState } from "react";
 import { Image, Pressable, ScrollView, TextInput, View } from "react-native";
 
-import type { PreferenceMediaType, WatchReflection, WatchReflectionInput } from "../api/tvlore-api";
-import { AppText, Button } from "../ui";
+import type { PreferenceMediaType, WatchReaction, WatchReflection, WatchReflectionInput } from "../api/tvlore-api";
+import { AppText, Button, RatingStars, ui } from "../ui";
 import { styles } from "./catalog-detail-styles";
 import { createCheckInDraft, normalizeCheckInDraft, type PostWatchCastState, reactionOptions } from "./post-watch-check-in-model";
 import { getTmdbProfileUrl } from "./posters";
+
+type IconName = ComponentProps<typeof Ionicons>["name"];
 
 export type PostWatchCheckInTarget = {
   id: string;
@@ -19,6 +23,13 @@ export type PostWatchCheckInActionState =
   | { kind: "idle" }
   | { kind: "loading" }
   | { kind: "error"; message: string };
+
+const reactionIconByValue: Record<WatchReaction, IconName> = {
+  liked: "happy-outline",
+  loved: "heart-outline",
+  mixed: "contrast-outline",
+  not_for_me: "sad-outline",
+};
 
 export function PostWatchCheckIn({
   actionState,
@@ -70,59 +81,46 @@ export function PostWatchCheckIn({
 
       {actionState.kind === "error" ? <AppText tone="danger">{actionState.message}</AppText> : null}
 
-      <View style={styles.ratingRow}>
-        {[1, 2, 3, 4, 5].map((rating) => {
-          const isSelected = draft.rating === rating;
-
-          return (
-            <Pressable
-              accessibilityLabel={`Rate ${rating} out of 5`}
-              accessibilityRole="button"
-              accessibilityState={{ disabled: isSaving, selected: isSelected }}
-              disabled={isSaving}
-              key={rating}
-              onPress={() => {
-                setDraft((current) => ({ ...current, rating }));
-              }}
-              style={[
-                styles.ratingButton,
-                isSelected ? styles.ratingButtonSelected : null,
-                isSaving ? styles.iconActionButtonDisabled : null,
-              ]}
-            >
-              <AppText style={isSelected ? styles.ratingButtonTextSelected : styles.ratingButtonText} variant="button">
-                {rating}
-              </AppText>
-            </Pressable>
-          );
-        })}
+      <View style={styles.checkInSection}>
+        <AppText variant="button">Your rating</AppText>
+        <RatingStars
+          disabled={isSaving}
+          onChange={(rating) => setDraft((current) => ({ ...current, rating }))}
+          value={draft.rating}
+        />
       </View>
 
-      <View style={styles.reactionRow}>
-        {reactionOptions.map((option) => {
-          const isSelected = draft.reaction === option.value;
+      <View style={styles.checkInSection}>
+        <AppText variant="button">Emotion</AppText>
+        <View style={styles.reactionRow}>
+          {reactionOptions.map((option) => {
+            const isSelected = draft.reaction === option.value;
+            const iconColor = isSelected ? ui.color.accent : ui.color.ink;
 
-          return (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityState={{ disabled: isSaving, selected: isSelected }}
-              disabled={isSaving}
-              key={option.value}
-              onPress={() => {
-                setDraft((current) => ({ ...current, reaction: option.value }));
-              }}
-              style={[
-                styles.reactionPill,
-                isSelected ? styles.reactionPillSelected : null,
-                isSaving ? styles.iconActionButtonDisabled : null,
-              ]}
-            >
-              <AppText style={isSelected ? styles.reactionPillTextSelected : styles.reactionPillText} variant="caption">
-                {option.label}
-              </AppText>
-            </Pressable>
-          );
-        })}
+            return (
+              <Pressable
+                accessibilityLabel={`Emotion ${option.label}`}
+                accessibilityRole="button"
+                accessibilityState={{ disabled: isSaving, selected: isSelected }}
+                disabled={isSaving}
+                key={option.value}
+                onPress={() => {
+                  setDraft((current) => ({ ...current, reaction: option.value }));
+                }}
+                style={[
+                  styles.reactionPill,
+                  isSelected ? styles.reactionPillSelected : null,
+                  isSaving ? styles.iconActionButtonDisabled : null,
+                ]}
+              >
+                <Ionicons color={iconColor} name={reactionIconByValue[option.value]} size={17} />
+                <AppText style={isSelected ? styles.reactionPillTextSelected : styles.reactionPillText} variant="caption">
+                  {option.label}
+                </AppText>
+              </Pressable>
+            );
+          })}
+        </View>
       </View>
 
       <View style={styles.castPickerSection}>

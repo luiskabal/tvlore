@@ -45,7 +45,7 @@ In scope:
 - Watched/unwatched tracking.
 - Show-level and season-level bulk watched actions.
 - Ratings for shows, movies, and episodes.
-- Post-watch reflection: rating, reaction, favorite character, optional comment.
+- Post-watch reflection: star rating, reaction/emotion, favorite character, optional comment.
 - Library filters and chronology.
 - Where to Watch by country.
 - Recommended picks.
@@ -86,8 +86,8 @@ enough value to justify a first release.
 | Season/episode detail | Ready | Seasons hydrate episodes; episode detail exists. |
 | Tracking | Ready | Movie, episode, season, and show watched/unwatched flows exist. |
 | Watchlist | Ready | Show/movie save/remove, including swipe removal from Library. |
-| Ratings | Ready | Show/movie/episode 1-5 ratings exist. |
-| Post-watch reflection | Ready | Dedicated check-in screen with reaction, cast picker, and comment. |
+| Ratings | Ready | Show/movie/episode 1-5 ratings exist with star controls in mobile. |
+| Post-watch reflection | Ready | Dedicated check-in screen with star rating, emotion, cast picker, and comment. |
 | Library | Ready | Summary filters, chronology, continue watching, watchlist, rated titles. |
 | Discovery | Ready | Recommendations and Popular in your country exist. |
 | TVLore Picks | Ready | Backend-owned editorial TMDB refs shown from Search. |

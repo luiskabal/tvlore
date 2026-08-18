@@ -3,6 +3,7 @@ export * from "./Badge";
 export * from "./Button";
 export * from "./MediaRow";
 export * from "./PosterImage";
+export * from "./RatingStars";
 export * from "./Skeleton";
 export * from "./StatCard";
 export * from "./StillImage";

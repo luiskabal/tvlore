@@ -498,12 +498,13 @@ CatalogDetailScreen(movie/show) or EpisodeDetailScreen(episode)
 
 `PostWatchCheckIn` is presentation-only. The `/check-in` route owns loading the
 target detail, cast, and save action through the existing catalog or episode
-hooks. The form builds a small draft for rating, sensation, favorite character,
-and optional comment, then the screen hook sends that draft through the API
-client. Cast is loaded lazily only after the check-in screen opens so detail
+hooks. The form builds a small draft for star rating, emotion/reaction,
+favorite character, and optional comment, then the screen hook sends that draft
+through the API client. Cast is loaded lazily only after the check-in screen opens so detail
 navigation stays fast; the chosen character is still persisted as the existing
 reflection `favoriteCharacter` string. Manual character entry is a fallback for
-unlisted cast, not the primary path. The backend persists the rating in the
+unlisted cast, not the primary path. Mobile renders rating through the shared
+`RatingStars` UI primitive, while the backend persists the rating in the
 existing preference model and stores the richer reflection separately. The flow
 is skip-friendly: watched state is already saved before the check-in route opens.
 

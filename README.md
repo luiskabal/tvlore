@@ -36,9 +36,9 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Show-level mark all watched/unwatched backed by the API.
 - Season-level mark all watched/unwatched.
 - Personal show/movie watchlist.
-- Personal show/movie/episode rating preferences.
-- Compact show/movie rating comparison in detail screens: TMDB public rating versus the user's 1-5 rating, with the public rating hidden as `Spoiler` until the user rates it or manually reveals it.
-- Dedicated post-watch check-in screen after marking a movie, full show, or episode watched, with rating, sensation, visual favorite-character cast picker, and optional comment.
+- Personal show/movie/episode star rating preferences.
+- Compact show/movie rating comparison in detail screens: TMDB public rating versus the user's 1-5 star rating, with the public rating hidden as `Spoiler` until the user rates it or manually reveals it.
+- Dedicated post-watch check-in screen after marking a movie, full show, or episode watched, ordered as star rating, emotion, visual favorite-character cast picker, and optional comment.
 - Library summary with watched show, movie, episode, watchlist, and rated-title counts.
 - Tappable Library summary cards filter Cronologia, watching shows, movies, grouped episodes, watchlist, and rated titles.
 - Cronologia loads backend-paginated watched movie and episode history and fetches more as the user scrolls.
@@ -81,7 +81,7 @@ Google login
 -> Open episode detail
 -> Rate episode
 -> Mark movie watched
--> Post-watch check-in screen with rating, sensation, cast-based favorite character, and comment
+-> Post-watch check-in screen with star rating, emotion, cast-based favorite character, and comment
 -> Open show season
 -> Mark episode watched
 -> Episode post-watch check-in screen
