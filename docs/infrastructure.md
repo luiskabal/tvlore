@@ -33,6 +33,10 @@ Current deployed endpoints:
 GET /
 GET /health
 GET /health/db
+GET /privacy
+GET /terms
+GET /support
+GET /account-deletion
 GET /users/me
 PATCH /users/me
 DELETE /users/me
@@ -73,6 +77,7 @@ POST /watch-paths/:pathId/watchlist
 ```
 
 `GET /health/db` verifies runtime connectivity from Vercel to PostgreSQL. If Vercel has no `DATABASE_URL`, the API fails during startup. `GET /health/error` exists only outside `NODE_ENV=production` to validate the global error contract during development.
+`GET /privacy`, `GET /terms`, `GET /support`, and `GET /account-deletion` are public release-readiness pages used by Profile links and store metadata.
 `GET /users/me` validates a Supabase Auth bearer token, upserts the matching `UserIdentity`, and returns the real TVLore user. `PATCH /users/me` updates user-owned settings such as streaming availability country. `DELETE /users/me` deletes the authenticated user's TVLore data and Supabase Auth account.
 `GET /search` validates a Supabase Auth bearer token and calls TMDB from the backend using server-side credentials.
 `POST /catalog/resolve` validates a Supabase Auth bearer token, fetches TMDB details, and upserts an internal show or movie ID plus TMDB public rating metadata.
@@ -280,6 +285,7 @@ the selected Postman environment.
 - Auth identity/session tables have been applied to Supabase.
 - `GET /users/me` resolves authenticated Supabase users into TVLore users.
 - `DELETE /users/me` deletes user-owned TVLore data and the Supabase Auth user when `SUPABASE_SERVICE_ROLE_KEY` is configured.
+- Public legal/support pages are live at `/privacy`, `/terms`, `/support`, and `/account-deletion`.
 - `GET /search` proxies TMDB search through the backend.
 - `POST /catalog/resolve` persists provider-backed shows/movies into TVLore IDs with TMDB public ratings.
 - Show/movie detail endpoints read catalog records by internal TVLore IDs.

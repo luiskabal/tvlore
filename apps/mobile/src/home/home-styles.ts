@@ -346,6 +346,27 @@ export const styles = StyleSheet.create({
     flex: 1,
     gap: 16,
   },
+  legalLinkButton: {
+    backgroundColor: "#ffffff",
+    borderColor: "#d8d0c5",
+    borderRadius: 8,
+    borderWidth: 1,
+    minHeight: 42,
+    justifyContent: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  legalLinkText: {
+    color: "#1f7a5c",
+    fontSize: 14,
+    fontWeight: "800",
+  },
+  legalLinksRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    paddingTop: 4,
+  },
   libraryListContent: {
     gap: 16,
     paddingBottom: 8,

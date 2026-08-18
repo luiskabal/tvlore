@@ -40,6 +40,22 @@ async function checkPublicHealth() {
     },
     expectedStatus: 200,
   });
+  await check("/privacy", {
+    assert: (body) => assertPublicHtml(body, "Privacy Policy"),
+    expectedStatus: 200,
+  });
+  await check("/terms", {
+    assert: (body) => assertPublicHtml(body, "Terms"),
+    expectedStatus: 200,
+  });
+  await check("/support", {
+    assert: (body) => assertPublicHtml(body, "Support"),
+    expectedStatus: 200,
+  });
+  await check("/account-deletion", {
+    assert: (body) => assertPublicHtml(body, "Account Deletion"),
+    expectedStatus: 200,
+  });
 }
 
 async function checkUnauthorizedRoutes() {
@@ -1319,6 +1335,12 @@ function assertError(body, code) {
   expectString(body.message, "error.message");
   expect("details" in body, "error.details should exist");
   expectString(body.correlationId, "error.correlationId");
+}
+
+function assertPublicHtml(body, title) {
+  expectString(body, `${title} page`);
+  expect(body.includes("<!doctype html>"), `${title} page should be HTML`);
+  expect(body.includes(`TVLore ${title}`), `${title} page title`);
 }
 
 function expectRecord(value, label) {

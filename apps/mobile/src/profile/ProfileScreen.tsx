@@ -1,15 +1,22 @@
 import { useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
+import { Linking, Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
 
 import { deleteCurrentUser, updateCurrentUser } from "../api/tvlore-api";
 import { getSupabaseAccessToken, isSupabaseConfigured, signOut as signOutFromSupabase } from "../auth/supabase-auth";
 import { formatWatchCountry } from "../catalog/watch-country";
+import { apiBaseUrl } from "../config/env";
 import { HoloProfileCard, HoloProfileCardSkeleton } from "../home/HoloProfileCard";
 import { styles } from "../home/home-styles";
 import { useHomeModel } from "../home/use-home-model";
 
 const availabilityCountries = ["CL", "US", "MX", "AR", "BR", "ES"] as const;
+const legalLinks = [
+  { label: "Privacy", path: "/privacy" },
+  { label: "Terms", path: "/terms" },
+  { label: "Support", path: "/support" },
+  { label: "Deletion help", path: "/account-deletion" },
+] as const;
 
 type CountryActionState =
   | { kind: "idle" }
@@ -141,6 +148,8 @@ export default function ProfileScreen() {
           </Pressable>
         ) : null}
 
+        <LegalLinksPanel />
+
         {auth.kind === "signedIn" ? (
           <DeleteAccountPanel
             action={deleteAction}
@@ -152,6 +161,25 @@ export default function ProfileScreen() {
       </ScrollView>
     </SafeAreaView>
   );
+}
+
+function LegalLinksPanel() {
+  return (
+    <View style={styles.statusPanel}>
+      <Text style={styles.statusLabel}>Legal and support</Text>
+      <View style={styles.legalLinksRow}>
+        {legalLinks.map((link) => (
+          <Pressable key={link.path} style={styles.legalLinkButton} onPress={() => openLegalLink(link.path)}>
+            <Text style={styles.legalLinkText}>{link.label}</Text>
+          </Pressable>
+        ))}
+      </View>
+    </View>
+  );
+}
+
+function openLegalLink(path: string) {
+  void Linking.openURL(`${apiBaseUrl}${path}`).catch(() => undefined);
 }
 
 function DeleteAccountPanel({

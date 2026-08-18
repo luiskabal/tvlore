@@ -66,8 +66,9 @@ The MVP goal is intentionally small: authenticate with Google, search catalog co
 17. [Mobile Development Build](mobile-development-build.md)
 18. [Release v1.0 Roadmap](release-v1-roadmap.md)
 19. [Release Smoke Checklist](release-smoke-checklist.md)
-20. [Roadmap](roadmap.md)
-21. [Architecture Decision Records](adr/)
+20. [Data Inventory](data-inventory.md)
+21. [Roadmap](roadmap.md)
+22. [Architecture Decision Records](adr/)
 
 ## Documentation Index
 
@@ -78,6 +79,7 @@ The MVP goal is intentionally small: authenticate with Google, search catalog co
 - [Coding Rules](coding-rules.md)
 - [Configuration](configuration.md)
 - [Current State](current-state.md)
+- [Data Inventory](data-inventory.md)
 - [Diagrams](diagrams.md)
 - [Domain Model](domain-model.md)
 - [Error Handling](error-handling.md)

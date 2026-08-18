@@ -2,6 +2,10 @@
 
 TVLore viewing history is personal data. As TVLore grows toward social comparison, privacy must be part of the architecture from the start.
 
+The public developer-preview privacy page is served by the API at
+`https://tvlore-api.vercel.app/privacy`. The engineering data inventory for
+store forms lives in [Data Inventory](data-inventory.md).
+
 ## Principles
 
 - Privacy is backend-owned.

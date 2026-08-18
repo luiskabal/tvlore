@@ -98,14 +98,16 @@ or emulator before Android beta.
 | Personal Watch Path | Import a small path from TMDB refs/text. | Path persists and can be reopened. |
 | Cronologia | Open Library Cronologia and scroll. | Items append without duplicates or layout jump. |
 | Account deletion | Test only on disposable account. | User-owned data and auth account are deleted when service role key is configured. |
+| Legal links | Open Profile and tap Privacy, Terms, Support, and Deletion help. | Each link opens a public `tvlore-api.vercel.app` page. |
 
 ## Store Readiness Smoke
 
 | Check | Expected |
 | --- | --- |
 | App icon and splash | Match current TVLore branding. |
-| Privacy link | Opens from Profile before store submission. |
-| Support link | Opens from Profile before store submission. |
+| Privacy link | Opens from Profile and can be used in store metadata. |
+| Support link | Opens from Profile and can be used in store metadata. |
+| Account deletion URL | Public page opens without login. |
 | Delete account entry | Visible in Profile. |
 | Reviewer notes | Explain login path and core flows. |
 | Store screenshots | Match current UI and do not show development-only states. |

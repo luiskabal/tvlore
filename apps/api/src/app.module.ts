@@ -11,6 +11,7 @@ import { ApiConfigProvider } from "./config";
 import { DiscoveryController } from "./discovery/discovery.controller";
 import { DiscoveryService } from "./discovery/discovery.service";
 import { HealthController } from "./health.controller";
+import { LegalController } from "./legal.controller";
 import { LibraryController, ShowProgressController } from "./library/library.controller";
 import { LibraryRepository } from "./library/library.repository";
 import { LibraryService } from "./library/library.service";
@@ -43,6 +44,7 @@ import { WatchPathsService } from "./watch-paths/watch-paths.service";
   controllers: [
     RootController,
     HealthController,
+    LegalController,
     UsersController,
     CatalogController,
     CatalogResolveController,

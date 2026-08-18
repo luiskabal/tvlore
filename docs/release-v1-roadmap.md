@@ -100,10 +100,10 @@ enough value to justify a first release.
 | Gap | Why It Blocks | Target |
 | --- | --- | --- |
 | In-app account deletion | Apple and Google require account deletion if account creation exists. | Implemented in Profile and `DELETE /users/me`; configure `SUPABASE_SERVICE_ROLE_KEY` in deployment before release. |
-| Web account deletion URL | Google requires a web resource for users who uninstalled the app. | Add a minimal public deletion/support page or documented request URL. |
+| Web account deletion URL | Google requires a web resource for users who uninstalled the app. | Done: `https://tvlore-api.vercel.app/account-deletion`. |
 | Sign in with Apple | Apple requires it in many apps that use third-party login for account creation. | Add Supabase Apple provider and mobile Apple login button for iOS. |
-| Privacy Policy | Required for collected personal data and store metadata. | Public URL + in-app link. |
-| Data Safety / App Privacy answers | Required in Play Console and App Store Connect. | Inventory collected data and complete forms. |
+| Privacy Policy | Required for collected personal data and store metadata. | Done as developer-preview URL: `https://tvlore-api.vercel.app/privacy`; review final wording before submission. |
+| Data Safety / App Privacy answers | Required in Play Console and App Store Connect. | Data inventory exists; final forms still need completion. |
 | Reviewer access | Reviewers need to access protected app functionality. | Provide test credentials/instructions or a reviewable auth path. |
 | Production EAS profiles | Store builds need bundle IDs, signing, version/build numbers. | Configure EAS build/submit profiles. |
 | Store assets | App icon, splash, screenshots, support URL, marketing copy. | Prepare iOS and Android metadata. |
@@ -117,7 +117,7 @@ enough value to justify a first release.
 | Rate limiting / provider cost guard | Search, resolve, providers, recommendations, and discovery can hit TMDB. | Done: in-memory API/provider route limits with optional env tuning. |
 | Device QA matrix | Unit tests do not catch mobile store/device issues. | Test iPhone, Android, cold launch, auth, deep link, bad network. |
 | Crash/error monitoring | Store releases need faster issue diagnosis. | Add minimal Sentry or equivalent only when release candidates start. |
-| Legal/support surfaces | Users need help and policies from Profile and store listing. | Add Profile links for Privacy, Terms, Support, Delete Account. |
+| Legal/support surfaces | Users need help and policies from Profile and store listing. | Done as developer-preview Profile links plus API pages. |
 
 ### Nice After 1.0
 
@@ -161,11 +161,11 @@ Tasks:
   - delete or anonymize TVLore user records,
   - delete private watch history, watchlist, ratings, reflections, and personal paths,
   - keep catalog rows that are not user-owned.
-- [ ] Add public Privacy Policy URL.
-- [ ] Add public Support URL.
-- [ ] Add public account deletion/support URL for Google Play.
-- [ ] Add Profile links to Privacy, Terms, Support, and Delete Account.
-- [ ] Inventory data for App Store privacy and Google Play Data Safety forms.
+- [x] Add public Privacy Policy URL.
+- [x] Add public Support URL.
+- [x] Add public account deletion/support URL for Google Play.
+- [x] Add Profile links to Privacy, Terms, Support, and Delete Account.
+- [x] Inventory data for App Store privacy and Google Play Data Safety forms.
 
 Exit criteria:
 
@@ -283,9 +283,9 @@ before TestFlight/closed testing. Quick gate:
 - [ ] Google login works where allowed.
 - [ ] Apple login works on iOS.
 - [ ] Account deletion works and removes/anonymizes user-owned data.
-- [ ] Privacy Policy link opens from Profile and store metadata.
-- [ ] Support link opens from Profile and store metadata.
-- [ ] Google Play deletion URL is public.
+- [x] Privacy Policy link opens from Profile and store metadata.
+- [x] Support link opens from Profile and store metadata.
+- [x] Google Play deletion URL is public.
 - [x] Search starts in a release-friendly state.
 - [x] `/health/error` is not publicly exposed in production.
 - [ ] Store screenshots and descriptions match the actual app.
