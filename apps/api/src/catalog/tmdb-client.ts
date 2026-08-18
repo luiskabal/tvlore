@@ -3,6 +3,7 @@ import { BadGatewayException, HttpException, HttpStatus, Inject, Injectable, Not
 import { API_CONFIG, type ApiConfig } from "../config";
 import type { CatalogResolveInput, CatalogSearchInput, MediaType } from "./catalog.types";
 import { toEpisodeCastResponse, toMovieCastResponse, toShowCastResponse } from "./catalog-cast";
+import { toMovieCollection } from "./catalog-collection";
 import { toResolvedSeason } from "./catalog-detail";
 import { toResolvedMovie, toResolvedShow } from "./catalog-resolve";
 import { toCatalogSearchResults, toCatalogSearchResultsForMediaType } from "./catalog-search";
@@ -81,6 +82,22 @@ export class TmdbClient {
     const url = new URL(`https://api.themoviedb.org/3/${path}/${providerId}/watch/providers`);
 
     return toWatchProvidersResponse(await this.getJson(url), country);
+  }
+
+  async getMovieCollection(providerId: string) {
+    const url = new URL(`https://api.themoviedb.org/3/collection/${providerId}`);
+    url.searchParams.set("language", "en-US");
+    const collection = toMovieCollection(await this.getJson(url));
+
+    if (!collection) {
+      throw new BadGatewayException({
+        code: "CATALOG_PROVIDER_UNAVAILABLE",
+        message: "Catalog provider returned an invalid collection response",
+        details: null,
+      });
+    }
+
+    return collection;
   }
 
   private async getDiscoverResults(

@@ -31,6 +31,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Country-aware `Where to watch` provider icons on show/movie detail using the user's saved country preference and TMDB Watch Providers.
 - Curated and user-owned Watch Paths with backend-owned ordered viewing lists, including Marvel Infinity Saga and Star Wars Skywalker Saga.
 - Mobile can create personal Watch Paths from TMDB refs or pasted TMDB title URLs.
+- Mobile can import a personal Watch Path from a public TMDB Collection URL.
 - Watch Paths can be saved to the user's watchlist in one backend-owned action.
 - Watch Path detail shows saved count and saved row state for the authenticated user.
 - Show-level mark all watched/unwatched backed by the API.
@@ -107,7 +108,7 @@ Use `corepack pnpm api:check` for local/Vercel HTTP smoke checks.
 ## Next Backlog Items
 
 - Refine recommendation quality with stronger taste signals after the provider/country baseline.
-- Add fetched Watch Path creation from public list sources after choosing a source format/provider.
+- Evaluate additional public Watch Path import sources after TMDB Collection proves useful.
 - Configure EAS project envs and run the first preview builds.
 
 ## Workspace Layout

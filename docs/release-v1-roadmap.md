@@ -93,7 +93,7 @@ enough value to justify a first release.
 | Discovery | Ready | Recommendations, Available to stream, and Popular in your country exist. |
 | TVLore Picks | Ready | Backend-owned editorial TMDB refs shown from Search. |
 | Where to Watch | Ready | TMDB Watch Providers by saved country, shown on detail screens. |
-| Watch Paths | Ready | Curated paths, personal imports, TMDB URL parsing, save-to-watchlist. |
+| Watch Paths | Ready | Curated paths, personal imports, TMDB title URL parsing, TMDB Collection import, save-to-watchlist. |
 | Mobile architecture | Ready | Screen -> hook -> API/auth client boundary is established. |
 | Tests | Partial | Unit/type checks are good; device QA and release smoke checklist are still needed. |
 | Postman/API smoke | Ready | Collection and `api:check` exist. |

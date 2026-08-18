@@ -376,6 +376,8 @@ WatchPathsScreen
   -> GET /watch-paths
   -> optional create form
   -> POST /watch-paths
+  -> optional TMDB Collection URL import
+  -> POST /watch-paths/imports/tmdb-collection
   -> WatchPathDetailScreen
   -> useWatchPath(pathId)
   -> GET /watch-paths/:pathId
@@ -389,10 +391,13 @@ WatchPathsScreen
 ```
 
 The app does not persist or rank paths locally. It renders backend-owned ordered
-lists and per-user saved state. For personal paths, mobile parses simple import
-lines into TMDB refs and sends them to `POST /watch-paths`; the backend hydrates
-and persists the path. Catalog identity is resolved only when the user opens an
-item or asks the backend to save the whole path to watchlist.
+lists and per-user saved state. For personal manual paths, mobile parses simple
+import lines into TMDB refs and sends them to `POST /watch-paths`; the backend
+hydrates and persists the path. For TMDB Collection imports, mobile sends only
+the URL to `POST /watch-paths/imports/tmdb-collection`, and the backend owns URL
+validation, provider fetch, release-date ordering, hydration, and persistence.
+Catalog identity is resolved only when the user opens an item or asks the
+backend to save the whole path to watchlist.
 `useWatchPaths` prefetches the first few path details after loading the path
 list. `useWatchPath` prefetches catalog detail reads for the first already
 resolved path items. It does not prefetch unresolved path items because

@@ -4,7 +4,9 @@ import {
   createWatchPath,
   getWatchPath,
   getWatchPaths,
+  importTmdbCollectionWatchPath,
   type CreateWatchPathInput,
+  type ImportTmdbCollectionInput,
   type WatchPathDetailResponse,
   type WatchPathSummary,
 } from "../api/tvlore-api";
@@ -74,11 +76,33 @@ export function useWatchPaths() {
     }
   }, []);
 
+  const importTmdbCollectionPath = useCallback(async (input: ImportTmdbCollectionInput) => {
+    setCreateState({ kind: "loading" });
+
+    try {
+      const token = await getSupabaseAccessToken();
+      const path = await importTmdbCollectionWatchPath(token, input);
+      setState((current) => current.kind === "ready"
+        ? { kind: "ready", paths: [toSummary(path), ...current.paths.filter((item) => item.id !== path.id)] }
+        : current);
+      setCreateState({ kind: "idle" });
+
+      return path;
+    } catch (error) {
+      setCreateState({
+        kind: "error",
+        message: error instanceof Error ? error.message : "Could not import TMDB collection",
+      });
+
+      return null;
+    }
+  }, []);
+
   const resetCreateState = useCallback(() => {
     setCreateState({ kind: "idle" });
   }, []);
 
-  return { createPath, createState, refresh, resetCreateState, state };
+  return { createPath, createState, importTmdbCollectionPath, refresh, resetCreateState, state };
 }
 
 export function useWatchPath(pathId: string | null) {

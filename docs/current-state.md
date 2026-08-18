@@ -70,7 +70,7 @@ Implemented:
 - Mobile Library/Profile keep previous library data during refreshes and render skeletons on initial load.
 - Mobile has routed Library, Search, Paths, and Profile surfaces with persistent bottom app navigation.
 - Mobile Paths lists curated and personal viewing orders and opens path items through the existing catalog resolve flow.
-- Mobile Paths can create a personal path from simple TMDB import lines or pasted TMDB title URLs.
+- Mobile Paths can create a personal path from simple TMDB import lines, pasted TMDB title URLs, or a public TMDB Collection URL.
 - Mobile path detail can save a full path to watchlist in one action.
 - Mobile path detail rows render poster thumbnails.
 - Postman collection and local/Vercel environments.
@@ -471,6 +471,8 @@ GET /recommendations
 GET /discovery/picks
 GET /discovery/popular
 GET /watch-paths
+POST /watch-paths
+POST /watch-paths/imports/tmdb-collection
 GET /watch-paths/:pathId
 POST /watch-paths/:pathId/watchlist
 ```
@@ -868,6 +870,8 @@ Expected behavior:
 - `GET /discovery/available` returns highly rated streamable TMDB Discover results scoped to the user's saved availability country, in the same row shape as search.
 - `GET /discovery/popular` returns popular country-aware TMDB Discover results in the same row shape as search, with existing TVLore IDs hydrated when already resolved.
 - `GET /watch-paths` returns curated ordered viewing paths, and `GET /watch-paths/:pathId` returns path items with existing TVLore IDs plus per-user watchlist saved state when already resolved.
+- `POST /watch-paths` creates a personal Watch Path from ordered TMDB refs.
+- `POST /watch-paths/imports/tmdb-collection` creates a personal Watch Path by fetching a public TMDB Collection URL and importing its movies in release-date order.
 - `POST /watch-paths/:pathId/watchlist` resolves every path item and saves the resulting shows or movies to the authenticated user's watchlist.
 - `POST /shows/:showId/watches` hydrates the show seasons, marks every episode watched, and returns completed show progress.
 - `DELETE /shows/:showId/watches` removes every episode watch marker for that show and returns not-started show progress.
@@ -922,6 +926,7 @@ Search
 Paths
 -> GET /watch-paths
 -> POST /watch-paths when the user creates a personal path
+-> POST /watch-paths/imports/tmdb-collection when the user imports a public TMDB Collection URL
 -> GET /watch-paths/:pathId
 -> POST /watch-paths/:pathId/watchlist when the user saves the full path
 -> Tap path item
@@ -948,7 +953,7 @@ Current behavior:
 - Library rows include compact poster thumbnails for quicker visual scanning.
 - Continue-watching rows open the next season, recently watched movies open movie detail, and recently watched episodes open episode detail.
 - Paths lists curated viewing orders such as Marvel Infinity Saga and Star Wars Skywalker Saga, plus personal paths created by the authenticated user.
-- Paths can create a personal list from TMDB import lines such as `movie,155` or pasted TMDB title URLs such as `https://www.themoviedb.org/tv/70523-dark`.
+- Paths can create a personal list from TMDB import lines such as `movie,155`, pasted TMDB title URLs such as `https://www.themoviedb.org/tv/70523-dark`, or a TMDB Collection URL such as `https://www.themoviedb.org/collection/10-star-wars-collection`.
 - Path detail rows navigate by tapping the full row and resolve the selected item into TVLore identity only when needed.
 - Path detail can save all path titles into the user's watchlist through one backend-owned bulk action.
 - Path detail shows how many path titles are already saved and marks saved rows.

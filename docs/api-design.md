@@ -2129,6 +2129,39 @@ Business validation:
 
 Errors: `BAD_REQUEST`, `UNAUTHORIZED`.
 
+### `POST /watch-paths/imports/tmdb-collection`
+
+Purpose: create a user-owned viewing path by fetching a public TMDB Collection URL.
+
+Current MVP status: implemented for TMDB movie collections.
+
+Auth: required.
+
+Request:
+
+```json
+{
+  "url": "https://www.themoviedb.org/collection/10-star-wars-collection"
+}
+```
+
+Response: same shape as `GET /watch-paths/:pathId`.
+
+Status codes: `201 CREATED`, `400 BAD_REQUEST`, `401 UNAUTHORIZED`.
+
+Authorization: imported paths belong to the authenticated user.
+
+Business validation:
+
+- `url` must be a TMDB Collection URL.
+- The backend extracts the TMDB collection ID and calls TMDB Collection Details.
+- Collection parts are imported as movies and sorted by release date.
+- The backend persists title, description, poster, year, and provider refs.
+- The import is capped at the same 100 item ceiling as manual paths.
+- Arbitrary web pages, IMDb lists, Trakt lists, and Letterboxd lists are not supported yet.
+
+Errors: `BAD_REQUEST`, `UNAUTHORIZED`.
+
 ### `GET /watch-paths/:pathId`
 
 Purpose: return one curated or user-owned viewing path with ordered provider-backed items.

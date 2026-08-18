@@ -221,4 +221,77 @@ describe("WatchPathsService", () => {
       ],
     }));
   });
+
+  it("imports a TMDB collection as a user watch path", async () => {
+    const tmdbClient = {
+      getMovieCollection: vi.fn(async () => ({
+        description: "The Skywalker Saga.",
+        items: [
+          {
+            externalRef: { provider: "tmdb", providerId: "11" },
+            mediaType: "movie",
+            overview: "Episode IV",
+            posterPath: "/star-wars.jpg",
+            title: "Star Wars",
+            tvloreId: null,
+            year: 1977,
+          },
+          {
+            externalRef: { provider: "tmdb", providerId: "1891" },
+            mediaType: "movie",
+            overview: "Episode V",
+            posterPath: "/empire.jpg",
+            title: "The Empire Strikes Back",
+            tvloreId: null,
+            year: 1980,
+          },
+        ],
+        title: "Star Wars Collection",
+      })),
+    };
+    const watchPathsRepository = {
+      createUserPath: vi.fn(async (_userId: string, input: { description: string; items: Array<{ title: string; year: number | null }>; title: string }) => ({
+        description: input.description,
+        id: "00000000-0000-4000-8000-000000000222",
+        items: input.items.map((item, index) => ({
+          externalRef: { provider: "tmdb", providerId: index === 0 ? "11" : "1891" },
+          mediaType: "movie",
+          note: null,
+          posterPath: index === 0 ? "/star-wars.jpg" : "/empire.jpg",
+          title: item.title,
+          year: item.year,
+        })),
+        source: "user",
+        title: input.title,
+      })),
+    };
+    const service = new WatchPathsService(
+      {} as unknown as CatalogRepository,
+      tmdbClient as unknown as TmdbClient,
+      { getMe: vi.fn(async () => ({ createdAt: "", displayName: "Luis", id: "user-id" })) } as unknown as UsersService,
+      {} as unknown as WatchlistRepository,
+      watchPathsRepository as unknown as WatchPathsRepository,
+    );
+
+    const response = await service.importTmdbCollection("Bearer token", {
+      url: "https://www.themoviedb.org/collection/10-star-wars-collection",
+    });
+
+    expect(response).toMatchObject({
+      id: "00000000-0000-4000-8000-000000000222",
+      itemCount: 2,
+      source: "user",
+      title: "Star Wars Collection",
+    });
+    expect(response.items[0]).toMatchObject({
+      externalRef: { provider: "tmdb", providerId: "11" },
+      title: "Star Wars",
+      year: 1977,
+    });
+    expect(tmdbClient.getMovieCollection).toHaveBeenCalledWith("10");
+    expect(watchPathsRepository.createUserPath).toHaveBeenCalledWith("user-id", expect.objectContaining({
+      description: "The Skywalker Saga.",
+      title: "Star Wars Collection",
+    }));
+  });
 });

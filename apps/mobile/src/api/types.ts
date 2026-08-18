@@ -246,6 +246,10 @@ export type CreateWatchPathInput = {
   title: string;
 };
 
+export type ImportTmdbCollectionInput = {
+  url: string;
+};
+
 export type ShowSeasonSummary = {
   airDate: string | null;
   episodeCount: number;

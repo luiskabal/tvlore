@@ -1,7 +1,7 @@
 import { BadRequestException } from "@nestjs/common";
 import { describe, expect, it } from "vitest";
 
-import { parseCreateWatchPathInput } from "../watch-paths-input";
+import { parseCreateWatchPathInput, parseImportTmdbCollectionInput } from "../watch-paths-input";
 
 describe("parseCreateWatchPathInput", () => {
   it("parses a valid watch path import", () => {
@@ -38,5 +38,23 @@ describe("parseCreateWatchPathInput", () => {
       items: [{ externalRef: { provider: "tmdb", providerId: "0" }, mediaType: "movie" }],
       title: "Wrong id",
     })).toThrow(BadRequestException);
+  });
+
+  it("parses a TMDB collection import URL", () => {
+    expect(parseImportTmdbCollectionInput({
+      url: "https://www.themoviedb.org/collection/10-star-wars-collection",
+    })).toEqual({
+      provider: "tmdb",
+      providerId: "10",
+      url: "https://www.themoviedb.org/collection/10-star-wars-collection",
+    });
+  });
+
+  it("rejects invalid TMDB collection import URLs", () => {
+    expect(() => parseImportTmdbCollectionInput(null)).toThrow(BadRequestException);
+    expect(() => parseImportTmdbCollectionInput({ url: "" })).toThrow(BadRequestException);
+    expect(() => parseImportTmdbCollectionInput({ url: "not-a-url" })).toThrow(BadRequestException);
+    expect(() => parseImportTmdbCollectionInput({ url: "https://example.com/collection/10" })).toThrow(BadRequestException);
+    expect(() => parseImportTmdbCollectionInput({ url: "https://www.themoviedb.org/movie/11-star-wars" })).toThrow(BadRequestException);
   });
 });

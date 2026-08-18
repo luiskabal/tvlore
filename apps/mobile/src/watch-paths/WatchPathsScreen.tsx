@@ -14,9 +14,12 @@ const importPlaceholder = [
   "https://www.themoviedb.org/tv/70523-dark",
 ].join("\n");
 
+const collectionPlaceholder = "https://www.themoviedb.org/collection/10-star-wars-collection";
+
 export default function WatchPathsScreen() {
-  const { createPath, createState, refresh, resetCreateState, state } = useWatchPaths();
+  const { createPath, createState, importTmdbCollectionPath, refresh, resetCreateState, state } = useWatchPaths();
   const [isCreateOpen, setCreateOpen] = useState(false);
+  const [collectionUrl, setCollectionUrl] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [itemsText, setItemsText] = useState("");
@@ -55,6 +58,31 @@ export default function WatchPathsScreen() {
     router.push({ pathname: "/paths/[id]", params: { id: path.id } });
   };
 
+  const submitCollectionImport = async () => {
+    const url = collectionUrl.trim();
+
+    setFormError(null);
+    resetCreateState();
+
+    if (!url) {
+      setFormError("TMDB collection URL is required");
+      return;
+    }
+
+    const path = await importTmdbCollectionPath({ url });
+
+    if (!path) {
+      return;
+    }
+
+    setCollectionUrl("");
+    setTitle("");
+    setDescription("");
+    setItemsText("");
+    closeCreate();
+    router.push({ pathname: "/paths/[id]", params: { id: path.id } });
+  };
+
   return (
     <SafeAreaView style={styles.screen}>
       <StatusBar style="dark" />
@@ -79,39 +107,64 @@ export default function WatchPathsScreen() {
 
         {isCreateOpen ? (
           <View style={styles.formPanel}>
-            <TextInput
-              autoCapitalize="words"
-              onChangeText={setTitle}
-              placeholder="Path title"
-              style={styles.input}
-              value={title}
-            />
-            <TextInput
-              onChangeText={setDescription}
-              placeholder="Description"
-              style={styles.input}
-              value={description}
-            />
-            <TextInput
-              autoCapitalize="none"
-              autoCorrect={false}
-              multiline
-              onChangeText={setItemsText}
-              placeholder={importPlaceholder}
-              style={[styles.input, styles.multilineInput]}
-              value={itemsText}
-            />
-            {formError ? <AppText tone="danger">{formError}</AppText> : null}
-            {createState.kind === "error" ? <AppText tone="danger">{createState.message}</AppText> : null}
-            <View style={styles.formActionsRow}>
+            <View style={styles.formSection}>
+              <AppText variant="section">Import TMDB Collection</AppText>
+              <TextInput
+                autoCapitalize="none"
+                autoCorrect={false}
+                onChangeText={setCollectionUrl}
+                placeholder={collectionPlaceholder}
+                style={styles.input}
+                value={collectionUrl}
+              />
               <Button
                 disabled={isCreating}
                 isLoading={isCreating}
-                label="Create"
-                loadingLabel="Creating"
-                onPress={submitCreate}
+                label="Import collection"
+                loadingLabel="Importing"
+                onPress={submitCollectionImport}
                 size="small"
               />
+            </View>
+
+            <View style={styles.formDivider} />
+
+            <View style={styles.formSection}>
+              <AppText variant="section">Manual TMDB list</AppText>
+              <TextInput
+                autoCapitalize="words"
+                onChangeText={setTitle}
+                placeholder="Path title"
+                style={styles.input}
+                value={title}
+              />
+              <TextInput
+                onChangeText={setDescription}
+                placeholder="Description"
+                style={styles.input}
+                value={description}
+              />
+              <TextInput
+                autoCapitalize="none"
+                autoCorrect={false}
+                multiline
+                onChangeText={setItemsText}
+                placeholder={importPlaceholder}
+                style={[styles.input, styles.multilineInput]}
+                value={itemsText}
+              />
+              {formError ? <AppText tone="danger">{formError}</AppText> : null}
+              {createState.kind === "error" ? <AppText tone="danger">{createState.message}</AppText> : null}
+              <View style={styles.formActionsRow}>
+                <Button
+                  disabled={isCreating}
+                  isLoading={isCreating}
+                  label="Create"
+                  loadingLabel="Creating"
+                  onPress={submitCreate}
+                  size="small"
+                />
+              </View>
             </View>
           </View>
         ) : null}

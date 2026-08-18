@@ -1,6 +1,6 @@
 import { BadRequestException } from "@nestjs/common";
 
-import type { CreateWatchPathInput, CreateWatchPathItemInput } from "./watch-paths.types";
+import type { CreateWatchPathInput, CreateWatchPathItemInput, ImportTmdbCollectionInput } from "./watch-paths.types";
 
 const maxItems = 100;
 
@@ -24,6 +24,25 @@ export function parseCreateWatchPathInput(value: unknown): CreateWatchPathInput 
     description,
     items: value.items.map(parseItem),
     title,
+  };
+}
+
+export function parseImportTmdbCollectionInput(value: unknown): ImportTmdbCollectionInput {
+  if (!isRecord(value)) {
+    throwValidation("request body is required");
+  }
+
+  const url = parseRequiredText(value.url, "url", 240);
+  const providerId = parseTmdbCollectionProviderId(url);
+
+  if (!providerId) {
+    throwValidation("url must be a TMDB collection URL");
+  }
+
+  return {
+    provider: "tmdb",
+    providerId,
+    url,
   };
 }
 
@@ -133,6 +152,29 @@ function parseYear(value: unknown) {
   }
 
   return value;
+}
+
+function parseTmdbCollectionProviderId(value: string) {
+  let url: URL;
+
+  try {
+    url = new URL(value);
+  } catch {
+    return null;
+  }
+
+  const host = url.hostname.toLowerCase().replace(/^www\./, "");
+
+  if (host !== "themoviedb.org") {
+    return null;
+  }
+
+  const parts = url.pathname.split("/").filter(Boolean);
+  const collectionIndex = parts.findIndex((part) => part.toLowerCase() === "collection");
+  const rawId = collectionIndex >= 0 ? parts[collectionIndex + 1] : null;
+  const match = rawId?.match(/^([1-9]\d*)/);
+
+  return match?.[1] ?? null;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

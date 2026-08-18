@@ -55,3 +55,9 @@ export type CreateWatchPathInput = {
   items: CreateWatchPathItemInput[];
   title: string;
 };
+
+export type ImportTmdbCollectionInput = {
+  provider: "tmdb";
+  providerId: string;
+  url: string;
+};

@@ -99,6 +99,7 @@ or emulator before Android beta.
 | Check-in | Save reaction, favorite character, and optional comment. | Reflection persists and detail shows the saved state. |
 | Where to Watch | Open a show/movie with providers. | Provider icons render by saved country; attribution remains visible. |
 | Watch Paths | Open curated path, open item, save path to watchlist. | Items resolve/open and watchlist count reflects saved titles. |
+| TMDB Collection import | Create a Path from `https://www.themoviedb.org/collection/10-star-wars-collection`. | A personal path opens with ordered movie rows and posters. |
 | Personal Watch Path | Import a small path from TMDB refs/text. | Path persists and can be reopened. |
 | Cronologia | Open Library Cronologia and scroll. | Items append without duplicates or layout jump. |
 | Account deletion | Test only on disposable account. | User-owned data and auth account are deleted when service role key is configured. |

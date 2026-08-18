@@ -118,6 +118,11 @@ async function checkUnauthorizedRoutes() {
   await checkUnauthorized("/discovery/available");
   await checkUnauthorized("/discovery/picks");
   await checkUnauthorized("/watch-paths");
+  await checkUnauthorized("/watch-paths/imports/tmdb-collection", {
+    body: JSON.stringify({ url: "https://www.themoviedb.org/collection/10-star-wars-collection" }),
+    headers: { "content-type": "application/json" },
+    method: "POST",
+  });
   await checkUnauthorized("/watch-paths/mcu-infinity-saga-release");
   await checkUnauthorized("/watch-paths/mcu-infinity-saga-release/watchlist", { method: "POST" });
   await checkUnauthorized(`/episodes/${missingUuid}`);
@@ -193,6 +198,13 @@ async function checkAuthenticatedProductFlow(token) {
     assert: assertWatchPathDetail,
     expectedStatus: 200,
     headers: authHeaders,
+  });
+  await check("/watch-paths/imports/tmdb-collection", {
+    assert: assertValidationError,
+    body: JSON.stringify({ url: "https://example.com/collection/10" }),
+    expectedStatus: 400,
+    headers: jsonAuthHeaders,
+    method: "POST",
   });
   await check("/search?query=&types=show", {
     assert: assertValidationError,

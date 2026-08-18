@@ -1,6 +1,12 @@
 import { fetchCachedJson, fetchMutationJson, getAuthHeaders } from "./client";
 import { isWatchPathDetailResponse, isWatchPathsResponse, isWatchPathWatchlistResponse } from "./guards";
-import type { CreateWatchPathInput, WatchPathDetailResponse, WatchPathsResponse, WatchPathWatchlistResponse } from "./types";
+import type {
+  CreateWatchPathInput,
+  ImportTmdbCollectionInput,
+  WatchPathDetailResponse,
+  WatchPathsResponse,
+  WatchPathWatchlistResponse,
+} from "./types";
 
 export async function getWatchPaths(accessToken: string | null): Promise<WatchPathsResponse> {
   return fetchCachedJson(
@@ -28,6 +34,25 @@ export async function createWatchPath(
     "/watch-paths",
     isWatchPathDetailResponse,
     "Unexpected create watch path response",
+    {
+      body: JSON.stringify(input),
+      headers: {
+        ...getAuthHeaders(accessToken),
+        "content-type": "application/json",
+      },
+      method: "POST",
+    },
+  );
+}
+
+export async function importTmdbCollectionWatchPath(
+  accessToken: string | null,
+  input: ImportTmdbCollectionInput,
+): Promise<WatchPathDetailResponse> {
+  return fetchMutationJson(
+    "/watch-paths/imports/tmdb-collection",
+    isWatchPathDetailResponse,
+    "Unexpected TMDB collection import response",
     {
       body: JSON.stringify(input),
       headers: {

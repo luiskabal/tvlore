@@ -118,6 +118,7 @@ function isProviderCostRoute(method: string, path: string) {
     || path.includes("/watch-providers")
     || (method === "GET" && /^\/shows\/[^/]+\/seasons\/[^/]+$/.test(path))
     || (method === "POST" && path === "/watch-paths")
+    || (method === "POST" && path === "/watch-paths/imports/tmdb-collection")
     || (method === "POST" && /^\/watch-paths\/[^/]+\/watchlist$/.test(path));
 }
 

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 
 import { CatalogRepository } from "../catalog/catalog.repository";
 import { TmdbClient } from "../catalog/tmdb-client";
@@ -12,7 +12,7 @@ import {
   toWatchPathDetail,
   type WatchPathDefinition,
 } from "./watch-paths.data";
-import { parseCreateWatchPathInput } from "./watch-paths-input";
+import { parseCreateWatchPathInput, parseImportTmdbCollectionInput } from "./watch-paths-input";
 import { WatchPathsRepository } from "./watch-paths.repository";
 import type {
   CreateWatchPathItemInput,
@@ -74,6 +74,34 @@ export class WatchPathsService {
       description: input.description,
       items: hydratedItems,
       title: input.title,
+    });
+
+    return toWatchPathDetail(path);
+  }
+
+  async importTmdbCollection(
+    authorizationHeader: string | undefined,
+    body: unknown,
+  ): Promise<WatchPathDetailDto> {
+    const input = parseImportTmdbCollectionInput(body);
+    const user = await this.usersService.getMe(authorizationHeader);
+    const collection = await this.tmdbClient.getMovieCollection(input.providerId);
+
+    if (collection.items.length === 0) {
+      throwValidation("TMDB collection does not contain usable movies");
+    }
+
+    const path = await this.watchPathsRepository.createUserPath(user.id, {
+      description: truncateText(collection.description, 240),
+      items: collection.items.slice(0, 100).map((item) => ({
+        externalRef: item.externalRef,
+        mediaType: item.mediaType,
+        note: null,
+        posterPath: item.posterPath,
+        title: item.title,
+        year: item.year,
+      })),
+      title: truncateText(collection.title, 80),
     });
 
     return toWatchPathDetail(path);
@@ -215,6 +243,18 @@ function throwNotFound(): never {
     message: "Watch path was not found",
     details: null,
   });
+}
+
+function throwValidation(message: string): never {
+  throw new BadRequestException({
+    code: "VALIDATION_FAILED",
+    details: null,
+    message,
+  });
+}
+
+function truncateText(value: string, maxLength: number) {
+  return value.length > maxLength ? value.slice(0, maxLength).trimEnd() : value;
 }
 
 async function mapInBatches<T, R>(

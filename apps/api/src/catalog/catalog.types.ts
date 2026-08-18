@@ -30,6 +30,12 @@ export type CatalogSearchResponseDto = {
   results: CatalogSearchResultDto[];
 };
 
+export type CatalogMovieCollectionDto = {
+  description: string;
+  items: CatalogSearchResultDto[];
+  title: string;
+};
+
 export type CatalogResolveInput = {
   mediaType: MediaType;
   provider: "tmdb";

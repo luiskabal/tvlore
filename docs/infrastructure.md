@@ -74,6 +74,7 @@ GET /discovery/popular
 GET /discovery/picks
 GET /watch-paths
 POST /watch-paths
+POST /watch-paths/imports/tmdb-collection
 GET /watch-paths/:pathId
 POST /watch-paths/:pathId/watchlist
 ```
@@ -311,5 +312,5 @@ the selected Postman environment.
 - `GET /discovery/available` feeds Search's country-aware available-to-stream titles from TMDB Discover and the user's saved availability country.
 - `GET /discovery/popular` feeds Search's country-aware popular titles from TMDB Discover and the user's saved availability country.
 - `GET /discovery/picks` feeds Search's TVLore-curated editorial picks from backend-owned TMDB refs.
-- `GET /watch-paths`, `POST /watch-paths`, and `GET /watch-paths/:pathId` feed curated and user-owned viewing-order screens.
+- `GET /watch-paths`, `POST /watch-paths`, `POST /watch-paths/imports/tmdb-collection`, and `GET /watch-paths/:pathId` feed curated and user-owned viewing-order screens.
 - `POST /watch-paths/:pathId/watchlist` saves a path into the authenticated user's watchlist using existing watchlist tables.

@@ -2718,6 +2718,78 @@
           ]
         },
         {
+          "name": "POST /watch-paths/imports/tmdb-collection",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "postman-{{$guid}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"https://www.themoviedb.org/collection/10-star-wars-collection\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/watch-paths/imports/tmdb-collection",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "watch-paths",
+                "imports",
+                "tmdb-collection"
+              ]
+            },
+            "description": "Creates a personal Watch Path by importing the movies from a public TMDB Collection URL in release-date order."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 201', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('response is imported TMDB collection path', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.id).to.be.a('string');",
+                  "  pm.expect(body.source).to.eql('user');",
+                  "  pm.expect(body.title).to.be.a('string');",
+                  "  pm.expect(body.itemCount).to.be.greaterThan(0);",
+                  "  pm.expect(body.savedItemCount).to.eql(0);",
+                  "  pm.expect(body.items).to.be.an('array');",
+                  "  pm.expect(body.items.length).to.eql(body.itemCount);",
+                  "  body.items.forEach(function (item) {",
+                  "    pm.expect(item.mediaType).to.eql('movie');",
+                  "    pm.expect(item.title).to.be.a('string');",
+                  "    pm.expect(item.externalRef.provider).to.eql('tmdb');",
+                  "    pm.expect(item.externalRef.providerId).to.be.a('string');",
+                  "  });",
+                  "  pm.environment.set('userWatchPathId', body.id);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "GET /watch-paths/:pathId",
           "request": {
             "method": "GET",

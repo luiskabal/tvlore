@@ -79,6 +79,7 @@ Status: done for v1.0 baseline.
 - Popular in your country.
 - TVLore Picks.
 - Watch Paths.
+- TMDB Collection import for personal Watch Paths.
 
 Post-1.0 candidates:
 

@@ -14,6 +14,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 
 - [x] Replace ambiguous show/movie watched header icons with an explicit tracking panel and check-in action.
 - [x] Add an `Available in your country` discovery section for streamable titles, separate from recommendation ranking.
+- [x] Add fetched Watch Path creation from TMDB Collection URLs as the first public-source import.
 - [x] Replace numeric mobile rating controls with shared star rating UI and make emotion explicit before favorite character.
 - [x] Add a `TVLore Picks` editorial discovery section backed by curated TMDB refs.
 - [x] Configure EAS development, preview, production, remote build-number increment, and minimal submit profiles.
@@ -29,9 +30,9 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 
 - [x] Split `CatalogDetailContent.tsx` into focused detail subcomponents when the next detail UX feature touches it.
 - [x] Move pure catalog response mappers out of `CatalogRepository` when catalog persistence is next edited.
-- [ ] Add fetched Watch Path creation from public list sources after choosing a source format/provider.
 - [ ] Add a TVLore-native recommendation engine with house rules, explicit taste signals, availability, and explainable reasons.
 - [ ] Add aggregate favorite-character voting percentages to post-watch check-in, sorted by community popularity.
+- [ ] Evaluate additional public Watch Path import sources after TMDB Collection proves useful.
 
 ## Notes
 
@@ -149,6 +150,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 - [x] Show saved watchlist state inside curated Watch Path detail.
 - [x] Add user-owned imported Watch Paths after approving persistence/schema shape.
 - [x] Add TMDB URL-assisted Watch Path import for pasted external list text.
+- [x] Add fetched Watch Path creation from TMDB Collection URLs as the first public-source import.
 - [x] Store the user's preferred availability country and render it with flag labels in mobile.
 - [x] Add episode-level rating preferences and mobile episode rating UI.
 - [x] Add backend-owned season-level mark all watched/unwatched and simplify the mobile season hook.

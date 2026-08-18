@@ -64,6 +64,10 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     gap: ui.space.md,
   },
+  formDivider: {
+    backgroundColor: ui.color.border,
+    height: 1,
+  },
   formPanel: {
     backgroundColor: ui.color.panel,
     borderColor: ui.color.border,
@@ -71,6 +75,9 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     gap: ui.space.md,
     padding: ui.space.xl,
+  },
+  formSection: {
+    gap: ui.space.md,
   },
   input: {
     backgroundColor: ui.color.panel,

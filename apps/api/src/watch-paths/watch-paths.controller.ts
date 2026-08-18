@@ -22,6 +22,14 @@ export class WatchPathsController {
     return this.watchPathsService.create(authorizationHeader, body);
   }
 
+  @Post("imports/tmdb-collection")
+  importTmdbCollection(
+    @Headers("authorization") authorizationHeader: string | undefined,
+    @Body() body: unknown,
+  ): Promise<WatchPathDetailDto> {
+    return this.watchPathsService.importTmdbCollection(authorizationHeader, body);
+  }
+
   @Get(":pathId")
   get(
     @Headers("authorization") authorizationHeader: string | undefined,
