@@ -2,7 +2,7 @@
   "name": "tvlore",
   "version": "0.0.0",
   "private": true,
-  "packageManager": "pnpm@11.21.0",
+  "packageManager": "pnpm@10.14.0",
   "description": "TVLore mobile-first entertainment tracking monorepo.",
   "scripts": {
     "api:check": "node tools/check-api.mjs",

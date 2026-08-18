@@ -39,6 +39,8 @@ npx --yes eas-cli@latest build --profile development --platform ios
 ```
 
 EAS will ask for Apple credentials and device registration when needed.
+The monorepo pins `pnpm@10.14.0` because the EAS Android builder supports it
+with the current Node image and the lockfile is already pnpm lockfile v9.
 
 ## EAS Profiles
 
