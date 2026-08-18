@@ -46,6 +46,7 @@ Implemented:
 - Mobile show detail can mark the full show watched or unwatched through one backend-owned bulk action.
 - Mobile show/movie detail can add or remove a title from the watchlist.
 - Mobile show/movie detail can rate or clear a star rating preference for a title.
+- Mobile show/movie detail keeps save/bookmark as a compact header action and renders watched/check-in actions in an explicit `Tracking` panel.
 - Mobile show/movie detail compares the TMDB public rating against the user's rating in a compact spoiler-aware row.
 - Mobile show/movie detail opens a dedicated post-watch check-in screen after a movie or full show is marked watched.
 - Mobile post-watch check-in loads cast lazily and lets the user pick a favorite character from cast photos, with manual text fallback only when the character is not listed.
@@ -968,6 +969,7 @@ Current behavior:
 - Watchlist actions update local detail state optimistically, then reconcile from the backend mutation response.
 - Show and movie detail can set or clear a 1-5 star rating preference.
 - Rating actions update local detail state optimistically, then reconcile from the backend mutation response.
+- Show and movie detail use clear tracking buttons for `Mark watched`, `Edit check-in`, and `Mark unwatched`; watched state is no longer represented by a standalone `X` or checkmark header icon.
 - Show and movie detail render TMDB `publicRating` as `Spoiler` until the user rates the title or manually reveals it; the user's rating shows `--` until rated.
 - After marking a movie, full show, or episode watched, mobile opens a dedicated post-watch check-in screen ordered as star rating, emotion, cast-based favorite character, and comment.
 - Reflection saves optimistically update the local detail rating/reflection state, then reconcile from the backend mutation response.

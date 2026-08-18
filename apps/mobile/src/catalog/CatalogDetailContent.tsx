@@ -3,7 +3,7 @@ import { View } from "react-native";
 import type { CatalogDetailResponse, MediaType } from "../api/tvlore-api";
 import { AppText, Badge, PosterImage } from "../ui";
 import { styles } from "./catalog-detail-styles";
-import { TitleActionMessages, TitleActionRow } from "./CatalogDetailActions";
+import { TitleActionMessages, TitleSaveAction, TitleTrackingPanel } from "./CatalogDetailActions";
 import { RatingMatchPanel, ShowProgressPanel, ShowSeasonsPanel, WhereToWatchPanel } from "./CatalogDetailPanels";
 import { getMetadata } from "./catalog-detail-format";
 import { getTmdbPosterUrl } from "./posters";
@@ -36,21 +36,6 @@ export function CatalogDetailContent({
   watchlistAction: WatchlistActionState;
   watchProvidersState: WatchProvidersState;
 }) {
-  const setMovieWatched = async (movieId: string, watched: boolean) => {
-    const saved = await onSetMovieWatched(movieId, watched);
-
-    if (saved && watched) {
-      onOpenCheckIn("movie", movieId);
-    }
-  };
-  const setShowWatched = async (showId: string, watched: boolean) => {
-    const saved = await onSetShowWatched(showId, watched);
-
-    if (saved && watched) {
-      onOpenCheckIn("show", showId);
-    }
-  };
-
   return (
     <View style={styles.detail}>
       <View style={styles.hero}>
@@ -68,12 +53,9 @@ export function CatalogDetailContent({
               <AppText tone="muted">{getMetadata(detail)}</AppText>
             </View>
 
-            <TitleActionRow
+            <TitleSaveAction
               detail={detail}
               onSetInWatchlist={onSetInWatchlist}
-              onSetMovieWatched={setMovieWatched}
-              onSetShowWatched={setShowWatched}
-              watchAction={watchAction}
               watchlistAction={watchlistAction}
             />
           </View>
@@ -82,6 +64,13 @@ export function CatalogDetailContent({
 
       <TitleActionMessages watchAction={watchAction} watchlistAction={watchlistAction} />
       <RatingMatchPanel detail={detail} onSetRating={onSetRating} preferenceAction={preferenceAction} />
+      <TitleTrackingPanel
+        detail={detail}
+        onOpenCheckIn={onOpenCheckIn}
+        onSetMovieWatched={onSetMovieWatched}
+        onSetShowWatched={onSetShowWatched}
+        watchAction={watchAction}
+      />
 
       <AppText style={styles.overview}>{detail.overview || "No overview available."}</AppText>
 

@@ -512,6 +512,11 @@ Catalog and season detail routes render content-shaped skeletons while their
 initial API requests are pending. This keeps detail screens visually stable
 when Vercel, Supabase, or TMDB respond slowly.
 
+Show/movie detail keeps watchlist as a compact header action, but watched state
+is rendered in an explicit `Tracking` panel. The panel owns user-facing labels
+for marking watched, editing check-in, and marking unwatched so navigation to
+the post-watch flow is not hidden behind ambiguous status icons.
+
 After tracking or watchlist mutations, related detail screens update their local
 response state immediately and notify the local library invalidator. Library and
 Profile subscribe to that invalidator instead of receiving mutation callbacks

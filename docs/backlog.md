@@ -12,6 +12,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 
 ## Done Recently
 
+- [x] Replace ambiguous show/movie watched header icons with an explicit tracking panel and check-in action.
 - [x] Replace numeric mobile rating controls with shared star rating UI and make emotion explicit before favorite character.
 - [x] Add a `TVLore Picks` editorial discovery section backed by curated TMDB refs.
 - [x] Configure EAS development, preview, production, remote build-number increment, and minimal submit profiles.
@@ -159,6 +160,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 - [x] Add TMDB-backed cast endpoints and visual favorite-character picker for post-watch check-ins.
 - [x] Move post-watch check-in from modal to a dedicated mobile screen.
 - [x] Replace numeric mobile rating controls with shared star rating UI and make emotion explicit before favorite character.
+- [x] Replace ambiguous show/movie watched header icons with an explicit tracking panel and check-in action.
 - [x] Add a country-aware `Popular in your country` discovery section using the user's saved availability country.
 
 ## Deferred

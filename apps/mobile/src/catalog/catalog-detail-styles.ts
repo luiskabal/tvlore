@@ -148,10 +148,6 @@ export const styles = StyleSheet.create({
     backgroundColor: ui.color.accent,
     borderColor: ui.color.accent,
   },
-  iconActionButtonDanger: {
-    backgroundColor: "#fbecea",
-    borderColor: ui.color.danger,
-  },
   iconActionButtonDisabled: {
     opacity: 0.56,
   },
@@ -363,5 +359,11 @@ export const styles = StyleSheet.create({
     fontSize: 31,
     fontWeight: "800",
     lineHeight: 36,
+  },
+  trackingActionRow: {
+    alignItems: "center",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
   },
 });

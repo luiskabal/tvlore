@@ -35,6 +35,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Watch Path detail shows saved count and saved row state for the authenticated user.
 - Show-level mark all watched/unwatched backed by the API.
 - Season-level mark all watched/unwatched.
+- Show/movie detail uses an explicit tracking panel for watched/check-in actions instead of ambiguous watched-state header icons.
 - Personal show/movie watchlist.
 - Personal show/movie/episode star rating preferences.
 - Compact show/movie rating comparison in detail screens: TMDB public rating versus the user's 1-5 star rating, with the public rating hidden as `Spoiler` until the user rates it or manually reveals it.

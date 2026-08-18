@@ -32,7 +32,7 @@ export type CatalogDetailState =
 
 export type WatchActionState =
   | { kind: "idle" }
-  | { kind: "loading" }
+  | { kind: "loading"; watched: boolean }
   | { kind: "error"; message: string };
 
 export type WatchlistActionState =
@@ -118,7 +118,7 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
 
     movieWatchRequestId.current = requestId;
 
-    setWatchAction({ kind: "loading" });
+    setWatchAction({ kind: "loading", watched });
     setState((current) => {
       if (current.kind !== "ready" || current.detail.mediaType !== "movie" || current.detail.id !== movieId) {
         return current;
@@ -182,7 +182,7 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
       ? state.detail
       : null;
 
-    setWatchAction({ kind: "loading" });
+    setWatchAction({ kind: "loading", watched });
 
     try {
       const token = await getSupabaseAccessToken();
