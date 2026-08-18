@@ -190,6 +190,8 @@ Tasks:
 - [x] Add remote EAS build-number auto-increment for production builds.
 - [x] Add local mobile release preflight for Expo/EAS config and public mobile envs.
 - [x] Configure required EAS project environment variables for development, preview, and production.
+- [x] Create first Android preview build and produce an installable APK.
+- [ ] Create first iOS preview build.
 - [ ] Confirm Supabase redirect URLs for production scheme/build.
 - [ ] Confirm Vercel envs are production-safe.
 - [x] Create draft reviewer notes for auth and core flows.
