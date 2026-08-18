@@ -4,7 +4,7 @@ import { CatalogRepository } from "../catalog/catalog.repository";
 import { TmdbClient } from "../catalog/tmdb-client";
 import { UsersService } from "../users/users.service";
 import { tvlorePicks } from "./discovery-picks";
-import type { PopularDiscoveryResponseDto, TvlorePicksDiscoveryResponseDto } from "./discovery.types";
+import type { AvailableDiscoveryResponseDto, PopularDiscoveryResponseDto, TvlorePicksDiscoveryResponseDto } from "./discovery.types";
 
 @Injectable()
 export class DiscoveryService {
@@ -23,6 +23,18 @@ export class DiscoveryService {
       country: user.availabilityCountry,
       items,
       section: "popular_in_country",
+    };
+  }
+
+  async getAvailable(authorizationHeader: string | undefined): Promise<AvailableDiscoveryResponseDto> {
+    const user = await this.usersService.getMe(authorizationHeader);
+    const availableItems = await this.tmdbClient.getAvailableByCountry(user.availabilityCountry);
+    const items = await this.catalogRepository.withExistingTvloreIds(availableItems);
+
+    return {
+      country: user.availabilityCountry,
+      items,
+      section: "available_in_country",
     };
   }
 

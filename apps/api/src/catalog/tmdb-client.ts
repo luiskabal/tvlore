@@ -14,8 +14,17 @@ export class TmdbClient {
 
   async getPopularByCountry(country: string) {
     const [shows, movies] = await Promise.all([
-      this.getPopularDiscoverResults("show", country),
-      this.getPopularDiscoverResults("movie", country),
+      this.getDiscoverResults("show", country, { sortBy: "popularity.desc" }),
+      this.getDiscoverResults("movie", country, { sortBy: "popularity.desc" }),
+    ]);
+
+    return interleave(shows.slice(0, 6), movies.slice(0, 6)).slice(0, 12);
+  }
+
+  async getAvailableByCountry(country: string) {
+    const [shows, movies] = await Promise.all([
+      this.getDiscoverResults("show", country, { sortBy: "vote_average.desc", voteCountGte: 200 }),
+      this.getDiscoverResults("movie", country, { sortBy: "vote_average.desc", voteCountGte: 200 }),
     ]);
 
     return interleave(shows.slice(0, 6), movies.slice(0, 6)).slice(0, 12);
@@ -74,16 +83,24 @@ export class TmdbClient {
     return toWatchProvidersResponse(await this.getJson(url), country);
   }
 
-  private async getPopularDiscoverResults(mediaType: MediaType, country: string) {
+  private async getDiscoverResults(
+    mediaType: MediaType,
+    country: string,
+    options: { sortBy: string; voteCountGte?: number },
+  ) {
     const path = mediaType === "show" ? "tv" : "movie";
     const url = new URL(`https://api.themoviedb.org/3/discover/${path}`);
 
     url.searchParams.set("include_adult", "false");
     url.searchParams.set("language", "en-US");
     url.searchParams.set("page", "1");
-    url.searchParams.set("sort_by", "popularity.desc");
+    url.searchParams.set("sort_by", options.sortBy);
     url.searchParams.set("watch_region", country);
     url.searchParams.set("with_watch_monetization_types", "flatrate|free|ads");
+
+    if (options.voteCountGte) {
+      url.searchParams.set("vote_count.gte", String(options.voteCountGte));
+    }
 
     if (mediaType === "movie") {
       url.searchParams.set("include_video", "false");

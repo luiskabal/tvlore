@@ -9,6 +9,7 @@ describe("app tabs", () => {
     expect(getActiveTab("/recommendations")).toBe("search");
     expect(getActiveTab("/popular")).toBe("search");
     expect(getActiveTab("/picks")).toBe("search");
+    expect(getActiveTab("/available")).toBe("search");
     expect(getActiveTab("/paths")).toBe("paths");
     expect(getActiveTab("/profile")).toBe("profile");
     expect(getActiveTab("/movies/123")).toBeNull();

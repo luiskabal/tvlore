@@ -1,7 +1,7 @@
 import { Controller, Get, Headers } from "@nestjs/common";
 
 import { DiscoveryService } from "./discovery.service";
-import type { PopularDiscoveryResponseDto, TvlorePicksDiscoveryResponseDto } from "./discovery.types";
+import type { AvailableDiscoveryResponseDto, PopularDiscoveryResponseDto, TvlorePicksDiscoveryResponseDto } from "./discovery.types";
 
 @Controller("discovery")
 export class DiscoveryController {
@@ -12,6 +12,13 @@ export class DiscoveryController {
     @Headers("authorization") authorizationHeader: string | undefined,
   ): Promise<PopularDiscoveryResponseDto> {
     return this.discoveryService.getPopular(authorizationHeader);
+  }
+
+  @Get("available")
+  getAvailable(
+    @Headers("authorization") authorizationHeader: string | undefined,
+  ): Promise<AvailableDiscoveryResponseDto> {
+    return this.discoveryService.getAvailable(authorizationHeader);
   }
 
   @Get("picks")

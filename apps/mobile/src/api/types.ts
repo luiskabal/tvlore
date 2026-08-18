@@ -45,6 +45,12 @@ export type RecommendationsResponse = {
   items: RecommendationItem[];
 };
 
+export type AvailableDiscoveryResponse = {
+  country: string;
+  items: CatalogSearchResult[];
+  section: "available_in_country";
+};
+
 export type PopularDiscoveryResponse = {
   country: string;
   items: CatalogSearchResult[];

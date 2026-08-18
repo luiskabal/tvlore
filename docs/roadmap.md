@@ -75,13 +75,13 @@ Status: done for v1.0 baseline.
 - Cast-based favorite-character picker.
 - Where to Watch.
 - Recommended picks.
+- Available in your country discovery section.
 - Popular in your country.
 - TVLore Picks.
 - Watch Paths.
 
 Post-1.0 candidates:
 
-- Available in your country discovery section.
 - Better recommendation ranking.
 - Aggregate favorite-character percentages.
 

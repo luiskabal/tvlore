@@ -2472,6 +2472,68 @@
           ]
         },
         {
+          "name": "GET /discovery/available",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supabaseAccessToken}}"
+              },
+              {
+                "key": "x-correlation-id",
+                "value": "postman-{{$guid}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/discovery/available",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "discovery",
+                "available"
+              ]
+            },
+            "description": "Returns highly rated shows and movies available to stream in the authenticated user's saved availability country."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('response is available discovery', function () {",
+                  "  var body = pm.response.json();",
+                  "  pm.expect(body.country).to.match(/^[A-Z]{2}$/);",
+                  "  pm.expect(body.section).to.eql('available_in_country');",
+                  "  pm.expect(body.items).to.be.an('array');",
+                  "  body.items.forEach(function (item) {",
+                  "    pm.expect(['movie', 'show']).to.include(item.mediaType);",
+                  "    pm.expect(item.title).to.be.a('string');",
+                  "    pm.expect(item.overview).to.be.a('string');",
+                  "    pm.expect(item.posterPath === null || typeof item.posterPath === 'string').to.eql(true);",
+                  "    pm.expect(item.tvloreId === null || typeof item.tvloreId === 'string').to.eql(true);",
+                  "    pm.expect(item.year === null || typeof item.year === 'number').to.eql(true);",
+                  "    pm.expect(item.externalRef.provider).to.eql('tmdb');",
+                  "    pm.expect(item.externalRef.providerId).to.be.a('string');",
+                  "  });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "GET /discovery/picks",
           "request": {
             "method": "GET",

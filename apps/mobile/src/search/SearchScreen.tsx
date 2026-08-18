@@ -5,12 +5,14 @@ import { SafeAreaView, ScrollView } from "react-native";
 
 import type { CatalogSearchResult, MediaType } from "../api/tvlore-api";
 import { SearchControls } from "./SearchControls";
+import { SearchAvailable } from "./SearchAvailable";
 import { SearchPopular } from "./SearchPopular";
 import { SearchPicks } from "./SearchPicks";
 import { SearchRecommendations } from "./SearchRecommendations";
 import { SearchResults } from "./SearchResults";
 import { styles } from "./search-styles";
 import { canRunSearch, type SearchFilter } from "./search-model";
+import { useAvailableDiscovery } from "./use-available-discovery";
 import { useCatalogSearch } from "./use-catalog-search";
 import { usePopularDiscovery } from "./use-popular-discovery";
 import { useSearchRecommendations } from "./use-search-recommendations";
@@ -24,6 +26,7 @@ export default function SearchScreen() {
   const { resolveResult, resolveState, runSearch, search } = useCatalogSearch();
   const { picks, picksState, retryPicks } = useTvlorePicks();
   const { recommendations, recommendationsState, retryRecommendations } = useSearchRecommendations();
+  const { available, availableState, retryAvailable } = useAvailableDiscovery();
   const { popular, popularState, retryPopular } = usePopularDiscovery();
   const skipNextDebouncedSearchRef = useRef(false);
   const canSearch = canRunSearch(query);
@@ -103,6 +106,12 @@ export default function SearchScreen() {
           onRetry={retryRecommendations}
           recommendations={recommendations}
           state={recommendationsState}
+        />
+
+        <SearchAvailable
+          available={available}
+          onRetry={retryAvailable}
+          state={availableState}
         />
 
         <SearchPopular

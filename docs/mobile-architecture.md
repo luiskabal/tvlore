@@ -9,6 +9,7 @@ app/
 |-- _layout.tsx
 |-- index.tsx
 |-- library.tsx
+|-- available.tsx
 |-- picks.tsx
 |-- recommendations.tsx
 |-- search.tsx
@@ -293,6 +294,12 @@ existing TVLore IDs. The screen reuses Search result rows and the same resolve
 flow as catalog search, so unopened popular titles become internal TVLore
 titles only when the user taps them.
 
+Search also renders an `Available to stream` entry card. The full availability
+list lives in `AvailableDiscoveryScreen`. `useAvailableDiscovery` loads only
+`GET /discovery/available`, which returns highly rated streamable TMDB refs
+scoped to the user's saved availability country. The screen reuses Search
+result rows and the same resolve flow as catalog search.
+
 Library rows receive navigation callbacks from `LibraryScreen`: movies route
 to movie detail, watched episode show headings route to show detail,
 continue-watching and season headings route to season detail, and watched
@@ -339,11 +346,14 @@ SearchScreen
   -> useTvlorePicks()
   -> useSearchRecommendations()
   -> usePopularDiscovery()
+  -> useAvailableDiscovery()
   -> GET /search
   -> GET /discovery/picks
   -> TvlorePicksScreen
   -> GET /recommendations
   -> RecommendationsScreen
+  -> GET /discovery/available
+  -> AvailableDiscoveryScreen
   -> GET /discovery/popular
   -> PopularDiscoveryScreen
   -> POST /catalog/resolve

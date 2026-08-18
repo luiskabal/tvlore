@@ -13,6 +13,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 ## Done Recently
 
 - [x] Replace ambiguous show/movie watched header icons with an explicit tracking panel and check-in action.
+- [x] Add an `Available in your country` discovery section for streamable titles, separate from recommendation ranking.
 - [x] Replace numeric mobile rating controls with shared star rating UI and make emotion explicit before favorite character.
 - [x] Add a `TVLore Picks` editorial discovery section backed by curated TMDB refs.
 - [x] Configure EAS development, preview, production, remote build-number increment, and minimal submit profiles.
@@ -30,7 +31,6 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 - [x] Move pure catalog response mappers out of `CatalogRepository` when catalog persistence is next edited.
 - [ ] Add fetched Watch Path creation from public list sources after choosing a source format/provider.
 - [ ] Add a TVLore-native recommendation engine with house rules, explicit taste signals, availability, and explainable reasons.
-- [ ] Add an `Available in your country` discovery section for streamable titles, separate from recommendation ranking.
 - [ ] Add aggregate favorite-character voting percentages to post-watch check-in, sorted by community popularity.
 
 ## Notes
@@ -162,6 +162,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 - [x] Replace numeric mobile rating controls with shared star rating UI and make emotion explicit before favorite character.
 - [x] Replace ambiguous show/movie watched header icons with an explicit tracking panel and check-in action.
 - [x] Add a country-aware `Popular in your country` discovery section using the user's saved availability country.
+- [x] Add an `Available in your country` discovery section for streamable titles, separate from recommendation ranking.
 
 ## Deferred
 

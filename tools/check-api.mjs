@@ -115,6 +115,7 @@ async function checkUnauthorizedRoutes() {
   await checkUnauthorized("/library/chronology");
   await checkUnauthorized("/recommendations");
   await checkUnauthorized("/discovery/popular");
+  await checkUnauthorized("/discovery/available");
   await checkUnauthorized("/discovery/picks");
   await checkUnauthorized("/watch-paths");
   await checkUnauthorized("/watch-paths/mcu-infinity-saga-release");
@@ -819,6 +820,11 @@ async function checkAuthenticatedProductFlow(token) {
     expectedStatus: 200,
     headers: authHeaders,
   });
+  await check("/discovery/available", {
+    assert: assertAvailableDiscovery,
+    expectedStatus: 200,
+    headers: authHeaders,
+  });
   await check("/discovery/picks", {
     assert: assertTvlorePicksDiscovery,
     expectedStatus: 200,
@@ -956,6 +962,18 @@ function assertPopularDiscovery(body) {
 
   for (const item of body.items) {
     assertCatalogSearchResult(item, "popular discovery item");
+  }
+}
+
+function assertAvailableDiscovery(body) {
+  expectRecord(body, "available discovery");
+  expectCountryCode(body.country, "available discovery.country");
+  expectEqual(body.section, "available_in_country", "available discovery.section");
+  expectArray(body.items, "available discovery.items");
+  expect(body.items.length > 0, "available discovery should include items");
+
+  for (const item of body.items) {
+    assertCatalogSearchResult(item, "available discovery item");
   }
 }
 

@@ -1938,6 +1938,59 @@ Business validation:
 
 Errors: `UNAUTHORIZED`.
 
+### `GET /discovery/available`
+
+Purpose: return highly rated shows and movies available to stream in the authenticated user's saved country.
+
+Current MVP status: implemented with TMDB Discover, using the authenticated user's saved availability country as `watch_region` and streaming monetization filters.
+
+Auth: required.
+
+Route parameters: none.
+
+Query parameters: none in the MVP.
+
+Request: none.
+
+Response:
+
+```json
+{
+  "country": "CL",
+  "section": "available_in_country",
+  "items": [
+    {
+      "externalRef": {
+        "provider": "tmdb",
+        "providerId": "70523"
+      },
+      "mediaType": "show",
+      "overview": "A missing child sets four families...",
+      "posterPath": "/apbrbWs8M9lyOpJYU5WXrpFbk1Z.jpg",
+      "title": "Dark",
+      "tvloreId": "uuid-or-null",
+      "year": 2017
+    }
+  ]
+}
+```
+
+Status codes:
+
+- `200 OK`
+- `401 UNAUTHORIZED`
+
+Authorization: available discovery is personalized only by the authenticated user's saved country.
+
+Business validation:
+
+- The endpoint asks TMDB Discover for highly rated shows and movies available through streaming, free, or ad-supported buckets in the user's saved availability country.
+- The response uses the same search-result row shape as `GET /search`, so mobile can resolve unopened TMDB refs through `POST /catalog/resolve`.
+- Existing TVLore IDs are hydrated when the TMDB item was already resolved before.
+- Personalized ranking remains in `GET /recommendations`; this endpoint is availability-first utility discovery, not a taste model.
+
+Errors: `UNAUTHORIZED`.
+
 ### `GET /discovery/picks`
 
 Purpose: return TVLore-curated editorial picks.

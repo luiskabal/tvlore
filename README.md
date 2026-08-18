@@ -52,6 +52,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Recommendation rows explain genre matches when the user's rated-title genres overlap with a suggested title.
 - Recommendation rows open title detail; watchlist actions stay on the detail screen.
 - Search combines catalog search with a `Recommended picks` entry, which opens a dedicated recommendations list.
+- Search exposes a country-aware `Available to stream` entry backed by TMDB Discover watch-region filters.
 - Search also exposes a country-aware `Popular in your country` entry backed by TMDB Discover and the user's saved availability country.
 - Search exposes `TVLore Picks`, an editorial list curated by backend-owned TMDB refs.
 - Library/Profile keeps prior data during refresh and shows skeletons on first load.
@@ -70,6 +71,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 ```text
 Google login
 -> Search catalog
+-> Open available-to-stream titles in your country
 -> Open popular titles in your country
 -> Open show or movie
 -> Resolve catalog item

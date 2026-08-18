@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { isDeleteUserResponse, isPopularDiscoveryResponse, isTvlorePicksDiscoveryResponse } from "./guards";
+import { isAvailableDiscoveryResponse, isDeleteUserResponse, isPopularDiscoveryResponse, isTvlorePicksDiscoveryResponse } from "./guards";
 
 describe("api guards", () => {
   it("accepts account deletion responses", () => {
@@ -24,6 +24,32 @@ describe("api guards", () => {
       ],
       section: "popular_in_country",
     })).toBe(true);
+  });
+
+  it("accepts available discovery responses with catalog search items", () => {
+    expect(isAvailableDiscoveryResponse({
+      country: "CL",
+      items: [
+        {
+          externalRef: { provider: "tmdb", providerId: "496243" },
+          mediaType: "movie",
+          overview: "Parasite overview",
+          posterPath: "/poster.jpg",
+          title: "Parasite",
+          tvloreId: null,
+          year: 2019,
+        },
+      ],
+      section: "available_in_country",
+    })).toBe(true);
+  });
+
+  it("rejects available discovery responses with the wrong section", () => {
+    expect(isAvailableDiscoveryResponse({
+      country: "CL",
+      items: [],
+      section: "popular_in_country",
+    })).toBe(false);
   });
 
   it("rejects popular discovery responses with invalid result rows", () => {

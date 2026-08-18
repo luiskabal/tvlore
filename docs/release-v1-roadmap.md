@@ -49,6 +49,7 @@ In scope:
 - Library filters and chronology.
 - Where to Watch by country.
 - Recommended picks.
+- Available to stream in your country.
 - Popular in your country.
 - Watch Paths, curated and personal.
 - Profile country preference.
@@ -89,7 +90,7 @@ enough value to justify a first release.
 | Ratings | Ready | Show/movie/episode 1-5 ratings exist with star controls in mobile. |
 | Post-watch reflection | Ready | Dedicated check-in screen with star rating, emotion, cast picker, and comment. |
 | Library | Ready | Summary filters, chronology, continue watching, watchlist, rated titles. |
-| Discovery | Ready | Recommendations and Popular in your country exist. |
+| Discovery | Ready | Recommendations, Available to stream, and Popular in your country exist. |
 | TVLore Picks | Ready | Backend-owned editorial TMDB refs shown from Search. |
 | Where to Watch | Ready | TMDB Watch Providers by saved country, shown on detail screens. |
 | Watch Paths | Ready | Curated paths, personal imports, TMDB URL parsing, save-to-watchlist. |
@@ -128,7 +129,6 @@ enough value to justify a first release.
 
 | Gap | Why Later |
 | --- | --- |
-| Available in your country section | Useful discovery slice, but Where to Watch already covers detail-level availability. |
 | Better recommendation engine | Current explainable baseline is enough for v1.0. |
 | Favorite-character percentages | Needs aggregate vote model and privacy decisions. |
 | Social/match | Bigger moderation/privacy/compliance surface. |
@@ -228,7 +228,7 @@ Tasks:
 
 - Ship TestFlight build.
 - Ship Google Play internal or closed testing build.
-- Test fresh install, login, logout, account deletion, country update, search, watchlist, watched state, ratings, check-in, Where to Watch, Watch Paths, recommendations, Popular in your country.
+- Test fresh install, login, logout, account deletion, country update, search, watchlist, watched state, ratings, check-in, Where to Watch, Watch Paths, recommendations, Available to stream, Popular in your country.
 - Record issues as backlog items.
 - Fix only blockers or severe UX failures.
 

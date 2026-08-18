@@ -1,4 +1,5 @@
 import type {
+  AvailableDiscoveryResponse,
   CatalogCastResponse,
   CatalogResolveResponse,
   CatalogSearchResponse,
@@ -122,6 +123,19 @@ export function isPopularDiscoveryResponse(value: unknown): value is PopularDisc
   return (
     typeof value.country === "string" &&
     value.section === "popular_in_country" &&
+    Array.isArray(value.items) &&
+    value.items.every(isCatalogSearchResult)
+  );
+}
+
+export function isAvailableDiscoveryResponse(value: unknown): value is AvailableDiscoveryResponse {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.country === "string" &&
+    value.section === "available_in_country" &&
     Array.isArray(value.items) &&
     value.items.every(isCatalogSearchResult)
   );

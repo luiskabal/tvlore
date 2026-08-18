@@ -69,6 +69,7 @@ GET /shows/:showId/progress
 GET /library
 GET /library/chronology
 GET /recommendations
+GET /discovery/available
 GET /discovery/popular
 GET /discovery/picks
 GET /watch-paths
@@ -307,6 +308,7 @@ the selected Postman environment.
 - `GET /library` feeds the mobile home library summary.
 - `GET /library/chronology` feeds the paginated Cronologia watch-history view.
 - `GET /recommendations` feeds Search suggestion rows from stored ratings, hydrated catalog rows, genre names, and user-country streaming availability.
+- `GET /discovery/available` feeds Search's country-aware available-to-stream titles from TMDB Discover and the user's saved availability country.
 - `GET /discovery/popular` feeds Search's country-aware popular titles from TMDB Discover and the user's saved availability country.
 - `GET /discovery/picks` feeds Search's TVLore-curated editorial picks from backend-owned TMDB refs.
 - `GET /watch-paths`, `POST /watch-paths`, and `GET /watch-paths/:pathId` feed curated and user-owned viewing-order screens.

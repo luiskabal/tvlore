@@ -27,6 +27,7 @@ describe("DiscoveryService", () => {
       withExistingTvloreIds: vi.fn().mockResolvedValue(itemsWithTvloreIds),
     };
     const tmdbClient = {
+      getAvailableByCountry: vi.fn(),
       getPopularByCountry: vi.fn().mockResolvedValue(popularItems),
     };
     const usersService = {
@@ -49,11 +50,49 @@ describe("DiscoveryService", () => {
     expect(catalogRepository.withExistingTvloreIds).toHaveBeenCalledWith(popularItems);
   });
 
+  it("returns available country-aware catalog items with existing TVLore ids", async () => {
+    const availableItems = [
+      catalogResult("show", "1399", "Game of Thrones"),
+      catalogResult("movie", "496243", "Parasite"),
+    ];
+    const itemsWithTvloreIds = [
+      { ...availableItems[0], tvloreId: "00000000-0000-4000-8000-000000000011" },
+      availableItems[1],
+    ];
+    const catalogRepository = {
+      withExistingTvloreIds: vi.fn().mockResolvedValue(itemsWithTvloreIds),
+    };
+    const tmdbClient = {
+      getAvailableByCountry: vi.fn().mockResolvedValue(availableItems),
+      getPopularByCountry: vi.fn(),
+    };
+    const usersService = {
+      getMe: vi.fn().mockResolvedValue(user),
+    };
+    const service = new DiscoveryService(
+      catalogRepository as unknown as CatalogRepository,
+      tmdbClient as unknown as TmdbClient,
+      usersService as unknown as UsersService,
+    );
+
+    await expect(service.getAvailable("Bearer token")).resolves.toEqual({
+      country: "CL",
+      items: itemsWithTvloreIds,
+      section: "available_in_country",
+    });
+
+    expect(usersService.getMe).toHaveBeenCalledWith("Bearer token");
+    expect(tmdbClient.getAvailableByCountry).toHaveBeenCalledWith("CL");
+    expect(catalogRepository.withExistingTvloreIds).toHaveBeenCalledWith(availableItems);
+    expect(tmdbClient.getPopularByCountry).not.toHaveBeenCalled();
+  });
+
   it("returns TVLore picks without calling the provider", async () => {
     const catalogRepository = {
       withExistingTvloreIds: vi.fn().mockImplementation((items: CatalogSearchResultDto[]) => Promise.resolve(items)),
     };
     const tmdbClient = {
+      getAvailableByCountry: vi.fn(),
       getPopularByCountry: vi.fn(),
     };
     const usersService = {

@@ -113,6 +113,7 @@ function isProviderCostRoute(method: string, path: string) {
     || path === "/catalog/resolve"
     || path === "/recommendations"
     || path === "/discovery/popular"
+    || path === "/discovery/available"
     || path.endsWith("/cast")
     || path.includes("/watch-providers")
     || (method === "GET" && /^\/shows\/[^/]+\/seasons\/[^/]+$/.test(path))
