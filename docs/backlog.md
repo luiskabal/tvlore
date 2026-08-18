@@ -4,13 +4,14 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 
 ## Active
 
-- [ ] Add Sign in with Apple for iOS store readiness.
+- [ ] Configure Apple Developer identifiers and Supabase Apple provider for iOS store readiness.
 - [ ] Configure production EAS build/submit profiles, app identifiers, app icon, splash, and versioning.
 - [ ] Continue removing release-blocking development affordances before store submission.
 
 ## Done Recently
 
 - [x] Add public Privacy Policy, Terms, Support, and account deletion URLs with Profile links.
+- [x] Add native iOS Sign in with Apple UI and Supabase token exchange.
 - [x] Add in-app account deletion backed by API-owned user-data deletion and Supabase Auth deletion.
 - [x] Start Search empty instead of using a seeded development query.
 - [x] Hide `/health/error` when `NODE_ENV=production`.

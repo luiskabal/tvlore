@@ -15,6 +15,16 @@ export const styles = StyleSheet.create({
     gap: 10,
     paddingTop: 4,
   },
+  appleSignInButton: {
+    alignSelf: "flex-start",
+    height: 44,
+    width: 230,
+  },
+  authButtons: {
+    alignItems: "flex-start",
+    gap: 10,
+    paddingTop: 4,
+  },
   content: {
     flexGrow: 1,
     gap: 20,
@@ -114,7 +124,7 @@ export const styles = StyleSheet.create({
     borderColor: "#d8d0c5",
     borderRadius: 8,
     borderWidth: 1,
-    minWidth: 190,
+    minWidth: 230,
     paddingHorizontal: 18,
     paddingVertical: 12,
   },

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { StatusBar } from "expo-status-bar";
+import * as AppleAuthentication from "expo-apple-authentication";
 import { Linking, Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
 
 import { deleteCurrentUser, updateCurrentUser } from "../api/tvlore-api";
@@ -36,9 +37,11 @@ export default function ProfileScreen() {
     auth,
     authActionMessage,
     backendStatus,
+    continueWithApple,
     continueWithGoogle,
     home,
     homeData,
+    isAppleSignInAvailable,
     isAuthActionRunning,
     refreshHome,
     signOut,
@@ -105,18 +108,29 @@ export default function ProfileScreen() {
           <HoloProfileCardSkeleton />
         ) : (
           <View style={styles.statusPanel}>
-            <Text style={styles.statusLabel}>Sign in with Google</Text>
+            <Text style={styles.statusLabel}>Sign in</Text>
             <Text style={styles.statusDetail}>Create your TVLore profile and keep it synced.</Text>
             {authActionMessage ? <Text style={styles.errorText}>{authActionMessage}</Text> : null}
-            <Pressable
-              disabled={!isSupabaseConfigured || isAuthActionRunning}
-              style={[styles.googleButton, !isSupabaseConfigured || isAuthActionRunning ? styles.disabledButton : null]}
-              onPress={continueWithGoogle}
-            >
-              <Text style={styles.googleButtonText}>
-                {isAuthActionRunning ? "Opening Google" : "Continue with Google"}
-              </Text>
-            </Pressable>
+            <View style={styles.authButtons}>
+              {isAppleSignInAvailable ? (
+                <AppleAuthentication.AppleAuthenticationButton
+                  buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+                  buttonType={AppleAuthentication.AppleAuthenticationButtonType.CONTINUE}
+                  cornerRadius={8}
+                  style={[styles.appleSignInButton, isAuthActionRunning ? styles.disabledButton : null]}
+                  onPress={continueWithApple}
+                />
+              ) : null}
+              <Pressable
+                disabled={!isSupabaseConfigured || isAuthActionRunning}
+                style={[styles.googleButton, !isSupabaseConfigured || isAuthActionRunning ? styles.disabledButton : null]}
+                onPress={continueWithGoogle}
+              >
+                <Text style={styles.googleButtonText}>
+                  {isAuthActionRunning ? "Opening sign-in" : "Continue with Google"}
+                </Text>
+              </Pressable>
+            </View>
           </View>
         )}
 

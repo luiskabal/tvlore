@@ -69,6 +69,7 @@ or emulator before Android beta.
 | --- | --- | --- | --- |
 | Fresh launch | [ ] | [ ] | App opens to Library/Auth state without crash. |
 | Google login | [ ] | [ ] | OAuth completes and returns to app. |
+| Apple login | [ ] | N/A | Native Apple sheet completes after Apple/Supabase provider config. |
 | Logout | [ ] | [ ] | Session clears and API cache is cleared. |
 | Cold restart after login | [ ] | [ ] | Session restores without manual login. |
 | Bad network | [ ] | [ ] | Loading/error state is readable; app does not freeze. |

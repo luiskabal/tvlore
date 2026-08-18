@@ -8,7 +8,7 @@ Implemented:
 
 - Monorepo with `apps/api`, `apps/mobile`, `packages/contracts`, and `docs`.
 - NestJS backend deployed to Vercel at `https://tvlore-api.vercel.app`.
-- Expo mobile app that can authenticate with Google through Supabase Auth.
+- Expo mobile app that can authenticate with Google through Supabase Auth, and has native iOS Apple Sign-In wired for provider configuration.
 - Supabase Postgres database connected to the backend through Prisma.
 - Supabase Auth token validation in the backend.
 - Authenticated `GET /users/me`, `PATCH /users/me`, and `DELETE /users/me`.
@@ -91,6 +91,7 @@ flowchart LR
   Postman[Postman]
   SupabaseAuth[Supabase Auth]
   Google[Google OAuth]
+  Apple[Apple Sign-In]
   API[TVLore API on Vercel]
   DB[(Supabase Postgres)]
   TMDB[TMDB API]
@@ -102,6 +103,8 @@ flowchart LR
   Postman --> SupabaseAuth
   SupabaseAuth --> Google
   Google --> SupabaseAuth
+  SupabaseAuth --> Apple
+  Apple --> SupabaseAuth
   SupabaseAuth --> Mobile
   SupabaseAuth --> Postman
 
@@ -114,7 +117,7 @@ flowchart LR
 
 What this means:
 
-- The client gets a Supabase session through Google.
+- The client gets a Supabase session through Google or native iOS Apple Sign-In.
 - The client calls TVLore with `Authorization: Bearer <supabase_access_token>`.
 - The backend validates that token against Supabase Auth.
 - The backend owns product data in Postgres.
@@ -259,6 +262,9 @@ What it does:
 Important detail:
 
 Supabase owns login/session issuance today. TVLore owns the internal user record once a valid Supabase user reaches the backend.
+Google uses Supabase OAuth with the `tvlore://auth/callback` deep link. Apple
+uses the native iOS `expo-apple-authentication` sheet and exchanges Apple's
+identity token through `supabase.auth.signInWithIdToken`.
 
 ## 6. Catalog Search Flow
 
@@ -916,12 +922,12 @@ Paths
 
 Current behavior:
 
-- Signed-out users can start Google login.
+- Signed-out users can start Google login, and iOS users can start native Apple Sign-In when Apple/Supabase provider configuration is complete.
 - Signed-in users can refresh authenticated backend state.
 - Library/Profile refresh avoids the public health check and loads only authenticated product data.
 - Library shows watched counts for shows, movies, episodes, watchlist items, and rated titles.
 - Profile shows library counts for shows, movies, episodes, and rated titles in a holo profile card.
-- The profile card uses Google avatar metadata when available and initials as a fallback.
+- The profile card uses provider avatar metadata when available and initials as a fallback.
 - Library shows continue-watching and recently watched rows when the backend has watched data.
 - Library shows saved watchlist rows when the backend has watchlist data.
 - Library shows rated show/movie rows when the backend has title-level rating preference data. Episode ratings live on episode detail for now.
@@ -985,6 +991,7 @@ Infrastructure:
 - Vercel can reach Supabase Postgres.
 - Vercel has the required backend env vars.
 - Supabase Google login works.
+- Native iOS Apple Sign-In is wired in mobile; Apple Developer and Supabase provider configuration are required before release-like testing.
 - Postman can obtain a Supabase session through OAuth callback.
 - TMDB access works from backend only.
 - TMDB Watch Providers data can be returned by country without exposing TMDB credentials to mobile.

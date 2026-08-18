@@ -7,8 +7,8 @@ store privacy forms. It is an engineering inventory, not legal advice.
 
 | Data | Source | Stored In | Linked To User | Purpose |
 | --- | --- | --- | --- | --- |
-| Email | Supabase Google OAuth | Supabase Auth, `user_identities` | Yes | Authentication and account recovery. |
-| Display name | Supabase Google OAuth | `users` | Yes | Profile display. |
+| Email | Supabase Google/Apple OAuth | Supabase Auth, `user_identities` | Yes | Authentication and account recovery. |
+| Display name | Supabase Google/Apple OAuth | `users` | Yes | Profile display. |
 | Avatar URL | Supabase Google OAuth | Supabase session metadata, mobile session | Yes | Profile card display. |
 | Supabase Auth user ID | Supabase Auth | `user_identities` | Yes | Backend identity mapping. |
 | Availability country | User selection | `users.availability_country` | Yes | Country-aware Where to Watch and discovery. |
@@ -31,6 +31,7 @@ store privacy forms. It is an engineering inventory, not legal advice.
 | Vercel | API hosting | Processes API requests and logs operational data. |
 | TMDB | Catalog and watch-provider API | Provides metadata, ratings, images, cast, discovery, and provider availability. |
 | Google | OAuth identity provider | Provides the signed-in user's Google identity through Supabase Auth. |
+| Apple | OAuth identity provider | Provides the signed-in user's Apple identity through Supabase Auth when selected on iOS. |
 
 ## Current User Rights Surface
 

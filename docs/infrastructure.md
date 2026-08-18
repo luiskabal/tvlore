@@ -211,6 +211,7 @@ of exposing partial routes with a broken database dependency.
 - Runtime: Expo SDK 54.
 - Current API target for device testing: `https://tvlore-api.vercel.app`
 - Supabase Auth client handles Google login and stores the mobile session.
+- Supabase Auth client also supports native iOS Apple Sign-In when Apple/Supabase provider configuration is complete.
 - Core product data should still go through the backend API, not direct table access from mobile.
 
 Public mobile environment variables:
@@ -277,6 +278,7 @@ the selected Postman environment.
 - Vercel backend deploy is live.
 - Mobile app can call the Vercel API from iPhone through Expo Go.
 - Supabase Google login works from an Expo development build.
+- Mobile has the native iOS Apple Sign-In flow wired through Supabase `signInWithIdToken`; Apple Developer and Supabase Apple provider configuration are required before release-like testing.
 - Prisma schema and initial migration exist.
 - Vercel `tvlore-api` has database and Supabase Auth env vars configured.
 - Vercel `tvlore-api` has `TMDB_ACCESS_TOKEN` configured for catalog search.

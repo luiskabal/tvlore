@@ -99,3 +99,6 @@ Examples:
 `DATABASE_URL` and `MIGRATE_DATABASE_URL` must be configured in Vercel for production database connectivity.
 Google OAuth Client ID and Client Secret are configured in Supabase Auth, not in
 the TVLore repository or mobile bundle.
+Apple Sign-In identifiers, keys, and provider settings are configured in Apple
+Developer and Supabase Auth. TVLore mobile does not need Apple secrets in env;
+it only uses the native Apple identity token returned by iOS.

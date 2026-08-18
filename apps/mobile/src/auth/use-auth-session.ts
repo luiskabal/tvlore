@@ -2,7 +2,9 @@ import type { Session } from "@supabase/supabase-js";
 import { useCallback, useEffect, useState } from "react";
 
 import {
+  getIsAppleSignInAvailable,
   isSupabaseConfigured,
+  signInWithApple,
   signInWithGoogle,
   signOut as signOutFromSupabase,
   supabase,
@@ -21,6 +23,7 @@ export function useAuthSession(onSessionChange: () => void) {
   );
   const [authActionMessage, setAuthActionMessage] = useState<string | null>(null);
   const [isAuthActionRunning, setIsAuthActionRunning] = useState(false);
+  const [isAppleSignInAvailable, setIsAppleSignInAvailable] = useState(false);
 
   useEffect(() => {
     if (!supabase) {
@@ -53,7 +56,46 @@ export function useAuthSession(onSessionChange: () => void) {
     };
   }, [onSessionChange]);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    void getIsAppleSignInAvailable().then((isAvailable) => {
+      if (isMounted) {
+        setIsAppleSignInAvailable(isAvailable);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const continueWithApple = useCallback(async () => {
+    if (isAuthActionRunning) {
+      return;
+    }
+
+    setAuthActionMessage(null);
+    setIsAuthActionRunning(true);
+
+    try {
+      const completed = await signInWithApple();
+
+      if (!completed) {
+        setAuthActionMessage("Apple sign-in was cancelled");
+      }
+    } catch (error) {
+      setAuthActionMessage(error instanceof Error ? error.message : "Apple sign-in failed");
+    } finally {
+      setIsAuthActionRunning(false);
+    }
+  }, [isAuthActionRunning]);
+
   const continueWithGoogle = useCallback(async () => {
+    if (isAuthActionRunning) {
+      return;
+    }
+
     setAuthActionMessage(null);
     setIsAuthActionRunning(true);
 
@@ -86,7 +128,9 @@ export function useAuthSession(onSessionChange: () => void) {
   return {
     auth,
     authActionMessage,
+    continueWithApple,
     continueWithGoogle,
+    isAppleSignInAvailable,
     isAuthActionRunning,
     signOut,
   };

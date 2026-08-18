@@ -26,6 +26,10 @@ Store policies change, so verify these again before submission:
   https://docs.expo.dev/deploy/submit-to-app-stores/
 - Expo EAS build setup:
   https://docs.expo.dev/build/setup/
+- Expo Apple Authentication:
+  https://docs.expo.dev/versions/latest/sdk/apple-authentication/
+- Supabase Apple Login:
+  https://supabase.com/docs/guides/auth/social-login/auth-apple
 
 ## 1. v1.0 Product Positioning
 
@@ -74,7 +78,7 @@ enough value to justify a first release.
 | --- | --- | --- |
 | Backend deployment | Ready | Vercel API is deployed at `https://tvlore-api.vercel.app`. |
 | Database | Ready | Supabase Postgres + Prisma migrations are in place. |
-| Authentication | Partial | Google OAuth works. iOS likely needs Sign in with Apple because Google is a third-party login. |
+| Authentication | Partial | Google OAuth works. Native iOS Apple Sign-In is wired in mobile; Apple Developer and Supabase provider configuration are still required for release-like testing. |
 | User profile | Ready | `GET /users/me`, `PATCH /users/me`, availability country. |
 | Search | Ready | TMDB-backed show/movie search through backend. |
 | Resolve | Ready | TMDB refs become internal TVLore IDs on demand. |
@@ -101,7 +105,7 @@ enough value to justify a first release.
 | --- | --- | --- |
 | In-app account deletion | Apple and Google require account deletion if account creation exists. | Implemented in Profile and `DELETE /users/me`; configure `SUPABASE_SERVICE_ROLE_KEY` in deployment before release. |
 | Web account deletion URL | Google requires a web resource for users who uninstalled the app. | Done: `https://tvlore-api.vercel.app/account-deletion`. |
-| Sign in with Apple | Apple requires it in many apps that use third-party login for account creation. | Add Supabase Apple provider and mobile Apple login button for iOS. |
+| Sign in with Apple | Apple requires an equivalent login option when third-party login creates the app account. | Mobile UI/token exchange is implemented; configure Apple Developer and Supabase Apple provider before release. |
 | Privacy Policy | Required for collected personal data and store metadata. | Done as developer-preview URL: `https://tvlore-api.vercel.app/privacy`; review final wording before submission. |
 | Data Safety / App Privacy answers | Required in Play Console and App Store Connect. | Data inventory exists; final forms still need completion. |
 | Reviewer access | Reviewers need to access protected app functionality. | Provide test credentials/instructions or a reviewable auth path. |
@@ -153,7 +157,8 @@ Goal: satisfy the rules that can block app review.
 
 Tasks:
 
-- [ ] Add Sign in with Apple for iOS.
+- [x] Add mobile native Sign in with Apple UI and Supabase token exchange.
+- [ ] Configure Apple Developer identifiers and Supabase Apple provider.
 - [x] Add backend account deletion flow.
 - [x] Add mobile delete-account UI under Profile.
 - [x] Decide deletion behavior:
@@ -281,7 +286,7 @@ before TestFlight/closed testing. Quick gate:
 - [ ] iOS production build installs.
 - [ ] Android production build installs.
 - [ ] Google login works where allowed.
-- [ ] Apple login works on iOS.
+- [ ] Apple login works on iOS after provider configuration.
 - [ ] Account deletion works and removes/anonymizes user-owned data.
 - [x] Privacy Policy link opens from Profile and store metadata.
 - [x] Support link opens from Profile and store metadata.

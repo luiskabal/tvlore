@@ -2,6 +2,7 @@ import "react-native-url-polyfill/auto";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createClient, processLock } from "@supabase/supabase-js";
+import * as AppleAuthentication from "expo-apple-authentication";
 import * as SecureStore from "expo-secure-store";
 import * as WebBrowser from "expo-web-browser";
 import { AppState, Platform } from "react-native";
@@ -43,6 +44,10 @@ export const isSupabaseConfigured = supabase !== null;
 
 export function getAuthRedirectUrl() {
   return authRedirectUrl;
+}
+
+export async function getIsAppleSignInAvailable() {
+  return Platform.OS === "ios" && await AppleAuthentication.isAvailableAsync();
 }
 
 export async function getSupabaseAccessToken() {
@@ -107,6 +112,52 @@ export async function signInWithGoogle() {
   return true;
 }
 
+export async function signInWithApple() {
+  if (!supabase) {
+    throw new Error("Supabase is not configured");
+  }
+
+  if (Platform.OS !== "ios") {
+    throw new Error("Apple sign-in is only available on iOS");
+  }
+
+  let credential: AppleAuthentication.AppleAuthenticationCredential;
+
+  try {
+    credential = await AppleAuthentication.signInAsync({
+      requestedScopes: [
+        AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+        AppleAuthentication.AppleAuthenticationScope.EMAIL,
+      ],
+    });
+  } catch (error) {
+    if (isAppleSignInCancelled(error)) {
+      return false;
+    }
+
+    throw error;
+  }
+
+  if (!credential.identityToken) {
+    throw new Error("Apple sign-in did not return an identity token");
+  }
+
+  const { error } = await supabase.auth.signInWithIdToken({
+    provider: "apple",
+    token: credential.identityToken,
+    ...(credential.authorizationCode ? { access_token: credential.authorizationCode } : {}),
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  await updateAppleProfileMetadata(credential);
+  clearApiReadCache();
+
+  return true;
+}
+
 export async function signOut() {
   if (!supabase) {
     clearApiReadCache();
@@ -131,6 +182,39 @@ function extractSessionFromUrl(url: string) {
   const refreshToken = params.get("refresh_token");
 
   return accessToken && refreshToken ? { accessToken, refreshToken } : null;
+}
+
+async function updateAppleProfileMetadata(credential: AppleAuthentication.AppleAuthenticationCredential) {
+  if (!supabase || !credential.fullName) {
+    return;
+  }
+
+  const fullName = AppleAuthentication.formatFullName(credential.fullName).trim();
+
+  if (!fullName) {
+    return;
+  }
+
+  const { error } = await supabase.auth.updateUser({
+    data: {
+      family_name: credential.fullName.familyName,
+      full_name: fullName,
+      given_name: credential.fullName.givenName,
+      name: fullName,
+    },
+  });
+
+  if (error) {
+    throw error;
+  }
+}
+
+function isAppleSignInCancelled(error: unknown) {
+  return isRecord(error) && error.code === "ERR_REQUEST_CANCELED";
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object";
 }
 
 if (Platform.OS !== "web" && supabase) {
