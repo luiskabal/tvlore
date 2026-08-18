@@ -115,6 +115,7 @@ async function checkUnauthorizedRoutes() {
   await checkUnauthorized("/library/chronology");
   await checkUnauthorized("/recommendations");
   await checkUnauthorized("/discovery/popular");
+  await checkUnauthorized("/discovery/picks");
   await checkUnauthorized("/watch-paths");
   await checkUnauthorized("/watch-paths/mcu-infinity-saga-release");
   await checkUnauthorized("/watch-paths/mcu-infinity-saga-release/watchlist", { method: "POST" });
@@ -818,6 +819,11 @@ async function checkAuthenticatedProductFlow(token) {
     expectedStatus: 200,
     headers: authHeaders,
   });
+  await check("/discovery/picks", {
+    assert: assertTvlorePicksDiscovery,
+    expectedStatus: 200,
+    headers: authHeaders,
+  });
   await check(`/shows/${resolvedShow.id}/watches`, {
     assert: (body) => {
       assertShowProgress(body, resolvedShow.id);
@@ -950,6 +956,17 @@ function assertPopularDiscovery(body) {
 
   for (const item of body.items) {
     assertCatalogSearchResult(item, "popular discovery item");
+  }
+}
+
+function assertTvlorePicksDiscovery(body) {
+  expectRecord(body, "TVLore picks discovery");
+  expectEqual(body.section, "tvlore_picks", "TVLore picks discovery.section");
+  expectArray(body.items, "TVLore picks discovery.items");
+  expect(body.items.length > 0, "TVLore picks discovery should include items");
+
+  for (const item of body.items) {
+    assertCatalogSearchResult(item, "TVLore picks discovery item");
   }
 }
 

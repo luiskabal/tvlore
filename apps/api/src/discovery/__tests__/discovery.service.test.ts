@@ -48,6 +48,32 @@ describe("DiscoveryService", () => {
     expect(tmdbClient.getPopularByCountry).toHaveBeenCalledWith("CL");
     expect(catalogRepository.withExistingTvloreIds).toHaveBeenCalledWith(popularItems);
   });
+
+  it("returns TVLore picks without calling the provider", async () => {
+    const catalogRepository = {
+      withExistingTvloreIds: vi.fn().mockImplementation((items: CatalogSearchResultDto[]) => Promise.resolve(items)),
+    };
+    const tmdbClient = {
+      getPopularByCountry: vi.fn(),
+    };
+    const usersService = {
+      getMe: vi.fn().mockResolvedValue(user),
+    };
+    const service = new DiscoveryService(
+      catalogRepository as unknown as CatalogRepository,
+      tmdbClient as unknown as TmdbClient,
+      usersService as unknown as UsersService,
+    );
+
+    const response = await service.getPicks("Bearer token");
+
+    expect(response.section).toBe("tvlore_picks");
+    expect(response.items.length).toBeGreaterThan(0);
+    expect(response.items.every((item) => item.externalRef.provider === "tmdb")).toBe(true);
+    expect(usersService.getMe).toHaveBeenCalledWith("Bearer token");
+    expect(catalogRepository.withExistingTvloreIds).toHaveBeenCalledWith(response.items);
+    expect(tmdbClient.getPopularByCountry).not.toHaveBeenCalled();
+  });
 });
 
 function catalogResult(

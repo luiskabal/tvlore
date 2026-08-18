@@ -52,6 +52,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Recommendation rows open title detail; watchlist actions stay on the detail screen.
 - Search combines catalog search with a `Recommended picks` entry, which opens a dedicated recommendations list.
 - Search also exposes a country-aware `Popular in your country` entry backed by TMDB Discover and the user's saved availability country.
+- Search exposes `TVLore Picks`, an editorial list curated by backend-owned TMDB refs.
 - Library/Profile keeps prior data during refresh and shows skeletons on first load.
 - Routed Library, Search, Paths, and Profile mobile surfaces with bottom app navigation.
 - Detail screens render content-shaped skeletons while show, movie, or season data loads.
@@ -104,7 +105,7 @@ Use `corepack pnpm api:check` for local/Vercel HTTP smoke checks.
 
 - Refine recommendation quality with stronger taste signals after the provider/country baseline.
 - Add fetched Watch Path creation from public list sources after choosing a source format/provider.
-- Add TVLore Picks as an editorial discovery section separate from personalized and country-popular surfaces.
+- Configure EAS project envs and run the first preview builds.
 
 ## Workspace Layout
 

@@ -3,7 +3,8 @@ import { Injectable } from "@nestjs/common";
 import { CatalogRepository } from "../catalog/catalog.repository";
 import { TmdbClient } from "../catalog/tmdb-client";
 import { UsersService } from "../users/users.service";
-import type { PopularDiscoveryResponseDto } from "./discovery.types";
+import { tvlorePicks } from "./discovery-picks";
+import type { PopularDiscoveryResponseDto, TvlorePicksDiscoveryResponseDto } from "./discovery.types";
 
 @Injectable()
 export class DiscoveryService {
@@ -22,6 +23,15 @@ export class DiscoveryService {
       country: user.availabilityCountry,
       items,
       section: "popular_in_country",
+    };
+  }
+
+  async getPicks(authorizationHeader: string | undefined): Promise<TvlorePicksDiscoveryResponseDto> {
+    await this.usersService.getMe(authorizationHeader);
+
+    return {
+      items: await this.catalogRepository.withExistingTvloreIds(tvlorePicks),
+      section: "tvlore_picks",
     };
   }
 }

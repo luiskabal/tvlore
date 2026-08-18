@@ -6,6 +6,7 @@ import { SafeAreaView, ScrollView } from "react-native";
 import type { CatalogSearchResult, MediaType } from "../api/tvlore-api";
 import { SearchControls } from "./SearchControls";
 import { SearchPopular } from "./SearchPopular";
+import { SearchPicks } from "./SearchPicks";
 import { SearchRecommendations } from "./SearchRecommendations";
 import { SearchResults } from "./SearchResults";
 import { styles } from "./search-styles";
@@ -13,6 +14,7 @@ import { canRunSearch, type SearchFilter } from "./search-model";
 import { useCatalogSearch } from "./use-catalog-search";
 import { usePopularDiscovery } from "./use-popular-discovery";
 import { useSearchRecommendations } from "./use-search-recommendations";
+import { useTvlorePicks } from "./use-tvlore-picks";
 
 const searchDebounceMs = 600;
 
@@ -20,6 +22,7 @@ export default function SearchScreen() {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<SearchFilter>("all");
   const { resolveResult, resolveState, runSearch, search } = useCatalogSearch();
+  const { picks, picksState, retryPicks } = useTvlorePicks();
   const { recommendations, recommendationsState, retryRecommendations } = useSearchRecommendations();
   const { popular, popularState, retryPopular } = usePopularDiscovery();
   const skipNextDebouncedSearchRef = useRef(false);
@@ -88,6 +91,12 @@ export default function SearchScreen() {
           onSelectFilter={selectFilter}
           onSubmit={submitSearch}
           query={query}
+        />
+
+        <SearchPicks
+          onRetry={retryPicks}
+          picks={picks}
+          state={picksState}
         />
 
         <SearchRecommendations

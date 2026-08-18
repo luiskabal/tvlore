@@ -102,6 +102,7 @@ src/
 |
 |-- discovery/
 |   |-- discovery.controller.ts
+|   |-- discovery-picks.ts
 |   |-- discovery.service.ts
 |   |-- discovery.types.ts
 |   `-- __tests__/
@@ -181,6 +182,12 @@ Recommendations follow the same shape:
 - `RecommendationsService`: resolves the authenticated TVLore user and enriches final candidates with country-aware TMDB Watch Providers availability.
 - `RecommendationsRepository`: reads existing ratings, watched state, watchlist rows, preferred genres, and hydrated catalog candidates.
 - The current MVP heuristic stays database-backed for candidate selection and only calls TMDB Watch Providers for the final recommendation items.
+
+Discovery follows the same controller/service boundary:
+
+- `DiscoveryController`: exposes contextual and editorial discovery routes.
+- `DiscoveryService`: resolves the authenticated TVLore user and hydrates existing TVLore IDs for discovery rows.
+- `discovery-picks.ts`: owns the first static TVLore editorial picks as TMDB refs and display metadata.
 
 Watch Paths follow the same shape:
 

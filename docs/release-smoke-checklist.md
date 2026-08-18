@@ -82,6 +82,7 @@ or emulator before Android beta.
 | Flow | Steps | Expected |
 | --- | --- | --- |
 | Search | Open Search, search `dark`, switch All/Shows/Movies. | Results update, filters do not look stuck, rows open detail. |
+| TVLore Picks | Open Search TVLore Picks entry. | List loads, tapping a title opens detail. |
 | Recommendations | Open Search recommendations entry. | List loads, tapping a title opens detail. |
 | Popular in country | Open Popular entry. | Country-aware rows load and open detail. |
 | Movie detail | Open a movie from Search. | Poster, rating comparison, Where to Watch, watched/watchlist controls render. |

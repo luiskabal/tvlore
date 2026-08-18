@@ -45,8 +45,8 @@ Done:
 
 Missing for v1.0:
 
-- Sign in with Apple where required by App Store review.
-- Public account deletion/support URL.
+- Apple Developer and Supabase Apple provider configuration for release-like Sign in with Apple testing.
+- `SUPABASE_SERVICE_ROLE_KEY` configuration in Vercel before account-deletion QA.
 
 ## Phase 3 - Catalog and Tracking
 
@@ -76,11 +76,11 @@ Status: done for v1.0 baseline.
 - Where to Watch.
 - Recommended picks.
 - Popular in your country.
+- TVLore Picks.
 - Watch Paths.
 
 Post-1.0 candidates:
 
-- TVLore Picks.
 - Available in your country discovery section.
 - Better recommendation ranking.
 - Aggregate favorite-character percentages.

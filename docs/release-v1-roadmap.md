@@ -90,6 +90,7 @@ enough value to justify a first release.
 | Post-watch reflection | Ready | Dedicated check-in screen with reaction, cast picker, and comment. |
 | Library | Ready | Summary filters, chronology, continue watching, watchlist, rated titles. |
 | Discovery | Ready | Recommendations and Popular in your country exist. |
+| TVLore Picks | Ready | Backend-owned editorial TMDB refs shown from Search. |
 | Where to Watch | Ready | TMDB Watch Providers by saved country, shown on detail screens. |
 | Watch Paths | Ready | Curated paths, personal imports, TMDB URL parsing, save-to-watchlist. |
 | Mobile architecture | Ready | Screen -> hook -> API/auth client boundary is established. |
@@ -127,7 +128,6 @@ enough value to justify a first release.
 
 | Gap | Why Later |
 | --- | --- |
-| TVLore Picks | Good identity feature, not required for store readiness. |
 | Available in your country section | Useful discovery slice, but Where to Watch already covers detail-level availability. |
 | Better recommendation engine | Current explainable baseline is enough for v1.0. |
 | Favorite-character percentages | Needs aggregate vote model and privacy decisions. |
@@ -143,7 +143,7 @@ Tasks:
 
 - Treat this document as the release source of truth.
 - Keep social/match out of v1.0.
-- Keep TVLore Picks and richer recommendations as post-1.0 unless all blockers are cleared.
+- Keep richer recommendations as post-1.0 unless all blockers are cleared.
 - [x] Add a release checklist template for TestFlight/closed testing.
 
 Exit criteria:

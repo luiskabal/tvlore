@@ -26,6 +26,7 @@ import type {
   ShowSeasonDetailResponse,
   ShowSeasonSummary,
   UserResponse,
+  TvlorePicksDiscoveryResponse,
   WatchPathDetailResponse,
   WatchPathItem,
   WatchPathsResponse,
@@ -121,6 +122,18 @@ export function isPopularDiscoveryResponse(value: unknown): value is PopularDisc
   return (
     typeof value.country === "string" &&
     value.section === "popular_in_country" &&
+    Array.isArray(value.items) &&
+    value.items.every(isCatalogSearchResult)
+  );
+}
+
+export function isTvlorePicksDiscoveryResponse(value: unknown): value is TvlorePicksDiscoveryResponse {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    value.section === "tvlore_picks" &&
     Array.isArray(value.items) &&
     value.items.every(isCatalogSearchResult)
   );

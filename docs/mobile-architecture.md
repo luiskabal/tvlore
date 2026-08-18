@@ -9,6 +9,7 @@ app/
 |-- _layout.tsx
 |-- index.tsx
 |-- library.tsx
+|-- picks.tsx
 |-- recommendations.tsx
 |-- search.tsx
 |-- paths.tsx
@@ -266,6 +267,13 @@ visual patterns. These components are presentation-only. They do not fetch
 data, resolve catalog IDs, calculate progress, or own domain-specific mutation
 logic.
 
+Search renders a `TVLore Picks` entry card. The editorial list lives in
+`TvlorePicksScreen`. `useTvlorePicks` loads only `GET /discovery/picks`,
+which returns backend-owned curated TMDB refs plus any existing TVLore IDs.
+The screen reuses Search result rows and the same resolve flow as catalog
+search, so unopened editorial titles become internal TVLore titles only when
+the user taps them.
+
 Search renders a `Recommended picks` entry card. The full recommendation list
 lives in `RecommendationsScreen`, which reuses the presentation-only
 `RecommendationsPanel`. `useSearchRecommendations` loads only
@@ -328,9 +336,12 @@ Search and detail now follow the same boundary:
 ```text
 SearchScreen
   -> useCatalogSearch()
+  -> useTvlorePicks()
   -> useSearchRecommendations()
   -> usePopularDiscovery()
   -> GET /search
+  -> GET /discovery/picks
+  -> TvlorePicksScreen
   -> GET /recommendations
   -> RecommendationsScreen
   -> GET /discovery/popular

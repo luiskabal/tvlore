@@ -1938,6 +1938,59 @@ Business validation:
 
 Errors: `UNAUTHORIZED`.
 
+### `GET /discovery/picks`
+
+Purpose: return TVLore-curated editorial picks.
+
+Current MVP status: implemented with a small static backend-owned list of TMDB
+refs and display metadata.
+
+Auth: required.
+
+Route parameters: none.
+
+Query parameters: none in the MVP.
+
+Request: none.
+
+Response:
+
+```json
+{
+  "section": "tvlore_picks",
+  "items": [
+    {
+      "externalRef": {
+        "provider": "tmdb",
+        "providerId": "95396"
+      },
+      "mediaType": "show",
+      "overview": "Mark leads a team of office workers...",
+      "posterPath": "/pPHpeI2X1qEd1CS1SeyrdhZ4qnT.jpg",
+      "title": "Severance",
+      "tvloreId": "uuid-or-null",
+      "year": 2022
+    }
+  ]
+}
+```
+
+Status codes:
+
+- `200 OK`
+- `401 UNAUTHORIZED`
+
+Authorization: authenticated users may read editorial picks.
+
+Business validation:
+
+- The backend owns the editorial pick list.
+- The response uses the same search-result row shape as `GET /search`, so mobile can resolve unopened TMDB refs through `POST /catalog/resolve`.
+- Existing TVLore IDs are hydrated when the TMDB item was already resolved before.
+- This endpoint is editorial discovery, not personalized ranking.
+
+Errors: `UNAUTHORIZED`.
+
 ### `GET /watch-paths`
 
 Purpose: return backend-owned curated and personal viewing paths for the authenticated user.

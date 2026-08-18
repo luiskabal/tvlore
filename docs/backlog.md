@@ -8,9 +8,11 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 - [ ] Configure required EAS project env vars for development, preview, and production mobile builds.
 - [ ] Run first EAS preview builds on iOS and Android.
 - [ ] Continue removing release-blocking development affordances before store submission.
+- [ ] Configure `SUPABASE_SERVICE_ROLE_KEY` in Vercel before release account-deletion QA.
 
 ## Done Recently
 
+- [x] Add a `TVLore Picks` editorial discovery section backed by curated TMDB refs.
 - [x] Configure EAS development, preview, production, remote build-number increment, and minimal submit profiles.
 - [x] Add public Privacy Policy, Terms, Support, and account deletion URLs with Profile links.
 - [x] Add native iOS Sign in with Apple UI and Supabase token exchange.
@@ -26,7 +28,6 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 - [x] Move pure catalog response mappers out of `CatalogRepository` when catalog persistence is next edited.
 - [ ] Add fetched Watch Path creation from public list sources after choosing a source format/provider.
 - [ ] Add a TVLore-native recommendation engine with house rules, explicit taste signals, availability, and explainable reasons.
-- [ ] Add a `TVLore Picks` / house-curated discovery section that is separate from personalized recommendations.
 - [ ] Add an `Available in your country` discovery section for streamable titles, separate from recommendation ranking.
 - [ ] Add aggregate favorite-character voting percentages to post-watch check-in, sorted by community popularity.
 
@@ -45,6 +46,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 - Keep recommendation surfaces separate: personalized `For you`, contextual `Popular in your country`, utility `Available in your country`, and editorial `TVLore Picks`.
 - TVLore-native recommendations should stay explainable before adding opaque ML or collaborative filtering.
 - Personalized recommendations belong in Search for now. Library should stay focused on user-owned watched, saved, rated, and in-progress content; Profile should stay focused on identity, stats, and account controls.
+- Account deletion is code-ready but external-admin-key gated. Keep `SUPABASE_SERVICE_ROLE_KEY` out of git/mobile and configure it in Vercel only during release hardening.
 - Cronologia uses a backend-owned paginated endpoint and loads more history as the user scrolls near the end.
 - Watch Paths should support movies and shows in one ordered list, keep source/provenance, and resolve items into TVLore catalog IDs only when the user opens or saves the list.
 - User-owned Watch Paths are persisted by the backend. Mobile imports the minimal provider refs and notes; the backend hydrates title, poster, and year from TMDB before storing the list.

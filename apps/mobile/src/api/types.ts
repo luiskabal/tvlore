@@ -51,6 +51,11 @@ export type PopularDiscoveryResponse = {
   section: "popular_in_country";
 };
 
+export type TvlorePicksDiscoveryResponse = {
+  items: CatalogSearchResult[];
+  section: "tvlore_picks";
+};
+
 export type RecommendationItem = {
   genreNames: string[];
   id: string;

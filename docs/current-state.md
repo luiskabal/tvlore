@@ -53,9 +53,9 @@ Implemented:
 - Mobile tracking mutations invalidate the local library data.
 - Mobile watchlist mutations invalidate the local library data.
 - Mobile Library/Profile refresh authenticated library data after tracking changes.
-- Mobile Search can show a `Recommended picks` entry that opens backend-owned recommendation candidates, while visible streaming availability stays in detail screens.
+- Mobile Search can show `TVLore Picks`, personalized `Recommended picks`, and country-aware `Popular in your country` entry cards, while visible streaming availability stays in detail screens.
 - Mobile recommendation rows can explain preferred-genre overlap when the suggestion shares genres with highly rated titles.
-- Mobile recommendation rows can save titles directly to the watchlist with optimistic feedback.
+- Mobile recommendation and discovery rows open detail; watchlist actions stay on detail screens.
 - Mobile Library shows watchlist titles and rated titles separately from watched history.
 - Mobile Library summary cards filter Cronologia, continuing shows, recently watched movies, watched episodes grouped by show and season, watchlist, and rated titles.
 - Mobile Cronologia loads a backend-owned paginated movie/episode watch-history feed.
@@ -467,6 +467,8 @@ GET /shows/:showId/progress
 GET /library
 GET /library/chronology
 GET /recommendations
+GET /discovery/picks
+GET /discovery/popular
 GET /watch-paths
 GET /watch-paths/:pathId
 POST /watch-paths/:pathId/watchlist
@@ -861,6 +863,7 @@ Expected behavior:
 - `GET /library` returns personal summary, rated titles, continue-watching, watchlist, recently watched activity, and full watched episode activity.
 - `GET /library/chronology` returns paginated personal movie/episode watch-history activity.
 - `GET /recommendations` returns unrated, unwatched, unsaved catalog candidates ordered by the user's stronger rated media type, preferred genre matches, and streaming availability in the user's saved country.
+- `GET /discovery/picks` returns backend-owned TVLore editorial picks in the same row shape as search, with existing TVLore IDs hydrated when already resolved.
 - `GET /discovery/popular` returns popular country-aware TMDB Discover results in the same row shape as search, with existing TVLore IDs hydrated when already resolved.
 - `GET /watch-paths` returns curated ordered viewing paths, and `GET /watch-paths/:pathId` returns path items with existing TVLore IDs plus per-user watchlist saved state when already resolved.
 - `POST /watch-paths/:pathId/watchlist` resolves every path item and saves the resulting shows or movies to the authenticated user's watchlist.
@@ -892,6 +895,8 @@ Profile
 
 Search
 -> GET /search
+-> GET /discovery/picks
+-> TVLore Picks route for the editorial list
 -> GET /recommendations
 -> Recommended picks route for the full recommendation list
 -> GET /discovery/popular
@@ -931,7 +936,7 @@ Current behavior:
 - Library shows continue-watching and recently watched rows when the backend has watched data.
 - Library shows saved watchlist rows when the backend has watchlist data.
 - Library shows rated show/movie rows when the backend has title-level rating preference data. Episode ratings live on episode detail for now.
-- Search shows a `Recommended picks` entry when the backend has eligible catalog candidates; the dedicated recommendations route shows the full list. Search also shows `Popular in your country`, backed by TMDB Discover and the user's saved availability country. Availability is intentionally shown only after opening a title detail.
+- Search shows `TVLore Picks`, `Recommended picks`, and `Popular in your country` entries. TVLore Picks are backend-owned editorial TMDB refs; recommendations are personalized from ratings; popular discovery is country-aware through TMDB Discover. Availability is intentionally shown only after opening a title detail.
 - Recommendation row copy can explain simple genre overlap, such as "Because you like Drama", from backend-provided preferred genres and item genres.
 - Recommendation rows open the matching show or movie detail screen; watchlist actions stay on the detail screen.
 - Library can filter from its summary cards between Cronologia, continuing shows, recently watched movies, watched episodes grouped by show and season, saved titles, and rated titles. Cronologia shows paginated watched movies and episodes by date.
