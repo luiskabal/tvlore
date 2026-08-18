@@ -35,6 +35,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "73bfb1b3-bcb2-41a8-8352-0b984c0bbad9"
+      }
+    },
+    "owner": "luiskabal"
   }
 }

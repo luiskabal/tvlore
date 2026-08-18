@@ -33,9 +33,9 @@ From the mobile workspace:
 
 ```bash
 cd apps/mobile
-npx eas login
-npx eas build:configure
-npx eas build --profile development --platform ios
+npx --yes eas-cli@latest login
+npx --yes eas-cli@latest build:configure
+npx --yes eas-cli@latest build --profile development --platform ios
 ```
 
 EAS will ask for Apple credentials and device registration when needed.
@@ -63,25 +63,25 @@ production builds:
 
 ```bash
 cd apps/mobile
-npx eas env:set development --name EXPO_PUBLIC_TVLORE_API_BASE_URL --value https://tvlore-api.vercel.app --visibility plaintext
-npx eas env:set development --name EXPO_PUBLIC_SUPABASE_URL --value https://qpekdijebjzigrgcumpv.supabase.co --visibility plaintext
-npx eas env:set development --name EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY --value YOUR_SUPABASE_PUBLISHABLE_KEY --visibility sensitive
+npx --yes eas-cli@latest env:set development --name EXPO_PUBLIC_TVLORE_API_BASE_URL --value https://tvlore-api.vercel.app --visibility plaintext --non-interactive
+npx --yes eas-cli@latest env:set development --name EXPO_PUBLIC_SUPABASE_URL --value https://qpekdijebjzigrgcumpv.supabase.co --visibility plaintext --non-interactive
+npx --yes eas-cli@latest env:set development --name EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY --value YOUR_SUPABASE_PUBLISHABLE_KEY --visibility plaintext --non-interactive
 
-npx eas env:set preview --name EXPO_PUBLIC_TVLORE_API_BASE_URL --value https://tvlore-api.vercel.app --visibility plaintext
-npx eas env:set preview --name EXPO_PUBLIC_SUPABASE_URL --value https://qpekdijebjzigrgcumpv.supabase.co --visibility plaintext
-npx eas env:set preview --name EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY --value YOUR_SUPABASE_PUBLISHABLE_KEY --visibility sensitive
+npx --yes eas-cli@latest env:set preview --name EXPO_PUBLIC_TVLORE_API_BASE_URL --value https://tvlore-api.vercel.app --visibility plaintext --non-interactive
+npx --yes eas-cli@latest env:set preview --name EXPO_PUBLIC_SUPABASE_URL --value https://qpekdijebjzigrgcumpv.supabase.co --visibility plaintext --non-interactive
+npx --yes eas-cli@latest env:set preview --name EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY --value YOUR_SUPABASE_PUBLISHABLE_KEY --visibility plaintext --non-interactive
 
-npx eas env:set production --name EXPO_PUBLIC_TVLORE_API_BASE_URL --value https://tvlore-api.vercel.app --visibility plaintext
-npx eas env:set production --name EXPO_PUBLIC_SUPABASE_URL --value https://qpekdijebjzigrgcumpv.supabase.co --visibility plaintext
-npx eas env:set production --name EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY --value YOUR_SUPABASE_PUBLISHABLE_KEY --visibility sensitive
+npx --yes eas-cli@latest env:set production --name EXPO_PUBLIC_TVLORE_API_BASE_URL --value https://tvlore-api.vercel.app --visibility plaintext --non-interactive
+npx --yes eas-cli@latest env:set production --name EXPO_PUBLIC_SUPABASE_URL --value https://qpekdijebjzigrgcumpv.supabase.co --visibility plaintext --non-interactive
+npx --yes eas-cli@latest env:set production --name EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY --value YOUR_SUPABASE_PUBLISHABLE_KEY --visibility plaintext --non-interactive
 ```
 
 Verify them with:
 
 ```bash
-npx eas env:list development
-npx eas env:list preview
-npx eas env:list production
+npx --yes eas-cli@latest env:list development
+npx --yes eas-cli@latest env:list preview
+npx --yes eas-cli@latest env:list production
 ```
 
 Before requesting a preview or production build, run the local release preflight
@@ -102,11 +102,11 @@ mobile/EAS client variables.
 
 ```bash
 cd apps/mobile
-npx eas build --profile development --platform ios
-npx eas build --profile preview --platform android
-npx eas build --profile preview --platform ios
-npx eas build --profile production --platform android
-npx eas build --profile production --platform ios
+npx --yes eas-cli@latest build --profile development --platform ios
+npx --yes eas-cli@latest build --profile preview --platform android
+npx --yes eas-cli@latest build --profile preview --platform ios
+npx --yes eas-cli@latest build --profile production --platform android
+npx --yes eas-cli@latest build --profile production --platform ios
 ```
 
 Use `preview` for release-like device testing before store submission. Use
@@ -150,8 +150,8 @@ Play app records exist.
 
 ```bash
 cd apps/mobile
-npx eas submit --profile production --platform android
-npx eas submit --profile production --platform ios
+npx --yes eas-cli@latest submit --profile production --platform android
+npx --yes eas-cli@latest submit --profile production --platform ios
 ```
 
 Android is configured to submit to the internal track first. iOS will prompt for

@@ -5,7 +5,6 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 ## Active
 
 - [ ] Configure Apple Developer identifiers and Supabase Apple provider for iOS store readiness.
-- [ ] Configure required EAS project env vars for development, preview, and production mobile builds.
 - [ ] Run first EAS preview builds on iOS and Android.
 - [ ] Continue removing release-blocking development affordances before store submission.
 - [ ] Configure `SUPABASE_SERVICE_ROLE_KEY` in Vercel before release account-deletion QA.
@@ -13,6 +12,8 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 ## Done Recently
 
 - [x] Replace ambiguous show/movie watched header icons with an explicit tracking panel and check-in action.
+- [x] Link TVLore to EAS project `@luiskabal/tvlore`.
+- [x] Configure required EAS project env vars for development, preview, and production mobile builds.
 - [x] Add local mobile release preflight for Expo/EAS config and public mobile envs.
 - [x] Add draft store reviewer notes for auth and core flows.
 - [x] Add a TVLore-native recommendation score with house rules, explicit taste signals, availability, and explainable reasons.

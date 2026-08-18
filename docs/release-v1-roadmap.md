@@ -111,7 +111,7 @@ enough value to justify a first release.
 | Privacy Policy | Required for collected personal data and store metadata. | Done as developer-preview URL: `https://tvlore-api.vercel.app/privacy`; review final wording before submission. |
 | Data Safety / App Privacy answers | Required in Play Console and App Store Connect. | Data inventory exists; final forms still need completion. |
 | Reviewer access | Reviewers need to access protected app functionality. | Provide test credentials/instructions or a reviewable auth path. |
-| Production EAS profiles | Partial | EAS development, preview, production, remote build-number increment, and minimal submit profiles are configured. EAS project envs and first real store builds still need validation. |
+| Production EAS profiles | Partial | EAS project is linked and development/preview/production envs are configured. First real store builds still need validation. |
 | Store assets | App icon, splash, screenshots, support URL, marketing copy. | Prepare iOS and Android metadata. |
 
 ### High Priority Before 1.0
@@ -189,7 +189,7 @@ Tasks:
 - [x] Configure a minimal EAS submit profile and document prompts for store-specific IDs.
 - [x] Add remote EAS build-number auto-increment for production builds.
 - [x] Add local mobile release preflight for Expo/EAS config and public mobile envs.
-- [ ] Configure required EAS project environment variables for development, preview, and production.
+- [x] Configure required EAS project environment variables for development, preview, and production.
 - [ ] Confirm Supabase redirect URLs for production scheme/build.
 - [ ] Confirm Vercel envs are production-safe.
 - [x] Create draft reviewer notes for auth and core flows.

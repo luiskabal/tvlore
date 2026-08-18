@@ -18,10 +18,12 @@ console.log("\nmobile app config");
 expectString(app.name, "expo.name");
 expectString(app.slug, "expo.slug");
 expectEqual(app.scheme, "tvlore", "expo.scheme");
+expectEqual(app.owner, "luiskabal", "expo.owner");
 expectSemver(app.version, "expo.version");
 expectFile(app.icon, "expo.icon");
 expectFile(app.splash?.image, "expo.splash.image");
 expectArrayIncludes(app.plugins, "expo-apple-authentication", "expo.plugins");
+expectUuid(app.extra?.eas?.projectId, "expo.extra.eas.projectId");
 expectEqual(app.ios?.bundleIdentifier, "com.luiskabal.tvlore", "expo.ios.bundleIdentifier");
 expectEqual(app.ios?.usesAppleSignIn, true, "expo.ios.usesAppleSignIn");
 expectEqual(app.android?.package, "com.luiskabal.tvlore", "expo.android.package");
@@ -47,7 +49,7 @@ expectHttpsUrl(mobileEnv.get("EXPO_PUBLIC_TVLORE_API_BASE_URL"), "EXPO_PUBLIC_TV
 expectHttpsUrl(mobileEnv.get("EXPO_PUBLIC_SUPABASE_URL"), "EXPO_PUBLIC_SUPABASE_URL");
 
 console.log("\nmanual release gates");
-warn("Verify EAS remote envs with: cd apps/mobile; npx eas env:list development|preview|production");
+warn("Verify EAS remote envs with: cd apps/mobile; npx --yes eas-cli@latest env:list development|preview|production");
 warn("Verify Supabase Auth allows tvlore://auth/callback");
 warn("Verify Apple Developer App ID com.luiskabal.tvlore has Sign in with Apple enabled");
 warn("Configure SUPABASE_SERVICE_ROLE_KEY in Vercel before release account-deletion QA");
@@ -130,6 +132,15 @@ function expectArrayIncludes(value, expected, label) {
 function expectSemver(value, label) {
   if (typeof value !== "string" || !/^\d+\.\d+\.\d+$/.test(value)) {
     fail(`${label} must use x.y.z release format`);
+    return;
+  }
+
+  ok(label);
+}
+
+function expectUuid(value, label) {
+  if (typeof value !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value)) {
+    fail(`${label} must be a UUID`);
     return;
   }
 
