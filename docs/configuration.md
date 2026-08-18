@@ -95,6 +95,16 @@ Examples:
 - `API_RATE_LIMIT_MAX_REQUESTS` and `API_RATE_LIMIT_WINDOW_SECONDS` tune the general API rate limit.
 - `PROVIDER_RATE_LIMIT_MAX_REQUESTS` and `PROVIDER_RATE_LIMIT_WINDOW_SECONDS` tune TMDB/provider-cost route protection.
 
+For mobile release readiness, also run:
+
+```bash
+corepack pnpm release:preflight
+```
+
+This validates the committed Expo/EAS config and local public mobile env values
+without printing secrets. Remote EAS envs, Apple Developer, and Supabase Auth
+redirects still need dashboard verification.
+
 ## Secrets
 
 - Do not commit secrets.

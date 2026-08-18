@@ -7,6 +7,7 @@
   "scripts": {
     "api:check": "node tools/check-api.mjs",
     "env:check": "node tools/check-env.mjs",
+    "release:preflight": "node tools/check-mobile-release.mjs",
     "db:migrate": "corepack pnpm --filter @tvlore/api db:migrate",
     "db:migrate:deploy": "corepack pnpm --filter @tvlore/api db:migrate:deploy",
     "db:logs": "docker compose logs -f postgres",
@@ -16,7 +17,7 @@
     "typecheck": "corepack pnpm -r typecheck",
     "verify": "corepack pnpm typecheck && corepack pnpm test:run",
     "verify:full": "corepack pnpm verify && corepack pnpm build",
-    "release:smoke": "corepack pnpm verify:full && corepack pnpm api:check",
+    "release:smoke": "corepack pnpm release:preflight && corepack pnpm verify:full && corepack pnpm api:check",
     "build": "corepack pnpm -r --if-present build"
   },
   "workspaces": [

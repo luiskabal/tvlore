@@ -13,6 +13,8 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 ## Done Recently
 
 - [x] Replace ambiguous show/movie watched header icons with an explicit tracking panel and check-in action.
+- [x] Add local mobile release preflight for Expo/EAS config and public mobile envs.
+- [x] Add draft store reviewer notes for auth and core flows.
 - [x] Add a TVLore-native recommendation score with house rules, explicit taste signals, availability, and explainable reasons.
 - [x] Add an `Available in your country` discovery section for streamable titles, separate from recommendation ranking.
 - [x] Add fetched Watch Path creation from TMDB Collection URLs as the first public-source import.

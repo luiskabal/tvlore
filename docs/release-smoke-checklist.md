@@ -10,6 +10,7 @@ exploratory QA.
 - Vercel `tvlore-api` points to the intended commit.
 - Local `.env` files match the tracked `.env.example` files.
 - EAS project env vars exist for the profile being built.
+- `corepack pnpm release:preflight` passes before EAS preview/production builds.
 - `TVLORE_SUPABASE_ACCESS_TOKEN` is set when running authenticated API smoke.
 - Mobile points to `https://tvlore-api.vercel.app`.
 - Test account is not a personal account that cannot be deleted during QA.
@@ -117,7 +118,7 @@ or emulator before Android beta.
 | Support link | Opens from Profile and can be used in store metadata. |
 | Account deletion URL | Public page opens without login. |
 | Delete account entry | Visible in Profile. |
-| Reviewer notes | Explain login path and core flows. |
+| Reviewer notes | `docs/store-reviewer-notes.md` explains login path and core flows. |
 | Store screenshots | Match current UI and do not show development-only states. |
 | Secrets | No real secrets in git diff or committed files. |
 

@@ -84,6 +84,16 @@ npx eas env:list preview
 npx eas env:list production
 ```
 
+Before requesting a preview or production build, run the local release preflight
+from the repo root:
+
+```bash
+corepack pnpm release:preflight
+```
+
+This checks the committed mobile app config, EAS profiles, local mobile `.env`,
+and prints the external gates that still require dashboard verification.
+
 These are client-side values, so they are embedded into the mobile bundle. Do
 not add backend secrets, database URLs, TMDB tokens, or service-role keys to
 mobile/EAS client variables.

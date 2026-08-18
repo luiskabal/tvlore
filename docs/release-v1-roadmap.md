@@ -188,10 +188,11 @@ Tasks:
 - [x] Configure EAS development, preview, and production build profiles.
 - [x] Configure a minimal EAS submit profile and document prompts for store-specific IDs.
 - [x] Add remote EAS build-number auto-increment for production builds.
+- [x] Add local mobile release preflight for Expo/EAS config and public mobile envs.
 - [ ] Configure required EAS project environment variables for development, preview, and production.
 - [ ] Confirm Supabase redirect URLs for production scheme/build.
 - [ ] Confirm Vercel envs are production-safe.
-- [ ] Create reviewer notes for auth and core flows.
+- [x] Create draft reviewer notes for auth and core flows.
 
 Exit criteria:
 
@@ -283,6 +284,7 @@ before TestFlight/closed testing. Quick gate:
 
 - [ ] `corepack pnpm verify` passes.
 - [ ] `corepack pnpm verify:full` passes.
+- [ ] `corepack pnpm release:preflight` passes.
 - [ ] Authenticated `corepack pnpm api:check` passes against Vercel.
 - [ ] iOS production build installs.
 - [ ] Android production build installs.
@@ -295,6 +297,6 @@ before TestFlight/closed testing. Quick gate:
 - [x] Search starts in a release-friendly state.
 - [x] `/health/error` is not publicly exposed in production.
 - [ ] Store screenshots and descriptions match the actual app.
-- [ ] Reviewer instructions are written.
+- [x] Reviewer instructions are written.
 - [ ] No secrets are committed.
 - [ ] No known blocker remains in `docs/backlog.md`.
