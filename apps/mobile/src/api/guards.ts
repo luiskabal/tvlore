@@ -166,12 +166,20 @@ function isRecommendationItem(value: unknown): value is RecommendationItem {
     typeof value.title === "string" &&
     typeof value.overview === "string" &&
     isNullableString(value.posterPath) &&
-    isRecommendationReason(value.reason)
+    isRecommendationReason(value.reason) &&
+    typeof value.streamingAvailable === "boolean" &&
+    typeof value.tvloreScore === "number" &&
+    value.tvloreScore >= 0 &&
+    value.tvloreScore <= 100
   );
 }
 
 function isRecommendationReason(value: unknown): value is RecommendationItem["reason"] {
-  return value === "based_on_movie_ratings" || value === "based_on_show_ratings" || value === "from_catalog";
+  return value === "available_in_country"
+    || value === "based_on_movie_ratings"
+    || value === "based_on_show_ratings"
+    || value === "from_catalog"
+    || value === "tvlore_house_pick";
 }
 
 export function isCatalogSearchResponse(value: unknown): value is CatalogSearchResponse {

@@ -282,10 +282,11 @@ lives in `RecommendationsScreen`, which reuses the presentation-only
 guard layer owns the response-shape validation. Recommendation rows receive
 navigation callbacks from the route screen. Recommendation rows render
 backend-provided genre names when available, but do not save to watchlist,
-calculate suggestion quality, or render provider availability locally.
+calculate suggestion quality, or render provider availability locally. They
+display the API-provided `tvloreScore` and explainable reason text only.
 Availability and watchlist actions stay in detail screens.
 `recommendation-detail.ts` owns the small presentation rule that turns
-preferred-genre overlap into copy such as "Because you like Drama".
+preferred-genre overlap and TVLore house-pick reasons into copy.
 
 Search also renders a `Popular in your country` entry card. The full country
 popular list lives in `PopularDiscoveryScreen`. `usePopularDiscovery` loads

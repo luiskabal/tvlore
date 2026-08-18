@@ -3,10 +3,12 @@ import { Injectable } from "@nestjs/common";
 import { CatalogRepository } from "../catalog/catalog.repository";
 import { TmdbClient } from "../catalog/tmdb-client";
 import { UsersService } from "../users/users.service";
+import { rankTvloreRecommendations } from "./recommendation-scoring";
 import { RecommendationsRepository } from "./recommendations.repository";
-import type { RecommendationItemDto, RecommendationsResponseDto } from "./recommendations.types";
+import type { RecommendationCandidateDto, RecommendationsResponseDto } from "./recommendations.types";
 
-type RankedRecommendationItem = RecommendationItemDto & {
+type RankedRecommendationItem = RecommendationCandidateDto & {
+  originalRank: number;
   streamingAvailable: boolean;
 };
 
@@ -23,25 +25,30 @@ export class RecommendationsService {
     const user = await this.usersService.getMe(authorizationHeader);
     const recommendations = await this.recommendationsRepository.getRecommendations(user.id, user.availabilityCountry);
     const items = await Promise.all(
-      recommendations.items.map((item) => this.withStreamingAvailability(item, user.availabilityCountry)),
+      recommendations.items.map((item, originalRank) => this.withStreamingAvailability(
+        item,
+        user.availabilityCountry,
+        originalRank,
+      )),
     );
 
     return {
       ...recommendations,
-      items: rankStreamingWithinMediaSegments(items).map(toRecommendationItem),
+      items: rankTvloreRecommendations(items, recommendations.basis),
     };
   }
 
   private async withStreamingAvailability(
-    item: RecommendationItemDto,
+    item: RecommendationCandidateDto,
     country: string,
+    originalRank: number,
   ): Promise<RankedRecommendationItem> {
     const providerId = item.mediaType === "show"
       ? await this.catalogRepository.findShowProviderId(item.id)
       : await this.catalogRepository.findMovieProviderId(item.id);
 
     if (!providerId) {
-      return { ...item, streamingAvailable: false };
+      return { ...item, originalRank, streamingAvailable: false };
     }
 
     try {
@@ -49,38 +56,11 @@ export class RecommendationsService {
 
       return {
         ...item,
+        originalRank,
         streamingAvailable: availability.providers.stream.length > 0,
       };
     } catch {
-      return { ...item, streamingAvailable: false };
+      return { ...item, originalRank, streamingAvailable: false };
     }
   }
-}
-
-function rankStreamingWithinMediaSegments(items: RankedRecommendationItem[]) {
-  const ranked: RankedRecommendationItem[] = [];
-  let index = 0;
-
-  while (index < items.length) {
-    const mediaType = items[index].mediaType;
-    const start = index;
-
-    while (index < items.length && items[index].mediaType === mediaType) {
-      index += 1;
-    }
-
-    ranked.push(
-      ...items
-        .slice(start, index)
-        .sort((left, right) => Number(right.streamingAvailable) - Number(left.streamingAvailable)),
-    );
-  }
-
-  return ranked;
-}
-
-function toRecommendationItem(item: RankedRecommendationItem): RecommendationItemDto {
-  const { streamingAvailable: _streamingAvailable, ...recommendation } = item;
-
-  return recommendation;
 }

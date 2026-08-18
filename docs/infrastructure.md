@@ -308,7 +308,7 @@ the selected Postman environment.
 - Reflection endpoints store private post-watch check-ins and keep the rating preference in sync.
 - `GET /library` feeds the mobile home library summary.
 - `GET /library/chronology` feeds the paginated Cronologia watch-history view.
-- `GET /recommendations` feeds Search suggestion rows from stored ratings, hydrated catalog rows, genre names, and user-country streaming availability.
+- `GET /recommendations` feeds Search suggestion rows from stored ratings, hydrated catalog rows, genre names, user-country streaming availability, and the backend-owned TVLore score.
 - `GET /discovery/available` feeds Search's country-aware available-to-stream titles from TMDB Discover and the user's saved availability country.
 - `GET /discovery/popular` feeds Search's country-aware popular titles from TMDB Discover and the user's saved availability country.
 - `GET /discovery/picks` feeds Search's TVLore-curated editorial picks from backend-owned TMDB refs.

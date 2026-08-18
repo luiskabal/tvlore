@@ -111,6 +111,9 @@ function RecommendationRow({
         <AppText numberOfLines={2} variant="title">{item.title}</AppText>
         <AppText tone="muted">{getRecommendationDetail(item, preferredGenreNames)}</AppText>
       </View>
+      <View style={styles.recommendationScorePill}>
+        <AppText tone="accent" variant="caption">{item.tvloreScore}</AppText>
+      </View>
       <Ionicons color="#5f564d" name={"chevron-forward" satisfies IconName} size={20} />
     </Pressable>
   );

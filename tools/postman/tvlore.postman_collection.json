@@ -2401,7 +2401,10 @@
                   "    pm.expect(item.title).to.be.a('string');",
                   "    pm.expect(item.overview).to.be.a('string');",
                   "    pm.expect(item.posterPath === null || typeof item.posterPath === 'string').to.eql(true);",
-                  "    pm.expect(['based_on_movie_ratings', 'based_on_show_ratings', 'from_catalog']).to.include(item.reason);",
+                  "    pm.expect(item.streamingAvailable).to.be.a('boolean');",
+                  "    pm.expect(item.tvloreScore).to.be.a('number');",
+                  "    pm.expect(item.tvloreScore).to.be.within(0, 100);",
+                  "    pm.expect(['available_in_country', 'based_on_movie_ratings', 'based_on_show_ratings', 'from_catalog', 'tvlore_house_pick']).to.include(item.reason);",
                   "  });",
                   "});"
                 ]

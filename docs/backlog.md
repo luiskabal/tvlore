@@ -13,6 +13,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 ## Done Recently
 
 - [x] Replace ambiguous show/movie watched header icons with an explicit tracking panel and check-in action.
+- [x] Add a TVLore-native recommendation score with house rules, explicit taste signals, availability, and explainable reasons.
 - [x] Add an `Available in your country` discovery section for streamable titles, separate from recommendation ranking.
 - [x] Add fetched Watch Path creation from TMDB Collection URLs as the first public-source import.
 - [x] Replace numeric mobile rating controls with shared star rating UI and make emotion explicit before favorite character.
@@ -30,7 +31,6 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 
 - [x] Split `CatalogDetailContent.tsx` into focused detail subcomponents when the next detail UX feature touches it.
 - [x] Move pure catalog response mappers out of `CatalogRepository` when catalog persistence is next edited.
-- [ ] Add a TVLore-native recommendation engine with house rules, explicit taste signals, availability, and explainable reasons.
 - [ ] Add aggregate favorite-character voting percentages to post-watch check-in, sorted by community popularity.
 - [ ] Evaluate additional public Watch Path import sources after TMDB Collection proves useful.
 
@@ -45,7 +45,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 - Keep watched state, rating preferences, and per-watch reflections as separate concepts so rewatches, comments, and recommendations do not fight the same row later.
 - Reaction tags, favorite-character picks, and comments are private product data for now. Spoiler/privacy rules are still required before any social surface.
 - Favorite-character percentages need structured character votes first: provider person ID, actor name, character name, profile path, aggregate counts, and privacy-safe voter visibility rules.
-- First recommendations intentionally use hydrated catalog data, ratings, genres, and a small provider-availability boost. Improve quality only after storing stronger content signals.
+- Recommendations intentionally use a simple explainable TVLore score from hydrated catalog data, ratings, genres, media affinity, and a provider-availability boost. Improve quality only after storing stronger content signals.
 - Keep recommendation surfaces separate: personalized `For you`, contextual `Popular in your country`, utility `Available in your country`, and editorial `TVLore Picks`.
 - TVLore-native recommendations should stay explainable before adding opaque ML or collaborative filtering.
 - Personalized recommendations belong in Search for now. Library should stay focused on user-owned watched, saved, rated, and in-progress content; Profile should stay focused on identity, stats, and account controls.

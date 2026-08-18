@@ -90,7 +90,7 @@ enough value to justify a first release.
 | Ratings | Ready | Show/movie/episode 1-5 ratings exist with star controls in mobile. |
 | Post-watch reflection | Ready | Dedicated check-in screen with star rating, emotion, cast picker, and comment. |
 | Library | Ready | Summary filters, chronology, continue watching, watchlist, rated titles. |
-| Discovery | Ready | Recommendations, Available to stream, and Popular in your country exist. |
+| Discovery | Ready | Explainable TVLore-scored recommendations, Available to stream, and Popular in your country exist. |
 | TVLore Picks | Ready | Backend-owned editorial TMDB refs shown from Search. |
 | Where to Watch | Ready | TMDB Watch Providers by saved country, shown on detail screens. |
 | Watch Paths | Ready | Curated paths, personal imports, TMDB title URL parsing, TMDB Collection import, save-to-watchlist. |
@@ -129,7 +129,7 @@ enough value to justify a first release.
 
 | Gap | Why Later |
 | --- | --- |
-| Better recommendation engine | Current explainable baseline is enough for v1.0. |
+| Advanced recommendation engine | Current explainable TVLore-scored baseline is enough for v1.0. |
 | Favorite-character percentages | Needs aggregate vote model and privacy decisions. |
 | Social/match | Bigger moderation/privacy/compliance surface. |
 
@@ -143,7 +143,7 @@ Tasks:
 
 - Treat this document as the release source of truth.
 - Keep social/match out of v1.0.
-- Keep richer recommendations as post-1.0 unless all blockers are cleared.
+- Keep collaborative/ML recommendations as post-1.0 unless all blockers are cleared.
 - [x] Add a release checklist template for TestFlight/closed testing.
 
 Exit criteria:
@@ -273,7 +273,7 @@ Skip for now:
 
 - New discovery sections.
 - Social.
-- Recommendation engine rewrite.
+- Collaborative/ML recommendation engine rewrite.
 - UI redesign beyond release-blocking clarity.
 
 ## 6. Release Readiness Checklist

@@ -14,7 +14,7 @@ const user = {
 };
 
 describe("RecommendationsService", () => {
-  it("prioritizes streamable recommendations inside the existing media ordering", async () => {
+  it("scores recommendations after enriching them with streaming availability", async () => {
     const catalogRepository = {
       findMovieProviderId: vi.fn()
         .mockResolvedValueOnce("movie-unavailable-provider")
@@ -56,9 +56,9 @@ describe("RecommendationsService", () => {
     await expect(service.getRecommendations("Bearer token")).resolves.toMatchObject({
       basis: { availabilityCountry: "CL" },
       items: [
-        { id: "movie-available", mediaType: "movie" },
-        { id: "movie-unavailable", mediaType: "movie" },
-        { id: "show-available", mediaType: "show" },
+        { id: "movie-available", mediaType: "movie", reason: "tvlore_house_pick", streamingAvailable: true, tvloreScore: 92 },
+        { id: "show-available", mediaType: "show", reason: "tvlore_house_pick", streamingAvailable: true, tvloreScore: 82 },
+        { id: "movie-unavailable", mediaType: "movie", reason: "based_on_movie_ratings", streamingAvailable: false, tvloreScore: 77 },
       ],
     });
 

@@ -27,7 +27,7 @@ Implemented:
 - Authenticated rating preference endpoints for shows, movies, and episodes.
 - Authenticated post-watch reflection endpoints for shows, movies, and episodes.
 - Authenticated personal library and show progress read endpoints.
-- Authenticated first-pass recommendation endpoint from stored ratings, hydrated catalog rows, persisted genre names, and country-aware streaming availability.
+- Authenticated TVLore-scored recommendation endpoint from stored ratings, hydrated catalog rows, persisted genre names, media affinity, and country-aware streaming availability.
 - Authenticated curated and user-owned Watch Paths endpoints with backend-owned ordered viewing lists.
 - Authenticated Watch Path creation endpoint that persists personal TMDB-ref lists for the user.
 - Authenticated Watch Path save-to-watchlist endpoint that resolves every path item and saves it for the user.
@@ -865,7 +865,7 @@ Expected behavior:
 - `PUT /shows/:showId/reflection`, `PUT /movies/:movieId/reflection`, and `PUT /episodes/:episodeId/reflection` save a private post-watch check-in and update the matching rating preference.
 - `GET /library` returns personal summary, rated titles, continue-watching, watchlist, recently watched activity, and full watched episode activity.
 - `GET /library/chronology` returns paginated personal movie/episode watch-history activity.
-- `GET /recommendations` returns unrated, unwatched, unsaved catalog candidates ordered by the user's stronger rated media type, preferred genre matches, and streaming availability in the user's saved country.
+- `GET /recommendations` returns unrated, unwatched, unsaved catalog candidates with an explainable `tvloreScore`, streaming availability flag, and reason based on preferred genres, rating strength, media affinity, and the user's saved country.
 - `GET /discovery/picks` returns backend-owned TVLore editorial picks in the same row shape as search, with existing TVLore IDs hydrated when already resolved.
 - `GET /discovery/available` returns highly rated streamable TMDB Discover results scoped to the user's saved availability country, in the same row shape as search.
 - `GET /discovery/popular` returns popular country-aware TMDB Discover results in the same row shape as search, with existing TVLore IDs hydrated when already resolved.
@@ -945,8 +945,8 @@ Current behavior:
 - Library shows continue-watching and recently watched rows when the backend has watched data.
 - Library shows saved watchlist rows when the backend has watchlist data.
 - Library shows rated show/movie rows when the backend has title-level rating preference data. Episode ratings live on episode detail for now.
-- Search shows `TVLore Picks`, `Recommended picks`, `Available to stream`, and `Popular in your country` entries. TVLore Picks are backend-owned editorial TMDB refs; recommendations are personalized from ratings; available discovery is utility-first by country; popular discovery is contextual through TMDB Discover. Provider icons are intentionally shown only after opening a title detail.
-- Recommendation row copy can explain simple genre overlap, such as "Because you like Drama", from backend-provided preferred genres and item genres.
+- Search shows `TVLore Picks`, `Recommended picks`, `Available to stream`, and `Popular in your country` entries. TVLore Picks are backend-owned editorial TMDB refs; recommendations are personalized from ratings and TVLore scoring; available discovery is utility-first by country; popular discovery is contextual through TMDB Discover. Provider icons are intentionally shown only after opening a title detail.
+- Recommendation row copy can explain simple genre overlap, such as "Because you like Drama", from backend-provided preferred genres and item genres, and rows show the backend-provided TVLore score.
 - Recommendation rows open the matching show or movie detail screen; watchlist actions stay on the detail screen.
 - Library can filter from its summary cards between Cronologia, continuing shows, recently watched movies, watched episodes grouped by show and season, saved titles, and rated titles. Cronologia shows paginated watched movies and episodes by date.
 - Episode groups keep each season collapsible so long watched histories stay scannable; the show title opens show detail, the season label opens season detail, and the +/- control expands or collapses the group.
@@ -1104,5 +1104,5 @@ Track completed shows, watched movies, and ratings
 Why this is next:
 
 - Watched history, watchlist, ratings, and bulk tracking now cover the core personal-library loop.
-- Recommendations now use explicit ratings, hydrated catalog rows, genre names, and user-country streaming availability.
+- Recommendations now use explicit ratings, hydrated catalog rows, genre names, media affinity, user-country streaming availability, and an explainable TVLore score.
 - Deeper behavior signals can improve suggestions without adding social complexity yet.

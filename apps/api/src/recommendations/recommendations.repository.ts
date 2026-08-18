@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
 import { PrismaService } from "../prisma.service";
-import type { RecommendationItemDto, RecommendationsResponseDto } from "./recommendations.types";
+import type { RecommendationCandidateDto, RecommendationCandidatesResponseDto } from "./recommendations.types";
 
 type MediaType = "movie" | "show";
 
@@ -9,7 +9,7 @@ type MediaType = "movie" | "show";
 export class RecommendationsRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getRecommendations(userId: string, availabilityCountry: string): Promise<RecommendationsResponseDto> {
+  async getRecommendations(userId: string, availabilityCountry: string): Promise<RecommendationCandidatesResponseDto> {
     const client = this.prismaService.getClient();
     const [
       showPreferences,
@@ -108,7 +108,7 @@ function toRecommendation(
   item: { genreNames: string[]; id: string; overview: string; posterPath: string | null; title: string },
   mediaType: MediaType,
   averageRating: number | null,
-): RecommendationItemDto {
+): RecommendationCandidateDto {
   return {
     ...item,
     mediaType,

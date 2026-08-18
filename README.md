@@ -49,8 +49,8 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Profile country selector for streaming availability, rendered with flag labels.
 - Continue-watching and recently-watched data from the backend.
 - Rated show/movie list from the backend.
-- First-pass recommendations from stored rating preferences, hydrated catalog data, persisted genre names, and user-country streaming availability.
-- Recommendation rows explain genre matches when the user's rated-title genres overlap with a suggested title.
+- TVLore-scored recommendations from stored rating preferences, hydrated catalog data, persisted genre names, media affinity, and user-country streaming availability.
+- Recommendation rows explain genre matches and show the backend-provided TVLore score.
 - Recommendation rows open title detail; watchlist actions stay on the detail screen.
 - Search combines catalog search with a `Recommended picks` entry, which opens a dedicated recommendations list.
 - Search exposes a country-aware `Available to stream` entry backed by TMDB Discover watch-region filters.

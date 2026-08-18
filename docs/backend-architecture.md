@@ -179,8 +179,9 @@ Tracking follows the same shape:
 Recommendations follow the same shape:
 
 - `RecommendationsController`: HTTP route only.
-- `RecommendationsService`: resolves the authenticated TVLore user and enriches final candidates with country-aware TMDB Watch Providers availability.
+- `RecommendationsService`: resolves the authenticated TVLore user, enriches final candidates with country-aware TMDB Watch Providers availability, and applies the TVLore recommendation score.
 - `RecommendationsRepository`: reads existing ratings, watched state, watchlist rows, preferred genres, and hydrated catalog candidates.
+- `recommendation-scoring.ts`: owns the pure scoring rule so ranking can be tested without Nest or Prisma wiring.
 - The current MVP heuristic stays database-backed for candidate selection and only calls TMDB Watch Providers for the final recommendation items.
 
 Discovery follows the same controller/service boundary:

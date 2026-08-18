@@ -1350,8 +1350,11 @@ function assertRecommendations(body) {
     expectString(item.title, "recommendations item.title");
     expectString(item.overview, "recommendations item.overview");
     expectNullableString(item.posterPath, "recommendations item.posterPath");
+    expectBoolean(item.streamingAvailable, "recommendations item.streamingAvailable");
+    expectInteger(item.tvloreScore, "recommendations item.tvloreScore");
+    expect(item.tvloreScore >= 0 && item.tvloreScore <= 100, "recommendations item.tvloreScore should be within 0-100");
     expect(
-      ["based_on_movie_ratings", "based_on_show_ratings", "from_catalog"].includes(item.reason),
+      ["available_in_country", "based_on_movie_ratings", "based_on_show_ratings", "from_catalog", "tvlore_house_pick"].includes(item.reason),
       "recommendations item.reason",
     );
   }

@@ -471,6 +471,15 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     width: 42,
   },
+  recommendationScorePill: {
+    alignItems: "center",
+    borderColor: "#b8ddcd",
+    borderRadius: 999,
+    borderWidth: 1,
+    minWidth: 34,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+  },
   recommendationTitle: {
     color: "#171412",
     fontSize: 18,

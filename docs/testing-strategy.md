@@ -148,8 +148,7 @@ Test:
 - Mark movie watched.
 - Library summary and rated-title projection.
 - Recommendations exclude already rated, watched, and watchlisted titles.
-- Recommendations prioritize the media type with the stronger user rating average.
-- Recommendations boost streamable candidates inside the existing media ordering.
+- Recommendations return an explainable TVLore score from genre matches, rating strength, media affinity, and streamable availability.
 
 ### Repository Integration Tests
 

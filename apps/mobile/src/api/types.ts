@@ -68,8 +68,10 @@ export type RecommendationItem = {
   mediaType: MediaType;
   overview: string;
   posterPath: string | null;
-  reason: "based_on_movie_ratings" | "based_on_show_ratings" | "from_catalog";
+  reason: "available_in_country" | "based_on_movie_ratings" | "based_on_show_ratings" | "from_catalog" | "tvlore_house_pick";
+  streamingAvailable: boolean;
   title: string;
+  tvloreScore: number;
 };
 
 export type ContinueWatchingShow = {

@@ -1820,9 +1820,9 @@ Errors: `VALIDATION_FAILED`, `UNAUTHORIZED`.
 
 ### `GET /recommendations`
 
-Purpose: return first-pass personalized suggestions for the authenticated user.
+Purpose: return explainable personalized suggestions for the authenticated user.
 
-Current MVP status: implemented with stored rating preferences, hydrated catalog rows, persisted genre names, and a streaming-availability boost for the user's saved country.
+Current MVP status: implemented with a TVLore-owned score built from stored rating preferences, hydrated catalog rows, persisted genre names, media affinity, and a streaming-availability boost for the user's saved country.
 
 Auth: required.
 
@@ -1851,7 +1851,9 @@ Response:
       "title": "Severance",
       "overview": "Mark leads a team...",
       "posterPath": "/path.jpg",
-      "reason": "based_on_show_ratings"
+      "reason": "tvlore_house_pick",
+      "streamingAvailable": true,
+      "tvloreScore": 95
     },
     {
       "mediaType": "movie",
@@ -1860,7 +1862,9 @@ Response:
       "title": "Arrival",
       "overview": "Taking place after alien crafts land...",
       "posterPath": "/path.jpg",
-      "reason": "based_on_movie_ratings"
+      "reason": "based_on_movie_ratings",
+      "streamingAvailable": false,
+      "tvloreScore": 77
     }
   ]
 }
@@ -1876,9 +1880,9 @@ Authorization: recommendations are only for the authenticated user.
 Business validation:
 
 - The endpoint excludes titles the user has already rated, watched, or saved to watchlist.
-- The first heuristic prioritizes the media type with the user's higher average rating.
-- Highly rated titles contribute preferred genre names, and candidates sharing those genres are ordered first.
-- Within each media type, titles available to stream in the user's saved availability country are ranked before titles without subscription-streaming availability.
+- The score is intentionally explainable: base relevance, preferred genre matches, rating strength, stronger media-type affinity, and user-country subscription-streaming availability.
+- `tvloreScore` is an integer from 0 to 100.
+- `reason` can be `tvlore_house_pick`, `available_in_country`, `based_on_movie_ratings`, `based_on_show_ratings`, or `from_catalog`.
 - Results are limited to catalog rows already persisted in TVLore; the endpoint only calls TMDB Watch Providers for the final candidate set.
 - The response does not expose provider buckets; visible availability remains in show/movie detail through the dedicated watch-provider endpoints.
 - If the user has no rating preferences yet, `items` is empty.
