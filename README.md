@@ -12,10 +12,12 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Supabase Postgres is connected through Prisma; production DB connectivity and migrations are verified.
 - Google OAuth is configured through Supabase Auth and works from the Expo development build.
 - Expo mobile app can consume the deployed API from iPhone.
+- Mobile EAS build profiles exist for development, preview, and production builds.
 
 ## Current Features
 
 - Google sign-in with Supabase Auth.
+- Native iOS Sign in with Apple through Supabase Auth, pending Apple/Supabase provider configuration for release-like testing.
 - Authenticated `GET /users/me` and `PATCH /users/me` backed by TVLore user records.
 - API health and database health endpoints.
 - TMDB-backed search for shows and movies.

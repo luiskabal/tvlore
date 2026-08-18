@@ -210,6 +210,7 @@ of exposing partial routes with a broken database dependency.
 - App: `apps/mobile`
 - Runtime: Expo SDK 54.
 - Current API target for device testing: `https://tvlore-api.vercel.app`
+- EAS profiles: `development`, `preview`, and `production` in `apps/mobile/eas.json`.
 - Supabase Auth client handles Google login and stores the mobile session.
 - Supabase Auth client also supports native iOS Apple Sign-In when Apple/Supabase provider configuration is complete.
 - Core product data should still go through the backend API, not direct table access from mobile.
@@ -224,6 +225,10 @@ EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=YOUR_SUPABASE_PUBLISHABLE_KEY
 
 Local mobile setup uses `apps/mobile/.env` with the same keys as
 `apps/mobile/.env.example`.
+
+EAS cloud builds use project environment variables instead of local `.env`
+files. Configure the same `EXPO_PUBLIC_*` keys for EAS `development`,
+`preview`, and `production` before building remotely.
 
 Local iPhone testing command:
 
@@ -277,6 +282,7 @@ the selected Postman environment.
 - GitHub repository is connected.
 - Vercel backend deploy is live.
 - Mobile app can call the Vercel API from iPhone through Expo Go.
+- Mobile EAS build profiles are configured for development, preview, and production.
 - Supabase Google login works from an Expo development build.
 - Mobile has the native iOS Apple Sign-In flow wired through Supabase `signInWithIdToken`; Apple Developer and Supabase Apple provider configuration are required before release-like testing.
 - Prisma schema and initial migration exist.

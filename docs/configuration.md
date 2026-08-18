@@ -46,6 +46,19 @@ EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 
 Only public/mobile-safe values may be included in the mobile bundle.
 
+Local mobile development reads these values from `apps/mobile/.env`. EAS cloud
+builds read them from the EAS project environment selected by
+`apps/mobile/eas.json`:
+
+```text
+development
+preview
+production
+```
+
+Use the same variable names in each EAS environment. Values can be the same
+while TVLore has one backend and one Supabase project.
+
 Do not include:
 
 - `TMDB_ACCESS_TOKEN`
@@ -88,6 +101,7 @@ Examples:
 - Keep real local values in ignored `.env` files.
 - Use `.env.example` only when implementation begins and only with placeholder values.
 - Store production secrets in the deployment platform's secret manager.
+- Store production mobile build variables in EAS project environments.
 - Redact secrets in logs and error reports.
 
 ## Current Deploy Targets

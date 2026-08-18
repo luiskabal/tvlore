@@ -5,11 +5,13 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 ## Active
 
 - [ ] Configure Apple Developer identifiers and Supabase Apple provider for iOS store readiness.
-- [ ] Configure production EAS build/submit profiles, app identifiers, app icon, splash, and versioning.
+- [ ] Configure required EAS project env vars for development, preview, and production mobile builds.
+- [ ] Run first EAS preview builds on iOS and Android.
 - [ ] Continue removing release-blocking development affordances before store submission.
 
 ## Done Recently
 
+- [x] Configure EAS development, preview, production, remote build-number increment, and minimal submit profiles.
 - [x] Add public Privacy Policy, Terms, Support, and account deletion URLs with Profile links.
 - [x] Add native iOS Sign in with Apple UI and Supabase token exchange.
 - [x] Add in-app account deletion backed by API-owned user-data deletion and Supabase Auth deletion.

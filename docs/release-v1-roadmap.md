@@ -109,7 +109,7 @@ enough value to justify a first release.
 | Privacy Policy | Required for collected personal data and store metadata. | Done as developer-preview URL: `https://tvlore-api.vercel.app/privacy`; review final wording before submission. |
 | Data Safety / App Privacy answers | Required in Play Console and App Store Connect. | Data inventory exists; final forms still need completion. |
 | Reviewer access | Reviewers need to access protected app functionality. | Provide test credentials/instructions or a reviewable auth path. |
-| Production EAS profiles | Store builds need bundle IDs, signing, version/build numbers. | Configure EAS build/submit profiles. |
+| Production EAS profiles | Partial | EAS development, preview, production, remote build-number increment, and minimal submit profiles are configured. EAS project envs and first real store builds still need validation. |
 | Store assets | App icon, splash, screenshots, support URL, marketing copy. | Prepare iOS and Android metadata. |
 
 ### High Priority Before 1.0
@@ -184,13 +184,14 @@ Goal: create installable store binaries, not just a development build.
 
 Tasks:
 
-- Configure final app name, bundle identifiers, package name, scheme, icon, splash, and adaptive icon.
-- Configure EAS production build profiles.
-- Configure EAS submit profiles or document manual upload.
-- Add version/build-number process.
-- Confirm Supabase redirect URLs for production scheme/build.
-- Confirm Vercel envs are production-safe.
-- Create reviewer notes for auth and core flows.
+- [x] Configure final app name, bundle identifiers, package name, scheme, icon, splash, and adaptive icon.
+- [x] Configure EAS development, preview, and production build profiles.
+- [x] Configure a minimal EAS submit profile and document prompts for store-specific IDs.
+- [x] Add remote EAS build-number auto-increment for production builds.
+- [ ] Configure required EAS project environment variables for development, preview, and production.
+- [ ] Confirm Supabase redirect URLs for production scheme/build.
+- [ ] Confirm Vercel envs are production-safe.
+- [ ] Create reviewer notes for auth and core flows.
 
 Exit criteria:
 
