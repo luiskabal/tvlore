@@ -177,6 +177,7 @@ export type CatalogSearchResult = {
 };
 
 export type CatalogSearchResponse = {
+  nextPage: number | null;
   page: number;
   query: string;
   results: CatalogSearchResult[];

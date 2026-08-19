@@ -1,6 +1,6 @@
 import { BadRequestException } from "@nestjs/common";
 
-import type { CatalogSearchInput, CatalogSearchResultDto, MediaType } from "./catalog.types";
+import type { CatalogSearchInput, CatalogSearchResponseDto, CatalogSearchResultDto, MediaType } from "./catalog.types";
 
 const defaultMediaTypes: MediaType[] = ["show", "movie"];
 const maxQueryLength = 100;
@@ -71,6 +71,21 @@ export function toCatalogSearchResults(value: unknown, mediaTypes: MediaType[]) 
     .map(toCatalogSearchResult)
     .filter((result): result is CatalogSearchResultDto => Boolean(result))
     .filter((result) => mediaTypes.includes(result.mediaType));
+}
+
+export function toCatalogSearchPage(
+  value: unknown,
+  input: CatalogSearchInput,
+): Pick<CatalogSearchResponseDto, "nextPage" | "page" | "results"> {
+  const totalPages = isRecord(value) && typeof value.total_pages === "number"
+    ? Math.min(Math.floor(value.total_pages), maxPage)
+    : input.page;
+
+  return {
+    nextPage: input.page < totalPages ? input.page + 1 : null,
+    page: input.page,
+    results: toCatalogSearchResults(value, input.mediaTypes),
+  };
 }
 
 export function toCatalogSearchResultsForMediaType(value: unknown, mediaType: MediaType) {

@@ -50,6 +50,27 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 12,
   },
+  inlineRecommendationIcon: {
+    alignItems: "center",
+    backgroundColor: ui.color.accent,
+    borderRadius: ui.radius.pill,
+    height: 32,
+    justifyContent: "center",
+    left: 8,
+    position: "absolute",
+    top: 8,
+    width: 32,
+    zIndex: 1,
+  },
+  inlineRecommendationRow: {
+    backgroundColor: ui.color.accentSoft,
+    borderColor: "#b8ddcd",
+    borderRadius: ui.radius.md,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: 14,
+    padding: 12,
+  },
   loadingStrip: {
     alignItems: "center",
     borderColor: ui.color.border,
@@ -140,6 +161,9 @@ export const styles = StyleSheet.create({
     alignSelf: "stretch",
   },
   searchPanel: {
+    gap: 12,
+  },
+  searchStatus: {
     gap: 12,
   },
   sectionTitle: {

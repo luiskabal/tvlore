@@ -958,6 +958,7 @@ function assertSearchResponse(body) {
   expectRecord(body, "search response");
   expectEqual(body.query, "dark", "search.query");
   expectEqual(body.page, 1, "search.page");
+  expect(body.nextPage === null || Number.isInteger(body.nextPage), "search.nextPage should be null or integer");
   expectArray(body.results, "search.results");
 
   for (const result of body.results) {

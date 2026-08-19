@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   isAvailableDiscoveryResponse,
+  isCatalogSearchResponse,
   isDeleteUserResponse,
   isLibraryResponse,
   isPopularDiscoveryResponse,
@@ -110,6 +111,25 @@ describe("api guards", () => {
         },
       ],
       section: "popular_in_country",
+    })).toBe(true);
+  });
+
+  it("accepts paginated catalog search responses", () => {
+    expect(isCatalogSearchResponse({
+      nextPage: 2,
+      page: 1,
+      query: "dark",
+      results: [
+        {
+          externalRef: { provider: "tmdb", providerId: "70523" },
+          mediaType: "show",
+          overview: "Dark overview",
+          posterPath: "/poster.jpg",
+          title: "Dark",
+          tvloreId: null,
+          year: 2017,
+        },
+      ],
     })).toBe(true);
   });
 

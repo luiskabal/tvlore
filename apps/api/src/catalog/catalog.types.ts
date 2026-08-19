@@ -25,6 +25,7 @@ export type CatalogSearchResultDto = {
 };
 
 export type CatalogSearchResponseDto = {
+  nextPage: number | null;
   page: number;
   query: string;
   results: CatalogSearchResultDto[];

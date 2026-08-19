@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
   parseCatalogSearchInput,
   toCatalogSearchResult,
+  toCatalogSearchPage,
   toCatalogSearchResults,
   toCatalogSearchResultsForMediaType,
 } from "../catalog-search";
@@ -93,5 +94,32 @@ describe("toCatalogSearchResults", () => {
         year: null,
       }),
     ]);
+  });
+});
+
+describe("toCatalogSearchPage", () => {
+  it("returns the next page while TMDB has more pages", () => {
+    expect(toCatalogSearchPage({
+      results: [
+        { id: 1, media_type: "tv", name: "Dark" },
+      ],
+      total_pages: 3,
+    }, { mediaTypes: ["show"], page: 2, query: "dark" })).toEqual({
+      nextPage: 3,
+      page: 2,
+      results: [
+        expect.objectContaining({
+          externalRef: { provider: "tmdb", providerId: "1" },
+          title: "Dark",
+        }),
+      ],
+    });
+  });
+
+  it("stops pagination on the last page", () => {
+    expect(toCatalogSearchPage({
+      results: [],
+      total_pages: 2,
+    }, { mediaTypes: ["movie"], page: 2, query: "dark" }).nextPage).toBeNull();
   });
 });

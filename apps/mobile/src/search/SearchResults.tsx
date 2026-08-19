@@ -1,10 +1,15 @@
+import type { ComponentProps } from "react";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { ActivityIndicator, Pressable, View } from "react-native";
 
-import type { CatalogSearchResult } from "../api/tvlore-api";
+import type { CatalogSearchResult, MediaType } from "../api/tvlore-api";
 import { getTmdbPosterUrl } from "../catalog/posters";
 import { AppText, Badge, PosterImage, Skeleton, ui } from "../ui";
+import type { SearchInlineRecommendation } from "./search-feed-model";
 import { styles } from "./search-styles";
 import { getResultKey, type ResolveState, type SearchState } from "./use-catalog-search";
+
+type IconName = ComponentProps<typeof Ionicons>["name"];
 
 export function SearchResults({
   onOpenResult,
@@ -33,11 +38,11 @@ export function SearchResults({
     );
   }
 
-  if (search.kind !== "ready" && search.kind !== "refreshing") {
+  if (search.kind !== "ready" && search.kind !== "refreshing" && search.kind !== "loadingMore") {
     return null;
   }
 
-  const isRefreshing = search.kind === "refreshing";
+  const isRefreshing = search.kind === "refreshing" || search.kind === "loadingMore";
 
   return (
     <View style={styles.resultsSection}>
@@ -68,7 +73,7 @@ export function SearchResults({
   );
 }
 
-function LoadingStrip({ label }: { label: string }) {
+export function LoadingStrip({ label }: { label: string }) {
   return (
     <View style={styles.loadingStrip}>
       <ActivityIndicator color={ui.color.accent} size="small" />
@@ -77,7 +82,7 @@ function LoadingStrip({ label }: { label: string }) {
   );
 }
 
-function SearchSkeleton() {
+export function SearchSkeleton() {
   return (
     <View style={styles.skeletonList}>
       {[0, 1, 2].map((item) => (
@@ -96,6 +101,47 @@ function SearchSkeleton() {
         </View>
       ))}
     </View>
+  );
+}
+
+export function SearchInlineRecommendationRow({
+  onOpen,
+  recommendation,
+}: {
+  onOpen: (recommendation: SearchInlineRecommendation) => void;
+  recommendation: SearchInlineRecommendation;
+}) {
+  return (
+    <Pressable
+      accessibilityLabel={`Open ${recommendation.title}`}
+      accessibilityRole="button"
+      onPress={() => onOpen(recommendation)}
+      style={({ pressed }) => [
+        styles.inlineRecommendationRow,
+        pressed ? styles.pressedResultRow : null,
+      ]}
+    >
+      <View style={styles.inlineRecommendationIcon}>
+        <Ionicons color={ui.color.white} name={"sparkles-outline" satisfies IconName} size={18} />
+      </View>
+
+      <PosterImage
+        label={getMediaLabel(recommendation.mediaType)}
+        size="search"
+        uri={recommendation.posterPath ? getTmdbPosterUrl(recommendation.posterPath) : null}
+      />
+
+      <View style={styles.resultBody}>
+        <View style={styles.resultHeading}>
+          <AppText tone="accent" variant="caption">{recommendation.label}</AppText>
+          <AppText numberOfLines={2} style={styles.resultTitle} variant="title">{recommendation.title}</AppText>
+          <Badge label={recommendation.mediaType === "show" ? "Show" : "Movie"} />
+        </View>
+        <AppText numberOfLines={2} style={styles.resultOverview} tone="muted">
+          {recommendation.overview || "Recommended by TVLore."}
+        </AppText>
+      </View>
+    </Pressable>
   );
 }
 
@@ -151,4 +197,8 @@ export function SearchResultRow({
       </View>
     </Pressable>
   );
+}
+
+function getMediaLabel(mediaType: MediaType) {
+  return mediaType === "show" ? "TV" : "M";
 }

@@ -193,6 +193,7 @@ export function isCatalogSearchResponse(value: unknown): value is CatalogSearchR
   return (
     typeof value.query === "string" &&
     typeof value.page === "number" &&
+    isNullableNumber(value.nextPage) &&
     Array.isArray(value.results) &&
     value.results.every(isCatalogSearchResult)
   );

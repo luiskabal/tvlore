@@ -36,12 +36,13 @@ export class CatalogService {
     await this.usersService.getMe(authorizationHeader);
 
     const input = parseCatalogSearchInput({ page, query, types });
-    const results = await this.tmdbClient.search(input);
+    const searchPage = await this.tmdbClient.search(input);
 
     return {
       page: input.page,
+      nextPage: searchPage.nextPage,
       query: input.query,
-      results: await this.catalogRepository.withExistingTvloreIds(results),
+      results: await this.catalogRepository.withExistingTvloreIds(searchPage.results),
     };
   }
 

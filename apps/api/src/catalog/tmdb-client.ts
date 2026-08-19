@@ -6,7 +6,7 @@ import { toEpisodeCastResponse, toMovieCastResponse, toShowCastResponse } from "
 import { toMovieCollection } from "./catalog-collection";
 import { toResolvedSeason } from "./catalog-detail";
 import { toResolvedMovie, toResolvedShow } from "./catalog-resolve";
-import { toCatalogSearchResults, toCatalogSearchResultsForMediaType } from "./catalog-search";
+import { toCatalogSearchPage, toCatalogSearchResultsForMediaType } from "./catalog-search";
 import { toWatchProvidersResponse } from "./catalog-watch-providers";
 
 @Injectable()
@@ -38,7 +38,7 @@ export class TmdbClient {
     url.searchParams.set("language", "en-US");
     url.searchParams.set("page", String(input.page));
 
-    return toCatalogSearchResults(await this.getJson(url), input.mediaTypes);
+    return toCatalogSearchPage(await this.getJson(url), input);
   }
 
   async getResolvedItem(input: CatalogResolveInput) {

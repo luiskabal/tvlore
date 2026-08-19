@@ -26,9 +26,10 @@ export async function searchCatalog(
   accessToken: string | null,
   query: string,
   mediaTypes: MediaType[],
+  page = 1,
 ): Promise<CatalogSearchResponse> {
   const params = new URLSearchParams({
-    page: "1",
+    page: String(page),
     query,
     types: mediaTypes.join(","),
   });

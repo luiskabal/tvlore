@@ -16,8 +16,9 @@ export type { SearchFilter };
 export type SearchState =
   | { kind: "idle" }
   | { kind: "loading"; query: string }
-  | { kind: "refreshing"; query: string; results: CatalogSearchResult[] }
-  | { kind: "ready"; query: string; results: CatalogSearchResult[] }
+  | { kind: "loadingMore"; nextPage: number | null; query: string; results: CatalogSearchResult[] }
+  | { kind: "refreshing"; nextPage: number | null; query: string; results: CatalogSearchResult[] }
+  | { kind: "ready"; loadMoreError?: string; nextPage: number | null; query: string; results: CatalogSearchResult[] }
   | { kind: "error"; message: string };
 
 export type ResolveState =
@@ -48,7 +49,7 @@ export function useCatalogSearch() {
 
     setSearch((current) => {
       if (keepResults && (current.kind === "ready" || current.kind === "refreshing") && current.results.length > 0) {
-        return { kind: "refreshing", query, results: current.results };
+        return { kind: "refreshing", nextPage: current.nextPage, query, results: current.results };
       }
 
       return { kind: "loading", query };
@@ -63,11 +64,8 @@ export function useCatalogSearch() {
         return;
       }
 
-      setSearch({ kind: "ready", query: response.query, results: response.results });
-      void prefetchCatalogDetails(
-        response.results.map((result) => ({ id: result.tvloreId, mediaType: result.mediaType })),
-        { accessToken: token },
-      );
+      setSearch({ kind: "ready", nextPage: response.nextPage, query: response.query, results: response.results });
+      prefetchResolvedResults(response.results, token);
     } catch (error) {
       if (requestIdRef.current !== requestId) {
         return;
@@ -79,6 +77,46 @@ export function useCatalogSearch() {
       });
     }
   }, []);
+
+  const loadMore = useCallback(async (filter: SearchFilter) => {
+    if (search.kind !== "ready" || !search.nextPage || search.results.length === 0) {
+      return;
+    }
+
+    const requestId = requestIdRef.current + 1;
+    requestIdRef.current = requestId;
+    const currentQuery = search.query;
+    const currentResults = search.results;
+    const nextPage = search.nextPage;
+
+    setSearch({ kind: "loadingMore", nextPage, query: currentQuery, results: currentResults });
+
+    try {
+      const token = await getSupabaseAccessToken();
+      const response = await searchCatalog(token, currentQuery, getMediaTypes(filter), nextPage);
+
+      if (requestIdRef.current !== requestId) {
+        return;
+      }
+
+      const results = mergeResults(currentResults, response.results);
+
+      setSearch({ kind: "ready", nextPage: response.nextPage, query: response.query, results });
+      prefetchResolvedResults(response.results, token);
+    } catch (error) {
+      if (requestIdRef.current !== requestId) {
+        return;
+      }
+
+      setSearch({
+        kind: "ready",
+        loadMoreError: error instanceof Error ? error.message : "Could not load more results",
+        nextPage,
+        query: currentQuery,
+        results: currentResults,
+      });
+    }
+  }, [search]);
 
   const resolveResult = useCallback(async (result: CatalogSearchResult) => {
     const resultKey = getResultKey(result);
@@ -100,5 +138,30 @@ export function useCatalogSearch() {
     }
   }, []);
 
-  return { resolveResult, resolveState, runSearch, search };
+  return { loadMore, resolveResult, resolveState, runSearch, search };
+}
+
+function prefetchResolvedResults(results: CatalogSearchResult[], accessToken: string | null) {
+  void prefetchCatalogDetails(
+    results
+      .filter((result): result is CatalogSearchResult & { tvloreId: string } => Boolean(result.tvloreId))
+      .map((result) => ({ id: result.tvloreId, mediaType: result.mediaType })),
+    { accessToken },
+  );
+}
+
+function mergeResults(current: CatalogSearchResult[], incoming: CatalogSearchResult[]) {
+  const keys = new Set(current.map(getResultKey));
+  const merged = [...current];
+
+  incoming.forEach((result) => {
+    const key = getResultKey(result);
+
+    if (!keys.has(key)) {
+      keys.add(key);
+      merged.push(result);
+    }
+  });
+
+  return merged;
 }
