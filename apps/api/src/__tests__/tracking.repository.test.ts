@@ -80,7 +80,8 @@ describe("TrackingRepository", () => {
   it("marks every show episode watched", async () => {
     const watchedAt = new Date("2026-08-14T00:00:00.000Z");
     const episodeWatch = {
-      upsert: vi.fn().mockResolvedValue({ watchedAt }),
+      createMany: vi.fn().mockResolvedValue({ count: 2 }),
+      deleteMany: vi.fn().mockResolvedValue({ count: 0 }),
     };
     const client = {
       $transaction: vi.fn(async (callback: (transaction: { episodeWatch: typeof episodeWatch }) => Promise<void>) => {
@@ -138,19 +139,71 @@ describe("TrackingRepository", () => {
       totalEpisodeCount: 2,
       watchedEpisodeCount: 2,
     });
-    expect(client.episodeWatch.upsert).toHaveBeenCalledTimes(2);
-    expect(client.episodeWatch.upsert).toHaveBeenCalledWith(expect.objectContaining({
-      where: { userId_episodeId: { episodeId: firstEpisodeId, userId } },
-    }));
-    expect(client.episodeWatch.upsert).toHaveBeenCalledWith(expect.objectContaining({
-      where: { userId_episodeId: { episodeId: secondEpisodeId, userId } },
-    }));
+    expect(client.episodeWatch.deleteMany).toHaveBeenCalledWith({
+      where: {
+        episodeId: { in: [firstEpisodeId, secondEpisodeId] },
+        userId,
+      },
+    });
+    expect(client.episodeWatch.createMany).toHaveBeenCalledWith({
+      data: [
+        { episodeId: firstEpisodeId, userId, watchedAt },
+        { episodeId: secondEpisodeId, userId, watchedAt },
+      ],
+    });
+    expect(client.episodeWatch.createMany.mock.invocationCallOrder[0])
+      .toBeGreaterThan(client.episodeWatch.deleteMany.mock.invocationCallOrder[0]);
+  });
+
+  it("does not bulk-create show watches when no episodes exist", async () => {
+    const watchedAt = new Date("2026-08-14T00:00:00.000Z");
+    const episodeWatch = {
+      createMany: vi.fn(),
+      deleteMany: vi.fn().mockResolvedValue({ count: 0 }),
+    };
+    const client = {
+      $transaction: vi.fn(async (callback: (transaction: { episodeWatch: typeof episodeWatch }) => Promise<void>) => {
+        await callback({ episodeWatch });
+      }),
+      episode: {
+        findMany: vi.fn().mockResolvedValue([]),
+      },
+      episodeWatch,
+      show: {
+        findUnique: vi.fn()
+          .mockResolvedValueOnce({ id: showId })
+          .mockResolvedValueOnce({
+            id: showId,
+            seasons: [],
+          }),
+      },
+    };
+    const repository = new TrackingRepository({ getClient: () => client } as unknown as PrismaService);
+
+    await expect(repository.markShowWatched(userId, showId, watchedAt)).resolves.toEqual({
+      isComplete: false,
+      nextEpisode: null,
+      percentComplete: 0,
+      seasons: [],
+      showId,
+      status: "not_started",
+      totalEpisodeCount: 0,
+      watchedEpisodeCount: 0,
+    });
+    expect(client.episodeWatch.deleteMany).toHaveBeenCalledWith({
+      where: {
+        episodeId: { in: [] },
+        userId,
+      },
+    });
+    expect(client.episodeWatch.createMany).not.toHaveBeenCalled();
   });
 
   it("marks every season episode watched", async () => {
     const watchedAt = new Date("2026-08-14T00:00:00.000Z");
     const episodeWatch = {
-      upsert: vi.fn().mockResolvedValue({ watchedAt }),
+      createMany: vi.fn().mockResolvedValue({ count: 2 }),
+      deleteMany: vi.fn().mockResolvedValue({ count: 0 }),
     };
     const client = {
       $transaction: vi.fn(async (callback: (transaction: { episodeWatch: typeof episodeWatch }) => Promise<void>) => {
@@ -202,12 +255,17 @@ describe("TrackingRepository", () => {
     expect(client.season.findUnique).toHaveBeenCalledWith(expect.objectContaining({
       where: { showId_seasonNumber: { seasonNumber: 1, showId } },
     }));
-    expect(client.episodeWatch.upsert).toHaveBeenCalledTimes(2);
-    expect(client.episodeWatch.upsert).toHaveBeenCalledWith(expect.objectContaining({
-      where: { userId_episodeId: { episodeId: firstEpisodeId, userId } },
-    }));
-    expect(client.episodeWatch.upsert).toHaveBeenCalledWith(expect.objectContaining({
-      where: { userId_episodeId: { episodeId: secondEpisodeId, userId } },
-    }));
+    expect(client.episodeWatch.deleteMany).toHaveBeenCalledWith({
+      where: {
+        episodeId: { in: [firstEpisodeId, secondEpisodeId] },
+        userId,
+      },
+    });
+    expect(client.episodeWatch.createMany).toHaveBeenCalledWith({
+      data: [
+        { episodeId: firstEpisodeId, userId, watchedAt },
+        { episodeId: secondEpisodeId, userId, watchedAt },
+      ],
+    });
   });
 });

@@ -26,12 +26,12 @@ describe("fetchJson", () => {
     expect(fetchMock).toHaveBeenCalledWith("http://localhost:3000/health", undefined);
   });
 
-  it("throws the caller error for non-JSON responses", async () => {
+  it("throws the caller error with status for non-JSON error responses", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(
       new Response("<html>bad gateway</html>", { status: 502 }),
     ));
 
-    await expect(fetchJson("/health", isOkResponse, "Readable failure")).rejects.toThrow("Readable failure");
+    await expect(fetchJson("/health", isOkResponse, "Readable failure")).rejects.toThrow("Readable failure (502)");
   });
 
   it("throws backend error messages for API error responses", async () => {

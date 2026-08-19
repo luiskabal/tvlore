@@ -10,6 +10,7 @@ import type {
   EpisodeDetailResponseDto,
   MovieDetailResponseDto,
   ShowDetailResponseDto,
+  ShowSeasonHydrationPlanDto,
   ShowSeasonDetailResponseDto,
   ShowSeasonsResponseDto,
 } from "./catalog.types";
@@ -192,6 +193,38 @@ export class CatalogRepository {
     return show
       ? {
           seasons: show.seasons.map(toSeasonSummaryResponse),
+          showId: show.id,
+        }
+      : null;
+  }
+
+  async findShowSeasonHydrationPlan(showId: string): Promise<ShowSeasonHydrationPlanDto | null> {
+    const show = await this.prismaService.getClient().show.findUnique({
+      select: {
+        id: true,
+        seasons: {
+          orderBy: { seasonNumber: "asc" },
+          select: {
+            _count: {
+              select: { episodes: true },
+            },
+            episodeCount: true,
+            seasonNumber: true,
+          },
+        },
+      },
+      where: { id: showId },
+    });
+
+    return show
+      ? {
+          seasons: show.seasons
+            .filter((season) => season.episodeCount > 0 && season._count.episodes < season.episodeCount)
+            .map((season) => ({
+              episodeCount: season.episodeCount,
+              seasonNumber: season.seasonNumber,
+              storedEpisodeCount: season._count.episodes,
+            })),
           showId: show.id,
         }
       : null;

@@ -122,13 +122,19 @@ export class TrackingRepository {
       select: { id: true },
       where: { showId },
     });
+    const episodeIds = episodes.map((episode) => episode.id);
 
     await client.$transaction(async (transaction) => {
-      for (const episode of episodes) {
-        await transaction.episodeWatch.upsert({
-          create: { episodeId: episode.id, userId, watchedAt },
-          update: { watchedAt },
-          where: { userId_episodeId: { episodeId: episode.id, userId } },
+      await transaction.episodeWatch.deleteMany({
+        where: {
+          episodeId: { in: episodeIds },
+          userId,
+        },
+      });
+
+      if (episodeIds.length > 0) {
+        await transaction.episodeWatch.createMany({
+          data: episodeIds.map((episodeId) => ({ episodeId, userId, watchedAt })),
         });
       }
     });
@@ -183,12 +189,19 @@ export class TrackingRepository {
       throwNotFound("SEASON_NOT_FOUND", "Season was not found");
     }
 
+    const episodeIds = season.episodes.map((episode) => episode.id);
+
     await client.$transaction(async (transaction) => {
-      for (const episode of season.episodes) {
-        await transaction.episodeWatch.upsert({
-          create: { episodeId: episode.id, userId, watchedAt },
-          update: { watchedAt },
-          where: { userId_episodeId: { episodeId: episode.id, userId } },
+      await transaction.episodeWatch.deleteMany({
+        where: {
+          episodeId: { in: episodeIds },
+          userId,
+        },
+      });
+
+      if (episodeIds.length > 0) {
+        await transaction.episodeWatch.createMany({
+          data: episodeIds.map((episodeId) => ({ episodeId, userId, watchedAt })),
         });
       }
     });

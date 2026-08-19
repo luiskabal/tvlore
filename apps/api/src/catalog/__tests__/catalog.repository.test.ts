@@ -9,6 +9,43 @@ const showId = "00000000-0000-4000-8000-000000000003";
 const seasonId = "00000000-0000-4000-8000-000000000004";
 
 describe("CatalogRepository", () => {
+  it("returns only seasons that still need episode hydration", async () => {
+    const client = {
+      show: {
+        findUnique: vi.fn().mockResolvedValue({
+          id: showId,
+          seasons: [
+            { _count: { episodes: 0 }, episodeCount: 0, seasonNumber: 0 },
+            { _count: { episodes: 1 }, episodeCount: 3, seasonNumber: 1 },
+            { _count: { episodes: 8 }, episodeCount: 8, seasonNumber: 2 },
+          ],
+        }),
+      },
+    };
+    const repository = new CatalogRepository({ getClient: () => client } as unknown as PrismaService);
+
+    await expect(repository.findShowSeasonHydrationPlan(showId)).resolves.toEqual({
+      seasons: [
+        {
+          episodeCount: 3,
+          seasonNumber: 1,
+          storedEpisodeCount: 1,
+        },
+      ],
+      showId,
+    });
+    expect(client.show.findUnique).toHaveBeenCalledWith(expect.objectContaining({
+      select: expect.objectContaining({
+        seasons: expect.objectContaining({
+          select: expect.objectContaining({
+            _count: { select: { episodes: true } },
+          }),
+        }),
+      }),
+      where: { id: showId },
+    }));
+  });
+
   it("returns season detail with show context", async () => {
     const watchedAt = new Date("2026-08-14T00:00:00.000Z");
     const client = {

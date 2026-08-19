@@ -23,7 +23,7 @@ export async function fetchJson<T>(
   const body = await readJsonBody(response);
 
   if (!response.ok) {
-    throw new Error(getApiErrorMessage(body) ?? errorMessage);
+    throw new Error(getApiErrorMessage(body) ?? `${errorMessage} (${response.status})`);
   }
 
   if (!guard(body)) {

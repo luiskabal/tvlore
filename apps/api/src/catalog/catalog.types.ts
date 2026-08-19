@@ -136,6 +136,15 @@ export type ShowSeasonsResponseDto = {
   showId: string;
 };
 
+export type ShowSeasonHydrationPlanDto = {
+  seasons: Array<{
+    episodeCount: number;
+    seasonNumber: number;
+    storedEpisodeCount: number;
+  }>;
+  showId: string;
+};
+
 export type ShowSeasonDetailResponseDto = ShowSeasonSummaryDto & {
   episodes: ShowEpisodeDto[];
   showId: string;

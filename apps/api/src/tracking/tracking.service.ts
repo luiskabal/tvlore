@@ -114,7 +114,7 @@ export class TrackingService {
   private async hydrateShowSeasons(showId: string) {
     const [providerShowId, seasons] = await Promise.all([
       this.catalogRepository.findShowProviderId(showId),
-      this.catalogRepository.findShowSeasons(showId),
+      this.catalogRepository.findShowSeasonHydrationPlan(showId),
     ]);
 
     if (!providerShowId || !seasons) {
@@ -122,10 +122,6 @@ export class TrackingService {
     }
 
     for (const season of seasons.seasons) {
-      if (season.episodeCount === 0) {
-        continue;
-      }
-
       const seasonDetail = await this.tmdbClient.getResolvedSeason(providerShowId, season.seasonNumber);
       await this.catalogRepository.upsertSeasonDetail(showId, seasonDetail);
     }

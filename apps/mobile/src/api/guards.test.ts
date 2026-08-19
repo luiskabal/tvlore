@@ -1,11 +1,37 @@
 import { describe, expect, it } from "vitest";
 
-import { isAvailableDiscoveryResponse, isDeleteUserResponse, isPopularDiscoveryResponse, isTvlorePicksDiscoveryResponse } from "./guards";
+import {
+  isAvailableDiscoveryResponse,
+  isDeleteUserResponse,
+  isPopularDiscoveryResponse,
+  isShowProgressResponse,
+  isTvlorePicksDiscoveryResponse,
+} from "./guards";
 
 describe("api guards", () => {
   it("accepts account deletion responses", () => {
     expect(isDeleteUserResponse({ deleted: true })).toBe(true);
     expect(isDeleteUserResponse({ deleted: false })).toBe(false);
+  });
+
+  it("accepts completed show progress responses", () => {
+    expect(isShowProgressResponse({
+      isComplete: true,
+      nextEpisode: null,
+      percentComplete: 100,
+      seasons: [
+        {
+          percentComplete: 100,
+          seasonNumber: 1,
+          totalEpisodeCount: 2,
+          watchedEpisodeCount: 2,
+        },
+      ],
+      showId: "00000000-0000-4000-8000-000000000002",
+      status: "completed",
+      totalEpisodeCount: 2,
+      watchedEpisodeCount: 2,
+    })).toBe(true);
   });
 
   it("accepts popular discovery responses with catalog search items", () => {

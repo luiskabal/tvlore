@@ -11,17 +11,16 @@ const showId = "00000000-0000-4000-8000-000000000002";
 const providerShowId = "70523";
 
 describe("TrackingService", () => {
-  it("hydrates non-empty seasons before marking a show watched", async () => {
+  it("hydrates incomplete seasons before marking a show watched", async () => {
     const watchedAt = "2026-08-14T00:00:00.000Z";
     const seasonOne = { seasonNumber: 1 };
     const seasonTwo = { seasonNumber: 2 };
     const catalogRepository = {
       findShowProviderId: vi.fn().mockResolvedValue(providerShowId),
-      findShowSeasons: vi.fn().mockResolvedValue({
+      findShowSeasonHydrationPlan: vi.fn().mockResolvedValue({
         seasons: [
-          { episodeCount: 0, seasonNumber: 0 },
-          { episodeCount: 2, seasonNumber: 1 },
-          { episodeCount: 1, seasonNumber: 2 },
+          { episodeCount: 2, seasonNumber: 1, storedEpisodeCount: 0 },
+          { episodeCount: 1, seasonNumber: 2, storedEpisodeCount: 0 },
         ],
         showId,
       }),
