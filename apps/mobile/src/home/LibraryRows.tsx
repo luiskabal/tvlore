@@ -5,6 +5,7 @@ import { Swipeable } from "react-native-gesture-handler";
 import type {
   ContinueWatchingShow,
   LibraryRatedTitle,
+  LibraryShowItem,
   LibraryWatchlistItem,
   RecentlyWatchedItem,
   WatchedEpisodeItem,
@@ -58,6 +59,36 @@ export function ContinueWatchingItem({
       posterUri={getPosterUri(show.posterPath)}
       title={show.title}
       trailing={`${show.percentComplete}%`}
+    />
+  );
+}
+
+export function LibraryShowRow({
+  onOpenShow,
+  onOpenShowSeason,
+  show,
+}: {
+  onOpenShow: (showId: string) => void;
+  onOpenShowSeason: (showId: string, seasonNumber: number) => void;
+  show: LibraryShowItem;
+}) {
+  const openShow = () => {
+    if (show.status === "watching" && show.nextEpisode) {
+      onOpenShowSeason(show.id, show.nextEpisode.seasonNumber);
+      return;
+    }
+
+    onOpenShow(show.id);
+  };
+
+  return (
+    <MediaRow
+      detail={getLibraryShowDetail(show)}
+      onPress={openShow}
+      posterLabel="TV"
+      posterUri={getPosterUri(show.posterPath)}
+      title={show.title}
+      trailing={getLibraryShowTrailing(show)}
     />
   );
 }
@@ -435,6 +466,46 @@ function getRecentlyWatchedDetail(item: RecentlyWatchedItem) {
   return item.mediaType === "movie"
     ? "Movie"
     : `S${item.seasonNumber} E${item.episodeNumber} - ${item.title}`;
+}
+
+function getLibraryShowDetail(show: LibraryShowItem) {
+  if (show.status === "completed") {
+    return `${show.watchedEpisodeCount}/${show.totalEpisodeCount} watched`;
+  }
+
+  if (show.status === "watching" && show.nextEpisode) {
+    return `Next S${show.nextEpisode.seasonNumber} E${show.nextEpisode.episodeNumber} - ${show.nextEpisode.title}`;
+  }
+
+  if (show.inWatchlist && show.rating) {
+    return `Saved - Rated ${show.rating}/5`;
+  }
+
+  if (show.inWatchlist) {
+    return "Saved to watchlist";
+  }
+
+  if (show.rating) {
+    return `Rated ${show.rating}/5`;
+  }
+
+  return "Show";
+}
+
+function getLibraryShowTrailing(show: LibraryShowItem) {
+  if (show.status === "completed") {
+    return "Done";
+  }
+
+  if (show.status === "watching") {
+    return `${show.percentComplete}%`;
+  }
+
+  if (show.rating) {
+    return `${show.rating}/5`;
+  }
+
+  return show.inWatchlist ? "Saved" : "";
 }
 
 function formatShortDate(value: string) {

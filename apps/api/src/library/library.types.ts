@@ -25,6 +25,21 @@ export type LibraryContinueWatchingShowDto = {
   title: string;
 };
 
+export type LibraryShowItemDto = {
+  id: string;
+  inWatchlist: boolean;
+  latestActivityAt: string;
+  mediaType: "show";
+  nextEpisode: LibraryNextEpisodeDto | null;
+  percentComplete: number;
+  posterPath: string | null;
+  rating: number | null;
+  status: ShowProgressResponseDto["status"];
+  title: string;
+  totalEpisodeCount: number;
+  watchedEpisodeCount: number;
+};
+
 export type LibraryRecentlyWatchedItemDto =
   | {
       id: string;
@@ -84,6 +99,7 @@ export type LibraryResponseDto = {
   continueWatching: LibraryContinueWatchingShowDto[];
   ratedTitles: LibraryRatedTitleDto[];
   recentlyWatched: LibraryRecentlyWatchedItemDto[];
+  shows: LibraryShowItemDto[];
   summary: LibrarySummaryDto;
   watchlist: LibraryWatchlistItemDto[];
   watchedEpisodes: LibraryWatchedEpisodeDto[];

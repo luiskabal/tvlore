@@ -17,6 +17,7 @@ export type LibraryResponse = {
   continueWatching: ContinueWatchingShow[];
   ratedTitles: LibraryRatedTitle[];
   recentlyWatched: RecentlyWatchedItem[];
+  shows: LibraryShowItem[];
   summary: {
     averageRating: number | null;
     ratedTitleCount: number;
@@ -86,6 +87,21 @@ export type ContinueWatchingShow = {
   percentComplete: number;
   posterPath: string | null;
   title: string;
+};
+
+export type LibraryShowItem = {
+  id: string;
+  inWatchlist: boolean;
+  latestActivityAt: string;
+  mediaType: "show";
+  nextEpisode: ContinueWatchingShow["nextEpisode"] | null;
+  percentComplete: number;
+  posterPath: string | null;
+  rating: number | null;
+  status: "completed" | "not_started" | "watching";
+  title: string;
+  totalEpisodeCount: number;
+  watchedEpisodeCount: number;
 };
 
 export type RecentlyWatchedItem =

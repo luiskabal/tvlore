@@ -15,11 +15,11 @@ import { Skeleton, StatCard } from "../ui";
 import { styles } from "./home-styles";
 import {
   ChronologySection,
-  ContinueWatchingSection,
   EmptySection,
   EpisodesSection,
   MoviesSection,
   RatedSection,
+  ShowsSection,
   WatchlistSection,
 } from "./LibraryOverviewSections";
 import { LibraryRowsSkeleton } from "./LibraryRows";
@@ -131,25 +131,25 @@ export function LibraryOverview({
     visibleLibrary.summary.watchedEpisodeCount === 0 &&
     visibleLibrary.summary.watchedMovieCount === 0 &&
     visibleLibrary.summary.watchedShowCount === 0;
-  const hasContinueWatching = visibleLibrary.continueWatching.length > 0;
   const hasRatedTitles = visibleLibrary.ratedTitles.length > 0;
   const recentlyWatchedMovies = visibleLibrary.recentlyWatched.filter((item) => item.mediaType === "movie");
   const episodeGroups = groupEpisodesByShowAndSeason(visibleLibrary.watchedEpisodes);
   const hasWatchedEpisodes = visibleLibrary.watchedEpisodes.length > 0;
   const hasRecentlyWatchedMovies = recentlyWatchedMovies.length > 0;
+  const hasShows = visibleLibrary.shows.length > 0;
   const hasWatchlist = visibleLibrary.watchlist.length > 0;
   const activeSection = selectedSection ?? getDefaultSection(visibleLibrary);
   const chronologyCount = visibleLibrary.summary.watchedEpisodeCount + visibleLibrary.summary.watchedMovieCount;
   const summaryStats: Array<{ label: string; section: LibrarySectionFilter; value: number }> = [
     { label: "Cronologia", section: "chronology", value: chronologyCount },
-    { label: "Shows", section: "watching", value: visibleLibrary.summary.watchedShowCount },
+    { label: "Shows", section: "shows", value: visibleLibrary.shows.length },
     { label: "Movies", section: "movies", value: visibleLibrary.summary.watchedMovieCount },
     { label: "Episodes", section: "episodes", value: visibleLibrary.summary.watchedEpisodeCount },
     { label: "Watchlist", section: "watchlist", value: visibleLibrary.summary.watchlistItemCount },
     { label: "Rated", section: "rated", value: visibleLibrary.summary.ratedTitleCount },
   ];
   const shouldShowWatchlist = activeSection === "watchlist";
-  const shouldShowContinueWatching = activeSection === "watching";
+  const shouldShowShows = activeSection === "shows";
   const shouldShowRated = activeSection === "rated";
   const shouldShowHistory = activeSection === "chronology";
   const shouldShowMovies = activeSection === "movies";
@@ -205,10 +205,11 @@ export function LibraryOverview({
           <EmptySection activeSection={activeSection} />
         ) : null}
 
-        {shouldShowContinueWatching && hasContinueWatching ? (
-          <ContinueWatchingSection
+        {shouldShowShows && hasShows ? (
+          <ShowsSection
+            onOpenShow={onOpenShow}
             onOpenShowSeason={onOpenShowSeason}
-            shows={visibleLibrary.continueWatching}
+            shows={visibleLibrary.shows}
           />
         ) : null}
 

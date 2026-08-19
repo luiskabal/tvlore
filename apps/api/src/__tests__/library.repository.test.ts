@@ -24,7 +24,16 @@ describe("LibraryRepository", () => {
       },
       movieWatch: { findMany: vi.fn().mockResolvedValue([]) },
       movieWatchlistItem: { findMany: vi.fn().mockResolvedValue([]) },
-      show: { findMany: vi.fn().mockResolvedValue([]) },
+      show: {
+        findMany: vi.fn().mockResolvedValue([
+          {
+            episodes: [],
+            id: showId,
+            posterPath: "/dark.jpg",
+            title: "Dark",
+          },
+        ]),
+      },
       showPreference: {
         findMany: vi.fn().mockResolvedValue([
           {
@@ -65,8 +74,26 @@ describe("LibraryRepository", () => {
         watchedMovieCount: 0,
         watchedShowCount: 0,
       },
+      shows: [
+        {
+          id: showId,
+          inWatchlist: false,
+          latestActivityAt: showUpdatedAt.toISOString(),
+          mediaType: "show",
+          nextEpisode: null,
+          percentComplete: 0,
+          posterPath: "/dark.jpg",
+          rating: 5,
+          status: "not_started",
+          title: "Dark",
+          totalEpisodeCount: 0,
+          watchedEpisodeCount: 0,
+        },
+      ],
     });
-    expect(client.show.findMany).not.toHaveBeenCalled();
+    expect(client.show.findMany).toHaveBeenCalledWith(expect.objectContaining({
+      where: { id: { in: [showId] } },
+    }));
   });
 
   it("returns complete watched episodes separately from recent activity", async () => {
@@ -85,7 +112,22 @@ describe("LibraryRepository", () => {
       moviePreference: { findMany: vi.fn().mockResolvedValue([]) },
       movieWatch: { findMany: vi.fn().mockResolvedValue([]) },
       movieWatchlistItem: { findMany: vi.fn().mockResolvedValue([]) },
-      show: { findMany: vi.fn().mockResolvedValue([]) },
+      show: {
+        findMany: vi.fn().mockResolvedValue([
+          {
+            episodes: episodeWatches.map((watch) => ({
+              episodeNumber: watch.episode.episodeNumber,
+              id: watch.episode.id,
+              seasonNumber: watch.episode.seasonNumber,
+              title: watch.episode.title,
+              watches: [{ watchedAt: watch.watchedAt }],
+            })),
+            id: showId,
+            posterPath: "/dark.jpg",
+            title: "Dark",
+          },
+        ]),
+      },
       showPreference: { findMany: vi.fn().mockResolvedValue([]) },
       showWatchlistItem: { findMany: vi.fn().mockResolvedValue([]) },
     };
@@ -94,6 +136,14 @@ describe("LibraryRepository", () => {
 
     expect(library.summary.watchedEpisodeCount).toBe(11);
     expect(library.summary.watchedShowCount).toBe(1);
+    expect(library.shows).toHaveLength(1);
+    expect(library.shows[0]).toMatchObject({
+      id: showId,
+      status: "completed",
+      title: "Dark",
+      totalEpisodeCount: 11,
+      watchedEpisodeCount: 11,
+    });
     expect(library.recentlyWatched).toHaveLength(10);
     expect(library.watchedEpisodes).toHaveLength(11);
     expect(library.watchedEpisodes[0]).toMatchObject({

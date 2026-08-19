@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   isAvailableDiscoveryResponse,
   isDeleteUserResponse,
+  isLibraryResponse,
   isPopularDiscoveryResponse,
   isShowProgressResponse,
   isTvlorePicksDiscoveryResponse,
@@ -31,6 +32,40 @@ describe("api guards", () => {
       status: "completed",
       totalEpisodeCount: 2,
       watchedEpisodeCount: 2,
+    })).toBe(true);
+  });
+
+  it("accepts library responses with show library items", () => {
+    expect(isLibraryResponse({
+      continueWatching: [],
+      ratedTitles: [],
+      recentlyWatched: [],
+      shows: [
+        {
+          id: "00000000-0000-4000-8000-000000000002",
+          inWatchlist: true,
+          latestActivityAt: "2026-08-14T10:00:00.000Z",
+          mediaType: "show",
+          nextEpisode: null,
+          percentComplete: 0,
+          posterPath: "/dark.jpg",
+          rating: 5,
+          status: "not_started",
+          title: "Dark",
+          totalEpisodeCount: 0,
+          watchedEpisodeCount: 0,
+        },
+      ],
+      summary: {
+        averageRating: 5,
+        ratedTitleCount: 1,
+        watchlistItemCount: 1,
+        watchedEpisodeCount: 0,
+        watchedMovieCount: 0,
+        watchedShowCount: 0,
+      },
+      watchlist: [],
+      watchedEpisodes: [],
     })).toBe(true);
   });
 

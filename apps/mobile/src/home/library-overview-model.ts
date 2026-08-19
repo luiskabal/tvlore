@@ -6,7 +6,7 @@ export type LibrarySectionFilter =
   | "episodes"
   | "movies"
   | "rated"
-  | "watching"
+  | "shows"
   | "watchlist";
 
 export type EpisodeGroup = {
@@ -23,8 +23,8 @@ export function hasItemsForSection(activeSection: LibrarySectionFilter, library:
     return library.recentlyWatched.length > 0;
   }
 
-  if (activeSection === "watching") {
-    return library.continueWatching.length > 0;
+  if (activeSection === "shows") {
+    return library.shows.length > 0;
   }
 
   if (activeSection === "watchlist") {
@@ -98,7 +98,7 @@ export function deleteSetValue<T>(values: Set<T>, value: T) {
 }
 
 export function getDefaultSection(library: LibraryResponse): LibrarySectionFilter {
-  return library.continueWatching.length > 0 ? "watching" : "chronology";
+  return library.shows.length > 0 ? "shows" : "chronology";
 }
 
 export function groupEpisodesByShowAndSeason(

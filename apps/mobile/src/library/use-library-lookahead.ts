@@ -14,6 +14,7 @@ export function useLibraryLookahead(library: LibraryResponse | null, enabled: bo
     }
 
     void prefetchCatalogDetails([
+      ...library.shows,
       ...library.watchlist,
       ...library.ratedTitles,
       ...library.recentlyWatched.filter(isRecentlyWatchedMovie),
@@ -24,6 +25,12 @@ export function useLibraryLookahead(library: LibraryResponse | null, enabled: bo
     ]);
 
     void prefetchShowSeasonDetails([
+      ...library.shows
+        .filter((show) => show.nextEpisode)
+        .map((show) => ({
+          seasonNumber: show.nextEpisode?.seasonNumber ?? 1,
+          showId: show.id,
+        })),
       ...library.continueWatching.map((show) => ({
         seasonNumber: show.nextEpisode.seasonNumber,
         showId: show.id,

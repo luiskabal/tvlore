@@ -3,6 +3,7 @@ import { Text, View } from "react-native";
 import type {
   ContinueWatchingShow,
   LibraryRatedTitle,
+  LibraryShowItem,
   LibraryWatchlistItem,
   RecentlyWatchedItem,
 } from "../api/tvlore-api";
@@ -17,6 +18,7 @@ import {
 import {
   ContinueWatchingItem,
   EpisodeShowGroup,
+  LibraryShowRow,
   LibraryRowsSkeleton,
   RatedTitleRow,
   RecentlyWatchedRow,
@@ -44,6 +46,30 @@ export function ContinueWatchingSection({
       <Text style={styles.listTitle}>Continue Watching</Text>
       {shows.map((show) => (
         <ContinueWatchingItem key={show.id} onOpenShowSeason={onOpenShowSeason} show={show} />
+      ))}
+    </View>
+  );
+}
+
+export function ShowsSection({
+  onOpenShow,
+  onOpenShowSeason,
+  shows,
+}: {
+  onOpenShow: (showId: string) => void;
+  onOpenShowSeason: (showId: string, seasonNumber: number) => void;
+  shows: LibraryShowItem[];
+}) {
+  return (
+    <View style={styles.listSection}>
+      <Text style={styles.listTitle}>Shows</Text>
+      {shows.map((show) => (
+        <LibraryShowRow
+          key={show.id}
+          onOpenShow={onOpenShow}
+          onOpenShowSeason={onOpenShowSeason}
+          show={show}
+        />
       ))}
     </View>
   );
@@ -243,8 +269,8 @@ function getEmptySectionTitle(activeSection: LibrarySectionFilter) {
     return "No watch history";
   }
 
-  if (activeSection === "watching") {
-    return "Nothing in progress";
+  if (activeSection === "shows") {
+    return "No shows yet";
   }
 
   if (activeSection === "watchlist") {
@@ -271,8 +297,8 @@ function getEmptySectionDetail(activeSection: LibrarySectionFilter) {
     return "Watched movies and episodes will appear here by date.";
   }
 
-  if (activeSection === "watching") {
-    return "Shows appear here after you mark at least one episode watched.";
+  if (activeSection === "shows") {
+    return "Watched, rated, and saved shows will appear here.";
   }
 
   if (activeSection === "watchlist") {

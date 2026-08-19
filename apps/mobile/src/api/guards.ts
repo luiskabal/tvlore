@@ -11,6 +11,7 @@ import type {
   LibraryChronologyResponse,
   LibraryRatedTitle,
   LibraryResponse,
+  LibraryShowItem,
   LibraryWatchlistItem,
   MediaType,
   MovieDetailResponse,
@@ -79,6 +80,8 @@ export function isLibraryResponse(value: unknown): value is LibraryResponse {
     value.ratedTitles.every(isLibraryRatedTitle) &&
     Array.isArray(value.recentlyWatched) &&
     value.recentlyWatched.every(isRecentlyWatchedItem) &&
+    Array.isArray(value.shows) &&
+    value.shows.every(isLibraryShowItem) &&
     Array.isArray(value.watchlist) &&
     value.watchlist.every(isLibraryWatchlistItem) &&
     Array.isArray(value.watchedEpisodes) &&
@@ -523,6 +526,27 @@ function isContinueWatchingShow(value: unknown): value is ContinueWatchingShow {
     typeof value.nextEpisode.title === "string" &&
     typeof value.nextEpisode.seasonNumber === "number" &&
     typeof value.nextEpisode.episodeNumber === "number"
+  );
+}
+
+function isLibraryShowItem(value: unknown): value is LibraryShowItem {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    value.mediaType === "show" &&
+    typeof value.id === "string" &&
+    typeof value.title === "string" &&
+    isNullableString(value.posterPath) &&
+    typeof value.inWatchlist === "boolean" &&
+    typeof value.latestActivityAt === "string" &&
+    isNextEpisode(value.nextEpisode) &&
+    typeof value.percentComplete === "number" &&
+    isNullableNumber(value.rating) &&
+    isShowProgressStatus(value.status) &&
+    typeof value.totalEpisodeCount === "number" &&
+    typeof value.watchedEpisodeCount === "number"
   );
 }
 
