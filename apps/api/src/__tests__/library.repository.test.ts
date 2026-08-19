@@ -103,6 +103,7 @@ describe("LibraryRepository", () => {
         id: `episode-${index + 1}`,
         seasonNumber: 1,
         show: { id: showId, posterPath: "/dark.jpg", title: "Dark" },
+        stillPath: `/episode-${index + 1}.jpg`,
         title: `Episode ${index + 1}`,
       },
       watchedAt: new Date(`2026-08-14T10:${String(index).padStart(2, "0")}:00.000Z`),
@@ -119,6 +120,7 @@ describe("LibraryRepository", () => {
               episodeNumber: watch.episode.episodeNumber,
               id: watch.episode.id,
               seasonNumber: watch.episode.seasonNumber,
+              stillPath: watch.episode.stillPath,
               title: watch.episode.title,
               watches: [{ watchedAt: watch.watchedAt }],
             })),
@@ -152,7 +154,9 @@ describe("LibraryRepository", () => {
       mediaType: "episode",
       seasonNumber: 1,
       showId,
+      showPosterPath: "/dark.jpg",
       showTitle: "Dark",
+      stillPath: "/episode-11.jpg",
       title: "Episode 11",
     });
   });
@@ -164,7 +168,8 @@ describe("LibraryRepository", () => {
           episodeNumber: 2,
           id: "episode-new",
           seasonNumber: 1,
-          show: { id: showId, title: "Dark" },
+          show: { id: showId, posterPath: "/dark.jpg", title: "Dark" },
+          stillPath: "/lies.jpg",
           title: "Lies",
         },
         watchedAt: new Date("2026-08-14T10:02:00.000Z"),
@@ -174,7 +179,8 @@ describe("LibraryRepository", () => {
           episodeNumber: 1,
           id: "episode-old",
           seasonNumber: 1,
-          show: { id: showId, title: "Dark" },
+          show: { id: showId, posterPath: "/dark.jpg", title: "Dark" },
+          stillPath: null,
           title: "Secrets",
         },
         watchedAt: new Date("2026-08-14T10:00:00.000Z"),
@@ -198,6 +204,11 @@ describe("LibraryRepository", () => {
     const chronology = await repository.getChronology(userId, { limit: 3 });
 
     expect(chronology.items.map((item) => item.id)).toEqual(["movie-new", "episode-new", "movie-mid"]);
+    expect(chronology.items[1]).toMatchObject({
+      id: "episode-new",
+      showPosterPath: "/dark.jpg",
+      stillPath: "/lies.jpg",
+    });
     expect(chronology.nextCursor).toBe("2026-08-14T10:01:00.000Z");
     expect(client.episodeWatch.findMany).toHaveBeenCalledWith(expect.objectContaining({
       orderBy: { watchedAt: "desc" },

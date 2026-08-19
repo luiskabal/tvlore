@@ -459,7 +459,9 @@ function getRecentlyWatchedTitle(item: RecentlyWatchedItem) {
 }
 
 function getRecentlyWatchedPosterUri(item: RecentlyWatchedItem) {
-  return item.mediaType === "movie" ? getPosterUri(item.posterPath) : null;
+  return item.mediaType === "movie"
+    ? getPosterUri(item.posterPath)
+    : getPosterUri(item.stillPath ?? item.showPosterPath);
 }
 
 function getRecentlyWatchedDetail(item: RecentlyWatchedItem) {

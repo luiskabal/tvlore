@@ -577,6 +577,8 @@ function isWatchedEpisodeItem(value: unknown): value is WatchedEpisodeItem {
     typeof value.title === "string" &&
     typeof value.seasonNumber === "number" &&
     typeof value.episodeNumber === "number" &&
+    isNullableString(value.showPosterPath) &&
+    isNullableString(value.stillPath) &&
     typeof value.watchedAt === "string"
   );
 }

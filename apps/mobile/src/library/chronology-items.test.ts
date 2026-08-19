@@ -41,7 +41,9 @@ function episodeItem(id: string, title: string): RecentlyWatchedItem {
     mediaType: "episode",
     seasonNumber: 1,
     showId: "show-1",
+    showPosterPath: "/dark.jpg",
     showTitle: "Dark",
+    stillPath: "/secrets.jpg",
     title,
     watchedAt: "2026-08-15T00:00:00.000Z",
   };

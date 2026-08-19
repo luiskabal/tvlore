@@ -39,7 +39,20 @@ describe("api guards", () => {
     expect(isLibraryResponse({
       continueWatching: [],
       ratedTitles: [],
-      recentlyWatched: [],
+      recentlyWatched: [
+        {
+          episodeNumber: 1,
+          id: "00000000-0000-4000-8000-000000000003",
+          mediaType: "episode",
+          seasonNumber: 1,
+          showId: "00000000-0000-4000-8000-000000000002",
+          showPosterPath: "/dark.jpg",
+          showTitle: "Dark",
+          stillPath: "/secrets.jpg",
+          title: "Secrets",
+          watchedAt: "2026-08-14T10:00:00.000Z",
+        },
+      ],
       shows: [
         {
           id: "00000000-0000-4000-8000-000000000002",
@@ -65,7 +78,20 @@ describe("api guards", () => {
         watchedShowCount: 0,
       },
       watchlist: [],
-      watchedEpisodes: [],
+      watchedEpisodes: [
+        {
+          episodeNumber: 1,
+          id: "00000000-0000-4000-8000-000000000003",
+          mediaType: "episode",
+          seasonNumber: 1,
+          showId: "00000000-0000-4000-8000-000000000002",
+          showPosterPath: "/dark.jpg",
+          showTitle: "Dark",
+          stillPath: "/secrets.jpg",
+          title: "Secrets",
+          watchedAt: "2026-08-14T10:00:00.000Z",
+        },
+      ],
     })).toBe(true);
   });
 

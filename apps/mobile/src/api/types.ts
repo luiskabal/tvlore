@@ -120,7 +120,9 @@ export type WatchedEpisodeItem = {
   mediaType: "episode";
   seasonNumber: number;
   showId: string;
+  showPosterPath: string | null;
   showTitle: string;
+  stillPath: string | null;
   title: string;
   watchedAt: string;
 };

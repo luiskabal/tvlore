@@ -37,6 +37,7 @@ export class LibraryRepository {
               id: true,
               seasonNumber: true,
               show: { select: { id: true, posterPath: true, title: true } },
+              stillPath: true,
               title: true,
             },
           },
@@ -159,7 +160,8 @@ export class LibraryRepository {
               episodeNumber: true,
               id: true,
               seasonNumber: true,
-              show: { select: { id: true, title: true } },
+              show: { select: { id: true, posterPath: true, title: true } },
+              stillPath: true,
               title: true,
             },
           },
@@ -322,7 +324,8 @@ function toRecentlyWatched(
       episodeNumber: number;
       id: string;
       seasonNumber: number;
-      show: { id: string; title: string };
+      show: { id: string; posterPath: string | null; title: string };
+      stillPath: string | null;
       title: string;
     };
     watchedAt: Date;
@@ -341,7 +344,8 @@ function toChronologyItems(
       episodeNumber: number;
       id: string;
       seasonNumber: number;
-      show: { id: string; title: string };
+      show: { id: string; posterPath: string | null; title: string };
+      stillPath: string | null;
       title: string;
     };
     watchedAt: Date;
@@ -369,7 +373,8 @@ function toWatchedEpisodes(
       episodeNumber: number;
       id: string;
       seasonNumber: number;
-      show: { id: string; title: string };
+      show: { id: string; posterPath: string | null; title: string };
+      stillPath: string | null;
       title: string;
     };
     watchedAt: Date;
@@ -381,7 +386,9 @@ function toWatchedEpisodes(
     mediaType: "episode" as const,
     seasonNumber: watch.episode.seasonNumber,
     showId: watch.episode.show.id,
+    showPosterPath: watch.episode.show.posterPath,
     showTitle: watch.episode.show.title,
+    stillPath: watch.episode.stillPath,
     title: watch.episode.title,
     watchedAt: watch.watchedAt.toISOString(),
   }));
