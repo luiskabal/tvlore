@@ -3,14 +3,20 @@ import "react-native-url-polyfill/auto";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createClient, processLock } from "@supabase/supabase-js";
 import * as AppleAuthentication from "expo-apple-authentication";
+import * as ExpoLinking from "expo-linking";
 import * as SecureStore from "expo-secure-store";
 import * as WebBrowser from "expo-web-browser";
-import { AppState, Platform } from "react-native";
+import { AppState, Linking as NativeLinking, Platform } from "react-native";
 
 import { clearApiReadCache } from "../api/client";
 import { supabaseProjectUrl, supabasePublishableKey, supabaseUrl } from "../config/env";
+import { extractSessionFromAuthCallbackUrl, isAuthCallbackUrl } from "./auth-callback";
 
-const authRedirectUrl = "tvlore://auth/callback";
+const authRedirectUrl = ExpoLinking.createURL("auth/callback", {
+  isTripleSlashed: true,
+  scheme: "tvlore",
+});
+const androidAuthCallbackGracePeriodMs = 1500;
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -86,16 +92,30 @@ export async function signInWithGoogle() {
     throw new Error("Google OAuth URL was not returned");
   }
 
-  const result = await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
+  const callbackUrl = await openGoogleAuthSession(data.url, redirectTo);
 
-  if (result.type !== "success") {
+  if (!callbackUrl) {
     return false;
   }
 
-  const session = extractSessionFromUrl(result.url);
+  const completed = await completeOAuthCallback(callbackUrl);
+
+  if (!completed) {
+    throw new Error("Google OAuth did not return a session");
+  }
+
+  return true;
+}
+
+export async function completeOAuthCallback(url: string) {
+  if (!supabase) {
+    throw new Error("Supabase is not configured");
+  }
+
+  const session = extractSessionFromAuthCallbackUrl(url);
 
   if (!session) {
-    throw new Error("Google OAuth did not return a session");
+    return false;
   }
 
   const { error: sessionError } = await supabase.auth.setSession({
@@ -173,17 +193,6 @@ export async function signOut() {
   clearApiReadCache();
 }
 
-function extractSessionFromUrl(url: string) {
-  const parsedUrl = new URL(url);
-  const hashParams = parsedUrl.hash.startsWith("#") ? parsedUrl.hash.slice(1) : "";
-  const queryParams = parsedUrl.search.startsWith("?") ? parsedUrl.search.slice(1) : "";
-  const params = new URLSearchParams(hashParams || queryParams);
-  const accessToken = params.get("access_token");
-  const refreshToken = params.get("refresh_token");
-
-  return accessToken && refreshToken ? { accessToken, refreshToken } : null;
-}
-
 async function updateAppleProfileMetadata(credential: AppleAuthentication.AppleAuthenticationCredential) {
   if (!supabase || !credential.fullName) {
     return;
@@ -207,6 +216,52 @@ async function updateAppleProfileMetadata(credential: AppleAuthentication.AppleA
   if (error) {
     throw error;
   }
+}
+
+async function openGoogleAuthSession(authUrl: string, redirectTo: string) {
+  if (Platform.OS !== "android") {
+    const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectTo);
+
+    return result.type === "success" ? result.url : null;
+  }
+
+  let callbackUrl: string | null = null;
+  let resolveCallback: (url: string) => void = () => undefined;
+  const callbackPromise = new Promise<string>((resolve) => {
+    resolveCallback = resolve;
+  });
+
+  const subscription = NativeLinking.addEventListener("url", (event) => {
+    if (isAuthCallbackUrl(event.url)) {
+      callbackUrl = event.url;
+      resolveCallback(event.url);
+    }
+  });
+
+  try {
+    const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectTo);
+
+    if (result.type === "success") {
+      return result.url;
+    }
+
+    if (callbackUrl) {
+      return callbackUrl;
+    }
+
+    return waitForAuthCallback(callbackPromise, androidAuthCallbackGracePeriodMs);
+  } finally {
+    subscription.remove();
+  }
+}
+
+function waitForAuthCallback(callbackPromise: Promise<string>, timeoutMs: number) {
+  return Promise.race([
+    callbackPromise,
+    new Promise<null>((resolve) => {
+      setTimeout(() => resolve(null), timeoutMs);
+    }),
+  ]);
 }
 
 function isAppleSignInCancelled(error: unknown) {

@@ -44,12 +44,15 @@ https://qpekdijebjzigrgcumpv.supabase.co/auth/v1/callback
 Supabase redirects back to the app through allowed callback URLs:
 
 ```text
-tvlore://auth/callback
+tvlore:///auth/callback
 ```
 
-`tvlore://auth/callback` is the app callback used by development builds and
-production builds. OAuth should not be validated in Expo Go because Expo Go does
-not own the `tvlore://` scheme.
+`tvlore:///auth/callback` is the app callback used by development builds and
+production builds. The triple slash keeps `/auth/callback` as the route path
+instead of treating `auth` as a URL host. The mobile callback parser still
+accepts the legacy `tvlore://auth/callback` shape for compatibility. OAuth
+should not be validated in Expo Go because Expo Go does not own the `tvlore://`
+scheme.
 
 Expo Go can still be used for UI and backend smoke tests. Google OAuth requires a
 development build or production build.

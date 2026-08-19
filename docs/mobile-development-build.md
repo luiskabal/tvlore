@@ -3,7 +3,7 @@
 TVLore uses a native URL scheme for Google OAuth:
 
 ```text
-tvlore://auth/callback
+tvlore:///auth/callback
 ```
 
 Expo Go cannot reliably validate this flow because it does not own TVLore's
@@ -24,8 +24,12 @@ iOS Sign in with Apple: enabled through `ios.usesAppleSignIn`
 Supabase Auth must allow:
 
 ```text
-tvlore://auth/callback
+tvlore:///auth/callback
 ```
+
+The app also accepts the legacy `tvlore://auth/callback` callback shape, but
+new builds generate the triple-slash URL so Expo Router treats
+`/auth/callback` as the route path instead of treating `auth` as a URL host.
 
 ## Build With EAS
 
@@ -150,7 +154,7 @@ Open the installed TVLore app, connect it to the Metro server, then test
 After Google login, Supabase redirects to:
 
 ```text
-tvlore://auth/callback
+tvlore:///auth/callback
 ```
 
 iOS opens the installed TVLore development build, and the app stores the

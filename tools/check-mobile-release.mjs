@@ -50,7 +50,7 @@ expectHttpsUrl(mobileEnv.get("EXPO_PUBLIC_SUPABASE_URL"), "EXPO_PUBLIC_SUPABASE_
 
 console.log("\nmanual release gates");
 warn("Verify EAS remote envs with: cd apps/mobile; npx --yes eas-cli@latest env:list development|preview|production");
-warn("Verify Supabase Auth allows tvlore://auth/callback");
+warn("Verify Supabase Auth allows tvlore:///auth/callback");
 warn("Verify Apple Developer App ID com.luiskabal.tvlore has Sign in with Apple enabled");
 warn("Configure SUPABASE_SERVICE_ROLE_KEY in Vercel before release account-deletion QA");
 

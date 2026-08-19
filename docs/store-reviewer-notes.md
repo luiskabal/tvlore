@@ -58,5 +58,5 @@ Supabase Auth user in addition to TVLore-owned private data.
 ## Known External Gates
 
 - EAS project envs should be rechecked before each preview/production build.
-- Supabase Auth redirect URLs must allow `tvlore://auth/callback`.
+- Supabase Auth redirect URLs must allow `tvlore:///auth/callback`.
 - Apple Developer App ID `com.luiskabal.tvlore` must enable Sign in with Apple.

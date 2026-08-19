@@ -263,7 +263,7 @@ What it does:
 Important detail:
 
 Supabase owns login/session issuance today. TVLore owns the internal user record once a valid Supabase user reaches the backend.
-Google uses Supabase OAuth with the `tvlore://auth/callback` deep link. Apple
+Google uses Supabase OAuth with the `tvlore:///auth/callback` deep link. Apple
 uses the native iOS `expo-apple-authentication` sheet and exchanges Apple's
 identity token through `supabase.auth.signInWithIdToken`.
 
