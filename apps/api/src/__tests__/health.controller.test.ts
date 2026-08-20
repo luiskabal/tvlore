@@ -19,6 +19,12 @@ const config: ApiConfig = {
       windowMs: 60000,
     },
   },
+  release: {
+    commitRef: "main",
+    commitSha: "abc123",
+    environment: "preview",
+    version: "0.0.0",
+  },
   supabasePublishableKey: "publishable",
   supabaseServiceRoleKey: "service-role",
   supabaseUrl: "https://supabase.test",
@@ -26,6 +32,15 @@ const config: ApiConfig = {
 };
 
 describe("HealthController", () => {
+  it("returns deployment metadata on health checks", () => {
+    expect(new HealthController({} as PrismaService, config).getHealth()).toEqual({
+      status: "ok",
+      service: "tvlore-api",
+      release: config.release,
+      time: expect.any(String),
+    });
+  });
+
   it("keeps the synthetic error endpoint available outside production", () => {
     expect(() => new HealthController({} as PrismaService, config).getHealthError())
       .toThrow(InternalServerErrorException);

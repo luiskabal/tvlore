@@ -17,6 +17,7 @@ export class HealthController {
     return {
       status: "ok",
       service: "tvlore-api",
+      release: this.config.release,
       time: new Date().toISOString(),
     };
   }
@@ -39,6 +40,7 @@ export class HealthController {
       status: "ok",
       service: "tvlore-api",
       database: "ok",
+      release: this.config.release,
       time: new Date().toISOString(),
     };
   }

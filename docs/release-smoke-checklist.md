@@ -92,8 +92,8 @@ Expected result:
 | Check | Expected |
 | --- | --- |
 | `GET /` | `200`, service is `tvlore-api`. |
-| `GET /health` | `200`, service is `tvlore-api`. |
-| `GET /health/db` | `200`, database is `ok`. |
+| `GET /health` | `200`, service is `tvlore-api`, release metadata is present. |
+| `GET /health/db` | `200`, database is `ok`, release metadata is present. |
 | `GET /health/error` | `404` in production. |
 | `GET /users/me` without token | `401 UNAUTHORIZED`. |
 | `GET /users/me/account-deletion` without token | `401 UNAUTHORIZED`. |

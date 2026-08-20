@@ -18,6 +18,12 @@ const config: ApiConfig = {
       windowMs: 60000,
     },
   },
+  release: {
+    commitRef: null,
+    commitSha: null,
+    environment: "test",
+    version: "0.0.0",
+  },
   supabasePublishableKey: "publishable",
   supabaseServiceRoleKey: "service-role",
   supabaseUrl: "https://supabase.test",

@@ -45,6 +45,12 @@ Response:
 {
   "status": "ok",
   "service": "tvlore-api",
+  "release": {
+    "commitRef": "main",
+    "commitSha": "61c8e72...",
+    "environment": "production",
+    "version": "0.0.0"
+  },
   "time": "2026-08-09T00:00:00.000Z"
 }
 ```

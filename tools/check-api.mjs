@@ -27,6 +27,7 @@ async function checkPublicHealth() {
       expectRecord(body, "health response");
       expectEqual(body.status, "ok", "health.status");
       expectEqual(body.service, "tvlore-api", "health.service");
+      assertRelease(body.release, "health.release");
       expectIsoString(body.time, "health.time");
     },
     expectedStatus: 200,
@@ -37,6 +38,7 @@ async function checkPublicHealth() {
       expectEqual(body.status, "ok", "db health.status");
       expectEqual(body.service, "tvlore-api", "db health.service");
       expectEqual(body.database, "ok", "db health.database");
+      assertRelease(body.release, "db health.release");
       expectIsoString(body.time, "db health.time");
     },
     expectedStatus: 200,
@@ -1433,6 +1435,14 @@ function assertPublicHtml(body, title) {
   expectString(body, `${title} page`);
   expect(body.includes("<!doctype html>"), `${title} page should be HTML`);
   expect(body.includes(`TVLore ${title}`), `${title} page title`);
+}
+
+function assertRelease(value, label) {
+  expectRecord(value, label);
+  expectNullableString(value.commitRef, `${label}.commitRef`);
+  expectNullableString(value.commitSha, `${label}.commitSha`);
+  expectString(value.environment, `${label}.environment`);
+  expectString(value.version, `${label}.version`);
 }
 
 function expectRecord(value, label) {

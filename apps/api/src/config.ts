@@ -10,10 +10,18 @@ export type ApiConfig = {
     api: RateLimitConfig;
     provider: RateLimitConfig;
   };
+  release: ApiReleaseConfig;
   supabasePublishableKey: string;
   supabaseServiceRoleKey: string | null;
   supabaseUrl: string;
   tmdbAccessToken: string;
+};
+
+export type ApiReleaseConfig = {
+  commitRef: string | null;
+  commitSha: string | null;
+  environment: string;
+  version: string;
 };
 
 export type RateLimitConfig = {
@@ -30,10 +38,11 @@ export const ApiConfigProvider: Provider<ApiConfig> = {
 
 export function getConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
   loadLocalEnv();
+  const nodeEnv = parseOptionalString(env.NODE_ENV) ?? "development";
 
   return {
     databaseUrl: parseDatabaseUrl(env.DATABASE_URL),
-    nodeEnv: parseOptionalString(env.NODE_ENV) ?? "development",
+    nodeEnv,
     port: parsePort(env.PORT),
     rateLimit: {
       api: {
@@ -44,6 +53,12 @@ export function getConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
         maxRequests: parsePositiveInteger(env.PROVIDER_RATE_LIMIT_MAX_REQUESTS, "PROVIDER_RATE_LIMIT_MAX_REQUESTS", 40),
         windowMs: parsePositiveInteger(env.PROVIDER_RATE_LIMIT_WINDOW_SECONDS, "PROVIDER_RATE_LIMIT_WINDOW_SECONDS", 60) * 1000,
       },
+    },
+    release: {
+      commitRef: parseOptionalString(env.VERCEL_GIT_COMMIT_REF),
+      commitSha: parseOptionalString(env.VERCEL_GIT_COMMIT_SHA),
+      environment: parseOptionalString(env.VERCEL_ENV) ?? nodeEnv,
+      version: parseOptionalString(env.TVLORE_API_VERSION) ?? parseOptionalString(env.npm_package_version) ?? "0.0.0",
     },
     supabasePublishableKey: parseRequiredString(env.SUPABASE_PUBLISHABLE_KEY, "SUPABASE_PUBLISHABLE_KEY"),
     supabaseServiceRoleKey: parseOptionalString(env.SUPABASE_SERVICE_ROLE_KEY),

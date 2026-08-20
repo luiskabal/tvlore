@@ -79,7 +79,12 @@ GET /watch-paths/:pathId
 POST /watch-paths/:pathId/watchlist
 ```
 
-`GET /health/db` verifies runtime connectivity from Vercel to PostgreSQL. If Vercel has no `DATABASE_URL`, the API fails during startup. `GET /health/error` exists only outside `NODE_ENV=production` to validate the global error contract during development.
+`GET /health` and `GET /health/db` expose release metadata from Vercel system
+environment variables, including `release.commitSha`, `release.commitRef`,
+`release.environment`, and `release.version`. `GET /health/db` verifies runtime
+connectivity from Vercel to PostgreSQL. If Vercel has no `DATABASE_URL`, the API
+fails during startup. `GET /health/error` exists only outside `NODE_ENV=production`
+to validate the global error contract during development.
 `GET /privacy`, `GET /terms`, `GET /support`, and `GET /account-deletion` are public release-readiness pages used by Profile links and store metadata.
 `GET /users/me` validates a Supabase Auth bearer token, upserts the matching `UserIdentity`, and returns the real TVLore user. `PATCH /users/me` updates user-owned settings such as streaming availability country. `DELETE /users/me` deletes the authenticated user's TVLore data and Supabase Auth account.
 `GET /search` validates a Supabase Auth bearer token and calls TMDB from the backend using server-side credentials.

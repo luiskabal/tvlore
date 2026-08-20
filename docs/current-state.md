@@ -840,7 +840,7 @@ flowchart TB
 
 Expected behavior:
 
-- `GET /health` and `GET /health/db` return `200` without auth.
+- `GET /health` and `GET /health/db` return `200` without auth and include release metadata for deploy traceability.
 - `GET /users/me`, `DELETE /users/me`, `GET /search`, and `POST /catalog/resolve` return `401` without auth.
 - `GET /users/me` returns the authenticated TVLore user with a valid Supabase token.
 - `PATCH /users/me` updates the authenticated user's streaming availability country.
