@@ -243,7 +243,9 @@ Goal: validate the v1.0 app with real devices and non-developer usage.
 Tasks:
 
 - Ship TestFlight build.
-- Ship Google Play internal or closed testing build.
+- Ship Google Play internal testing build.
+- If required for the personal Play Console account, run a closed testing build
+  with 12 opted-in testers for 14 continuous days before production access.
 - Test fresh install, login, logout, account deletion, country update, search, watchlist, watched state, ratings, check-in, Where to Watch, Watch Paths, recommendations, Available to stream, Popular in your country.
 - Record issues as backlog items.
 - Fix only blockers or severe UX failures.
@@ -278,11 +280,13 @@ Exit criteria:
 Do these next:
 
 1. Capture Android screenshots from a release-like preview build.
-2. Prepare Google Play internal testing metadata and data-safety answers after account verification.
-3. Run Android manual QA from the release checklist.
-4. Fix only Android blockers or severe UX failures.
-5. Submit Android internal testing.
-6. Resume iOS Sign in with Apple after Apple Developer Program renewal.
+2. Prepare the internal/closed Android tester list and feedback channel.
+3. Prepare Google Play internal testing metadata and data-safety answers after account verification.
+4. Run Android manual QA from the release checklist.
+5. Fix only Android blockers or severe UX failures.
+6. Submit Android internal testing.
+7. Promote to closed testing if Play Console requires the 12-tester/14-day gate.
+8. Resume iOS Sign in with Apple after Apple Developer Program renewal.
 
 Skip for now:
 

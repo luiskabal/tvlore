@@ -151,6 +151,55 @@ If the Google Play developer account is a personal account created after
 testers for 14 continuous days before applying for production access. Plan for
 that calendar delay early.
 
+## Internal Testing Execution
+
+Use this sequence after Google finishes developer-account verification:
+
+1. Create the Play Console app record with the values above.
+2. Complete required App content sections enough to allow an internal release.
+3. Run the Android release smoke:
+
+```powershell
+corepack pnpm release:android:smoke
+```
+
+4. Build the Android production artifact for Play Console upload:
+
+```powershell
+corepack pnpm release:android:build:production
+```
+
+5. In Play Console, open Test and release -> Testing -> Internal testing.
+6. Create an email tester list for trusted testers only.
+7. Create a release and upload the EAS-generated Android artifact.
+8. Add reviewer sign-in instructions from [Store Reviewer Notes](store-reviewer-notes.md).
+9. Roll out the internal release and share the opt-in link with testers.
+10. Run the Android manual QA gate below from the installed Play build.
+
+Internal testing is the v1.0-internal gate. It validates installability,
+authentication, deep links, backend connectivity, and the core product loop
+through Google Play distribution, but it does not by itself grant production
+access for new personal developer accounts.
+
+## Closed Testing Promotion Gate
+
+Use Closed testing after internal QA passes and before public production access.
+
+Minimum production-access gate for a new personal account:
+
+- At least 12 testers opted into the closed test.
+- Testers stay opted in continuously for 14 days before applying for production
+  access.
+- The build should be stable enough that testers can use the core loop without
+  repeated reinstall/reset instructions.
+
+Closed testing should use the same release checklist as internal testing, plus:
+
+- One feedback channel for testers.
+- A small known-issues list.
+- A decision log for fixes that block public production.
+- A final production-access application only after the 14-day window is complete.
+
 ## Android Manual QA Gate
 
 Before promoting beyond internal testing, run the Android column in [Release
@@ -171,7 +220,10 @@ Smoke Checklist](release-smoke-checklist.md), especially:
 ## Open Items
 
 - Create the Play Console app record.
+- Prepare an internal tester email list and feedback channel.
 - Add reviewer Google credentials in Play Console only.
 - Capture screenshots from a preview or production Android build.
 - Complete Data safety and Content rating forms.
 - Run Android manual QA from the release checklist.
+- Run a Closed testing track with 12 opted-in testers for 14 days before public
+  production access if Play Console requires it for the personal account.
