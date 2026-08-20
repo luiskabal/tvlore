@@ -36,6 +36,8 @@ Expected result:
 - Typecheck passes for every workspace.
 - Unit tests pass for API and mobile.
 - API build passes.
+- Release preflight fails if a real `.env` file is tracked.
+- Release preflight fails if known development-only diagnostics appear in mobile UI source.
 - Public API smoke returns `200` for root/health routes.
 - Protected routes return `401` without a token.
 - Authenticated product flow passes when a token is provided.

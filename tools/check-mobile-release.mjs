@@ -1,4 +1,5 @@
-import { existsSync, readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 const mobileRoot = join(process.cwd(), "apps", "mobile");
@@ -8,6 +9,16 @@ const requiredMobileEnv = [
   "EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
 ];
 const placeholderPattern = /YOUR_|PROJECT_REF|CHANGE_ME|placeholder|your-/i;
+const releaseUiBlocklist = [
+  { pattern: /API online/i, reason: "debug API status card" },
+  { pattern: /Demo User/i, reason: "seed/demo identity copy" },
+  { pattern: /Redirect:\s*tvlore/i, reason: "raw auth callback copy" },
+  { pattern: /Supabase configured/i, reason: "debug Supabase status card" },
+  { pattern: /Supabase user ID/i, reason: "raw auth provider identifier" },
+  { pattern: /health\/db/i, reason: "database health endpoint in mobile UI" },
+  { pattern: /health\/error/i, reason: "development error endpoint in mobile UI" },
+  { pattern: /tvlore-api responded/i, reason: "debug backend health copy" },
+];
 let hasError = false;
 
 const app = readJson("apps/mobile/app.json").expo;
@@ -47,6 +58,10 @@ for (const key of requiredMobileEnv) {
 }
 expectHttpsUrl(mobileEnv.get("EXPO_PUBLIC_TVLORE_API_BASE_URL"), "EXPO_PUBLIC_TVLORE_API_BASE_URL");
 expectHttpsUrl(mobileEnv.get("EXPO_PUBLIC_SUPABASE_URL"), "EXPO_PUBLIC_SUPABASE_URL");
+
+console.log("\nrelease guards");
+expectNoTrackedEnvFiles();
+expectNoReleaseUiAffordances();
 
 console.log("\nmanual release gates");
 warn("Verify EAS remote envs with: cd apps/mobile; npx --yes eas-cli@latest env:list development|preview|production");
@@ -180,6 +195,74 @@ function expectHttpsUrl(value, label) {
   } catch {
     fail(`${label} must be a valid URL`);
   }
+}
+
+function expectNoTrackedEnvFiles() {
+  let files;
+
+  try {
+    files = execFileSync("git", ["ls-files"], { encoding: "utf8" }).split(/\r?\n/).filter(Boolean);
+  } catch {
+    warn("Could not inspect tracked files; run from a git checkout before release");
+    return;
+  }
+
+  const trackedEnvFiles = files.filter((file) => /(^|\/)\.env$/i.test(file.replace(/\\/g, "/")));
+
+  if (trackedEnvFiles.length > 0) {
+    fail(`tracked env files are not release-safe: ${trackedEnvFiles.join(", ")}`);
+    return;
+  }
+
+  ok("no tracked .env files");
+}
+
+function expectNoReleaseUiAffordances() {
+  const files = getReleaseUiFiles(join(mobileRoot, "app"))
+    .concat(getReleaseUiFiles(join(mobileRoot, "src")))
+    .filter((file) => !/\.test\.[jt]sx?$/i.test(file));
+  const findings = [];
+
+  for (const file of files) {
+    const content = readFileSync(file, "utf8");
+
+    for (const { pattern, reason } of releaseUiBlocklist) {
+      if (pattern.test(content)) {
+        findings.push(`${toRelativePath(file)} (${reason})`);
+      }
+    }
+  }
+
+  if (findings.length > 0) {
+    fail(`release-only UI guard found development affordances: ${findings.join(", ")}`);
+    return;
+  }
+
+  ok("no development-only mobile UI affordances");
+}
+
+function getReleaseUiFiles(directory) {
+  if (!existsSync(directory)) {
+    return [];
+  }
+
+  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(directory, entry.name);
+
+    if (entry.isDirectory()) {
+      return getReleaseUiFiles(path);
+    }
+
+    if (/\.[jt]sx?$/.test(entry.name) || entry.name.endsWith(".json")) {
+      return [path];
+    }
+
+    return [];
+  });
+}
+
+function toRelativePath(file) {
+  return file.replace(process.cwd(), "").replace(/^[/\\]/, "").replace(/\\/g, "/");
 }
 
 function ok(message) {

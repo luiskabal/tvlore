@@ -212,6 +212,7 @@ Tasks:
 - [x] Disable or protect `/health/error` outside development.
 - [x] Add simple backend rate limiting or abuse guard for expensive authenticated routes.
 - [x] Add a small release smoke script/checklist for mobile manual QA.
+- [x] Add release preflight guards for tracked `.env` files and known development-only mobile diagnostics.
 - Run `corepack pnpm verify:full`.
 - Run authenticated `corepack pnpm api:check` against Vercel.
 - Add minimal crash/error monitoring if release candidates expose hard-to-debug mobile failures.
@@ -298,6 +299,7 @@ before TestFlight/closed testing. Quick gate:
 - [x] Google Play deletion URL is public.
 - [x] Search starts in a release-friendly state.
 - [x] `/health/error` is not publicly exposed in production.
+- [x] `release:preflight` blocks tracked `.env` files and known development-only mobile diagnostics.
 - [ ] Store screenshots and descriptions match the actual app.
 - [x] Reviewer instructions are written.
 - [ ] No secrets are committed.
