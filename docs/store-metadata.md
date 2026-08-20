@@ -90,6 +90,8 @@ session.
 ## Store Privacy Starting Point
 
 Use [Data Inventory](data-inventory.md) as the engineering source of truth.
+Use [Google Play Android Release Prep](google-play-android-release.md) for the
+Android-first Play Console checklist.
 
 High-level answers:
 

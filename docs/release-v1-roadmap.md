@@ -199,7 +199,7 @@ Tasks:
 - [x] Create first Android preview build and produce an installable APK.
 - [ ] Run Android-focused release smoke with `corepack pnpm release:android:smoke`.
 - [ ] Capture Android screenshots from a preview/production build.
-- [ ] Prepare the Google Play internal testing app record.
+- [ ] Prepare the Google Play internal testing app record using `docs/google-play-android-release.md`.
 - [ ] Create first iOS preview build.
 - [ ] Confirm Supabase redirect URLs for production scheme/build.
 - [x] Add Supabase Google OAuth native callback smoke check.

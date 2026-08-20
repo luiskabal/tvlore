@@ -6,7 +6,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 
 - [ ] Run Android-focused release smoke with `corepack pnpm release:android:smoke`.
 - [ ] Capture Android store screenshots from a preview/production build using `docs/store-metadata.md`.
-- [ ] Create or prepare the Google Play internal testing app record.
+- [ ] Create or prepare the Google Play internal testing app record using `docs/google-play-android-release.md`.
 - [ ] Continue removing release-blocking development affordances before store submission.
 - [ ] Run account-deletion QA on a disposable account now that `SUPABASE_SERVICE_ROLE_KEY` is configured in Vercel.
 
@@ -18,6 +18,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 ## Done Recently
 
 - [x] Add Android-first release smoke/build scripts and document the Android release lane.
+- [x] Add Google Play Android release prep checklist.
 - [x] Run first EAS Android preview build and produce an installable APK.
 - [x] Add Profile release-support metadata and block debugger `NODE_OPTIONS` in release preflight.
 - [x] Make `release:smoke` fail on missing local, Vercel, or EAS env gates.
