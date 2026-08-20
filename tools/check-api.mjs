@@ -557,6 +557,12 @@ async function checkAuthenticatedProductFlow(token) {
 
   expectUuid(firstEpisodeId, "first episode id");
 
+  await check(`/episodes/${firstEpisodeId}/watches`, {
+    assert: (body) => assertEpisodeWatchResponse(body, firstEpisodeId, false),
+    expectedStatus: 200,
+    headers: authHeaders,
+    method: "DELETE",
+  });
   await check(`/episodes/${firstEpisodeId}/preference`, {
     assert: (body) => assertPreferenceResponse(body, firstEpisodeId, "episode", null),
     expectedStatus: 200,
