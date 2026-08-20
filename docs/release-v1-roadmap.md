@@ -197,9 +197,9 @@ Tasks:
 - [x] Configure required EAS project environment variables for development, preview, and production.
 - [x] Add EAS remote env smoke check for development, preview, and production.
 - [x] Create first Android preview build and produce an installable APK.
-- [ ] Run Android-focused release smoke with `corepack pnpm release:android:smoke`.
+- [x] Run Android-focused release smoke with `corepack pnpm release:android:smoke`.
 - [ ] Capture Android screenshots from a preview/production build.
-- [ ] Prepare the Google Play internal testing app record using `docs/google-play-android-release.md`.
+- [ ] Prepare the Google Play internal testing app record using `docs/google-play-android-release.md` after developer account verification completes.
 - [ ] Create first iOS preview build.
 - [ ] Confirm Supabase redirect URLs for production scheme/build.
 - [x] Add Supabase Google OAuth native callback smoke check.
@@ -277,13 +277,12 @@ Exit criteria:
 
 Do these next:
 
-1. Run Android-focused release smoke.
-2. Capture Android screenshots from a release-like preview build.
-3. Prepare Google Play internal testing metadata and data-safety answers.
-4. Run Android manual QA from the release checklist.
-5. Fix only Android blockers or severe UX failures.
-6. Submit Android internal testing.
-7. Resume iOS Sign in with Apple after Apple Developer Program renewal.
+1. Capture Android screenshots from a release-like preview build.
+2. Prepare Google Play internal testing metadata and data-safety answers after account verification.
+3. Run Android manual QA from the release checklist.
+4. Fix only Android blockers or severe UX failures.
+5. Submit Android internal testing.
+6. Resume iOS Sign in with Apple after Apple Developer Program renewal.
 
 Skip for now:
 

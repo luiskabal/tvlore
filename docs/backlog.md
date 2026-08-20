@@ -4,9 +4,8 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 
 ## Active
 
-- [ ] Run Android-focused release smoke with `corepack pnpm release:android:smoke`.
 - [ ] Capture Android store screenshots from a preview/production build using `docs/store-metadata.md`.
-- [ ] Create or prepare the Google Play internal testing app record using `docs/google-play-android-release.md`.
+- [ ] Wait for Google Play developer account verification, then create the TVLore app record using `docs/google-play-android-release.md`.
 - [ ] Continue removing release-blocking development affordances before store submission.
 - [ ] Run account-deletion QA on a disposable account now that `SUPABASE_SERVICE_ROLE_KEY` is configured in Vercel.
 
@@ -17,6 +16,8 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 
 ## Done Recently
 
+- [x] Run Android-focused release smoke with `corepack pnpm release:android:smoke`.
+- [x] Submit Google Play Developer account verification.
 - [x] Add Android-first release smoke/build scripts and document the Android release lane.
 - [x] Add Google Play Android release prep checklist.
 - [x] Run first EAS Android preview build and produce an installable APK.
