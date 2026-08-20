@@ -36,11 +36,12 @@ const secretPatterns = [
 ];
 let hasError = false;
 
+const releaseTarget = parseReleaseTarget(process.argv.slice(2));
 const app = readJson("apps/mobile/app.json").expo;
 const eas = readJson("apps/mobile/eas.json");
 const mobileEnv = parseEnvFile("apps/mobile/.env");
 
-console.log("\nmobile app config");
+console.log(`\nmobile app config (${releaseTarget})`);
 expectString(app.name, "expo.name");
 expectString(app.slug, "expo.slug");
 expectEqual(app.scheme, "tvlore", "expo.scheme");
@@ -84,7 +85,11 @@ expectStoreMetadata();
 console.log("\nmanual release gates");
 warn("Verify EAS remote envs with: corepack pnpm eas:env:check");
 warn("Verify Supabase Auth allows tvlore:///auth/callback with: corepack pnpm auth:redirect:check");
-warn("Verify Apple Developer App ID com.luiskabal.tvlore has Sign in with Apple enabled");
+if (releaseTarget === "android") {
+  warn("Android-first target: Apple Developer / iOS Sign in with Apple remains a separate blocked gate");
+} else {
+  warn("Verify Apple Developer App ID com.luiskabal.tvlore has Sign in with Apple enabled");
+}
 warn("Configure SUPABASE_SERVICE_ROLE_KEY in Vercel before release account-deletion QA");
 
 if (hasError) {
@@ -93,6 +98,18 @@ if (hasError) {
 
 function readJson(file) {
   return JSON.parse(readFileSync(file, "utf8"));
+}
+
+function parseReleaseTarget(args) {
+  const targetArg = args.find((arg) => arg.startsWith("--target="));
+  const target = targetArg ? targetArg.slice("--target=".length) : "all";
+
+  if (["all", "android", "ios"].includes(target)) {
+    return target;
+  }
+
+  fail(`unknown release target: ${target}`);
+  return "all";
 }
 
 function parseEnvFile(file) {

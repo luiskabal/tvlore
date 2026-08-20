@@ -118,6 +118,28 @@ npx --yes eas-cli@latest build --profile production --platform ios
 Use `preview` for release-like device testing before store submission. Use
 `production` only when the app is ready to upload to the stores.
 
+## Android-First Release Lane
+
+Apple Developer Program renewal currently blocks release-like iOS validation,
+so TVLore can continue toward v1.0 on Android first.
+
+From the repo root:
+
+```bash
+corepack pnpm release:android:preflight
+corepack pnpm release:android:smoke
+corepack pnpm release:android:build:preview
+```
+
+Use `release:android:preflight` for a fast local release-config gate,
+`release:android:smoke` before asking EAS for a build, and the preview build
+for installable APK QA. Use the production Android build command only after the
+preview build passes the manual release checklist.
+
+```bash
+corepack pnpm release:android:build:production
+```
+
 ## Preview Build Records
 
 The first Android preview build completed successfully on 2026-08-18:

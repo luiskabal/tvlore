@@ -4,14 +4,20 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 
 ## Active
 
-- [ ] Configure Apple Developer identifiers and Supabase Apple provider for iOS store readiness.
-- [ ] Run first EAS preview build on iOS.
+- [ ] Run Android-focused release smoke with `corepack pnpm release:android:smoke`.
+- [ ] Capture Android store screenshots from a preview/production build using `docs/store-metadata.md`.
+- [ ] Create or prepare the Google Play internal testing app record.
 - [ ] Continue removing release-blocking development affordances before store submission.
-- [ ] Configure `SUPABASE_SERVICE_ROLE_KEY` in Vercel before release account-deletion QA.
-- [ ] Capture store screenshots from a preview/production build using `docs/store-metadata.md`.
+- [ ] Run account-deletion QA on a disposable account now that `SUPABASE_SERVICE_ROLE_KEY` is configured in Vercel.
+
+## Blocked
+
+- [ ] Configure Apple Developer identifiers and Supabase Apple provider for iOS store readiness. Blocked by expired Apple Developer Program membership.
+- [ ] Run first EAS preview build on iOS. Blocked by Apple Developer Program renewal.
 
 ## Done Recently
 
+- [x] Add Android-first release smoke/build scripts and document the Android release lane.
 - [x] Run first EAS Android preview build and produce an installable APK.
 - [x] Add Profile release-support metadata and block debugger `NODE_OPTIONS` in release preflight.
 - [x] Make `release:smoke` fail on missing local, Vercel, or EAS env gates.

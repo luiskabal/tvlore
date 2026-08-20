@@ -114,6 +114,11 @@ enough value to justify a first release.
 | Production EAS profiles | Partial | EAS project is linked and development/preview/production envs are configured. First real store builds still need validation. |
 | Store assets | App icon, splash, screenshots, support URL, marketing copy. | Metadata draft is in `docs/store-metadata.md`; screenshots still need capture from a release-like build. |
 
+Current release lane: Android first. The Apple Developer Program membership for
+the available Apple team is expired, so iOS provider configuration and
+release-like iOS builds are blocked until renewal. Android preview/production
+hardening can continue without that blocker.
+
 ### High Priority Before 1.0
 
 | Gap | Risk | Target |
@@ -192,6 +197,9 @@ Tasks:
 - [x] Configure required EAS project environment variables for development, preview, and production.
 - [x] Add EAS remote env smoke check for development, preview, and production.
 - [x] Create first Android preview build and produce an installable APK.
+- [ ] Run Android-focused release smoke with `corepack pnpm release:android:smoke`.
+- [ ] Capture Android screenshots from a preview/production build.
+- [ ] Prepare the Google Play internal testing app record.
 - [ ] Create first iOS preview build.
 - [ ] Confirm Supabase redirect URLs for production scheme/build.
 - [x] Add Supabase Google OAuth native callback smoke check.
@@ -269,13 +277,13 @@ Exit criteria:
 
 Do these next:
 
-1. Account deletion backend + mobile.
-2. Sign in with Apple.
-3. Privacy/Support/Delete web URLs.
-4. Production EAS config.
-5. Release hardening pass.
-6. Beta QA.
-7. Store submission.
+1. Run Android-focused release smoke.
+2. Capture Android screenshots from a release-like preview build.
+3. Prepare Google Play internal testing metadata and data-safety answers.
+4. Run Android manual QA from the release checklist.
+5. Fix only Android blockers or severe UX failures.
+6. Submit Android internal testing.
+7. Resume iOS Sign in with Apple after Apple Developer Program renewal.
 
 Skip for now:
 

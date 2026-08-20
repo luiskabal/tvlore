@@ -49,6 +49,19 @@ To validate Supabase Google OAuth accepts the native callback:
 corepack pnpm auth:redirect:check
 ```
 
+For the Android-first lane:
+
+```powershell
+corepack pnpm release:android:preflight
+corepack pnpm release:android:smoke
+```
+
+`release:android:smoke` keeps the mobile/EAS env, legal URL, OAuth callback,
+build, and API gates, but does not require a complete local API `.env` for
+Android preview QA against the deployed Vercel backend. The preflight messaging
+treats Apple Developer setup as an iOS-only blocked gate instead of the next
+Android action.
+
 For authenticated API paths:
 
 ```powershell
