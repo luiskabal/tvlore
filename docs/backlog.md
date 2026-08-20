@@ -35,6 +35,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 
 - [x] Split `CatalogDetailContent.tsx` into focused detail subcomponents when the next detail UX feature touches it.
 - [x] Move pure catalog response mappers out of `CatalogRepository` when catalog persistence is next edited.
+- [ ] Add lightweight preflight plus lazy hydration for large provider-backed lists so navigation never blocks on seasons, search result pages, or bulk actions that can be loaded progressively.
 - [ ] Add aggregate favorite-character voting percentages to post-watch check-in, sorted by community popularity.
 - [ ] Evaluate additional public Watch Path import sources after TMDB Collection proves useful.
 
@@ -55,6 +56,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 - Personalized recommendations belong in Search for now. Library should stay focused on user-owned watched, saved, rated, and in-progress content; Profile should stay focused on identity, stats, and account controls.
 - Account deletion is code-ready but external-admin-key gated. Keep `SUPABASE_SERVICE_ROLE_KEY` out of git/mobile and configure it in Vercel only during release hardening.
 - Cronologia uses a backend-owned paginated endpoint and loads more history as the user scrolls near the end.
+- Large provider-backed lists should load in layers: fetch enough shape to navigate first, then hydrate additional pages, seasons, or batches only when visible or explicitly requested. Regression example: `The Office` season 0 / Specials has 100+ episodes and should not block critical navigation.
 - Watch Paths should support movies and shows in one ordered list, keep source/provenance, and resolve items into TVLore catalog IDs only when the user opens or saves the list.
 - User-owned Watch Paths are persisted by the backend. Mobile imports the minimal provider refs and notes; the backend hydrates title, poster, and year from TMDB before storing the list.
 - Where to Watch should stay backend-owned: provider API keys stay server-side, results are normalized by country, and mobile only renders availability badges/icons plus allowed attribution or links.

@@ -428,6 +428,14 @@ Mobile lookahead prefetch uses `src/catalog/prefetch.ts`:
 - Initial search loading renders skeleton result rows.
 - Typed-query refreshes keep previous results visible and show an updating indicator.
 
+Lookahead must stay lightweight. A prefetch may warm a small read that is likely
+to be needed next, but it should not trigger heavy provider hydration or database
+writes. Large lists should render progressively: show the navigable shell first,
+load the visible slice, then fetch the next slice when scroll position or user
+intent makes it likely. This protects cases such as a `Specials` season with
+100+ episodes, where the app should not feel blocked just because the provider
+can return a huge list.
+
 `SearchScreen` owns only route/container behavior: input state, selected filter,
 debounce orchestration, resolve navigation, and hook wiring. `SearchControls`
 owns the input/filter/button UI. `SearchResults` owns result states, skeletons,

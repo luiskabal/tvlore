@@ -269,6 +269,14 @@ Provider integrations isolate external APIs:
 
 TMDB models must not leak into domain services or mobile contracts.
 
+Provider hydration has a performance budget. Navigation-critical reads should
+prefer lightweight provider data and already persisted TVLore rows. Heavy
+hydration, such as full-show watched actions or large seasons, must be backed by
+explicit user intent, batched persistence, and stable partial progress semantics
+instead of one provider row producing one slow transactional write. If a provider
+resource can be unexpectedly large, add a preflight/count step or progressive
+hydration before making mobile wait for every row.
+
 ## Module Guidelines
 
 - Keep modules cohesive.
