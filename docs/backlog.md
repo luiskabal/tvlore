@@ -14,6 +14,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 - [x] Run first EAS Android preview build and produce an installable APK.
 - [x] Add lightweight preflight plus lazy hydration for large provider-backed season episode lists.
 - [x] Add release preflight guards for tracked `.env` files and development-only mobile UI affordances.
+- [x] Automate production `/health/error` and rate-limit header checks in API smoke.
 - [x] Replace ambiguous show/movie watched header icons with an explicit tracking panel and check-in action.
 - [x] Link TVLore to EAS project `@luiskabal/tvlore`.
 - [x] Configure required EAS project env vars for development, preview, and production mobile builds.

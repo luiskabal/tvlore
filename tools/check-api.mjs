@@ -2,6 +2,7 @@ const baseUrl = process.env.TVLORE_API_BASE_URL ?? "https://tvlore-api.vercel.ap
 const supabaseAccessToken = process.env.TVLORE_SUPABASE_ACCESS_TOKEN;
 const missingUuid = "00000000-0000-4000-8000-000000000002";
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const isProductionTarget = process.env.TVLORE_EXPECT_PRODUCTION === "true" || new URL(baseUrl).hostname.endsWith("vercel.app");
 
 await checkPublicHealth();
 await checkUnauthorizedRoutes();
@@ -40,6 +41,14 @@ async function checkPublicHealth() {
     },
     expectedStatus: 200,
   });
+  if (isProductionTarget) {
+    await check("/health/error", {
+      assert: (body) => assertError(body, "NOT_FOUND"),
+      expectedStatus: 404,
+    });
+  } else {
+    console.log("Skipping production-only /health/error check: set TVLORE_EXPECT_PRODUCTION=true.");
+  }
   await check("/privacy", {
     assert: (body) => assertPublicHtml(body, "Privacy Policy"),
     expectedStatus: 200,
@@ -59,14 +68,18 @@ async function checkPublicHealth() {
 }
 
 async function checkUnauthorizedRoutes() {
-  await checkUnauthorized("/users/me");
+  await checkUnauthorized("/users/me", {
+    assert: (_, response) => assertRateLimitHeaders(response, 180),
+  });
   await checkUnauthorized("/users/me", { method: "DELETE" });
   await checkUnauthorized("/users/me", {
     body: JSON.stringify({ availabilityCountry: "CL" }),
     headers: { "content-type": "application/json" },
     method: "PATCH",
   });
-  await checkUnauthorized("/search?query=dark");
+  await checkUnauthorized("/search?query=dark", {
+    assert: (_, response) => assertRateLimitHeaders(response, 40),
+  });
   await checkUnauthorized("/catalog/resolve", {
     body: JSON.stringify({ mediaType: "show", provider: "tmdb", providerId: "70523" }),
     headers: { "content-type": "application/json" },
@@ -917,9 +930,14 @@ async function checkAuthenticatedProductFlow(token) {
 }
 
 async function checkUnauthorized(path, options = {}) {
+  const extraAssert = options.assert;
+
   await check(path, {
     ...options,
-    assert: assertUnauthorizedError,
+    assert: (body, response) => {
+      assertUnauthorizedError(body);
+      extraAssert?.(body, response);
+    },
     expectedStatus: 401,
   });
 }
@@ -1376,6 +1394,12 @@ function assertUnauthorizedError(body) {
   expectEqual(body.message, "Valid bearer token required", "unauthorized.message");
 }
 
+function assertRateLimitHeaders(response, expectedLimit) {
+  expectEqual(response.headers.get("x-ratelimit-limit"), String(expectedLimit), "x-ratelimit-limit");
+  expectNumberString(response.headers.get("x-ratelimit-remaining"), "x-ratelimit-remaining");
+  expectNumberString(response.headers.get("x-ratelimit-reset"), "x-ratelimit-reset");
+}
+
 function assertValidationError(body) {
   assertError(body, "VALIDATION_FAILED");
 }
@@ -1408,6 +1432,10 @@ function expectNullableString(value, label) {
 
 function expectNumber(value, label) {
   expect(typeof value === "number", `${label} should be a number`);
+}
+
+function expectNumberString(value, label) {
+  expect(typeof value === "string" && /^\d+$/.test(value), `${label} should be a number string`);
 }
 
 function expectNullableNumber(value, label) {
