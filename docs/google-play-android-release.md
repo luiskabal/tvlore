@@ -193,12 +193,49 @@ Minimum production-access gate for a new personal account:
 - The build should be stable enough that testers can use the core loop without
   repeated reinstall/reset instructions.
 
+Invite more than 12 people. Plan for 15-20 trusted testers so the test still
+meets the 12-opted-in requirement if some people never install the app.
+
 Closed testing should use the same release checklist as internal testing, plus:
 
 - One feedback channel for testers.
 - A small known-issues list.
 - A decision log for fixes that block public production.
 - A final production-access application only after the 14-day window is complete.
+
+## Tester And Feedback Plan
+
+Keep real tester names, emails, and phone numbers outside git. Use Play Console
+tester lists, a private spreadsheet, or a private form.
+
+Recommended tester roster fields:
+
+| Field | Why |
+| --- | --- |
+| Name | Identify feedback without exposing it in git. |
+| Google account email | Required for Play Console tester list invites. |
+| Device model | Helps reproduce Android/device-specific issues. |
+| Android version | Helps spot OS-specific regressions. |
+| Opted-in date | Needed for the 14-day closed testing window. |
+| Installed build/version | Confirms which build produced feedback. |
+| Core loop completed | Shows whether search -> watched -> rating -> library worked. |
+| Blocker reported | Separates release blockers from polish requests. |
+
+Recommended feedback fields:
+
+| Field | Example |
+| --- | --- |
+| Build | `1.0.0 (versionCode 1)` |
+| Device | `Pixel 8 / Android 15` |
+| Flow | `Google login`, `Search`, `Episode watched`, `Account deletion` |
+| Expected | What the tester thought should happen. |
+| Actual | What happened instead. |
+| Screenshot/video | Optional, useful for UI bugs. |
+| Severity | `blocker`, `major`, `minor`, `polish` |
+
+Release rule: fix blockers and major broken flows before applying for public
+production access. Put polish feedback back into the normal backlog unless it
+blocks a reviewer or a new user's first successful session.
 
 ## Android Manual QA Gate
 

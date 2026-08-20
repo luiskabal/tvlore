@@ -5,7 +5,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 ## Active
 
 - [ ] Capture Android store screenshots from a preview/production build using `docs/store-metadata.md`.
-- [ ] Prepare internal/closed Android tester list and feedback channel.
+- [ ] Fill internal/closed Android tester list and feedback channel outside git.
 - [ ] Wait for Google Play developer account verification, then create the TVLore app record using `docs/google-play-android-release.md`.
 - [ ] Continue removing release-blocking development affordances before store submission.
 - [ ] Run account-deletion QA on a disposable account now that `SUPABASE_SERVICE_ROLE_KEY` is configured in Vercel.
@@ -18,6 +18,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 ## Done Recently
 
 - [x] Fix Android EAS build runner for the mobile app inside the monorepo.
+- [x] Add Android tester roster and feedback plan.
 - [x] Run Android-focused release smoke with `corepack pnpm release:android:smoke`.
 - [x] Submit Google Play Developer account verification.
 - [x] Add Android-first release smoke/build scripts and document the Android release lane.
