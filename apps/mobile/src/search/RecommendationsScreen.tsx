@@ -28,7 +28,7 @@ export default function RecommendationsScreen() {
 
         {recommendationsState.kind === "error" ? (
           <EmptyState
-            action={<Button label="Retry" onPress={retryRecommendations} size="small" />}
+            action={<Button icon="refresh" label="Retry" onPress={retryRecommendations} size="small" />}
             detail={recommendationsState.message}
             icon="sparkles-outline"
             title="Recommendations unavailable"

@@ -55,6 +55,7 @@ export default function LibraryScreen() {
               {authActionMessage ? <AppText tone="danger">{authActionMessage}</AppText> : null}
               <Button
                 disabled={!isSupabaseConfigured || isAuthActionRunning}
+                icon="logo-google"
                 isLoading={isAuthActionRunning}
                 label="Continue with Google"
                 loadingLabel="Opening Google"

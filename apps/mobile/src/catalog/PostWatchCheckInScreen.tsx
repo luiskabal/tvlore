@@ -18,7 +18,7 @@ export default function PostWatchCheckInScreen() {
     return (
       <CheckInShell>
         <EmptyState
-          action={<Button label="Back" onPress={() => router.back()} />}
+          action={<Button icon="arrow-back" label="Back" onPress={() => router.back()} />}
           detail="Missing or invalid check-in route params."
           icon="chatbubble-ellipses-outline"
           title="Could not open check-in"
@@ -43,7 +43,7 @@ function CatalogCheckIn({ id, mediaType }: { id: string; mediaType: MediaType })
     return (
       <CheckInShell>
         <EmptyState
-          action={<Button label="Retry" onPress={refresh} />}
+          action={<Button icon="refresh" label="Retry" onPress={refresh} />}
           detail={state.message}
           icon="chatbubble-ellipses-outline"
           title="Could not open check-in"
@@ -89,7 +89,7 @@ function EpisodeCheckIn({ id }: { id: string }) {
     return (
       <CheckInShell>
         <EmptyState
-          action={<Button label="Retry" onPress={refresh} />}
+          action={<Button icon="refresh" label="Retry" onPress={refresh} />}
           detail={state.message}
           icon="chatbubble-ellipses-outline"
           title="Could not open check-in"

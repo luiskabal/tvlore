@@ -91,6 +91,7 @@ export function TitleTrackingPanel({
         {isWatched ? (
           <Button
             disabled={isSaving}
+            icon="create-outline"
             label="Edit check-in"
             onPress={() => onOpenCheckIn(detail.mediaType, detail.id)}
             size="small"
@@ -98,6 +99,7 @@ export function TitleTrackingPanel({
         ) : (
           <Button
             disabled={isSaving || !canMarkWatched}
+            icon="checkmark"
             isLoading={pendingWatched === true}
             label={canMarkWatched ? markWatchedLabel : "Open a season first"}
             loadingLabel="Saving"
@@ -111,6 +113,7 @@ export function TitleTrackingPanel({
         {canUnwatch ? (
           <Button
             disabled={isSaving}
+            icon="eye-off-outline"
             isLoading={pendingWatched === false}
             label={markUnwatchedLabel}
             loadingLabel="Saving"

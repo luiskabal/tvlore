@@ -119,6 +119,7 @@ export default function WatchPathsScreen() {
               />
               <Button
                 disabled={isCreating}
+                icon="download-outline"
                 isLoading={isCreating}
                 label="Import collection"
                 loadingLabel="Importing"
@@ -158,6 +159,7 @@ export default function WatchPathsScreen() {
               <View style={styles.formActionsRow}>
                 <Button
                   disabled={isCreating}
+                  icon="add"
                   isLoading={isCreating}
                   label="Create"
                   loadingLabel="Creating"
@@ -173,7 +175,7 @@ export default function WatchPathsScreen() {
 
         {state.kind === "error" ? (
           <EmptyState
-            action={<Button label="Retry" onPress={refresh} />}
+            action={<Button icon="refresh" label="Retry" onPress={refresh} />}
             detail={state.message}
             icon="map-outline"
             title="Could not load paths"

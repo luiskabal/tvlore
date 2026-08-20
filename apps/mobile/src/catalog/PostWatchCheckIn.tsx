@@ -168,6 +168,7 @@ export function PostWatchCheckIn({
 
       <Button
         disabled={isSaving}
+        icon="checkmark"
         isLoading={isSaving}
         label="Save check-in"
         loadingLabel="Saving"
@@ -177,6 +178,7 @@ export function PostWatchCheckIn({
 
       <Button
         disabled={isSaving}
+        icon="close"
         label="Skip"
         onPress={onCancel}
         size="small"

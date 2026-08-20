@@ -44,7 +44,7 @@ export default function AvailableDiscoveryScreen() {
 
         {availableState.kind === "error" ? (
           <EmptyState
-            action={<Button label="Retry" onPress={retryAvailable} size="small" />}
+            action={<Button icon="refresh" label="Retry" onPress={retryAvailable} size="small" />}
             detail={availableState.message}
             icon="tv-outline"
             title="Streamable titles unavailable"

@@ -196,7 +196,7 @@ export function LibraryOverview({
           <View style={styles.statusPanel}>
             <Text style={styles.statusLabel}>Could not load chronology</Text>
             <Text style={styles.errorText}>{item.message}</Text>
-            <Button label="Retry" onPress={onChronologyVisible} />
+            <Button icon="refresh" label="Retry" onPress={onChronologyVisible} />
           </View>
         );
       }

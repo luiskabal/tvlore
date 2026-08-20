@@ -169,6 +169,7 @@ export default function ProfileScreen() {
               ) : null}
               <Button
                 disabled={!isSupabaseConfigured || isAuthActionRunning}
+                icon="logo-google"
                 isLoading={isAuthActionRunning}
                 label="Continue with Google"
                 loadingLabel="Opening sign-in"

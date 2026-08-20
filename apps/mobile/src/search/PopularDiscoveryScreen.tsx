@@ -44,7 +44,7 @@ export default function PopularDiscoveryScreen() {
 
         {popularState.kind === "error" ? (
           <EmptyState
-            action={<Button label="Retry" onPress={retryPopular} size="small" />}
+            action={<Button icon="refresh" label="Retry" onPress={retryPopular} size="small" />}
             detail={popularState.message}
             icon="trending-up-outline"
             title="Popular titles unavailable"

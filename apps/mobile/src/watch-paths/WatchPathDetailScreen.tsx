@@ -73,7 +73,7 @@ export default function WatchPathDetailScreen() {
 
         {state.kind === "error" ? (
           <EmptyState
-            action={<Button label="Retry" onPress={refresh} />}
+            action={<Button icon="refresh" label="Retry" onPress={refresh} />}
             detail={state.message}
             icon="map-outline"
             title="Could not load path"
@@ -89,6 +89,7 @@ export default function WatchPathDetailScreen() {
                 <Badge label={`${savedItemCount} saved`} tone="neutral" />
                 <Button
                   disabled={isFullySaved}
+                  icon={isFullySaved ? "bookmark" : "bookmark-outline"}
                   isLoading={saveState.kind === "loading"}
                   label={isFullySaved ? "Saved" : savedItemCount > 0 ? "Save remaining" : "Save all"}
                   loadingLabel="Saving"

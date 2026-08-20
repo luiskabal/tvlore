@@ -26,7 +26,7 @@ export function SearchPicks({
         icon="alert-circle-outline"
         title="TVLore Picks unavailable"
         action={(
-        <Button label="Retry" onPress={onRetry} size="small" />
+          <Button icon="refresh" label="Retry" onPress={onRetry} size="small" />
         )}
       />
     );

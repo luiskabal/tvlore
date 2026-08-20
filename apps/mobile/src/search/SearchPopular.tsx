@@ -26,7 +26,7 @@ export function SearchPopular({
         icon="alert-circle-outline"
         title="Popular titles unavailable"
         action={(
-        <Button label="Retry" onPress={onRetry} size="small" />
+          <Button icon="refresh" label="Retry" onPress={onRetry} size="small" />
         )}
       />
     );

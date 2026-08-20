@@ -44,7 +44,7 @@ export default function TvlorePicksScreen() {
 
         {picksState.kind === "error" ? (
           <EmptyState
-            action={<Button label="Retry" onPress={retryPicks} size="small" />}
+            action={<Button icon="refresh" label="Retry" onPress={retryPicks} size="small" />}
             detail={picksState.message}
             icon="sparkles-outline"
             title="TVLore Picks unavailable"

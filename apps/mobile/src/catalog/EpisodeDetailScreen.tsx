@@ -35,7 +35,7 @@ export default function EpisodeDetailScreen() {
 
         {state.kind === "error" ? (
           <EmptyState
-            action={<Button label="Retry" onPress={refresh} />}
+            action={<Button icon="refresh" label="Retry" onPress={refresh} />}
             detail={state.message}
             icon="play-circle-outline"
             title="Could not open episode"
@@ -119,6 +119,7 @@ function EpisodeDetailContent({
         </AppText>
         {watchAction.kind === "error" ? <AppText tone="danger">{watchAction.message}</AppText> : null}
         <Button
+          icon={detail.watched ? "eye-off-outline" : "checkmark"}
           isLoading={isSaving}
           label={detail.watched ? "Mark unwatched" : "Mark watched"}
           loadingLabel="Saving"

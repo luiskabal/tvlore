@@ -1,6 +1,9 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
+import type { ComponentProps } from "react";
 import {
   Pressable,
   StyleSheet,
+  View,
   type PressableProps,
   type StyleProp,
   type ViewStyle,
@@ -10,8 +13,10 @@ import { AppText } from "./AppText";
 import { ui } from "./tokens";
 
 type ButtonVariant = "danger" | "outline" | "primary" | "secondary";
+type IconName = ComponentProps<typeof Ionicons>["name"];
 
 type ButtonProps = Omit<PressableProps, "children" | "style"> & {
+  icon?: IconName;
   label: string;
   loadingLabel?: string;
   isLoading?: boolean;
@@ -22,6 +27,7 @@ type ButtonProps = Omit<PressableProps, "children" | "style"> & {
 
 export function Button({
   disabled,
+  icon,
   isLoading = false,
   label,
   loadingLabel,
@@ -32,6 +38,7 @@ export function Button({
 }: ButtonProps) {
   const isDisabled = Boolean(disabled || isLoading);
   const textTone = variant === "outline" ? "default" : "inverse";
+  const iconColor = variant === "outline" ? ui.color.ink : ui.color.white;
 
   return (
     <Pressable
@@ -47,9 +54,12 @@ export function Button({
         style,
       ]}
     >
-      <AppText tone={textTone} variant={size === "small" ? "caption" : "button"}>
-        {isLoading ? loadingLabel ?? "Loading" : label}
-      </AppText>
+      <View style={styles.content}>
+        {icon ? <Ionicons color={iconColor} name={icon} size={size === "small" ? 15 : 17} /> : null}
+        <AppText tone={textTone} variant={size === "small" ? "caption" : "button"}>
+          {isLoading ? loadingLabel ?? "Loading" : label}
+        </AppText>
+      </View>
     </Pressable>
   );
 }
@@ -65,6 +75,12 @@ const styles = StyleSheet.create({
   button: {
     alignItems: "center",
     borderRadius: ui.radius.md,
+    justifyContent: "center",
+  },
+  content: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: ui.space.sm,
     justifyContent: "center",
   },
   default: {

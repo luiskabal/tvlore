@@ -45,7 +45,7 @@ export default function CatalogDetailScreen({ mediaType }: { mediaType: MediaTyp
 
         {state.kind === "error" ? (
           <EmptyState
-            action={<Button label="Retry" onPress={refresh} />}
+            action={<Button icon="refresh" label="Retry" onPress={refresh} />}
             detail={state.message}
             icon="film-outline"
             title="Could not open title"

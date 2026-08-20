@@ -31,7 +31,7 @@ export function SearchRecommendations({
         icon="alert-circle-outline"
         title="Recommendations unavailable"
         action={(
-        <Button label="Retry" onPress={onRetry} size="small" />
+          <Button icon="refresh" label="Retry" onPress={onRetry} size="small" />
         )}
       />
     );

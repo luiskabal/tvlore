@@ -157,6 +157,7 @@ function EpisodeList({
       {hasMore && !isHydratingEpisodes ? (
         <Button
           disabled={isLoadingMoreEpisodes}
+          icon="chevron-down"
           isLoading={isLoadingMoreEpisodes}
           label="Load more episodes"
           loadingLabel="Loading"
@@ -195,6 +196,7 @@ function SeasonBulkPanel({
       <View style={styles.bulkButtonRow}>
         <Button
           disabled={!hasEpisodes || allWatched || isBulkSaving}
+          icon="checkmark-done"
           isLoading={isBulkSaving && watchAction.watched}
           label="Mark all watched"
           loadingLabel="Saving"
@@ -204,6 +206,7 @@ function SeasonBulkPanel({
 
         <Button
           disabled={!hasEpisodes || noneWatched || isBulkSaving}
+          icon="eye-off-outline"
           isLoading={isBulkSaving && !watchAction.watched}
           label="Mark all unwatched"
           loadingLabel="Saving"
@@ -259,6 +262,7 @@ function EpisodeRow({
 
         <Button
           disabled={isDisabled}
+          icon={episode.watched ? "eye-off-outline" : "checkmark"}
           label={episode.watched ? "Mark unwatched" : "Mark watched"}
           onPress={() => onSetWatched(episode.id, !episode.watched)}
           size="small"

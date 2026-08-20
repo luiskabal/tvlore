@@ -29,7 +29,7 @@ export default function SeasonDetailScreen() {
 
         {state.kind === "error" ? (
           <EmptyState
-            action={<Button label="Retry" onPress={refresh} />}
+            action={<Button icon="refresh" label="Retry" onPress={refresh} />}
             detail={state.message}
             icon="albums-outline"
             title="Could not open season"

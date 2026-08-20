@@ -55,6 +55,7 @@ export function SearchControls({
 
         <Button
           disabled={!canSearch || isSearching}
+          icon="search"
           isLoading={isSearching}
           label="Search"
           loadingLabel="Searching"
