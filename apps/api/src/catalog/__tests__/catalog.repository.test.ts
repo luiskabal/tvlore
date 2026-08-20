@@ -173,4 +173,51 @@ describe("CatalogRepository", () => {
       where: { id: episodeId },
     }));
   });
+
+  it("bulk upserts season episodes", async () => {
+    const transaction = {
+      $executeRaw: vi.fn().mockResolvedValue(2),
+      season: {
+        upsert: vi.fn().mockResolvedValue({ id: seasonId }),
+      },
+    };
+    const client = {
+      $transaction: vi.fn(async (callback) => callback(transaction)),
+    };
+    const repository = new CatalogRepository({ getClient: () => client } as unknown as PrismaService);
+
+    await repository.upsertSeasonDetail(showId, {
+      airDate: "2026-08-14",
+      episodeCount: 2,
+      episodes: [
+        {
+          airDate: "2026-08-14",
+          episodeNumber: 1,
+          overview: "First.",
+          runtimeMinutes: 44,
+          seasonNumber: 1,
+          stillPath: "/one.jpg",
+          title: "One",
+        },
+        {
+          airDate: "2026-08-21",
+          episodeNumber: 2,
+          overview: "Second.",
+          runtimeMinutes: 45,
+          seasonNumber: 1,
+          stillPath: "/two.jpg",
+          title: "Two",
+        },
+      ],
+      overview: "Season overview.",
+      posterPath: "/season.jpg",
+      seasonNumber: 1,
+      title: "Season 1",
+    });
+
+    expect(transaction.season.upsert).toHaveBeenCalledWith(expect.objectContaining({
+      where: { showId_seasonNumber: { seasonNumber: 1, showId } },
+    }));
+    expect(transaction.$executeRaw).toHaveBeenCalledTimes(1);
+  });
 });

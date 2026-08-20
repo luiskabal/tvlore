@@ -1,5 +1,8 @@
+import { randomUUID } from "node:crypto";
+
 import { Injectable } from "@nestjs/common";
 
+import { Prisma } from "../generated/prisma/client";
 import { PrismaService } from "../prisma.service";
 import type {
   CatalogResolveResponseDto,
@@ -316,35 +319,46 @@ export class CatalogRepository {
         },
       });
 
-      for (const episode of season.episodes) {
-        await transaction.episode.upsert({
-          create: {
-            airDate: toDate(episode.airDate),
-            episodeNumber: episode.episodeNumber,
-            overview: episode.overview,
-            runtimeMinutes: episode.runtimeMinutes,
-            seasonId: storedSeason.id,
-            seasonNumber: episode.seasonNumber,
-            showId,
-            stillPath: episode.stillPath,
-            title: episode.title,
-          },
-          update: {
-            airDate: toDate(episode.airDate),
-            overview: episode.overview,
-            runtimeMinutes: episode.runtimeMinutes,
-            seasonId: storedSeason.id,
-            stillPath: episode.stillPath,
-            title: episode.title,
-          },
-          where: {
-            showId_seasonNumber_episodeNumber: {
-              episodeNumber: episode.episodeNumber,
-              seasonNumber: episode.seasonNumber,
-              showId,
-            },
-          },
-        });
+      if (season.episodes.length > 0) {
+        const updatedAt = new Date();
+
+        await transaction.$executeRaw(Prisma.sql`
+          INSERT INTO "episodes" (
+            "id",
+            "show_id",
+            "season_id",
+            "season_number",
+            "episode_number",
+            "title",
+            "overview",
+            "still_path",
+            "air_date",
+            "runtime_minutes",
+            "updated_at"
+          )
+          VALUES ${Prisma.join(season.episodes.map((episode) => Prisma.sql`(
+            ${randomUUID()}::uuid,
+            ${showId}::uuid,
+            ${storedSeason.id}::uuid,
+            ${episode.seasonNumber},
+            ${episode.episodeNumber},
+            ${episode.title},
+            ${episode.overview},
+            ${episode.stillPath},
+            ${toDate(episode.airDate)},
+            ${episode.runtimeMinutes},
+            ${updatedAt}
+          )`))}
+          ON CONFLICT ("show_id", "season_number", "episode_number")
+          DO UPDATE SET
+            "season_id" = EXCLUDED."season_id",
+            "title" = EXCLUDED."title",
+            "overview" = EXCLUDED."overview",
+            "still_path" = EXCLUDED."still_path",
+            "air_date" = EXCLUDED."air_date",
+            "runtime_minutes" = EXCLUDED."runtime_minutes",
+            "updated_at" = EXCLUDED."updated_at"
+        `);
       }
     });
   }
