@@ -13,6 +13,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 ## Done Recently
 
 - [x] Run first EAS Android preview build and produce an installable APK.
+- [x] Make `release:smoke` fail on missing local, Vercel, or EAS env gates.
 - [x] Add release preflight guard for obvious committed secrets.
 - [x] Add Supabase Google OAuth native redirect smoke check.
 - [x] Add EAS remote env smoke check for development, preview, and production.

@@ -196,6 +196,7 @@ Tasks:
 - [ ] Confirm Supabase redirect URLs for production scheme/build.
 - [x] Add Supabase Google OAuth native callback smoke check.
 - [ ] Confirm Vercel envs are production-safe.
+- [x] Make `release:smoke` include local, Vercel, and EAS env gates.
 - [x] Create draft reviewer notes for auth and core flows.
 
 Exit criteria:
@@ -291,6 +292,7 @@ before TestFlight/closed testing. Quick gate:
 - [ ] `corepack pnpm verify` passes.
 - [ ] `corepack pnpm verify:full` passes.
 - [ ] `corepack pnpm release:preflight` passes.
+- [ ] `corepack pnpm env:check` passes.
 - [ ] Authenticated `corepack pnpm api:check` passes against Vercel.
 - [ ] iOS production build installs.
 - [ ] Android production build installs.

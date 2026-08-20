@@ -9,6 +9,7 @@ exploratory QA.
 - Latest `main` is pushed.
 - Vercel `tvlore-api` points to the intended commit.
 - Local `.env` files match the tracked `.env.example` files.
+- `corepack pnpm env:check` passes for local API/mobile envs and Vercel env names.
 - EAS project env vars exist for the profile being built.
 - `corepack pnpm eas:env:check` passes when Expo login is available locally.
 - `corepack pnpm release:preflight` passes before EAS preview/production builds.
@@ -22,6 +23,12 @@ Run from the repository root:
 
 ```powershell
 corepack pnpm release:smoke
+```
+
+If release secrets are not configured yet, run the public/non-destructive smoke:
+
+```powershell
+corepack pnpm release:smoke:public
 ```
 
 To validate only the public store/legal URLs:
@@ -55,6 +62,9 @@ Expected result:
 - Typecheck passes for every workspace.
 - Unit tests pass for API and mobile.
 - API build passes.
+- Local API/mobile envs match `.env.example`.
+- Required Vercel env names exist for Production and Preview.
+- Required EAS public env names exist for development, preview, and production.
 - Release preflight fails if a real `.env` file is tracked.
 - Release preflight fails if obvious secret-like values are tracked.
 - Release preflight fails if known development-only diagnostics appear in mobile UI source.
@@ -134,6 +144,7 @@ or emulator before Android beta.
 
 | Check | Expected |
 | --- | --- |
+| Local/Vercel env smoke | `corepack pnpm env:check` passes before release. |
 | EAS envs | `EXPO_PUBLIC_TVLORE_API_BASE_URL`, `EXPO_PUBLIC_SUPABASE_URL`, and `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` exist in EAS `preview` and `production`. |
 | EAS env smoke | `corepack pnpm eas:env:check` passes for development, preview, and production. |
 | Supabase redirect smoke | `corepack pnpm auth:redirect:check` returns a Google OAuth redirect for `tvlore:///auth/callback`. |
