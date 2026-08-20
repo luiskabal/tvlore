@@ -3,26 +3,21 @@ import { Pressable, Text, View } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 
 import type {
-  ContinueWatchingShow,
   LibraryRatedTitle,
   LibraryShowItem,
   LibraryWatchlistItem,
   RecentlyWatchedItem,
-  WatchedEpisodeItem,
 } from "../api/tvlore-api";
 import { getTmdbPosterUrl } from "../catalog/posters";
 import {
   getHistoryActionKey,
   getWatchlistActionKey,
+} from "../library/library-action-keys";
+import {
   type LibraryActionState,
 } from "../library/use-library-actions";
 import { MediaRow, Skeleton } from "../ui";
 import { styles } from "./home-styles";
-import {
-  addSetValue,
-  deleteSetValue,
-  type EpisodeGroup,
-} from "./library-overview-model";
 
 const swipeConfirmWindowMs = 4000;
 
@@ -41,25 +36,6 @@ export function LibraryRowsSkeleton() {
         </View>
       ))}
     </View>
-  );
-}
-
-export function ContinueWatchingItem({
-  onOpenShowSeason,
-  show,
-}: {
-  onOpenShowSeason: (showId: string, seasonNumber: number) => void;
-  show: ContinueWatchingShow;
-}) {
-  return (
-    <MediaRow
-      detail={`S${show.nextEpisode.seasonNumber} E${show.nextEpisode.episodeNumber} - ${show.nextEpisode.title}`}
-      onPress={() => onOpenShowSeason(show.id, show.nextEpisode.seasonNumber)}
-      posterLabel="TV"
-      posterUri={getPosterUri(show.posterPath)}
-      title={show.title}
-      trailing={`${show.percentComplete}%`}
-    />
   );
 }
 
@@ -207,127 +183,6 @@ export function RecentlyWatchedRow({
         {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
       </View>
     </SwipeableActionRow>
-  );
-}
-
-export function EpisodeShowGroup({
-  group,
-  libraryAction,
-  onOptimisticRemove,
-  onOpenEpisode,
-  onOpenShow,
-  onOpenShowSeason,
-  onRemove,
-}: {
-  group: EpisodeGroup;
-  libraryAction: LibraryActionState;
-  onOptimisticRemove: (actionKey: string) => void;
-  onOpenEpisode: (episodeId: string) => void;
-  onOpenShow: (showId: string) => void;
-  onOpenShowSeason: (showId: string, seasonNumber: number) => void;
-  onRemove: (item: RecentlyWatchedItem) => void;
-}) {
-  const [collapsedSeasons, setCollapsedSeasons] = useState<Set<number>>(() => new Set());
-  const toggleSeason = (seasonNumber: number) => {
-    setCollapsedSeasons((current) => (
-      current.has(seasonNumber)
-        ? deleteSetValue(current, seasonNumber)
-        : addSetValue(current, seasonNumber)
-    ));
-  };
-
-  return (
-    <View style={styles.groupPanel}>
-      <Pressable
-        accessibilityLabel={`Open ${group.showTitle}`}
-        accessibilityRole="button"
-        onPress={() => onOpenShow(group.showId)}
-        style={({ pressed }) => [styles.groupTitleLink, pressed ? styles.pressedListItem : null]}
-      >
-        <Text style={styles.groupTitle}>{group.showTitle}</Text>
-      </Pressable>
-      {group.seasons.map((season) => (
-        <EpisodeSeasonGroup
-          episodes={season.episodes}
-          isCollapsed={collapsedSeasons.has(season.seasonNumber)}
-          key={`${group.showId}-${season.seasonNumber}`}
-          libraryAction={libraryAction}
-          onOptimisticRemove={onOptimisticRemove}
-          onOpenEpisode={onOpenEpisode}
-          onOpenShowSeason={onOpenShowSeason}
-          onRemove={onRemove}
-          showId={group.showId}
-          onToggle={() => toggleSeason(season.seasonNumber)}
-          seasonNumber={season.seasonNumber}
-        />
-      ))}
-    </View>
-  );
-}
-
-function EpisodeSeasonGroup({
-  episodes,
-  isCollapsed,
-  libraryAction,
-  onOptimisticRemove,
-  onOpenEpisode,
-  onOpenShowSeason,
-  onRemove,
-  onToggle,
-  showId,
-  seasonNumber,
-}: {
-  episodes: WatchedEpisodeItem[];
-  isCollapsed: boolean;
-  libraryAction: LibraryActionState;
-  onOptimisticRemove: (actionKey: string) => void;
-  onOpenEpisode: (episodeId: string) => void;
-  onOpenShowSeason: (showId: string, seasonNumber: number) => void;
-  onRemove: (item: RecentlyWatchedItem) => void;
-  onToggle: () => void;
-  showId: string;
-  seasonNumber: number;
-}) {
-  return (
-    <View style={styles.groupSeason}>
-      <View style={styles.groupSeasonHeader}>
-        <Pressable
-          accessibilityLabel={`Open season ${seasonNumber}`}
-          accessibilityRole="button"
-          onPress={() => onOpenShowSeason(showId, seasonNumber)}
-          style={({ pressed }) => [styles.groupSeasonLink, pressed ? styles.pressedListItem : null]}
-        >
-          <Text style={styles.groupSubtitle}>Season {seasonNumber}</Text>
-        </Pressable>
-        <View style={styles.groupSeasonMeta}>
-          <Text style={styles.statusDetail}>{episodes.length} watched</Text>
-          <Pressable
-            accessibilityLabel={`${isCollapsed ? "Expand" : "Collapse"} season ${seasonNumber}`}
-            accessibilityRole="button"
-            accessibilityState={{ expanded: !isCollapsed }}
-            hitSlop={8}
-            onPress={onToggle}
-            style={({ pressed }) => [styles.groupSeasonToggleButton, pressed ? styles.pressedListItem : null]}
-          >
-            <Text style={styles.groupSeasonToggle}>{isCollapsed ? "+" : "-"}</Text>
-          </Pressable>
-        </View>
-      </View>
-      {isCollapsed
-        ? null
-        : episodes.map((episode) => (
-            <RecentlyWatchedRow
-              item={episode}
-              key={episode.id}
-              libraryAction={libraryAction}
-              onOptimisticRemove={onOptimisticRemove}
-              onOpenEpisode={onOpenEpisode}
-              onOpenMovie={noop}
-              onOpenShowSeason={onOpenShowSeason}
-              onRemove={onRemove}
-            />
-          ))}
-    </View>
   );
 }
 
@@ -513,8 +368,6 @@ function getLibraryShowTrailing(show: LibraryShowItem) {
 function formatShortDate(value: string) {
   return new Date(value).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
-
-function noop() {}
 
 function getPosterUri(posterPath: string | null) {
   return posterPath ? getTmdbPosterUrl(posterPath) : null;

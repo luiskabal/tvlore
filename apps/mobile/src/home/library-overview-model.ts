@@ -1,5 +1,5 @@
 import type { LibraryResponse, RecentlyWatchedItem, WatchedEpisodeItem } from "../api/tvlore-api";
-import { getHistoryActionKey, getWatchlistActionKey } from "../library/use-library-actions";
+import { getHistoryActionKey, getWatchlistActionKey } from "../library/library-action-keys";
 
 export type LibrarySectionFilter =
   | "chronology"

@@ -133,16 +133,6 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
   },
-  groupPanel: {
-    borderColor: "#d8d0c5",
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: 12,
-    padding: 14,
-  },
-  groupSeason: {
-    gap: 8,
-  },
   groupSeasonHeader: {
     alignItems: "center",
     flexDirection: "row",
@@ -380,6 +370,9 @@ export const styles = StyleSheet.create({
   libraryListContent: {
     gap: 16,
     paddingBottom: 8,
+  },
+  libraryFeedHeader: {
+    gap: 16,
   },
   libraryListScroll: {
     flex: 1,

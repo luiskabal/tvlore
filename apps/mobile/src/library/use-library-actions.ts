@@ -8,7 +8,10 @@ import {
   type RecentlyWatchedItem,
 } from "../api/tvlore-api";
 import { getSupabaseAccessToken } from "../auth/supabase-auth";
+import { getHistoryActionKey, getWatchlistActionKey } from "./library-action-keys";
 import { notifyLibraryChanged } from "./library-refresh";
+
+export { getHistoryActionKey, getWatchlistActionKey } from "./library-action-keys";
 
 export type LibraryActionState =
   | { kind: "idle" }
@@ -61,12 +64,4 @@ export function useLibraryActions() {
   }, []);
 
   return { libraryAction, removeRecentlyWatchedItem, removeWatchlistItem };
-}
-
-export function getHistoryActionKey(item: RecentlyWatchedItem) {
-  return `history:${item.mediaType}:${item.id}`;
-}
-
-export function getWatchlistActionKey(item: LibraryWatchlistItem) {
-  return `watchlist:${item.mediaType}:${item.id}`;
 }
