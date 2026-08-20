@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  isAccountDeletionStatusResponse,
   isAvailableDiscoveryResponse,
   isCatalogSearchResponse,
   isDeleteUserResponse,
@@ -15,6 +16,12 @@ describe("api guards", () => {
   it("accepts account deletion responses", () => {
     expect(isDeleteUserResponse({ deleted: true })).toBe(true);
     expect(isDeleteUserResponse({ deleted: false })).toBe(false);
+  });
+
+  it("accepts account deletion readiness responses", () => {
+    expect(isAccountDeletionStatusResponse({ configured: true })).toBe(true);
+    expect(isAccountDeletionStatusResponse({ configured: false })).toBe(true);
+    expect(isAccountDeletionStatusResponse({ configured: "false" })).toBe(false);
   });
 
   it("accepts completed show progress responses", () => {

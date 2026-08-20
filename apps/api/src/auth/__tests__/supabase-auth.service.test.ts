@@ -61,6 +61,12 @@ describe("SupabaseAuthService", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it("reports whether account deletion is configured", () => {
+    expect(new SupabaseAuthService(config).isAccountDeletionConfigured()).toBe(true);
+    expect(new SupabaseAuthService({ ...config, supabaseServiceRoleKey: null }).isAccountDeletionConfigured())
+      .toBe(false);
+  });
+
   it("fails account deletion when Supabase rejects the admin request", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 500 } as Response));
 

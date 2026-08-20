@@ -83,6 +83,7 @@ Expected result:
 | `GET /health/db` | `200`, database is `ok`. |
 | `GET /health/error` | `404` in production. |
 | `GET /users/me` without token | `401 UNAUTHORIZED`. |
+| `GET /users/me/account-deletion` without token | `401 UNAUTHORIZED`. |
 | `GET /search?query=dark` without token | `401 UNAUTHORIZED`. |
 | Rate-limit headers on `/users/me` | `x-ratelimit-limit=180` by default. |
 | Rate-limit headers on `/search?query=dark` | `x-ratelimit-limit=40` by default. |
@@ -156,6 +157,7 @@ or emulator before Android beta.
 | Account deletion URL | Public page opens without login. |
 | Store URL smoke | `corepack pnpm store:check` returns `200` for Privacy, Terms, Support, and Account deletion. |
 | Delete account entry | Visible in Profile. |
+| Delete account readiness | Profile disables deletion and explains it if `SUPABASE_SERVICE_ROLE_KEY` is not configured. |
 | Reviewer notes | `docs/store-reviewer-notes.md` explains login path and core flows. |
 | Store metadata | `docs/store-metadata.md` matches the actual app and public URLs. |
 | Store screenshots | Match current UI, use a preview/production build, and do not show development-only states. |

@@ -11,7 +11,7 @@ Implemented:
 - Expo mobile app that can authenticate with Google through Supabase Auth, and has native iOS Apple Sign-In wired for provider configuration.
 - Supabase Postgres database connected to the backend through Prisma.
 - Supabase Auth token validation in the backend.
-- Authenticated `GET /users/me`, `PATCH /users/me`, and `DELETE /users/me`.
+- Authenticated `GET /users/me`, `PATCH /users/me`, `GET /users/me/account-deletion`, and `DELETE /users/me`.
 - User-owned streaming availability country preference.
 - Authenticated `GET /search` backed by TMDB.
 - Authenticated `POST /catalog/resolve` that converts TMDB refs into TVLore internal IDs.
@@ -244,6 +244,7 @@ Implemented endpoint:
 ```text
 GET /users/me
 PATCH /users/me
+GET /users/me/account-deletion
 DELETE /users/me
 ```
 
@@ -258,6 +259,7 @@ What it does:
 7. Returns the TVLore user.
 
 `PATCH /users/me` additionally validates and stores user settings such as the two-letter `availabilityCountry` used by watch-provider lookups.
+`GET /users/me/account-deletion` validates the session and reports whether the backend has the service-role configuration required for account deletion, without mutating data.
 `DELETE /users/me` deletes the TVLore `User`, cascades user-owned rows, keeps shared catalog rows, and then deletes the Supabase Auth user through the backend-only service-role key.
 
 Important detail:

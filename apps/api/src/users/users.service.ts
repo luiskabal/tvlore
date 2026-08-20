@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 
 import { SupabaseAuthService } from "../auth/supabase-auth.service";
 import { UsersRepository } from "./users.repository";
-import type { DeleteUserResponseDto, UpdateUserInput, UserDto } from "./users.types";
+import type { AccountDeletionStatusDto, DeleteUserResponseDto, UpdateUserInput, UserDto } from "./users.types";
 
 @Injectable()
 export class UsersService {
@@ -15,6 +15,12 @@ export class UsersService {
     const authenticatedUser = await this.supabaseAuthService.getUserFromAuthorizationHeader(authorizationHeader);
 
     return this.usersRepository.upsertAuthenticatedUser(authenticatedUser);
+  }
+
+  async getAccountDeletionStatus(authorizationHeader: string | undefined): Promise<AccountDeletionStatusDto> {
+    await this.supabaseAuthService.getUserFromAuthorizationHeader(authorizationHeader);
+
+    return { configured: this.supabaseAuthService.isAccountDeletionConfigured() };
   }
 
   async deleteMe(authorizationHeader: string | undefined): Promise<DeleteUserResponseDto> {

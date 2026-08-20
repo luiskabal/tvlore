@@ -12,3 +12,7 @@ export type UpdateUserInput = {
 export type DeleteUserResponseDto = {
   deleted: true;
 };
+
+export type AccountDeletionStatusDto = {
+  configured: boolean;
+};

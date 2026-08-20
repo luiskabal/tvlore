@@ -1,6 +1,6 @@
-import { fetchCachedJson, fetchMutationJson, getAuthHeaders } from "./client";
-import { isDeleteUserResponse, isUserResponse } from "./guards";
-import type { DeleteUserResponse, UserResponse } from "./types";
+import { fetchCachedJson, fetchJson, fetchMutationJson, getAuthHeaders } from "./client";
+import { isAccountDeletionStatusResponse, isDeleteUserResponse, isUserResponse } from "./guards";
+import type { AccountDeletionStatusResponse, DeleteUserResponse, UserResponse } from "./types";
 
 export async function getCurrentUser(accessToken: string | null): Promise<UserResponse> {
   return fetchCachedJson(
@@ -39,5 +39,16 @@ export async function deleteCurrentUser(accessToken: string | null): Promise<Del
       headers: getAuthHeaders(accessToken),
       method: "DELETE",
     },
+  );
+}
+
+export async function getAccountDeletionStatus(
+  accessToken: string | null,
+): Promise<AccountDeletionStatusResponse> {
+  return fetchJson(
+    "/users/me/account-deletion",
+    isAccountDeletionStatusResponse,
+    "Unexpected account deletion status response",
+    { headers: getAuthHeaders(accessToken) },
   );
 }

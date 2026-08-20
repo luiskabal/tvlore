@@ -13,6 +13,10 @@ export type DeleteUserResponse = {
   deleted: true;
 };
 
+export type AccountDeletionStatusResponse = {
+  configured: boolean;
+};
+
 export type LibraryResponse = {
   continueWatching: ContinueWatchingShow[];
   ratedTitles: LibraryRatedTitle[];

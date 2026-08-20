@@ -9,6 +9,10 @@ import { toAuthenticatedUser } from "./supabase-user";
 export class SupabaseAuthService {
   constructor(@Inject(API_CONFIG) private readonly config: ApiConfig) {}
 
+  isAccountDeletionConfigured(): boolean {
+    return Boolean(this.config.supabaseServiceRoleKey);
+  }
+
   async deleteUser(userId: string): Promise<void> {
     const serviceRoleKey = this.config.supabaseServiceRoleKey;
 

@@ -1,4 +1,5 @@
 import type {
+  AccountDeletionStatusResponse,
   AvailableDiscoveryResponse,
   CatalogCastResponse,
   CatalogResolveResponse,
@@ -59,6 +60,10 @@ export function isUserResponse(value: unknown): value is UserResponse {
 
 export function isDeleteUserResponse(value: unknown): value is DeleteUserResponse {
   return isRecord(value) && value.deleted === true;
+}
+
+export function isAccountDeletionStatusResponse(value: unknown): value is AccountDeletionStatusResponse {
+  return isRecord(value) && typeof value.configured === "boolean";
 }
 
 export function isLibraryResponse(value: unknown): value is LibraryResponse {

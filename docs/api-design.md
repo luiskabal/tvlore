@@ -311,6 +311,43 @@ Business validation:
 
 Errors: `VALIDATION_FAILED`, `UNAUTHORIZED`.
 
+### `GET /users/me/account-deletion`
+
+Purpose: report whether the authenticated user's account can be deleted in the current backend environment.
+
+Current MVP status: implemented as a non-destructive readiness check for Profile and release QA.
+
+Auth: required.
+
+Route parameters: none.
+
+Query parameters: none.
+
+Request: none.
+
+Response:
+
+```json
+{
+  "configured": true
+}
+```
+
+Status codes:
+
+- `200 OK`
+- `401 UNAUTHORIZED`
+
+Authorization: Supabase access token must represent an active Supabase Auth user.
+
+Business behavior:
+
+- Validates the Supabase token.
+- Returns `configured: true` only when the backend has the Supabase service-role key required by `DELETE /users/me`.
+- Does not delete or mutate user data.
+
+Errors: `UNAUTHORIZED`.
+
 ### `DELETE /users/me`
 
 Purpose: permanently delete the authenticated user's TVLore account.

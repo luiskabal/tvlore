@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import * as AppleAuthentication from "expo-apple-authentication";
 import { Linking, Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
 
-import { deleteCurrentUser, updateCurrentUser } from "../api/tvlore-api";
+import { deleteCurrentUser, getAccountDeletionStatus, updateCurrentUser } from "../api/tvlore-api";
 import { getSupabaseAccessToken, isSupabaseConfigured, signOut as signOutFromSupabase } from "../auth/supabase-auth";
 import { formatWatchCountry } from "../catalog/watch-country";
 import { apiBaseUrl } from "../config/env";
@@ -30,9 +30,16 @@ type DeleteAccountActionState =
   | { kind: "loading" }
   | { kind: "error"; message: string };
 
+type AccountDeletionStatusState =
+  | { kind: "idle" }
+  | { kind: "loading" }
+  | { configured: boolean; kind: "ready" }
+  | { kind: "error"; message: string };
+
 export default function ProfileScreen() {
   const [countryAction, setCountryAction] = useState<CountryActionState>({ kind: "idle" });
   const [deleteAction, setDeleteAction] = useState<DeleteAccountActionState>({ kind: "idle" });
+  const [deleteStatus, setDeleteStatus] = useState<AccountDeletionStatusState>({ kind: "idle" });
   const {
     auth,
     authActionMessage,
@@ -46,6 +53,37 @@ export default function ProfileScreen() {
     refreshHome,
     signOut,
   } = useHomeModel({ includeRecommendations: false });
+
+  useEffect(() => {
+    if (auth.kind !== "signedIn") {
+      setDeleteStatus({ kind: "idle" });
+      return;
+    }
+
+    let isMounted = true;
+
+    setDeleteStatus({ kind: "loading" });
+
+    void getSupabaseAccessToken()
+      .then((token) => getAccountDeletionStatus(token))
+      .then((status) => {
+        if (isMounted) {
+          setDeleteStatus({ configured: status.configured, kind: "ready" });
+        }
+      })
+      .catch((error) => {
+        if (isMounted) {
+          setDeleteStatus({
+            kind: "error",
+            message: error instanceof Error ? error.message : "Could not check account deletion",
+          });
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [auth.kind]);
 
   async function updateAvailabilityCountry(availabilityCountry: string) {
     if (countryAction.kind === "loading" || homeData?.user?.availabilityCountry === availabilityCountry) {
@@ -170,6 +208,7 @@ export default function ProfileScreen() {
             onCancel={() => setDeleteAction({ kind: "idle" })}
             onConfirm={confirmDeleteAccount}
             onRequestConfirm={() => setDeleteAction({ kind: "confirming" })}
+            status={deleteStatus}
           />
         ) : null}
       </ScrollView>
@@ -201,14 +240,19 @@ function DeleteAccountPanel({
   onCancel,
   onConfirm,
   onRequestConfirm,
+  status,
 }: {
   action: DeleteAccountActionState;
   onCancel: () => void;
   onConfirm: () => Promise<void> | void;
   onRequestConfirm: () => void;
+  status: AccountDeletionStatusState;
 }) {
   const isLoading = action.kind === "loading";
   const isConfirming = action.kind === "confirming" || action.kind === "error" || isLoading;
+  const isChecking = status.kind === "loading";
+  const isNotConfigured = status.kind === "ready" && !status.configured;
+  const canRequestDeletion = !isChecking && !isNotConfigured;
 
   return (
     <View style={styles.statusPanel}>
@@ -216,6 +260,11 @@ function DeleteAccountPanel({
       <Text style={styles.statusDetail}>
         Permanently removes your TVLore library, watchlist, ratings, reflections, and login account.
       </Text>
+      {isChecking ? <Text style={styles.statusDetail}>Checking account deletion availability.</Text> : null}
+      {isNotConfigured ? (
+        <Text style={styles.errorText}>Account deletion is not configured for this environment yet.</Text>
+      ) : null}
+      {status.kind === "error" ? <Text style={styles.errorText}>{status.message}</Text> : null}
       {action.kind === "error" ? <Text style={styles.errorText}>{action.message}</Text> : null}
       {isConfirming ? (
         <View style={styles.accountActionRow}>
@@ -227,15 +276,19 @@ function DeleteAccountPanel({
             <Text style={styles.dangerOutlineButtonText}>Cancel</Text>
           </Pressable>
           <Pressable
-            disabled={isLoading}
-            style={[styles.dangerButton, isLoading ? styles.disabledButton : null]}
+            disabled={isLoading || !canRequestDeletion}
+            style={[styles.dangerButton, isLoading || !canRequestDeletion ? styles.disabledButton : null]}
             onPress={onConfirm}
           >
             <Text style={styles.dangerButtonText}>{isLoading ? "Deleting" : "Delete forever"}</Text>
           </Pressable>
         </View>
       ) : (
-        <Pressable style={styles.dangerOutlineButton} onPress={onRequestConfirm}>
+        <Pressable
+          disabled={!canRequestDeletion}
+          style={[styles.dangerOutlineButton, !canRequestDeletion ? styles.disabledButton : null]}
+          onPress={onRequestConfirm}
+        >
           <Text style={styles.dangerOutlineButtonText}>Delete account</Text>
         </Pressable>
       )}

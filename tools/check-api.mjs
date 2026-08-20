@@ -71,6 +71,7 @@ async function checkUnauthorizedRoutes() {
   await checkUnauthorized("/users/me", {
     assert: (_, response) => assertRateLimitHeaders(response, 180),
   });
+  await checkUnauthorized("/users/me/account-deletion");
   await checkUnauthorized("/users/me", { method: "DELETE" });
   await checkUnauthorized("/users/me", {
     body: JSON.stringify({ availabilityCountry: "CL" }),
@@ -172,6 +173,11 @@ async function checkAuthenticatedProductFlow(token) {
 
   const currentUser = await check("/users/me", {
     assert: assertUser,
+    expectedStatus: 200,
+    headers: authHeaders,
+  });
+  await check("/users/me/account-deletion", {
+    assert: assertAccountDeletionStatus,
     expectedStatus: 200,
     headers: authHeaders,
   });
@@ -970,6 +976,11 @@ function assertUser(body) {
   expectUuid(body.id, "user.id");
   expectString(body.displayName, "user.displayName");
   expectIsoString(body.createdAt, "user.createdAt");
+}
+
+function assertAccountDeletionStatus(body) {
+  expectRecord(body, "account deletion status");
+  expectBoolean(body.configured, "account deletion status.configured");
 }
 
 function assertSearchResponse(body) {

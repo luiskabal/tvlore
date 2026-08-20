@@ -19,6 +19,22 @@ const currentUser = {
 };
 
 describe("UsersService", () => {
+  it("reports account deletion readiness for signed-in users", async () => {
+    const supabaseAuthService = {
+      getUserFromAuthorizationHeader: vi.fn().mockResolvedValue(authenticatedUser),
+      isAccountDeletionConfigured: vi.fn().mockReturnValue(true),
+    };
+    const service = new UsersService(
+      supabaseAuthService as unknown as SupabaseAuthService,
+      {} as unknown as UsersRepository,
+    );
+
+    await expect(service.getAccountDeletionStatus("Bearer token")).resolves.toEqual({ configured: true });
+
+    expect(supabaseAuthService.getUserFromAuthorizationHeader).toHaveBeenCalledWith("Bearer token");
+    expect(supabaseAuthService.isAccountDeletionConfigured).toHaveBeenCalled();
+  });
+
   it("deletes the signed-in user's TVLore data before deleting their Supabase auth user", async () => {
     const supabaseAuthService = {
       deleteUser: vi.fn().mockResolvedValue(undefined),
