@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { fetchJson } from "./client";
+import { clearApiReadCache, fetchCachedJson, fetchJson, fetchMutationJson } from "./client";
 
 vi.mock("expo-constants", () => ({
   default: { expoConfig: null },
@@ -12,6 +12,7 @@ vi.mock("react-native", () => ({
 
 describe("fetchJson", () => {
   afterEach(() => {
+    clearApiReadCache();
     vi.unstubAllGlobals();
   });
 
@@ -53,8 +54,32 @@ describe("fetchJson", () => {
 
     await expect(fetchJson("/health", isOkResponse, "Empty failure")).rejects.toThrow("Empty failure");
   });
+
+  it("clears cached reads after mutations", async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(new Response(JSON.stringify({ version: 1 }), { status: 200 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ ok: true }), { status: 200 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ version: 2 }), { status: 200 }));
+
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(fetchCachedJson("/shows/show-1", isVersionResponse, "Unexpected show"))
+      .resolves.toEqual({ version: 1 });
+    await expect(fetchCachedJson("/shows/show-1", isVersionResponse, "Unexpected show"))
+      .resolves.toEqual({ version: 1 });
+    await expect(fetchMutationJson("/catalog/resolve", isOkResponse, "Unexpected resolve"))
+      .resolves.toEqual({ ok: true });
+    await expect(fetchCachedJson("/shows/show-1", isVersionResponse, "Unexpected show"))
+      .resolves.toEqual({ version: 2 });
+
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+  });
 });
 
 function isOkResponse(value: unknown): value is { ok: true } {
   return Boolean(value && typeof value === "object" && "ok" in value && value.ok === true);
+}
+
+function isVersionResponse(value: unknown): value is { version: number } {
+  return Boolean(value && typeof value === "object" && "version" in value && typeof value.version === "number");
 }

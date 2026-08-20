@@ -29,15 +29,15 @@ export default function WatchPathDetailScreen() {
     setOpenError(null);
 
     try {
+      const token = await getSupabaseAccessToken();
+      const resolved = await resolveCatalogItem(token, toCatalogSearchResult(item));
+      openDetail(resolved.mediaType, resolved.id);
+    } catch (error) {
       if (item.tvloreId) {
         openDetail(item.mediaType, item.tvloreId);
         return;
       }
 
-      const token = await getSupabaseAccessToken();
-      const resolved = await resolveCatalogItem(token, toCatalogSearchResult(item));
-      openDetail(resolved.mediaType, resolved.id);
-    } catch (error) {
       setOpenError(error instanceof Error ? error.message : "Could not open title");
     } finally {
       setOpeningKey(null);

@@ -14,18 +14,16 @@ export default function PopularDiscoveryScreen() {
   const { popular, popularState, retryPopular } = usePopularDiscovery();
 
   const openResult = async (result: CatalogSearchResult) => {
-    if (result.tvloreId) {
-      pushDetail(result.mediaType, result.tvloreId);
-      return;
-    }
-
     const item = await resolveResult(result);
 
-    if (!item) {
+    if (item) {
+      pushDetail(item.mediaType, item.id);
       return;
     }
 
-    pushDetail(item.mediaType, item.id);
+    if (result.tvloreId) {
+      pushDetail(result.mediaType, result.tvloreId);
+    }
   };
 
   return (
