@@ -94,7 +94,7 @@ enough value to justify a first release.
 | TVLore Picks | Ready | Backend-owned editorial TMDB refs shown from Search. |
 | Where to Watch | Ready | TMDB Watch Providers by saved country, shown on detail screens. |
 | Watch Paths | Ready | Curated paths, personal imports, TMDB title URL parsing, TMDB Collection import, save-to-watchlist. |
-| Mobile architecture | Ready | Screen -> hook -> API/auth client boundary is established. |
+| Mobile architecture | Ready | Screen -> hook -> API/auth client boundary is established. Reusable responsive UI primitives now cover primary screen layout, panels, headers, and icon actions. |
 | Tests | Partial | Unit/type checks are good; device QA and release smoke checklist are still needed. |
 | Postman/API smoke | Ready | Collection and `api:check` exist. |
 | Documentation | Partial | Architecture/current state exist; release-specific plan begins here. |
@@ -293,7 +293,7 @@ Skip for now:
 - New discovery sections.
 - Social.
 - Collaborative/ML recommendation engine rewrite.
-- UI redesign beyond release-blocking clarity.
+- A full visual redesign. Keep UI polish incremental and routed through reusable primitives.
 
 ## 6. Release Readiness Checklist
 

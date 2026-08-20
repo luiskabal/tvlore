@@ -1,11 +1,10 @@
 import { router, useLocalSearchParams } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { useEffect, useRef } from "react";
-import { Pressable, SafeAreaView, ScrollView, View } from "react-native";
+import { Pressable } from "react-native";
 
 import type { MediaType } from "../api/tvlore-api";
 import { useLibraryRevision } from "../library/library-refresh";
-import { AppText, Button } from "../ui";
+import { AppText, Button, Screen, ScreenScroll, Surface } from "../ui";
 import { CatalogDetailContent, CatalogDetailSkeleton } from "./CatalogDetailContent";
 import { styles } from "./catalog-detail-styles";
 import { useCatalogDetail } from "./use-catalog-detail";
@@ -38,9 +37,8 @@ export default function CatalogDetailScreen({ mediaType }: { mediaType: MediaTyp
   }, [libraryRevision, refresh]);
 
   return (
-    <SafeAreaView style={styles.screen}>
-      <StatusBar style="dark" />
-      <ScrollView contentContainerStyle={styles.content}>
+    <Screen>
+      <ScreenScroll options={{ top: 48 }}>
         <Pressable style={styles.backButton} onPress={() => router.back()}>
           <AppText style={styles.backButtonText}>Back</AppText>
         </Pressable>
@@ -50,11 +48,11 @@ export default function CatalogDetailScreen({ mediaType }: { mediaType: MediaTyp
         ) : null}
 
         {state.kind === "error" ? (
-          <View style={styles.statusPanel}>
+          <Surface>
             <AppText variant="section">Could not open title</AppText>
             <AppText tone="muted">{state.message}</AppText>
             <Button label="Retry" onPress={refresh} />
-          </View>
+          </Surface>
         ) : null}
 
         {state.kind === "ready" ? (
@@ -72,8 +70,8 @@ export default function CatalogDetailScreen({ mediaType }: { mediaType: MediaTyp
             watchProvidersState={watchProvidersState}
           />
         ) : null}
-      </ScrollView>
-    </SafeAreaView>
+      </ScreenScroll>
+    </Screen>
   );
 }
 

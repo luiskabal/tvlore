@@ -1,10 +1,9 @@
 import { router } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ActivityIndicator, FlatList, SafeAreaView, View, type ListRenderItemInfo } from "react-native";
+import { ActivityIndicator, FlatList, View, type ListRenderItemInfo } from "react-native";
 
 import type { CatalogSearchResult, MediaType } from "../api/tvlore-api";
-import { AppText, ui } from "../ui";
+import { AppText, Screen, ui, useScreenContentStyle } from "../ui";
 import { SearchControls } from "./SearchControls";
 import { SearchAvailable } from "./SearchAvailable";
 import { SearchPopular } from "./SearchPopular";
@@ -47,6 +46,7 @@ export default function SearchScreen() {
   const { recommendations, recommendationsState, retryRecommendations } = useSearchRecommendations();
   const { available, availableState, retryAvailable } = useAvailableDiscovery();
   const { popular, popularState, retryPopular } = usePopularDiscovery();
+  const contentStyle = useScreenContentStyle();
   const skipNextDebouncedSearchRef = useRef(false);
   const hasTypedQuery = query.trim().length > 0;
   const canSearch = canRunSearch(query);
@@ -170,8 +170,7 @@ export default function SearchScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.screen}>
-      <StatusBar style="dark" />
+    <Screen>
       <FlatList
         ListEmptyComponent={<SearchEmptyState canSearch={canSearch} hasTypedQuery={hasTypedQuery} search={search} />}
         ListFooterComponent={<SearchFooter search={search} />}
@@ -189,7 +188,7 @@ export default function SearchScreen() {
             <SearchHeader canSearch={canSearch} hasTypedQuery={hasTypedQuery} search={search} />
           </View>
         )}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={contentStyle}
         data={feedItems}
         keyExtractor={(item) => item.key}
         keyboardShouldPersistTaps="handled"
@@ -201,7 +200,7 @@ export default function SearchScreen() {
         onEndReachedThreshold={0.6}
         renderItem={renderItem}
       />
-    </SafeAreaView>
+    </Screen>
   );
 }
 

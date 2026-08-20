@@ -9,7 +9,7 @@ import {
 import { AppText } from "./AppText";
 import { ui } from "./tokens";
 
-type ButtonVariant = "danger" | "primary" | "secondary";
+type ButtonVariant = "danger" | "outline" | "primary" | "secondary";
 
 type ButtonProps = Omit<PressableProps, "children" | "style"> & {
   label: string;
@@ -31,6 +31,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   const isDisabled = Boolean(disabled || isLoading);
+  const textTone = variant === "outline" ? "default" : "inverse";
 
   return (
     <Pressable
@@ -46,7 +47,7 @@ export function Button({
         style,
       ]}
     >
-      <AppText tone="inverse" variant={size === "small" ? "caption" : "button"}>
+      <AppText tone={textTone} variant={size === "small" ? "caption" : "button"}>
         {isLoading ? loadingLabel ?? "Loading" : label}
       </AppText>
     </Pressable>
@@ -55,6 +56,7 @@ export function Button({
 
 const variantStyles: Record<ButtonVariant, ViewStyle> = {
   danger: { backgroundColor: ui.color.danger },
+  outline: { backgroundColor: ui.color.panel, borderColor: ui.color.border, borderWidth: 1 },
   primary: { backgroundColor: ui.color.accent },
   secondary: { backgroundColor: ui.color.ink },
 };

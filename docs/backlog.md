@@ -8,6 +8,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 - [ ] Fill internal/closed Android tester list and feedback channel outside git.
 - [ ] Wait for Google Play developer account verification, then create the TVLore app record using `docs/google-play-android-release.md`.
 - [ ] Continue removing release-blocking development affordances before store submission.
+- [ ] Continue applying reusable mobile UI primitives to secondary screens and skeleton states.
 - [ ] Run account-deletion QA on a disposable account now that `SUPABASE_SERVICE_ROLE_KEY` is configured in Vercel.
 
 ## Blocked
@@ -18,6 +19,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 ## Done Recently
 
 - [x] Fix Android EAS build runner for the mobile app inside the monorepo.
+- [x] Add reusable responsive mobile UI primitives for screen layout, panels, page headers, and icon actions.
 - [x] Add Android tester roster and feedback plan.
 - [x] Run Android-focused release smoke with `corepack pnpm release:android:smoke`.
 - [x] Submit Google Play Developer account verification.
@@ -66,7 +68,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 ## Notes
 
 - Show-level and season-level bulk watched actions are backend-owned so mobile does not issue one request per episode for those user intents.
-- Mobile cleanup should start with the largest screens: `SeasonDetailScreen`, `CatalogDetailScreen`, `SearchScreen`, then `HomeScreen`.
+- Mobile cleanup should keep moving repeated presentation into reusable UI primitives. Primary screens now share responsive screen/header/panel primitives; secondary screens and skeletons should migrate when their next UX change touches them.
 - Keep the current screen -> hook -> API client boundary. The cleanup goal is readability, not a new state-management layer yet.
 - Ratings are explicit preference signals. Keep them separate from watched state so recommendations can use both later.
 - Post-watch check-in should never block `Watched`: save the watched state first, then open an optional skip-friendly flow.

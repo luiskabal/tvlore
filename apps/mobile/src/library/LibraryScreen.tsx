@@ -1,11 +1,9 @@
 import { router } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
 
 import { isSupabaseConfigured } from "../auth/supabase-auth";
 import { LibraryOverview, LibraryOverviewSkeleton } from "../home/LibraryOverview";
-import { styles } from "../home/home-styles";
 import { useHomeModel } from "../home/use-home-model";
+import { AppText, Button, IconButton, PageHeader, Screen, ScreenContent, ScreenScroll, Surface } from "../ui";
 import { useLibraryChronology } from "./use-library-chronology";
 import { useLibraryActions } from "./use-library-actions";
 import { useLibraryLookahead } from "./use-library-lookahead";
@@ -26,10 +24,9 @@ export default function LibraryScreen() {
   useLibraryLookahead(homeData?.library ?? null, isSignedIn);
 
   return (
-    <SafeAreaView style={styles.screen}>
-      <StatusBar style="dark" />
+    <Screen>
       {homeData?.user ? (
-        <View style={styles.fixedContent}>
+        <ScreenContent fill options={{ bottom: 16 }}>
           <LibraryHeader showSearchButton={isSignedIn} />
           <LibraryOverview
             chronology={chronology}
@@ -44,48 +41,43 @@ export default function LibraryScreen() {
             onRemoveRecentlyWatchedItem={removeRecentlyWatchedItem}
             onRemoveWatchlistItem={removeWatchlistItem}
           />
-        </View>
+        </ScreenContent>
       ) : (
-        <ScrollView contentContainerStyle={styles.content}>
+        <ScreenScroll>
           <LibraryHeader showSearchButton={isSignedIn} />
 
           {home.kind === "loading" ? (
             <LibraryOverviewSkeleton />
           ) : (
-            <View style={styles.statusPanel}>
-              <Text style={styles.statusLabel}>Build your TVLore</Text>
-              <Text style={styles.statusDetail}>Sign in to track movies, shows, and episodes.</Text>
-              {authActionMessage ? <Text style={styles.errorText}>{authActionMessage}</Text> : null}
-              <Pressable
+            <Surface>
+              <AppText variant="section">Build your TVLore</AppText>
+              <AppText tone="muted">Sign in to track movies, shows, and episodes.</AppText>
+              {authActionMessage ? <AppText tone="danger">{authActionMessage}</AppText> : null}
+              <Button
                 disabled={!isSupabaseConfigured || isAuthActionRunning}
-                style={[styles.googleButton, !isSupabaseConfigured || isAuthActionRunning ? styles.disabledButton : null]}
+                isLoading={isAuthActionRunning}
+                label="Continue with Google"
+                loadingLabel="Opening Google"
                 onPress={continueWithGoogle}
-              >
-                <Text style={styles.googleButtonText}>
-                  {isAuthActionRunning ? "Opening Google" : "Continue with Google"}
-                </Text>
-              </Pressable>
-            </View>
+                variant="outline"
+              />
+            </Surface>
           )}
-        </ScrollView>
+        </ScreenScroll>
       )}
-    </SafeAreaView>
+    </Screen>
   );
 }
 
 function LibraryHeader({ showSearchButton }: { showSearchButton: boolean }) {
   return (
-    <View style={styles.headerRow}>
-      <View style={styles.headerText}>
-        <Text style={styles.title}>Library</Text>
-        <Text style={styles.subtitle}>Pick up where you left off.</Text>
-      </View>
-      {showSearchButton ? (
-        <Pressable style={styles.iconButton} onPress={() => router.push("/search")}>
-          <Text style={styles.iconButtonText}>+</Text>
-        </Pressable>
+    <PageHeader
+      action={showSearchButton ? (
+        <IconButton icon="add" label="Search catalog" onPress={() => router.push("/search")} />
       ) : null}
-    </View>
+      subtitle="Pick up where you left off."
+      title="Library"
+    />
   );
 }
 

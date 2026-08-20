@@ -1,6 +1,6 @@
 import { Pressable, TextInput, View } from "react-native";
 
-import { AppText, Button } from "../ui";
+import { AppText, Button, PageHeader } from "../ui";
 import type { SearchFilter } from "./use-catalog-search";
 import { styles } from "./search-styles";
 
@@ -29,10 +29,10 @@ export function SearchControls({
 }) {
   return (
     <>
-      <View style={styles.header}>
-        <AppText style={styles.title}>Search</AppText>
-        <AppText style={styles.subtitle} tone="muted">Find shows, movies, and suggestions.</AppText>
-      </View>
+      <PageHeader
+        subtitle="Find shows, movies, and suggestions."
+        title="Search"
+      />
 
       <View style={styles.searchPanel}>
         <TextInput

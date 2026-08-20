@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import Constants from "expo-constants";
-import { StatusBar } from "expo-status-bar";
 import * as AppleAuthentication from "expo-apple-authentication";
-import { Linking, Platform, Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
+import { Linking, Platform, Pressable, Text, View } from "react-native";
 
 import { deleteCurrentUser, getAccountDeletionStatus, updateCurrentUser } from "../api/tvlore-api";
 import { getSupabaseAccessToken, isSupabaseConfigured, signOut as signOutFromSupabase } from "../auth/supabase-auth";
@@ -11,6 +10,7 @@ import { apiBaseUrl } from "../config/env";
 import { HoloProfileCard, HoloProfileCardSkeleton } from "../home/HoloProfileCard";
 import { styles } from "../home/home-styles";
 import { useHomeModel } from "../home/use-home-model";
+import { AppText, Button, PageHeader, Screen, ScreenScroll, Surface } from "../ui";
 
 const availabilityCountries = ["CL", "US", "MX", "AR", "BR", "ES"] as const;
 const legalLinks = [
@@ -140,13 +140,9 @@ export default function ProfileScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.screen}>
-      <StatusBar style="dark" />
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.headerText}>
-          <Text style={styles.title}>Profile</Text>
-          <Text style={styles.subtitle}>Your watching identity.</Text>
-        </View>
+    <Screen>
+      <ScreenScroll>
+        <PageHeader subtitle="Your watching identity." title="Profile" />
 
         {homeData?.user && homeData.library ? (
           <HoloProfileCard
@@ -157,10 +153,10 @@ export default function ProfileScreen() {
         ) : home.kind === "loading" ? (
           <HoloProfileCardSkeleton />
         ) : (
-          <View style={styles.statusPanel}>
-            <Text style={styles.statusLabel}>Sign in</Text>
-            <Text style={styles.statusDetail}>Create your TVLore profile and keep it synced.</Text>
-            {authActionMessage ? <Text style={styles.errorText}>{authActionMessage}</Text> : null}
+          <Surface>
+            <AppText variant="section">Sign in</AppText>
+            <AppText tone="muted">Create your TVLore profile and keep it synced.</AppText>
+            {authActionMessage ? <AppText tone="danger">{authActionMessage}</AppText> : null}
             <View style={styles.authButtons}>
               {isAppleSignInAvailable ? (
                 <AppleAuthentication.AppleAuthenticationButton
@@ -171,17 +167,16 @@ export default function ProfileScreen() {
                   onPress={continueWithApple}
                 />
               ) : null}
-              <Pressable
+              <Button
                 disabled={!isSupabaseConfigured || isAuthActionRunning}
-                style={[styles.googleButton, !isSupabaseConfigured || isAuthActionRunning ? styles.disabledButton : null]}
+                isLoading={isAuthActionRunning}
+                label="Continue with Google"
+                loadingLabel="Opening sign-in"
                 onPress={continueWithGoogle}
-              >
-                <Text style={styles.googleButtonText}>
-                  {isAuthActionRunning ? "Opening sign-in" : "Continue with Google"}
-                </Text>
-              </Pressable>
+                variant="outline"
+              />
             </View>
-          </View>
+          </Surface>
         )}
 
         {auth.kind === "signedIn" && homeData?.user ? (
@@ -193,10 +188,10 @@ export default function ProfileScreen() {
         ) : null}
 
         {auth.kind === "signedIn" ? (
-          <View style={styles.statusPanel}>
+          <Surface>
             <Text style={styles.statusLabel}>Account</Text>
             <Text style={styles.statusDetail}>{auth.displayName ?? auth.email}</Text>
-          </View>
+          </Surface>
         ) : null}
 
         {auth.kind === "signedIn" ? (
@@ -224,14 +219,14 @@ export default function ProfileScreen() {
             status={deleteStatus}
           />
         ) : null}
-      </ScrollView>
-    </SafeAreaView>
+      </ScreenScroll>
+    </Screen>
   );
 }
 
 function AboutTvlorePanel() {
   return (
-    <View style={styles.statusPanel}>
+    <Surface>
       <Text style={styles.statusLabel}>About TVLore</Text>
       <View style={styles.aboutMetaGrid}>
         <View style={styles.aboutMetaItem}>
@@ -250,13 +245,13 @@ function AboutTvlorePanel() {
       <Pressable style={styles.legalLinkButton} onPress={() => openLegalLink("/support")}>
         <Text style={styles.legalLinkText}>Contact support</Text>
       </Pressable>
-    </View>
+    </Surface>
   );
 }
 
 function LegalLinksPanel() {
   return (
-    <View style={styles.statusPanel}>
+    <Surface>
       <Text style={styles.statusLabel}>Legal and support</Text>
       <View style={styles.legalLinksRow}>
         {legalLinks.map((link) => (
@@ -265,7 +260,7 @@ function LegalLinksPanel() {
           </Pressable>
         ))}
       </View>
-    </View>
+    </Surface>
   );
 }
 
@@ -293,7 +288,7 @@ function DeleteAccountPanel({
   const canRequestDeletion = !isChecking && !isNotConfigured;
 
   return (
-    <View style={styles.statusPanel}>
+    <Surface>
       <Text style={styles.statusLabel}>Delete account</Text>
       <Text style={styles.statusDetail}>
         Permanently removes your TVLore library, watchlist, ratings, reflections, and login account.
@@ -330,7 +325,7 @@ function DeleteAccountPanel({
           <Text style={styles.dangerOutlineButtonText}>Delete account</Text>
         </Pressable>
       )}
-    </View>
+    </Surface>
   );
 }
 
@@ -346,7 +341,7 @@ function AvailabilityCountryPanel({
   const normalizedCountry = country.toUpperCase();
 
   return (
-    <View style={styles.statusPanel}>
+    <Surface>
       <Text style={styles.statusLabel}>Where to watch country</Text>
       <Text style={styles.statusDetail}>Streaming availability uses {formatWatchCountry(normalizedCountry)}.</Text>
       <View style={styles.countryOptionsRow}>
@@ -373,6 +368,6 @@ function AvailabilityCountryPanel({
         })}
       </View>
       {action.kind === "error" ? <Text style={styles.errorText}>{action.message}</Text> : null}
-    </View>
+    </Surface>
   );
 }
