@@ -1,8 +1,6 @@
 import { router, useLocalSearchParams } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import { Pressable, SafeAreaView, ScrollView, View } from "react-native";
 
-import { AppText, Button } from "../ui";
+import { BackButton, Button, EmptyState, Screen, ScreenScroll } from "../ui";
 import { SeasonContent, SeasonDetailSkeleton } from "./SeasonContent";
 import { styles } from "./season-detail-styles";
 import { useSeasonDetail } from "./use-season-detail";
@@ -14,10 +12,8 @@ export default function SeasonDetailScreen() {
   const { loadMoreEpisodes, refresh, setEpisodeWatched, setSeasonWatched, state, watchAction } = useSeasonDetail(showId, seasonNumber);
 
   return (
-    <SafeAreaView style={styles.screen}>
-      <StatusBar style="dark" />
-      <ScrollView
-        contentContainerStyle={styles.content}
+    <Screen>
+      <ScreenScroll
         onScroll={(event) => {
           if (isNearBottom(event.nativeEvent)) {
             void loadMoreEpisodes();
@@ -25,20 +21,19 @@ export default function SeasonDetailScreen() {
         }}
         scrollEventThrottle={200}
       >
-        <Pressable style={styles.backButton} onPress={() => router.back()}>
-          <AppText style={styles.backButtonText}>Back</AppText>
-        </Pressable>
+        <BackButton onPress={() => router.back()} />
 
         {state.kind === "loading" ? (
           <SeasonDetailSkeleton />
         ) : null}
 
         {state.kind === "error" ? (
-          <View style={styles.statusPanel}>
-            <AppText variant="section">Could not open season</AppText>
-            <AppText tone="muted">{state.message}</AppText>
-            <Button label="Retry" onPress={refresh} />
-          </View>
+          <EmptyState
+            action={<Button label="Retry" onPress={refresh} />}
+            detail={state.message}
+            icon="albums-outline"
+            title="Could not open season"
+          />
         ) : null}
 
         {state.kind === "ready" ? (
@@ -56,8 +51,8 @@ export default function SeasonDetailScreen() {
             watchAction={watchAction}
           />
         ) : null}
-      </ScrollView>
-    </SafeAreaView>
+      </ScreenScroll>
+    </Screen>
   );
 }
 

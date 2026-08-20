@@ -1,12 +1,10 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef } from "react";
-import { Pressable } from "react-native";
 
 import type { MediaType } from "../api/tvlore-api";
 import { useLibraryRevision } from "../library/library-refresh";
-import { AppText, Button, Screen, ScreenScroll, Surface } from "../ui";
+import { BackButton, Button, EmptyState, Screen, ScreenScroll } from "../ui";
 import { CatalogDetailContent, CatalogDetailSkeleton } from "./CatalogDetailContent";
-import { styles } from "./catalog-detail-styles";
 import { useCatalogDetail } from "./use-catalog-detail";
 
 export default function CatalogDetailScreen({ mediaType }: { mediaType: MediaType }) {
@@ -39,20 +37,19 @@ export default function CatalogDetailScreen({ mediaType }: { mediaType: MediaTyp
   return (
     <Screen>
       <ScreenScroll options={{ top: 48 }}>
-        <Pressable style={styles.backButton} onPress={() => router.back()}>
-          <AppText style={styles.backButtonText}>Back</AppText>
-        </Pressable>
+        <BackButton onPress={() => router.back()} />
 
         {state.kind === "loading" ? (
           <CatalogDetailSkeleton mediaType={mediaType} />
         ) : null}
 
         {state.kind === "error" ? (
-          <Surface>
-            <AppText variant="section">Could not open title</AppText>
-            <AppText tone="muted">{state.message}</AppText>
-            <Button label="Retry" onPress={refresh} />
-          </Surface>
+          <EmptyState
+            action={<Button label="Retry" onPress={refresh} />}
+            detail={state.message}
+            icon="film-outline"
+            title="Could not open title"
+          />
         ) : null}
 
         {state.kind === "ready" ? (

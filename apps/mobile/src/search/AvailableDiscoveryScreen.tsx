@@ -1,9 +1,8 @@
 import { router } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import { ActivityIndicator, Pressable, SafeAreaView, ScrollView, View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 
 import type { CatalogSearchResult, MediaType } from "../api/tvlore-api";
-import { AppText, Button, Skeleton, ui } from "../ui";
+import { AppText, BackButton, Button, EmptyState, MediaRowSkeleton, PageHeader, Screen, ScreenScroll, ui } from "../ui";
 import { SearchResultRow } from "./SearchResults";
 import { styles } from "./search-styles";
 import { useAvailableDiscovery } from "./use-available-discovery";
@@ -27,41 +26,29 @@ export default function AvailableDiscoveryScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.screen}>
-      <StatusBar style="dark" />
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.header}>
-          <Pressable accessibilityRole="button" onPress={() => router.back()}>
-            <AppText tone="accent" variant="caption">Back</AppText>
-          </Pressable>
-          <AppText style={styles.title}>Available to stream</AppText>
-          <AppText style={styles.subtitle} tone="muted">
-            Highly rated titles available around {available?.country ?? "your saved country"}.
-          </AppText>
-        </View>
+    <Screen>
+      <ScreenScroll>
+        <BackButton onPress={() => router.back()} />
+        <PageHeader
+          subtitle={`Highly rated titles available around ${available?.country ?? "your saved country"}.`}
+          title="Available to stream"
+        />
 
         {availableState.kind === "loading" || availableState.kind === "idle" ? (
           <View style={styles.skeletonList}>
             {[0, 1, 2].map((item) => (
-              <View key={item} style={styles.skeletonRow}>
-                <Skeleton height={112} width={76} />
-                <View style={styles.skeletonBody}>
-                  <Skeleton height={22} width="70%" />
-                  <Skeleton height={24} radius={999} width={64} />
-                  <Skeleton height={15} width="88%" />
-                  <Skeleton height={15} width="74%" />
-                </View>
-              </View>
+              <MediaRowSkeleton key={item} lines={4} size="search" />
             ))}
           </View>
         ) : null}
 
         {availableState.kind === "error" ? (
-          <View style={styles.statusPanel}>
-            <AppText variant="section">Streamable titles unavailable</AppText>
-            <AppText tone="muted">{availableState.message}</AppText>
-            <Button label="Retry" onPress={retryAvailable} size="small" />
-          </View>
+          <EmptyState
+            action={<Button label="Retry" onPress={retryAvailable} size="small" />}
+            detail={availableState.message}
+            icon="tv-outline"
+            title="Streamable titles unavailable"
+          />
         ) : null}
 
         {availableState.kind === "ready" && available ? (
@@ -74,10 +61,11 @@ export default function AvailableDiscoveryScreen() {
             </View>
 
             {available.items.length === 0 ? (
-              <View style={styles.statusPanel}>
-                <AppText variant="section">No streamable titles yet</AppText>
-                <AppText tone="muted">Try changing your availability country from Profile.</AppText>
-              </View>
+              <EmptyState
+                detail="Try changing your availability country from Profile."
+                icon="location-outline"
+                title="No streamable titles yet"
+              />
             ) : null}
 
             {available.items.map((result) => (
@@ -92,13 +80,14 @@ export default function AvailableDiscoveryScreen() {
         ) : null}
 
         {availableState.kind === "ready" && !available ? (
-          <View style={styles.statusPanel}>
-            <AppText variant="section">Sign in to see streamable titles</AppText>
-            <AppText tone="muted">TVLore uses your saved country to shape this list.</AppText>
-          </View>
+          <EmptyState
+            detail="TVLore uses your saved country to shape this list."
+            icon="lock-closed-outline"
+            title="Sign in to see streamable titles"
+          />
         ) : null}
-      </ScrollView>
-    </SafeAreaView>
+      </ScreenScroll>
+    </Screen>
   );
 }
 

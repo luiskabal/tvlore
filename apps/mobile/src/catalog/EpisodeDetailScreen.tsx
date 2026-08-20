@@ -1,11 +1,10 @@
 import { router, useLocalSearchParams } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { useEffect, useRef } from "react";
-import { Image, Pressable, SafeAreaView, ScrollView, View } from "react-native";
+import { Image, Pressable, View } from "react-native";
 
 import type { EpisodeDetailResponse } from "../api/tvlore-api";
 import { useLibraryRevision } from "../library/library-refresh";
-import { AppText, Button, RatingStars, Skeleton } from "../ui";
+import { AppText, BackButton, Button, EmptyState, RatingStars, Screen, ScreenScroll, Skeleton, Surface } from "../ui";
 import { getTmdbPosterUrl } from "./posters";
 import { styles } from "./episode-detail-styles";
 import type { EpisodeDetailPreferenceActionState, EpisodeDetailWatchActionState } from "./use-episode-detail";
@@ -28,21 +27,19 @@ export default function EpisodeDetailScreen() {
   }, [libraryRevision, refresh]);
 
   return (
-    <SafeAreaView style={styles.screen}>
-      <StatusBar style="dark" />
-      <ScrollView contentContainerStyle={styles.content}>
-        <Pressable style={styles.backButton} onPress={() => router.back()}>
-          <AppText style={styles.backButtonText}>Back</AppText>
-        </Pressable>
+    <Screen>
+      <ScreenScroll>
+        <BackButton onPress={() => router.back()} />
 
         {state.kind === "loading" ? <EpisodeDetailSkeleton /> : null}
 
         {state.kind === "error" ? (
-          <View style={styles.statusPanel}>
-            <AppText variant="section">Could not open episode</AppText>
-            <AppText tone="muted">{state.message}</AppText>
-            <Button label="Retry" onPress={refresh} />
-          </View>
+          <EmptyState
+            action={<Button label="Retry" onPress={refresh} />}
+            detail={state.message}
+            icon="play-circle-outline"
+            title="Could not open episode"
+          />
         ) : null}
 
         {state.kind === "ready" ? (
@@ -55,8 +52,8 @@ export default function EpisodeDetailScreen() {
             watchAction={watchAction}
           />
         ) : null}
-      </ScrollView>
-    </SafeAreaView>
+      </ScreenScroll>
+    </Screen>
   );
 }
 
@@ -115,7 +112,7 @@ function EpisodeDetailContent({
         preferenceAction={preferenceAction}
       />
 
-      <View style={styles.statusPanel}>
+      <Surface>
         <AppText variant="section">Tracking</AppText>
         <AppText tone="muted">
           {detail.watched && detail.lastWatchedAt ? `Watched ${formatDate(detail.lastWatchedAt)}` : "Not watched yet"}
@@ -130,7 +127,7 @@ function EpisodeDetailContent({
           }}
           variant={detail.watched ? "secondary" : "primary"}
         />
-      </View>
+      </Surface>
 
     </View>
   );
@@ -155,7 +152,7 @@ function EpisodeRatingPanel({
   const isSaving = preferenceAction.kind === "loading";
 
   return (
-    <View style={styles.statusPanel}>
+    <Surface>
       <View style={styles.ratingHeaderRow}>
         <AppText variant="section">Your rating</AppText>
         <AppText style={styles.ratingValue} variant="title">{detail.rating ? `${detail.rating}/5` : "--"}</AppText>
@@ -183,7 +180,7 @@ function EpisodeRatingPanel({
           <AppText variant="caption">Clear rating</AppText>
         </Pressable>
       ) : null}
-    </View>
+    </Surface>
   );
 }
 

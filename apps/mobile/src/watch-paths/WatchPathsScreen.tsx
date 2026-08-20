@@ -1,10 +1,9 @@
 import { router } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
-import { Pressable, SafeAreaView, ScrollView, TextInput, View } from "react-native";
+import { Pressable, TextInput, View } from "react-native";
 
 import type { CreateWatchPathInput } from "../api/tvlore-api";
-import { AppText, Badge, Button, Skeleton } from "../ui";
+import { AppText, Badge, Button, EmptyState, IconButton, PageHeader, Screen, ScreenScroll, Skeleton, Surface } from "../ui";
 import { styles } from "./watch-paths-styles";
 import { parseWatchPathImport } from "./watch-paths-model";
 import { useWatchPaths } from "./use-watch-paths";
@@ -84,29 +83,30 @@ export default function WatchPathsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.screen}>
-      <StatusBar style="dark" />
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.header}>
-          <AppText style={styles.title}>Paths</AppText>
-          <AppText tone="muted">Follow curated watch orders without rebuilding the list yourself.</AppText>
-          <Button
-            label={isCreateOpen ? "Cancel" : "New path"}
-            onPress={() => {
-              if (isCreateOpen) {
-                closeCreate();
-                return;
-              }
+    <Screen>
+      <ScreenScroll>
+        <PageHeader
+          action={(
+            <IconButton
+              icon={isCreateOpen ? "close" : "add"}
+              label={isCreateOpen ? "Cancel path creation" : "New path"}
+              onPress={() => {
+                if (isCreateOpen) {
+                  closeCreate();
+                  return;
+                }
 
-              setCreateOpen(true);
-            }}
-            size="small"
-            variant={isCreateOpen ? "secondary" : "primary"}
-          />
-        </View>
+                setCreateOpen(true);
+              }}
+              variant={isCreateOpen ? "plain" : "primary"}
+            />
+          )}
+          subtitle="Follow curated watch orders without rebuilding the list yourself."
+          title="Paths"
+        />
 
         {isCreateOpen ? (
-          <View style={styles.formPanel}>
+          <Surface style={styles.formPanel}>
             <View style={styles.formSection}>
               <AppText variant="section">Import TMDB Collection</AppText>
               <TextInput
@@ -166,21 +166,29 @@ export default function WatchPathsScreen() {
                 />
               </View>
             </View>
-          </View>
+          </Surface>
         ) : null}
 
         {state.kind === "loading" ? <WatchPathsSkeleton /> : null}
 
         {state.kind === "error" ? (
-          <View style={styles.emptyPanel}>
-            <AppText variant="section">Could not load paths</AppText>
-            <AppText tone="muted">{state.message}</AppText>
-            <Button label="Retry" onPress={refresh} />
-          </View>
+          <EmptyState
+            action={<Button label="Retry" onPress={refresh} />}
+            detail={state.message}
+            icon="map-outline"
+            title="Could not load paths"
+          />
         ) : null}
 
         {state.kind === "ready" ? (
           <View style={styles.list}>
+            {state.paths.length === 0 ? (
+              <EmptyState
+                detail="Create a path or import a TMDB collection to keep a watch order handy."
+                icon="map-outline"
+                title="No paths yet"
+              />
+            ) : null}
             {state.paths.map((path) => (
               <Pressable
                 accessibilityRole="button"
@@ -198,8 +206,8 @@ export default function WatchPathsScreen() {
             ))}
           </View>
         ) : null}
-      </ScrollView>
-    </SafeAreaView>
+      </ScreenScroll>
+    </Screen>
   );
 }
 

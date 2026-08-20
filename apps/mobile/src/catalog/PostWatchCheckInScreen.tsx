@@ -1,10 +1,9 @@
 import { router, useLocalSearchParams } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { useCallback, type ReactNode } from "react";
-import { Pressable, SafeAreaView, ScrollView, View } from "react-native";
+import { View } from "react-native";
 
 import type { MediaType, PreferenceMediaType, WatchReflectionInput } from "../api/tvlore-api";
-import { AppText, Button, Skeleton } from "../ui";
+import { BackButton, Button, EmptyState, Screen, ScreenScroll, Skeleton } from "../ui";
 import { styles } from "./catalog-detail-styles";
 import { PostWatchCheckIn, type PostWatchCheckInTarget } from "./PostWatchCheckIn";
 import { useCatalogDetail } from "./use-catalog-detail";
@@ -18,11 +17,12 @@ export default function PostWatchCheckInScreen() {
   if (!id || !mediaType) {
     return (
       <CheckInShell>
-        <View style={styles.statusPanel}>
-          <AppText variant="section">Could not open check-in</AppText>
-          <AppText tone="muted">Missing or invalid check-in route params.</AppText>
-          <Button label="Back" onPress={() => router.back()} />
-        </View>
+        <EmptyState
+          action={<Button label="Back" onPress={() => router.back()} />}
+          detail="Missing or invalid check-in route params."
+          icon="chatbubble-ellipses-outline"
+          title="Could not open check-in"
+        />
       </CheckInShell>
     );
   }
@@ -42,11 +42,12 @@ function CatalogCheckIn({ id, mediaType }: { id: string; mediaType: MediaType })
   if (state.kind === "error") {
     return (
       <CheckInShell>
-        <View style={styles.statusPanel}>
-          <AppText variant="section">Could not open check-in</AppText>
-          <AppText tone="muted">{state.message}</AppText>
-          <Button label="Retry" onPress={refresh} />
-        </View>
+        <EmptyState
+          action={<Button label="Retry" onPress={refresh} />}
+          detail={state.message}
+          icon="chatbubble-ellipses-outline"
+          title="Could not open check-in"
+        />
       </CheckInShell>
     );
   }
@@ -87,11 +88,12 @@ function EpisodeCheckIn({ id }: { id: string }) {
   if (state.kind === "error") {
     return (
       <CheckInShell>
-        <View style={styles.statusPanel}>
-          <AppText variant="section">Could not open check-in</AppText>
-          <AppText tone="muted">{state.message}</AppText>
-          <Button label="Retry" onPress={refresh} />
-        </View>
+        <EmptyState
+          action={<Button label="Retry" onPress={refresh} />}
+          detail={state.message}
+          icon="chatbubble-ellipses-outline"
+          title="Could not open check-in"
+        />
       </CheckInShell>
     );
   }
@@ -146,15 +148,12 @@ function CheckInLoading() {
 
 function CheckInShell({ children }: { children: ReactNode }) {
   return (
-    <SafeAreaView style={styles.screen}>
-      <StatusBar style="dark" />
-      <ScrollView contentContainerStyle={styles.content}>
-        <Pressable style={styles.backButton} onPress={() => router.back()}>
-          <AppText style={styles.backButtonText}>Back</AppText>
-        </Pressable>
+    <Screen>
+      <ScreenScroll>
+        <BackButton onPress={() => router.back()} />
         {children}
-      </ScrollView>
-    </SafeAreaView>
+      </ScreenScroll>
+    </Screen>
   );
 }
 

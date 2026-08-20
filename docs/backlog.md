@@ -8,7 +8,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 - [ ] Fill internal/closed Android tester list and feedback channel outside git.
 - [ ] Wait for Google Play developer account verification, then create the TVLore app record using `docs/google-play-android-release.md`.
 - [ ] Continue removing release-blocking development affordances before store submission.
-- [ ] Continue applying reusable mobile UI primitives to secondary screens and skeleton states.
+- [ ] Continue applying reusable mobile UI primitives only when a screen gets new UX work.
 - [ ] Run account-deletion QA on a disposable account now that `SUPABASE_SERVICE_ROLE_KEY` is configured in Vercel.
 
 ## Blocked
@@ -18,6 +18,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 
 ## Done Recently
 
+- [x] Apply reusable mobile UI primitives to secondary Search discovery, Watch Paths, catalog detail, season, episode, and check-in routes.
 - [x] Apply reusable mobile UI molecules to Search discovery cards, filters, empty states, and list skeletons.
 - [x] Fix Android EAS build runner for the mobile app inside the monorepo.
 - [x] Add reusable responsive mobile UI primitives for screen layout, panels, page headers, and icon actions.

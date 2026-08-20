@@ -1,13 +1,12 @@
 import { router, useLocalSearchParams } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
-import { ActivityIndicator, Pressable, SafeAreaView, ScrollView, View } from "react-native";
+import { ActivityIndicator, Pressable, View } from "react-native";
 
 import { resolveCatalogItem, saveWatchPathToWatchlist, type WatchPathItem } from "../api/tvlore-api";
 import { getSupabaseAccessToken } from "../auth/supabase-auth";
 import { getTmdbPosterUrl } from "../catalog/posters";
 import { notifyLibraryChanged } from "../library/library-refresh";
-import { AppText, Badge, Button, PosterImage, Skeleton, ui } from "../ui";
+import { AppText, BackButton, Badge, Button, EmptyState, PageHeader, PosterImage, Screen, ScreenScroll, Skeleton, ui } from "../ui";
 import { styles } from "./watch-paths-styles";
 import { toCatalogSearchResult, getWatchPathItemKey } from "./watch-paths-model";
 import { useWatchPath } from "./use-watch-paths";
@@ -66,28 +65,25 @@ export default function WatchPathDetailScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.screen}>
-      <StatusBar style="dark" />
-      <ScrollView contentContainerStyle={styles.content}>
-        <Pressable onPress={() => router.back()}>
-          <AppText tone="accent" variant="caption">Back</AppText>
-        </Pressable>
+    <Screen>
+      <ScreenScroll>
+        <BackButton onPress={() => router.back()} />
 
         {state.kind === "loading" ? <WatchPathDetailSkeleton /> : null}
 
         {state.kind === "error" ? (
-          <View style={styles.emptyPanel}>
-            <AppText variant="section">Could not load path</AppText>
-            <AppText tone="muted">{state.message}</AppText>
-            <Button label="Retry" onPress={refresh} />
-          </View>
+          <EmptyState
+            action={<Button label="Retry" onPress={refresh} />}
+            detail={state.message}
+            icon="map-outline"
+            title="Could not load path"
+          />
         ) : null}
 
         {readyPath ? (
           <>
-            <View style={styles.header}>
-              <AppText style={styles.title}>{readyPath.title}</AppText>
-              <AppText tone="muted">{readyPath.description}</AppText>
+            <View style={styles.detailHeader}>
+              <PageHeader subtitle={readyPath.description} title={readyPath.title} />
               <View style={styles.headerActionsRow}>
                 <Badge label={`${readyPath.itemCount} titles`} />
                 <Badge label={`${savedItemCount} saved`} tone="neutral" />
@@ -121,8 +117,8 @@ export default function WatchPathDetailScreen() {
             </View>
           </>
         ) : null}
-      </ScrollView>
-    </SafeAreaView>
+      </ScreenScroll>
+    </Screen>
   );
 }
 

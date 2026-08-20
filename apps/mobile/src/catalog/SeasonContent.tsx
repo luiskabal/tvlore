@@ -1,7 +1,7 @@
 import { Pressable, View } from "react-native";
 
 import type { ShowEpisode, ShowProgressResponse, ShowSeasonDetailResponse } from "../api/tvlore-api";
-import { AppText, Button, Skeleton, StillImage } from "../ui";
+import { AppText, Button, EmptyState, Skeleton, StillImage, Surface } from "../ui";
 import { getTmdbPosterUrl } from "./posters";
 import { styles } from "./season-detail-styles";
 import type { EpisodeWatchActionState } from "./use-season-detail";
@@ -135,10 +135,11 @@ function EpisodeList({
       {episodeLoadError ? <AppText tone="danger">{episodeLoadError}</AppText> : null}
 
       {episodes.length === 0 && !isHydratingEpisodes ? (
-        <View style={styles.statusPanel}>
-          <AppText variant="section">No episodes</AppText>
-          <AppText tone="muted">This season has no episode data yet.</AppText>
-        </View>
+        <EmptyState
+          detail="This season has no episode data yet."
+          icon="albums-outline"
+          title="No episodes"
+        />
       ) : null}
 
       {episodes.map((episode) => (
@@ -186,7 +187,7 @@ function SeasonBulkPanel({
   const actionError = watchAction.kind === "bulk-error" ? watchAction.message : null;
 
   return (
-    <View style={styles.statusPanel}>
+    <Surface>
       <AppText variant="section">Season actions</AppText>
       <AppText tone="muted">{watchedCount}/{episodeCount} episodes watched</AppText>
       {actionError ? <AppText tone="danger">{actionError}</AppText> : null}
@@ -211,7 +212,7 @@ function SeasonBulkPanel({
           variant="secondary"
         />
       </View>
-    </View>
+    </Surface>
   );
 }
 

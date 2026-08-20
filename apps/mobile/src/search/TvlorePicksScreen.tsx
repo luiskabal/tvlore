@@ -1,9 +1,8 @@
 import { router } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import { ActivityIndicator, Pressable, SafeAreaView, ScrollView, View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 
 import type { CatalogSearchResult, MediaType } from "../api/tvlore-api";
-import { AppText, Button, Skeleton, ui } from "../ui";
+import { AppText, BackButton, Button, EmptyState, MediaRowSkeleton, PageHeader, Screen, ScreenScroll, ui } from "../ui";
 import { SearchResultRow } from "./SearchResults";
 import { styles } from "./search-styles";
 import { useCatalogSearch } from "./use-catalog-search";
@@ -27,41 +26,29 @@ export default function TvlorePicksScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.screen}>
-      <StatusBar style="dark" />
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.header}>
-          <Pressable accessibilityRole="button" onPress={() => router.back()}>
-            <AppText tone="accent" variant="caption">Back</AppText>
-          </Pressable>
-          <AppText style={styles.title}>TVLore Picks</AppText>
-          <AppText style={styles.subtitle} tone="muted">
-            Curated shows and movies from the TVLore shelf.
-          </AppText>
-        </View>
+    <Screen>
+      <ScreenScroll>
+        <BackButton onPress={() => router.back()} />
+        <PageHeader
+          subtitle="Curated shows and movies from the TVLore shelf."
+          title="TVLore Picks"
+        />
 
         {picksState.kind === "loading" || picksState.kind === "idle" ? (
           <View style={styles.skeletonList}>
             {[0, 1, 2].map((item) => (
-              <View key={item} style={styles.skeletonRow}>
-                <Skeleton height={112} width={76} />
-                <View style={styles.skeletonBody}>
-                  <Skeleton height={22} width="70%" />
-                  <Skeleton height={24} radius={999} width={64} />
-                  <Skeleton height={15} width="88%" />
-                  <Skeleton height={15} width="74%" />
-                </View>
-              </View>
+              <MediaRowSkeleton key={item} lines={4} size="search" />
             ))}
           </View>
         ) : null}
 
         {picksState.kind === "error" ? (
-          <View style={styles.statusPanel}>
-            <AppText variant="section">TVLore Picks unavailable</AppText>
-            <AppText tone="muted">{picksState.message}</AppText>
-            <Button label="Retry" onPress={retryPicks} size="small" />
-          </View>
+          <EmptyState
+            action={<Button label="Retry" onPress={retryPicks} size="small" />}
+            detail={picksState.message}
+            icon="sparkles-outline"
+            title="TVLore Picks unavailable"
+          />
         ) : null}
 
         {picksState.kind === "ready" && picks ? (
@@ -85,13 +72,14 @@ export default function TvlorePicksScreen() {
         ) : null}
 
         {picksState.kind === "ready" && !picks ? (
-          <View style={styles.statusPanel}>
-            <AppText variant="section">Sign in to see TVLore Picks</AppText>
-            <AppText tone="muted">Curated titles are available after login.</AppText>
-          </View>
+          <EmptyState
+            detail="Curated titles are available after login."
+            icon="lock-closed-outline"
+            title="Sign in to see TVLore Picks"
+          />
         ) : null}
-      </ScrollView>
-    </SafeAreaView>
+      </ScreenScroll>
+    </Screen>
   );
 }
 

@@ -14,15 +14,11 @@ export const styles = StyleSheet.create({
     flex: 1,
     gap: 4,
   },
-  emptyPanel: {
-    borderColor: ui.color.border,
-    borderRadius: ui.radius.md,
-    borderWidth: 1,
-    gap: 8,
-    padding: ui.space.xl,
-  },
   header: {
     gap: 8,
+  },
+  detailHeader: {
+    gap: 12,
   },
   headerActionsRow: {
     alignItems: "center",
@@ -69,12 +65,7 @@ export const styles = StyleSheet.create({
     height: 1,
   },
   formPanel: {
-    backgroundColor: ui.color.panel,
-    borderColor: ui.color.border,
-    borderRadius: ui.radius.md,
-    borderWidth: 1,
     gap: ui.space.md,
-    padding: ui.space.xl,
   },
   formSection: {
     gap: ui.space.md,
