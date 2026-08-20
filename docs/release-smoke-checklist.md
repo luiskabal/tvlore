@@ -10,6 +10,7 @@ exploratory QA.
 - Vercel `tvlore-api` points to the intended commit.
 - Local `.env` files match the tracked `.env.example` files.
 - EAS project env vars exist for the profile being built.
+- `corepack pnpm eas:env:check` passes when Expo login is available locally.
 - `corepack pnpm release:preflight` passes before EAS preview/production builds.
 - `TVLORE_SUPABASE_ACCESS_TOKEN` is set when running authenticated API smoke.
 - Mobile points to `https://tvlore-api.vercel.app`.
@@ -27,6 +28,12 @@ To validate only the public store/legal URLs:
 
 ```powershell
 corepack pnpm store:check
+```
+
+To validate EAS remote env names without printing values:
+
+```powershell
+corepack pnpm eas:env:check
 ```
 
 For authenticated API paths:
@@ -120,6 +127,7 @@ or emulator before Android beta.
 | Check | Expected |
 | --- | --- |
 | EAS envs | `EXPO_PUBLIC_TVLORE_API_BASE_URL`, `EXPO_PUBLIC_SUPABASE_URL`, and `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` exist in EAS `preview` and `production`. |
+| EAS env smoke | `corepack pnpm eas:env:check` passes for development, preview, and production. |
 | EAS preview build | `eas build --profile preview --platform ios` and Android equivalent can produce installable builds. |
 | EAS production build | Production build starts only after preview QA passes. |
 | App icon and splash | Match current TVLore branding. |
