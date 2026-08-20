@@ -126,6 +126,7 @@ docs/
 
 - [Current State](docs/current-state.md)
 - [Backlog](docs/backlog.md)
+- [Store Metadata Pack](docs/store-metadata.md)
 - [Mobile Architecture](docs/mobile-architecture.md)
 - [Backend Architecture](docs/backend-architecture.md)
 - [Infrastructure](docs/infrastructure.md)

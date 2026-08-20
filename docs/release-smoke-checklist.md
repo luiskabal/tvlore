@@ -121,7 +121,8 @@ or emulator before Android beta.
 | Account deletion URL | Public page opens without login. |
 | Delete account entry | Visible in Profile. |
 | Reviewer notes | `docs/store-reviewer-notes.md` explains login path and core flows. |
-| Store screenshots | Match current UI and do not show development-only states. |
+| Store metadata | `docs/store-metadata.md` matches the actual app and public URLs. |
+| Store screenshots | Match current UI, use a preview/production build, and do not show development-only states. |
 | Secrets | No real secrets in git diff or committed files. |
 
 ## Failure Handling

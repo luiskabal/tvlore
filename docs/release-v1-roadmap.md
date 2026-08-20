@@ -112,7 +112,7 @@ enough value to justify a first release.
 | Data Safety / App Privacy answers | Required in Play Console and App Store Connect. | Data inventory exists; final forms still need completion. |
 | Reviewer access | Reviewers need to access protected app functionality. | Provide test credentials/instructions or a reviewable auth path. |
 | Production EAS profiles | Partial | EAS project is linked and development/preview/production envs are configured. First real store builds still need validation. |
-| Store assets | App icon, splash, screenshots, support URL, marketing copy. | Prepare iOS and Android metadata. |
+| Store assets | App icon, splash, screenshots, support URL, marketing copy. | Metadata draft is in `docs/store-metadata.md`; screenshots still need capture from a release-like build. |
 
 ### High Priority Before 1.0
 
@@ -301,6 +301,7 @@ before TestFlight/closed testing. Quick gate:
 - [x] `/health/error` is not publicly exposed in production.
 - [x] `release:preflight` blocks tracked `.env` files and known development-only mobile diagnostics.
 - [ ] Store screenshots and descriptions match the actual app.
+- [x] Store metadata draft exists in `docs/store-metadata.md`.
 - [x] Reviewer instructions are written.
 - [ ] No secrets are committed.
 - [ ] No known blocker remains in `docs/backlog.md`.

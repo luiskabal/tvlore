@@ -66,9 +66,10 @@ The MVP goal is intentionally small: authenticate with Google, search catalog co
 17. [Mobile Development Build](mobile-development-build.md)
 18. [Release v1.0 Roadmap](release-v1-roadmap.md)
 19. [Release Smoke Checklist](release-smoke-checklist.md)
-20. [Data Inventory](data-inventory.md)
-21. [Roadmap](roadmap.md)
-22. [Architecture Decision Records](adr/)
+20. [Store Metadata Pack](store-metadata.md)
+21. [Data Inventory](data-inventory.md)
+22. [Roadmap](roadmap.md)
+23. [Architecture Decision Records](adr/)
 
 ## Documentation Index
 
@@ -93,6 +94,7 @@ The MVP goal is intentionally small: authenticate with Google, search catalog co
 - [Product Vision](product-vision.md)
 - [Release v1.0 Roadmap](release-v1-roadmap.md)
 - [Release Smoke Checklist](release-smoke-checklist.md)
+- [Store Metadata Pack](store-metadata.md)
 - [Roadmap](roadmap.md)
 - [Security](security.md)
 - [Social Vision](social-vision.md)

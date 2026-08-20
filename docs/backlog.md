@@ -8,10 +8,12 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 - [ ] Run first EAS preview build on iOS.
 - [ ] Continue removing release-blocking development affordances before store submission.
 - [ ] Configure `SUPABASE_SERVICE_ROLE_KEY` in Vercel before release account-deletion QA.
+- [ ] Capture store screenshots from a preview/production build using `docs/store-metadata.md`.
 
 ## Done Recently
 
 - [x] Run first EAS Android preview build and produce an installable APK.
+- [x] Add a v1.0 store metadata pack for App Store / Google Play submission.
 - [x] Exclude Specials / Season 0 from show-level progress and full-show bulk watched actions.
 - [x] Add lightweight preflight plus lazy hydration for large provider-backed season episode lists.
 - [x] Add release preflight guards for tracked `.env` files and development-only mobile UI affordances.
