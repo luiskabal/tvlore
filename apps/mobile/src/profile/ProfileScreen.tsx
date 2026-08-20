@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import Constants from "expo-constants";
 import { StatusBar } from "expo-status-bar";
 import * as AppleAuthentication from "expo-apple-authentication";
-import { Linking, Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
+import { Linking, Platform, Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
 
 import { deleteCurrentUser, getAccountDeletionStatus, updateCurrentUser } from "../api/tvlore-api";
 import { getSupabaseAccessToken, isSupabaseConfigured, signOut as signOutFromSupabase } from "../auth/supabase-auth";
@@ -18,6 +19,18 @@ const legalLinks = [
   { label: "Support", path: "/support" },
   { label: "Deletion help", path: "/account-deletion" },
 ] as const;
+
+const appVersion = Constants.expoConfig?.version ?? "1.0.0";
+const appIdentifier = Platform.select({
+  android: Constants.expoConfig?.android?.package,
+  ios: Constants.expoConfig?.ios?.bundleIdentifier,
+  default: Constants.expoConfig?.slug,
+}) ?? "tvlore";
+const platformLabel = Platform.select({
+  android: "Android",
+  ios: "iOS",
+  default: Platform.OS,
+});
 
 type CountryActionState =
   | { kind: "idle" }
@@ -43,7 +56,6 @@ export default function ProfileScreen() {
   const {
     auth,
     authActionMessage,
-    backendStatus,
     continueWithApple,
     continueWithGoogle,
     home,
@@ -184,7 +196,6 @@ export default function ProfileScreen() {
           <View style={styles.statusPanel}>
             <Text style={styles.statusLabel}>Account</Text>
             <Text style={styles.statusDetail}>{auth.displayName ?? auth.email}</Text>
-            <Text style={styles.statusDetail}>{backendStatus.detail}</Text>
           </View>
         ) : null}
 
@@ -200,6 +211,8 @@ export default function ProfileScreen() {
           </Pressable>
         ) : null}
 
+        <AboutTvlorePanel />
+
         <LegalLinksPanel />
 
         {auth.kind === "signedIn" ? (
@@ -213,6 +226,31 @@ export default function ProfileScreen() {
         ) : null}
       </ScrollView>
     </SafeAreaView>
+  );
+}
+
+function AboutTvlorePanel() {
+  return (
+    <View style={styles.statusPanel}>
+      <Text style={styles.statusLabel}>About TVLore</Text>
+      <View style={styles.aboutMetaGrid}>
+        <View style={styles.aboutMetaItem}>
+          <Text style={styles.sectionEyebrow}>Version</Text>
+          <Text style={styles.statusDetail}>{appVersion}</Text>
+        </View>
+        <View style={styles.aboutMetaItem}>
+          <Text style={styles.sectionEyebrow}>Platform</Text>
+          <Text style={styles.statusDetail}>{platformLabel}</Text>
+        </View>
+        <View style={styles.aboutMetaItem}>
+          <Text style={styles.sectionEyebrow}>App ID</Text>
+          <Text style={styles.statusDetail}>{appIdentifier}</Text>
+        </View>
+      </View>
+      <Pressable style={styles.legalLinkButton} onPress={() => openLegalLink("/support")}>
+        <Text style={styles.legalLinkText}>Contact support</Text>
+      </Pressable>
+    </View>
   );
 }
 

@@ -20,6 +20,17 @@ export const styles = StyleSheet.create({
     height: 44,
     width: 230,
   },
+  aboutMetaGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    paddingTop: 2,
+  },
+  aboutMetaItem: {
+    flexBasis: "45%",
+    flexGrow: 1,
+    gap: 2,
+  },
   authButtons: {
     alignItems: "flex-start",
     gap: 10,

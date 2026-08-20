@@ -148,6 +148,7 @@ or emulator before Android beta.
 | Local/Vercel env smoke | `corepack pnpm env:check` passes before release. |
 | EAS envs | `EXPO_PUBLIC_TVLORE_API_BASE_URL`, `EXPO_PUBLIC_SUPABASE_URL`, and `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` exist in EAS `preview` and `production`. |
 | EAS env smoke | `corepack pnpm eas:env:check` passes for development, preview, and production. |
+| Node debugger env | `corepack pnpm release:preflight` fails if `NODE_OPTIONS` enables debugger flags. |
 | Supabase redirect smoke | `corepack pnpm auth:redirect:check` returns a Google OAuth redirect for `tvlore:///auth/callback`. |
 | EAS preview build | `eas build --profile preview --platform ios` and Android equivalent can produce installable builds. |
 | EAS production build | Production build starts only after preview QA passes. |

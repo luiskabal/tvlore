@@ -75,6 +75,7 @@ expectHttpsUrl(mobileEnv.get("EXPO_PUBLIC_TVLORE_API_BASE_URL"), "EXPO_PUBLIC_TV
 expectHttpsUrl(mobileEnv.get("EXPO_PUBLIC_SUPABASE_URL"), "EXPO_PUBLIC_SUPABASE_URL");
 
 console.log("\nrelease guards");
+expectNoNodeDebuggerOptions();
 expectNoTrackedEnvFiles();
 expectNoTrackedSecrets();
 expectNoReleaseUiAffordances();
@@ -230,6 +231,17 @@ function expectNoTrackedEnvFiles() {
   }
 
   ok("no tracked .env files");
+}
+
+function expectNoNodeDebuggerOptions() {
+  const nodeOptions = process.env.NODE_OPTIONS ?? "";
+
+  if (/(^|\s)--(?:inspect|inspect-brk|debug)(?:=|\s|$)/.test(nodeOptions)) {
+    fail("NODE_OPTIONS must not enable the Node debugger for release checks");
+    return;
+  }
+
+  ok("no Node debugger options");
 }
 
 function expectNoTrackedSecrets() {
