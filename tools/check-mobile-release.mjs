@@ -8,6 +8,15 @@ const requiredMobileEnv = [
   "EXPO_PUBLIC_SUPABASE_URL",
   "EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
 ];
+const storeMetadataFile = "docs/store-metadata.md";
+const requiredStoreMetadata = [
+  "https://tvlore-api.vercel.app/privacy",
+  "https://tvlore-api.vercel.app/terms",
+  "https://tvlore-api.vercel.app/support",
+  "https://tvlore-api.vercel.app/account-deletion",
+  "## Screenshot Set",
+  "## Long Description Draft",
+];
 const placeholderPattern = /YOUR_|PROJECT_REF|CHANGE_ME|placeholder|your-/i;
 const releaseUiBlocklist = [
   { pattern: /API online/i, reason: "debug API status card" },
@@ -62,6 +71,7 @@ expectHttpsUrl(mobileEnv.get("EXPO_PUBLIC_SUPABASE_URL"), "EXPO_PUBLIC_SUPABASE_
 console.log("\nrelease guards");
 expectNoTrackedEnvFiles();
 expectNoReleaseUiAffordances();
+expectStoreMetadata();
 
 console.log("\nmanual release gates");
 warn("Verify EAS remote envs with: cd apps/mobile; npx --yes eas-cli@latest env:list development|preview|production");
@@ -239,6 +249,23 @@ function expectNoReleaseUiAffordances() {
   }
 
   ok("no development-only mobile UI affordances");
+}
+
+function expectStoreMetadata() {
+  if (!existsSync(storeMetadataFile)) {
+    fail(`${storeMetadataFile} missing`);
+    return;
+  }
+
+  const content = readFileSync(storeMetadataFile, "utf8");
+  const missing = requiredStoreMetadata.filter((value) => !content.includes(value));
+
+  if (missing.length > 0) {
+    fail(`${storeMetadataFile} missing release metadata: ${missing.join(", ")}`);
+    return;
+  }
+
+  ok("store metadata pack");
 }
 
 function getReleaseUiFiles(directory) {
