@@ -1,39 +1,56 @@
 import { StyleSheet } from "react-native";
 
+import { ui } from "../ui";
+
 export const styles = StyleSheet.create({
   activeTabButton: {
-    backgroundColor: "#171412",
+    opacity: 1,
   },
   activeTabText: {
-    color: "#ffffff",
+    color: ui.color.ink,
   },
   rootShell: {
-    backgroundColor: "#f7f4ee",
+    backgroundColor: ui.color.panelAlt,
     flex: 1,
   },
   stackShell: {
     flex: 1,
   },
   tabBar: {
-    backgroundColor: "#f7f4ee",
-    borderColor: "#d8d0c5",
+    backgroundColor: ui.color.panelAlt,
+    borderColor: ui.color.border,
     borderTopWidth: 1,
     flexDirection: "row",
-    gap: 8,
-    padding: 12,
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingTop: 8,
+    paddingBottom: 6,
   },
   tabButton: {
     alignItems: "center",
-    borderRadius: 8,
     flex: 1,
-    paddingVertical: 10,
+    gap: 3,
+    justifyContent: "center",
+    minHeight: 52,
+  },
+  iconRail: {
+    alignItems: "center",
+    borderTopColor: "transparent",
+    borderTopWidth: 3,
+    height: 30,
+    justifyContent: "center",
+    minWidth: 44,
+    paddingTop: 3,
+  },
+  activeIconRail: {
+    borderTopColor: ui.color.accent,
   },
   tabText: {
-    color: "#5f564d",
-    fontSize: 13,
+    color: ui.color.muted,
+    fontSize: 11,
     fontWeight: "800",
   },
   tabSafeArea: {
-    backgroundColor: "#f7f4ee",
+    backgroundColor: ui.color.panelAlt,
   },
 });
