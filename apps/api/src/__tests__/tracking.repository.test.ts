@@ -139,6 +139,10 @@ describe("TrackingRepository", () => {
       totalEpisodeCount: 2,
       watchedEpisodeCount: 2,
     });
+    expect(client.episode.findMany).toHaveBeenCalledWith({
+      select: { id: true },
+      where: { seasonNumber: { gt: 0 }, showId },
+    });
     expect(client.episodeWatch.deleteMany).toHaveBeenCalledWith({
       where: {
         episodeId: { in: [firstEpisodeId, secondEpisodeId] },
@@ -189,6 +193,10 @@ describe("TrackingRepository", () => {
       status: "not_started",
       totalEpisodeCount: 0,
       watchedEpisodeCount: 0,
+    });
+    expect(client.episode.findMany).toHaveBeenCalledWith({
+      select: { id: true },
+      where: { seasonNumber: { gt: 0 }, showId },
     });
     expect(client.episodeWatch.deleteMany).toHaveBeenCalledWith({
       where: {

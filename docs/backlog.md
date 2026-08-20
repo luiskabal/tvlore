@@ -12,6 +12,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 ## Done Recently
 
 - [x] Run first EAS Android preview build and produce an installable APK.
+- [x] Exclude Specials / Season 0 from show-level progress and full-show bulk watched actions.
 - [x] Add lightweight preflight plus lazy hydration for large provider-backed season episode lists.
 - [x] Add release preflight guards for tracked `.env` files and development-only mobile UI affordances.
 - [x] Automate production `/health/error` and rate-limit header checks in API smoke.

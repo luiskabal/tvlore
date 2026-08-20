@@ -482,12 +482,12 @@ Current watched-state behavior:
 - Movies return `watched`, `watchCount`, and `lastWatchedAt` for the authenticated user.
 - Episodes return `watched`, `watchCount`, and `lastWatchedAt` for the authenticated user.
 - Mark watched/unwatched is idempotent in the MVP: one active row per user/movie or user/episode.
-- Show-level mark watched/unwatched is a backend-owned bulk action. Mark watched hydrates all non-empty seasons first, then upserts one watch row per episode for the authenticated user.
+- Show-level mark watched/unwatched is a backend-owned bulk action for regular seasons. Mark watched hydrates non-empty regular seasons first, then upserts one watch row per regular episode for the authenticated user. Specials / Season 0 remain explicit season-level tracking.
 - Add/remove watchlist is idempotent in the MVP: one active row per user/show or user/movie.
 - Rating preferences are explicit and separate from watched state: one active row per user/show, user/movie, or user/episode, with `rating` from 1 to 5 and star controls in mobile.
 - Post-watch reflections are explicit and separate from watched state: one active row per user/show, user/movie, or user/episode, with reaction/emotion, optional favorite character, and optional comment.
 - Reflection writes also update the matching 1-5 rating preference so recommendations and library rating summaries continue reading the preference model.
-- Show progress returned by show detail, episode watch mutations, and `GET /shows/:showId/progress` is based on episodes currently persisted in TVLore. Opening a season hydrates its episode rows.
+- Show progress returned by show detail, episode watch mutations, and `GET /shows/:showId/progress` is based on regular episodes currently persisted in TVLore. Opening a season hydrates its episode rows, including Specials when the user opens Season 0 explicitly.
 - Show detail returns `progress.status` as `not_started`, `watching`, or `completed`.
 - Show and movie detail responses return `inWatchlist`, nullable authenticated-user `rating`, and nullable TMDB `publicRating`. Episode detail responses return nullable authenticated-user `rating`.
 - Show, movie, and episode detail responses return nullable authenticated-user `reflection` data when the user has saved a post-watch check-in.

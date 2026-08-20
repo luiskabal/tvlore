@@ -19,6 +19,7 @@ describe("TrackingService", () => {
       findShowProviderId: vi.fn().mockResolvedValue(providerShowId),
       findShowSeasonHydrationPlan: vi.fn().mockResolvedValue({
         seasons: [
+          { episodeCount: 10, seasonNumber: 0, storedEpisodeCount: 0 },
           { episodeCount: 2, seasonNumber: 1, storedEpisodeCount: 0 },
           { episodeCount: 1, seasonNumber: 2, storedEpisodeCount: 0 },
         ],
@@ -60,6 +61,7 @@ describe("TrackingService", () => {
     });
 
     expect(tmdbClient.getResolvedSeason).toHaveBeenCalledTimes(2);
+    expect(tmdbClient.getResolvedSeason).not.toHaveBeenCalledWith(providerShowId, 0);
     expect(tmdbClient.getResolvedSeason).toHaveBeenCalledWith(providerShowId, 1);
     expect(tmdbClient.getResolvedSeason).toHaveBeenCalledWith(providerShowId, 2);
     expect(catalogRepository.upsertSeasonDetail).toHaveBeenCalledWith(showId, seasonOne);

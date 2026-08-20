@@ -120,7 +120,7 @@ export class TrackingRepository {
 
     const episodes = await client.episode.findMany({
       select: { id: true },
-      where: { showId },
+      where: { seasonNumber: { gt: 0 }, showId },
     });
     const episodeIds = episodes.map((episode) => episode.id);
 
@@ -155,7 +155,7 @@ export class TrackingRepository {
 
     const episodes = await client.episode.findMany({
       select: { id: true },
-      where: { showId },
+      where: { seasonNumber: { gt: 0 }, showId },
     });
 
     await client.episodeWatch.deleteMany({

@@ -1303,7 +1303,7 @@ Errors: `EPISODE_NOT_FOUND`, `VALIDATION_FAILED`, `UNAUTHORIZED`.
 
 Purpose: mark every episode in a show watched for the authenticated user.
 
-Current MVP status: implemented as a backend-owned bulk action. The backend hydrates every provider-backed season before writing episode watch rows.
+Current MVP status: implemented as a backend-owned bulk action for regular seasons. The backend hydrates regular provider-backed seasons before writing episode watch rows. Specials / Season 0 stay available through explicit season-level tracking.
 
 Auth: required.
 

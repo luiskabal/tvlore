@@ -55,7 +55,8 @@ export function toShowProgress(show: {
     seasonNumber: number;
   }>;
 }): ShowProgressResponseDto {
-  const episodes = show.seasons.flatMap((season) => season.episodes);
+  const eligibleSeasons = show.seasons.filter((season) => isRegularSeason(season.seasonNumber));
+  const episodes = eligibleSeasons.flatMap((season) => season.episodes);
   const totalEpisodeCount = episodes.length;
   const watchedEpisodeCount = countWatched(episodes);
 
@@ -63,7 +64,7 @@ export function toShowProgress(show: {
     isComplete: totalEpisodeCount > 0 && watchedEpisodeCount === totalEpisodeCount,
     nextEpisode: toNextEpisode(episodes.find((episode) => episode.watches.length === 0)),
     percentComplete: calculatePercentComplete(watchedEpisodeCount, totalEpisodeCount),
-    seasons: show.seasons.map((season) => {
+    seasons: eligibleSeasons.map((season) => {
       const seasonTotalEpisodeCount = season.episodes.length;
       const seasonWatchedEpisodeCount = countWatched(season.episodes);
 
@@ -79,6 +80,10 @@ export function toShowProgress(show: {
     totalEpisodeCount,
     watchedEpisodeCount,
   };
+}
+
+function isRegularSeason(seasonNumber: number) {
+  return seasonNumber > 0;
 }
 
 function countWatched(episodes: ProgressEpisode[]) {

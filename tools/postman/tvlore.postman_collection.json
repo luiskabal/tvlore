@@ -2951,7 +2951,7 @@
                 "watches"
               ]
             },
-            "description": "Marks every currently provider-backed season episode watched for the authenticated user. The backend hydrates show seasons before creating watch records."
+            "description": "Marks every regular show episode watched for the authenticated user. The backend hydrates regular show seasons before creating watch records; Specials / Season 0 remain explicit season-level tracking."
           },
           "response": [],
           "event": [

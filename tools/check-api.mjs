@@ -1116,7 +1116,7 @@ function assertSeasonDetail(body, showId, seasonNumber) {
     expectRecord(episode, "episode");
     expectUuid(episode.id, "episode.id");
     expectPositiveInteger(episode.episodeNumber, "episode.episodeNumber");
-    expectPositiveInteger(episode.seasonNumber, "episode.seasonNumber");
+    expectNonNegativeInteger(episode.seasonNumber, "episode.seasonNumber");
     expectString(episode.title, "episode.title");
     expectString(episode.overview, "episode.overview");
     expectBoolean(episode.watched, "episode.watched");
@@ -1133,7 +1133,7 @@ function assertEpisodeDetail(body, episodeId, showId, watched, rating) {
   expectString(body.showTitle, "episode detail.showTitle");
   expectString(body.seasonTitle, "episode detail.seasonTitle");
   expectPositiveInteger(body.episodeNumber, "episode detail.episodeNumber");
-  expectPositiveInteger(body.seasonNumber, "episode detail.seasonNumber");
+  expectNonNegativeInteger(body.seasonNumber, "episode detail.seasonNumber");
   expectString(body.title, "episode detail.title");
   expectString(body.overview, "episode detail.overview");
   expectNullableString(body.showPosterPath, "episode detail.showPosterPath");
@@ -1169,7 +1169,7 @@ function assertShowProgress(body, showId) {
 
   if (body.nextEpisode) {
     expectUuid(body.nextEpisode.id, "show progress.nextEpisode.id");
-    expectPositiveInteger(body.nextEpisode.seasonNumber, "show progress.nextEpisode.seasonNumber");
+    expectNonNegativeInteger(body.nextEpisode.seasonNumber, "show progress.nextEpisode.seasonNumber");
     expectPositiveInteger(body.nextEpisode.episodeNumber, "show progress.nextEpisode.episodeNumber");
     expectString(body.nextEpisode.title, "show progress.nextEpisode.title");
   }
@@ -1322,7 +1322,7 @@ function assertLibrary(body) {
     expectUuid(item.showId, "library watchedEpisodes.showId");
     expectString(item.showTitle, "library watchedEpisodes.showTitle");
     expectString(item.title, "library watchedEpisodes.title");
-    expectPositiveInteger(item.seasonNumber, "library watchedEpisodes.seasonNumber");
+    expectNonNegativeInteger(item.seasonNumber, "library watchedEpisodes.seasonNumber");
     expectPositiveInteger(item.episodeNumber, "library watchedEpisodes.episodeNumber");
     expectIsoString(item.watchedAt, "library watchedEpisodes.watchedAt");
   }
@@ -1455,6 +1455,11 @@ function expectInteger(value, label) {
 function expectPositiveInteger(value, label) {
   expectInteger(value, label);
   expect(value > 0, `${label} should be positive`);
+}
+
+function expectNonNegativeInteger(value, label) {
+  expectInteger(value, label);
+  expect(value >= 0, `${label} should be non-negative`);
 }
 
 function expectBoolean(value, label) {
