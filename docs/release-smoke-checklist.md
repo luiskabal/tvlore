@@ -56,6 +56,7 @@ Expected result:
 - Unit tests pass for API and mobile.
 - API build passes.
 - Release preflight fails if a real `.env` file is tracked.
+- Release preflight fails if obvious secret-like values are tracked.
 - Release preflight fails if known development-only diagnostics appear in mobile UI source.
 - Store public URLs return `200` HTML without authentication.
 - Supabase Google OAuth returns a redirect for `tvlore:///auth/callback`.
@@ -148,6 +149,7 @@ or emulator before Android beta.
 | Store metadata | `docs/store-metadata.md` matches the actual app and public URLs. |
 | Store screenshots | Match current UI, use a preview/production build, and do not show development-only states. |
 | Secrets | No real secrets in git diff or committed files. |
+| Secret smoke | `corepack pnpm release:preflight` reports `ok no obvious tracked secrets`. |
 
 ## Failure Handling
 

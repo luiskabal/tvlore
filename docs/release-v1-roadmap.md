@@ -215,6 +215,7 @@ Tasks:
 - [x] Add simple backend rate limiting or abuse guard for expensive authenticated routes.
 - [x] Add a small release smoke script/checklist for mobile manual QA.
 - [x] Add release preflight guards for tracked `.env` files and known development-only mobile diagnostics.
+- [x] Add release preflight guard for obvious committed secrets.
 - Run `corepack pnpm verify:full`.
 - Run authenticated `corepack pnpm api:check` against Vercel.
 - Add minimal crash/error monitoring if release candidates expose hard-to-debug mobile failures.
@@ -304,6 +305,7 @@ before TestFlight/closed testing. Quick gate:
 - [x] Search starts in a release-friendly state.
 - [x] `/health/error` is not publicly exposed in production.
 - [x] `release:preflight` blocks tracked `.env` files and known development-only mobile diagnostics.
+- [x] `release:preflight` blocks obvious committed secrets.
 - [ ] Store screenshots and descriptions match the actual app.
 - [x] Store metadata draft exists in `docs/store-metadata.md`.
 - [x] Reviewer instructions are written.

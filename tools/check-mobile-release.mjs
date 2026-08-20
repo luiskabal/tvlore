@@ -28,6 +28,12 @@ const releaseUiBlocklist = [
   { pattern: /health\/error/i, reason: "development error endpoint in mobile UI" },
   { pattern: /tvlore-api responded/i, reason: "debug backend health copy" },
 ];
+const binaryFilePattern = /\.(png|jpg|jpeg|gif|webp|ico|pdf|zip|gz|tgz|mp4|mov|woff2?)$/i;
+const secretPatterns = [
+  { pattern: /\beyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\b/, reason: "JWT-like token" },
+  { pattern: /\bsb_secret_[A-Za-z0-9_-]{20,}\b/i, reason: "Supabase secret key" },
+  { pattern: /\bSUPABASE_SERVICE_ROLE_KEY\s*=\s*(?!\s*(YOUR_|your-|CHANGE_ME|placeholder|$))\S+/i, reason: "Supabase service role value" },
+];
 let hasError = false;
 
 const app = readJson("apps/mobile/app.json").expo;
@@ -70,6 +76,7 @@ expectHttpsUrl(mobileEnv.get("EXPO_PUBLIC_SUPABASE_URL"), "EXPO_PUBLIC_SUPABASE_
 
 console.log("\nrelease guards");
 expectNoTrackedEnvFiles();
+expectNoTrackedSecrets();
 expectNoReleaseUiAffordances();
 expectStoreMetadata();
 
@@ -208,11 +215,9 @@ function expectHttpsUrl(value, label) {
 }
 
 function expectNoTrackedEnvFiles() {
-  let files;
+  const files = getTrackedFiles();
 
-  try {
-    files = execFileSync("git", ["ls-files"], { encoding: "utf8" }).split(/\r?\n/).filter(Boolean);
-  } catch {
+  if (!files) {
     warn("Could not inspect tracked files; run from a git checkout before release");
     return;
   }
@@ -225,6 +230,45 @@ function expectNoTrackedEnvFiles() {
   }
 
   ok("no tracked .env files");
+}
+
+function expectNoTrackedSecrets() {
+  const files = getTrackedFiles();
+
+  if (!files) {
+    warn("Could not inspect tracked files for secrets; run from a git checkout before release");
+    return;
+  }
+
+  const findings = [];
+
+  for (const file of files) {
+    if (binaryFilePattern.test(file)) {
+      continue;
+    }
+
+    const content = readFileSync(file, "utf8");
+    const lines = content.split(/\r?\n/);
+
+    lines.forEach((line, index) => {
+      for (const { pattern, reason } of secretPatterns) {
+        if (pattern.test(line)) {
+          findings.push(`${file}:${index + 1} (${reason})`);
+        }
+      }
+
+      if (hasNonPlaceholderRemotePostgresPassword(line)) {
+        findings.push(`${file}:${index + 1} (remote PostgreSQL password)`);
+      }
+    });
+  }
+
+  if (findings.length > 0) {
+    fail(`tracked secret-like values found: ${findings.join(", ")}`);
+    return;
+  }
+
+  ok("no obvious tracked secrets");
 }
 
 function expectNoReleaseUiAffordances() {
@@ -286,6 +330,31 @@ function getReleaseUiFiles(directory) {
 
     return [];
   });
+}
+
+function getTrackedFiles() {
+  try {
+    return execFileSync("git", ["ls-files"], { encoding: "utf8" }).split(/\r?\n/).filter(Boolean);
+  } catch {
+    return null;
+  }
+}
+
+function hasNonPlaceholderRemotePostgresPassword(line) {
+  const match = line.match(/\bpostgres(?:ql)?:\/\/[^:\s]+:([^@\s]+)@([^\/\s]+)/i);
+
+  if (!match) {
+    return false;
+  }
+
+  const password = match[1];
+  const host = match[2].toLowerCase().split(":")[0];
+
+  if (host === "localhost" || host === "127.0.0.1") {
+    return false;
+  }
+
+  return !/YOUR[-_]?PASSWORD|YOUR_|CHANGE_ME|placeholder|\[.*\]/i.test(password);
 }
 
 function toRelativePath(file) {
