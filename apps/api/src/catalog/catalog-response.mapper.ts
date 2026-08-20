@@ -2,6 +2,8 @@ import { toShowProgress, type ProgressEpisode } from "../progress";
 import type {
   EpisodeDetailResponseDto,
   MovieDetailResponseDto,
+  SeasonEpisodePageDto,
+  SeasonEpisodePageInput,
   ShowDetailResponseDto,
   ShowEpisodeDto,
   ShowSeasonDetailResponseDto,
@@ -96,6 +98,9 @@ export function toSeasonSummaryResponse(season: {
 }
 
 export function toSeasonDetailResponse(season: {
+  _count: {
+    episodes: number;
+  };
   airDate: Date | null;
   episodeCount: number;
   episodes: Array<{
@@ -118,12 +123,32 @@ export function toSeasonDetailResponse(season: {
   };
   showId: string;
   title: string;
-}): ShowSeasonDetailResponseDto {
+}, page: SeasonEpisodePageInput & { watchedCount: number } = { offset: 0, watchedCount: 0 }): ShowSeasonDetailResponseDto {
   return {
     ...toSeasonSummaryResponse(season),
+    episodePage: toSeasonEpisodePage(season, page),
     episodes: season.episodes.map(toEpisodeResponse),
     showId: season.showId,
     showTitle: season.show.title,
+  };
+}
+
+function toSeasonEpisodePage(
+  season: { _count: { episodes: number }; episodeCount: number; episodes: unknown[] },
+  page: SeasonEpisodePageInput & { watchedCount: number },
+): SeasonEpisodePageDto {
+  const limit = page.limit ?? null;
+  const returnedCount = season.episodes.length;
+  const storedCount = season._count.episodes;
+
+  return {
+    hasMore: limit !== null && page.offset + returnedCount < storedCount,
+    limit,
+    offset: page.offset,
+    returnedCount,
+    storedCount,
+    totalCount: season.episodeCount,
+    watchedCount: page.watchedCount,
   };
 }
 

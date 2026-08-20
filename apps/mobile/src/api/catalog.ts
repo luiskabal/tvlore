@@ -95,9 +95,26 @@ export async function getShowSeasonDetail(
   accessToken: string | null,
   showId: string,
   seasonNumber: number,
+  options: { episodeLimit?: number; episodeOffset?: number; hydrate?: boolean } = {},
 ): Promise<ShowSeasonDetailResponse> {
+  const params = new URLSearchParams();
+
+  if (options.hydrate !== undefined) {
+    params.set("hydrate", String(options.hydrate));
+  }
+
+  if (options.episodeLimit !== undefined) {
+    params.set("episodeLimit", String(options.episodeLimit));
+  }
+
+  if (options.episodeOffset !== undefined) {
+    params.set("episodeOffset", String(options.episodeOffset));
+  }
+
+  const query = params.toString();
+
   return fetchCachedJson(
-    `/shows/${showId}/seasons/${seasonNumber}`,
+    `/shows/${showId}/seasons/${seasonNumber}${query ? `?${query}` : ""}`,
     isShowSeasonDetailResponse,
     "Unexpected season detail response",
     { headers: getAuthHeaders(accessToken) },

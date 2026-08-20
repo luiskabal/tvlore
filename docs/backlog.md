@@ -12,6 +12,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 ## Done Recently
 
 - [x] Run first EAS Android preview build and produce an installable APK.
+- [x] Add lightweight preflight plus lazy hydration for large provider-backed season episode lists.
 - [x] Replace ambiguous show/movie watched header icons with an explicit tracking panel and check-in action.
 - [x] Link TVLore to EAS project `@luiskabal/tvlore`.
 - [x] Configure required EAS project env vars for development, preview, and production mobile builds.
@@ -35,7 +36,6 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 
 - [x] Split `CatalogDetailContent.tsx` into focused detail subcomponents when the next detail UX feature touches it.
 - [x] Move pure catalog response mappers out of `CatalogRepository` when catalog persistence is next edited.
-- [ ] Add lightweight preflight plus lazy hydration for large provider-backed lists so navigation never blocks on seasons, search result pages, or bulk actions that can be loaded progressively.
 - [ ] Add aggregate favorite-character voting percentages to post-watch check-in, sorted by community popularity.
 - [ ] Evaluate additional public Watch Path import sources after TMDB Collection proves useful.
 

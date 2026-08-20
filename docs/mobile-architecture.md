@@ -427,6 +427,8 @@ Mobile lookahead prefetch uses `src/catalog/prefetch.ts`:
 - `POST /catalog/resolve` is still not bulk-prefetched because it writes catalog identity to the database.
 - Initial search loading renders skeleton result rows.
 - Typed-query refreshes keep previous results visible and show an updating indicator.
+- Season detail first requests `GET /shows/:id/seasons/:seasonNumber?hydrate=false&episodeLimit=20&episodeOffset=0` so the route can render from persisted shell data without provider hydration.
+- If the season is incomplete locally, mobile then hydrates the first episode page with `hydrate=true` and loads later pages with `hydrate=false` as the user scrolls near the end.
 
 Lookahead must stay lightweight. A prefetch may warm a small read that is likely
 to be needed next, but it should not trigger heavy provider hydration or database

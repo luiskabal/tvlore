@@ -607,9 +607,9 @@ Errors: `SHOW_NOT_FOUND`, `VALIDATION_FAILED`, `CATALOG_PROVIDER_UNAVAILABLE`.
 
 ### `GET /shows/:showId/seasons/:seasonNumber`
 
-Purpose: return a season and its episodes, including authenticated user's watch state.
+Purpose: return a season and a page of its episodes, including authenticated user's watch state.
 
-Current MVP status: implemented with authenticated user's watched state.
+Current MVP status: implemented with authenticated user's watched state, optional lazy provider hydration, and episode paging.
 
 Auth: required.
 
@@ -618,7 +618,11 @@ Route parameters:
 - `showId` UUID.
 - `seasonNumber` integer.
 
-Query parameters: none.
+Query parameters:
+
+- `hydrate` optional boolean, defaults to `true`. When `false`, the API returns already persisted season/episode data without calling the provider.
+- `episodeLimit` optional integer between `1` and `50`. When omitted, all persisted episodes are returned for backwards compatibility.
+- `episodeOffset` optional non-negative integer, defaults to `0`.
 
 Request: none.
 
@@ -631,6 +635,15 @@ Response:
   "showTitle": "Dark",
   "seasonNumber": 1,
   "title": "Season 1",
+  "episodePage": {
+    "hasMore": true,
+    "limit": 20,
+    "offset": 0,
+    "returnedCount": 20,
+    "storedCount": 106,
+    "totalCount": 106,
+    "watchedCount": 4
+  },
   "episodes": [
     {
       "id": "uuid",
@@ -658,12 +671,16 @@ Transport validation:
 
 - `showId` UUID.
 - `seasonNumber` non-negative integer.
+- `hydrate` must be `true` or `false` when present.
+- `episodeLimit` must be between `1` and `50` when present.
+- `episodeOffset` must be non-negative when present.
 
 Business validation:
 
 - Show exists.
 - Season belongs to show.
 - Episodes are returned with backend-calculated watch state.
+- Heavy provider hydration is opt-in through `hydrate=true`; mobile may first request a lightweight shell with `hydrate=false`.
 
 Errors: `SHOW_NOT_FOUND`, `SEASON_NOT_FOUND`, `VALIDATION_FAILED`.
 

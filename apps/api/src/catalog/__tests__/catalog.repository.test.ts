@@ -48,12 +48,16 @@ describe("CatalogRepository", () => {
 
   it("returns season detail with show context", async () => {
     const watchedAt = new Date("2026-08-14T00:00:00.000Z");
-    const client = {
-      season: {
-        findUnique: vi.fn().mockResolvedValue({
-          airDate: new Date("2022-06-11T00:00:00.000Z"),
-          episodeCount: 1,
-          episodes: [
+      const client = {
+        episodeWatch: {
+          count: vi.fn().mockResolvedValue(1),
+        },
+        season: {
+          findUnique: vi.fn().mockResolvedValue({
+            _count: { episodes: 1 },
+            airDate: new Date("2022-06-11T00:00:00.000Z"),
+            episodeCount: 1,
+            episodes: [
             {
               airDate: new Date("2022-06-11T00:00:00.000Z"),
               episodeNumber: 1,
@@ -83,6 +87,15 @@ describe("CatalogRepository", () => {
     await expect(repository.findSeasonDetail(showId, 1, userId)).resolves.toEqual({
       airDate: "2022-06-11",
       episodeCount: 1,
+      episodePage: {
+        hasMore: false,
+        limit: null,
+        offset: 0,
+        returnedCount: 1,
+        storedCount: 1,
+        totalCount: 1,
+        watchedCount: 1,
+      },
       episodes: [
         {
           airDate: "2022-06-11",
@@ -111,6 +124,61 @@ describe("CatalogRepository", () => {
         show: { select: { title: true } },
       }),
       where: { showId_seasonNumber: { seasonNumber: 1, showId } },
+    }));
+    expect(client.episodeWatch.count).toHaveBeenCalledWith({
+      where: {
+        episode: {
+          is: {
+            seasonNumber: 1,
+            showId,
+          },
+        },
+        userId,
+      },
+    });
+  });
+
+  it("pages season episodes", async () => {
+    const client = {
+      episodeWatch: {
+        count: vi.fn().mockResolvedValue(0),
+      },
+      season: {
+        findUnique: vi.fn().mockResolvedValue({
+          _count: { episodes: 8 },
+          airDate: null,
+          episodeCount: 8,
+          episodes: [],
+          id: seasonId,
+          overview: "",
+          posterPath: null,
+          seasonNumber: 1,
+          show: { title: "Dark" },
+          showId,
+          title: "Season 1",
+        }),
+      },
+    };
+    const repository = new CatalogRepository({ getClient: () => client } as unknown as PrismaService);
+
+    await expect(repository.findSeasonDetail(showId, 1, userId, { limit: 3, offset: 3 })).resolves.toMatchObject({
+      episodePage: {
+        hasMore: true,
+        limit: 3,
+        offset: 3,
+        returnedCount: 0,
+        storedCount: 8,
+        totalCount: 8,
+        watchedCount: 0,
+      },
+    });
+    expect(client.season.findUnique).toHaveBeenCalledWith(expect.objectContaining({
+      include: expect.objectContaining({
+        episodes: expect.objectContaining({
+          skip: 3,
+          take: 3,
+        }),
+      }),
     }));
   });
 

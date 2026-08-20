@@ -6,6 +6,7 @@ import {
   isDeleteUserResponse,
   isLibraryResponse,
   isPopularDiscoveryResponse,
+  isShowSeasonDetailResponse,
   isShowProgressResponse,
   isTvlorePicksDiscoveryResponse,
 } from "./guards";
@@ -130,6 +131,44 @@ describe("api guards", () => {
           year: 2017,
         },
       ],
+    })).toBe(true);
+  });
+
+  it("accepts paged season detail responses", () => {
+    expect(isShowSeasonDetailResponse({
+      airDate: "2026-08-14",
+      episodeCount: 106,
+      episodePage: {
+        hasMore: true,
+        limit: 20,
+        offset: 0,
+        returnedCount: 1,
+        storedCount: 106,
+        totalCount: 106,
+        watchedCount: 0,
+      },
+      episodes: [
+        {
+          airDate: "2026-08-14",
+          episodeNumber: 1,
+          id: "episode-1",
+          lastWatchedAt: null,
+          overview: "Special episode.",
+          runtimeMinutes: 52,
+          seasonNumber: 0,
+          stillPath: "/still.jpg",
+          title: "Special",
+          watchCount: 0,
+          watched: false,
+        },
+      ],
+      id: "season-1",
+      overview: "Specials.",
+      posterPath: null,
+      seasonNumber: 0,
+      showId: "show-1",
+      showTitle: "The Office",
+      title: "Specials",
     })).toBe(true);
   });
 

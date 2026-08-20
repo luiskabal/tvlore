@@ -295,7 +295,18 @@ export type ShowEpisode = {
   watched: boolean;
 };
 
+export type SeasonEpisodePage = {
+  hasMore: boolean;
+  limit: number | null;
+  offset: number;
+  returnedCount: number;
+  storedCount: number;
+  totalCount: number;
+  watchedCount: number;
+};
+
 export type ShowSeasonDetailResponse = ShowSeasonSummary & {
+  episodePage: SeasonEpisodePage;
   episodes: ShowEpisode[];
   showId: string;
   showTitle: string;

@@ -146,7 +146,23 @@ export type ShowSeasonHydrationPlanDto = {
   showId: string;
 };
 
+export type SeasonEpisodePageDto = {
+  hasMore: boolean;
+  limit: number | null;
+  offset: number;
+  returnedCount: number;
+  storedCount: number;
+  totalCount: number;
+  watchedCount: number;
+};
+
+export type SeasonEpisodePageInput = {
+  limit?: number;
+  offset: number;
+};
+
 export type ShowSeasonDetailResponseDto = ShowSeasonSummaryDto & {
+  episodePage: SeasonEpisodePageDto;
   episodes: ShowEpisodeDto[];
   showId: string;
   showTitle: string;

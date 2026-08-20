@@ -1,8 +1,19 @@
 import { BadRequestException } from "@nestjs/common";
 
-import type { CatalogResolvedEpisode, CatalogResolvedSeason } from "./catalog.types";
+import type { CatalogResolvedEpisode, CatalogResolvedSeason, SeasonEpisodePageInput } from "./catalog.types";
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const maxSeasonEpisodeLimit = 50;
+
+export type SeasonDetailQueryInput = {
+  episodeLimit?: string;
+  episodeOffset?: string;
+  hydrate?: string;
+};
+
+export type SeasonDetailQuery = SeasonEpisodePageInput & {
+  hydrate: boolean;
+};
 
 export function parseTvloreId(value: string | undefined, name: string) {
   if (!value || !uuidPattern.test(value)) {
@@ -20,6 +31,14 @@ export function parseSeasonNumber(value: string | undefined) {
   }
 
   return seasonNumber;
+}
+
+export function parseSeasonDetailQuery(input: SeasonDetailQueryInput): SeasonDetailQuery {
+  return {
+    hydrate: parseHydrate(input.hydrate),
+    limit: parseOptionalLimit(input.episodeLimit),
+    offset: parseOffset(input.episodeOffset),
+  };
 }
 
 export function toResolvedSeason(value: unknown): CatalogResolvedSeason | null {
@@ -88,6 +107,50 @@ function getNonNegativeInteger(value: unknown) {
 
 function getPositiveInteger(value: unknown) {
   return typeof value === "number" && Number.isInteger(value) && value > 0 ? value : null;
+}
+
+function parseHydrate(value: string | undefined) {
+  if (value === undefined) {
+    return true;
+  }
+
+  if (value === "true") {
+    return true;
+  }
+
+  if (value === "false") {
+    return false;
+  }
+
+  throwValidation("hydrate must be true or false");
+}
+
+function parseOptionalLimit(value: string | undefined) {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  const limit = Number(value);
+
+  if (!Number.isInteger(limit) || limit < 1 || limit > maxSeasonEpisodeLimit) {
+    throwValidation(`episodeLimit must be an integer between 1 and ${maxSeasonEpisodeLimit}`);
+  }
+
+  return limit;
+}
+
+function parseOffset(value: string | undefined) {
+  if (value === undefined) {
+    return 0;
+  }
+
+  const offset = Number(value);
+
+  if (!Number.isInteger(offset) || offset < 0) {
+    throwValidation("episodeOffset must be a non-negative integer");
+  }
+
+  return offset;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

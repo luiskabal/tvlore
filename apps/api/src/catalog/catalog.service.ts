@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 
 import { UsersService } from "../users/users.service";
-import { parseSeasonNumber, parseTvloreId } from "./catalog-detail";
+import { parseSeasonDetailQuery, parseSeasonNumber, parseTvloreId } from "./catalog-detail";
 import { parseCatalogResolveInput } from "./catalog-resolve";
 import { parseCatalogSearchInput } from "./catalog-search";
 import { parseWatchCountry } from "./catalog-watch-providers";
@@ -178,21 +178,25 @@ export class CatalogService {
     authorizationHeader: string | undefined,
     showId: string | undefined,
     seasonNumber: string | undefined,
+    query: { episodeLimit?: string; episodeOffset?: string; hydrate?: string } = {},
   ): Promise<ShowSeasonDetailResponseDto> {
     const user = await this.usersService.getMe(authorizationHeader);
 
     const parsedShowId = parseTvloreId(showId, "showId");
     const parsedSeasonNumber = parseSeasonNumber(seasonNumber);
+    const parsedQuery = parseSeasonDetailQuery(query);
     const providerShowId = await this.catalogRepository.findShowProviderId(parsedShowId);
 
     if (!providerShowId) {
       throwNotFound("SHOW_NOT_FOUND", "Show was not found");
     }
 
-    const season = await this.tmdbClient.getResolvedSeason(providerShowId, parsedSeasonNumber);
-    await this.catalogRepository.upsertSeasonDetail(parsedShowId, season);
+    if (parsedQuery.hydrate) {
+      const season = await this.tmdbClient.getResolvedSeason(providerShowId, parsedSeasonNumber);
+      await this.catalogRepository.upsertSeasonDetail(parsedShowId, season);
+    }
 
-    const storedSeason = await this.catalogRepository.findSeasonDetail(parsedShowId, parsedSeasonNumber, user.id);
+    const storedSeason = await this.catalogRepository.findSeasonDetail(parsedShowId, parsedSeasonNumber, user.id, parsedQuery);
 
     if (!storedSeason) {
       throwNotFound("SEASON_NOT_FOUND", "Season was not found");

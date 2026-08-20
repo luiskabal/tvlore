@@ -84,8 +84,15 @@ export class ShowsController {
     @Headers("authorization") authorizationHeader: string | undefined,
     @Param("showId") showId: string | undefined,
     @Param("seasonNumber") seasonNumber: string | undefined,
+    @Query("hydrate") hydrate: string | undefined,
+    @Query("episodeLimit") episodeLimit: string | undefined,
+    @Query("episodeOffset") episodeOffset: string | undefined,
   ): Promise<ShowSeasonDetailResponseDto> {
-    return this.catalogService.getShowSeason(authorizationHeader, showId, seasonNumber);
+    return this.catalogService.getShowSeason(authorizationHeader, showId, seasonNumber, {
+      episodeLimit,
+      episodeOffset,
+      hydrate,
+    });
   }
 }
 

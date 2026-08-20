@@ -13,9 +13,18 @@ import {
 import { getSupabaseAccessToken } from "../auth/supabase-auth";
 import { notifyLibraryChanged } from "../library/library-refresh";
 
+const seasonEpisodePageSize = 20;
+
 export type SeasonDetailState =
   | { kind: "loading" }
-  | { detail: ShowSeasonDetailResponse; kind: "ready"; showProgress: ShowProgressResponse | null }
+  | {
+      detail: ShowSeasonDetailResponse;
+      episodeLoadError: string | null;
+      isHydratingEpisodes: boolean;
+      isLoadingMoreEpisodes: boolean;
+      kind: "ready";
+      showProgress: ShowProgressResponse | null;
+    }
   | { kind: "error"; message: string };
 
 export type EpisodeWatchActionState =
@@ -29,6 +38,7 @@ export function useSeasonDetail(showId: string | null, seasonNumber: number | nu
   const [state, setState] = useState<SeasonDetailState>({ kind: "loading" });
   const [watchAction, setWatchAction] = useState<EpisodeWatchActionState>({ kind: "idle" });
   const episodeRequestIds = useRef(new Map<string, number>());
+  const seasonRequestId = useRef(0);
 
   const refresh = useCallback(async () => {
     if (!showId || seasonNumber === null) {
@@ -36,20 +46,123 @@ export function useSeasonDetail(showId: string | null, seasonNumber: number | nu
       return;
     }
 
+    const requestId = seasonRequestId.current + 1;
+    seasonRequestId.current = requestId;
+    setWatchAction({ kind: "idle" });
     setState({ kind: "loading" });
 
     try {
       const token = await getSupabaseAccessToken();
-      const detail = await getShowSeasonDetail(token, showId, seasonNumber);
-      setState({ detail, kind: "ready", showProgress: null });
+      const shell = await getShowSeasonDetail(token, showId, seasonNumber, {
+        episodeLimit: seasonEpisodePageSize,
+        episodeOffset: 0,
+        hydrate: false,
+      });
+      const needsHydration = shell.episodePage.storedCount < shell.episodePage.totalCount;
+
+      if (seasonRequestId.current !== requestId) {
+        return;
+      }
+
+      setState({
+        detail: shell,
+        episodeLoadError: null,
+        isHydratingEpisodes: needsHydration,
+        isLoadingMoreEpisodes: false,
+        kind: "ready",
+        showProgress: null,
+      });
+
+      if (needsHydration) {
+        let hydrated: ShowSeasonDetailResponse;
+
+        try {
+          hydrated = await getShowSeasonDetail(token, showId, seasonNumber, {
+            episodeLimit: seasonEpisodePageSize,
+            episodeOffset: 0,
+            hydrate: true,
+          });
+        } catch (error) {
+          if (seasonRequestId.current !== requestId) {
+            return;
+          }
+
+          setState((current) => current.kind === "ready"
+            ? {
+                ...current,
+                episodeLoadError: error instanceof Error ? error.message : "Could not load episodes",
+                isHydratingEpisodes: false,
+              }
+            : current);
+          return;
+        }
+
+        if (seasonRequestId.current !== requestId) {
+          return;
+        }
+
+        setState({
+          detail: hydrated,
+          episodeLoadError: null,
+          isHydratingEpisodes: false,
+          isLoadingMoreEpisodes: false,
+          kind: "ready",
+          showProgress: null,
+        });
+      }
+
       setWatchAction({ kind: "idle" });
     } catch (error) {
+      if (seasonRequestId.current !== requestId) {
+        return;
+      }
+
       setState({
         kind: "error",
         message: error instanceof Error ? error.message : "Season detail failed",
       });
     }
   }, [seasonNumber, showId]);
+
+  const loadMoreEpisodes = useCallback(async () => {
+    if (state.kind !== "ready" || !showId || seasonNumber === null) {
+      return;
+    }
+
+    if (state.isHydratingEpisodes || state.isLoadingMoreEpisodes || !state.detail.episodePage.hasMore) {
+      return;
+    }
+
+    setState((current) => current.kind === "ready"
+      ? { ...current, episodeLoadError: null, isLoadingMoreEpisodes: true }
+      : current);
+
+    try {
+      const token = await getSupabaseAccessToken();
+      const nextPage = await getShowSeasonDetail(token, showId, seasonNumber, {
+        episodeLimit: seasonEpisodePageSize,
+        episodeOffset: state.detail.episodes.length,
+        hydrate: false,
+      });
+
+      setState((current) => current.kind === "ready"
+        ? {
+            ...current,
+            detail: mergeEpisodePage(current.detail, nextPage),
+            episodeLoadError: null,
+            isLoadingMoreEpisodes: false,
+          }
+        : current);
+    } catch (error) {
+      setState((current) => current.kind === "ready"
+        ? {
+            ...current,
+            episodeLoadError: error instanceof Error ? error.message : "Could not load more episodes",
+            isLoadingMoreEpisodes: false,
+          }
+        : current);
+    }
+  }, [seasonNumber, showId, state]);
 
   const setEpisodeWatched = useCallback(async (episodeId: string, watched: boolean) => {
     const previousEpisode = state.kind === "ready"
@@ -102,8 +215,10 @@ export function useSeasonDetail(showId: string | null, seasonNumber: number | nu
     }
 
     const targetEpisodes = state.detail.episodes.filter((episode) => episode.watched !== watched);
+    const totalEpisodeCount = state.detail.episodePage.totalCount;
+    const watchedEpisodeCount = state.detail.episodePage.watchedCount;
 
-    if (targetEpisodes.length === 0) {
+    if (watched ? watchedEpisodeCount >= totalEpisodeCount : watchedEpisodeCount === 0) {
       return;
     }
 
@@ -123,8 +238,13 @@ export function useSeasonDetail(showId: string | null, seasonNumber: number | nu
         }
 
         return {
+          ...current,
           detail: {
             ...current.detail,
+            episodePage: {
+              ...current.detail.episodePage,
+              watchedCount: watched ? current.detail.episodePage.totalCount : 0,
+            },
             episodes: current.detail.episodes.map((episode) => {
               return targetEpisodeIds.has(episode.id)
                 ? {
@@ -136,7 +256,6 @@ export function useSeasonDetail(showId: string | null, seasonNumber: number | nu
                 : episode;
             }),
           },
-          kind: "ready",
           showProgress,
         };
       });
@@ -155,7 +274,7 @@ export function useSeasonDetail(showId: string | null, seasonNumber: number | nu
     void refresh();
   }, [refresh]);
 
-  return { refresh, setEpisodeWatched, setSeasonWatched, state, watchAction };
+  return { loadMoreEpisodes, refresh, setEpisodeWatched, setSeasonWatched, state, watchAction };
 }
 
 function updateEpisode(
@@ -168,14 +287,20 @@ function updateEpisode(
     return current;
   }
 
+  const previousEpisode = current.detail.episodes.find((episode) => episode.id === episodeId);
+
   return {
+    ...current,
     detail: {
       ...current.detail,
+      episodePage: {
+        ...current.detail.episodePage,
+        watchedCount: getNextSeasonWatchedCount(current.detail.episodePage.watchedCount, previousEpisode?.watched, patch.watched),
+      },
       episodes: current.detail.episodes.map((episode) => (
         episode.id === episodeId ? { ...episode, ...patch } : episode
       )),
     },
-    kind: "ready",
     showProgress: showProgress === undefined ? current.showProgress : showProgress,
   };
 }
@@ -201,4 +326,31 @@ function getOptimisticWatchCount(currentCount: number, currentWatched: boolean, 
   }
 
   return Math.max(0, currentCount + (nextWatched ? 1 : -1));
+}
+
+function getNextSeasonWatchedCount(currentCount: number, currentWatched: boolean | undefined, nextWatched: boolean) {
+  if (currentWatched === undefined || currentWatched === nextWatched) {
+    return currentCount;
+  }
+
+  return Math.max(0, currentCount + (nextWatched ? 1 : -1));
+}
+
+function mergeEpisodePage(current: ShowSeasonDetailResponse, next: ShowSeasonDetailResponse): ShowSeasonDetailResponse {
+  const episodesById = new Map(current.episodes.map((episode) => [episode.id, episode]));
+
+  for (const episode of next.episodes) {
+    episodesById.set(episode.id, episode);
+  }
+
+  const episodes = [...episodesById.values()].sort((left, right) => left.episodeNumber - right.episodeNumber);
+
+  return {
+    ...next,
+    episodePage: {
+      ...next.episodePage,
+      returnedCount: episodes.length,
+    },
+    episodes,
+  };
 }

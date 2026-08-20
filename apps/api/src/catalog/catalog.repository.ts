@@ -12,6 +12,7 @@ import type {
   CatalogSearchResultDto,
   EpisodeDetailResponseDto,
   MovieDetailResponseDto,
+  SeasonEpisodePageInput,
   ShowDetailResponseDto,
   ShowSeasonHydrationPlanDto,
   ShowSeasonDetailResponseDto,
@@ -233,9 +234,18 @@ export class CatalogRepository {
       : null;
   }
 
-  async findSeasonDetail(showId: string, seasonNumber: number, userId: string): Promise<ShowSeasonDetailResponseDto | null> {
-    const season = await this.prismaService.getClient().season.findUnique({
+  async findSeasonDetail(
+    showId: string,
+    seasonNumber: number,
+    userId: string,
+    page: SeasonEpisodePageInput = { offset: 0 },
+  ): Promise<ShowSeasonDetailResponseDto | null> {
+    const client = this.prismaService.getClient();
+    const season = await client.season.findUnique({
       include: {
+        _count: {
+          select: { episodes: true },
+        },
         episodes: {
           include: {
             watches: {
@@ -245,6 +255,10 @@ export class CatalogRepository {
             },
           },
           orderBy: { episodeNumber: "asc" },
+          ...(page.limit === undefined ? {} : {
+            skip: page.offset,
+            take: page.limit,
+          }),
         },
         show: {
           select: {
@@ -260,7 +274,23 @@ export class CatalogRepository {
       },
     });
 
-    return season ? toSeasonDetailResponse(season) : null;
+    if (!season) {
+      return null;
+    }
+
+    const watchedCount = await client.episodeWatch.count({
+      where: {
+        episode: {
+          is: {
+            seasonNumber,
+            showId,
+          },
+        },
+        userId,
+      },
+    });
+
+    return toSeasonDetailResponse(season, { ...page, watchedCount });
   }
 
   async findEpisodeDetail(episodeId: string, userId: string): Promise<EpisodeDetailResponseDto | null> {

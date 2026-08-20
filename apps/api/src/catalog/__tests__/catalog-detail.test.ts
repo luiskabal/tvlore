@@ -1,7 +1,7 @@
 import { BadRequestException } from "@nestjs/common";
 import { describe, expect, it } from "vitest";
 
-import { parseSeasonNumber, parseTvloreId, toResolvedSeason } from "../catalog-detail";
+import { parseSeasonDetailQuery, parseSeasonNumber, parseTvloreId, toResolvedSeason } from "../catalog-detail";
 
 describe("parseTvloreId", () => {
   it("accepts UUID route ids", () => {
@@ -22,6 +22,34 @@ describe("parseSeasonNumber", () => {
   it("rejects invalid season numbers", () => {
     expect(() => parseSeasonNumber("-1")).toThrow(BadRequestException);
     expect(() => parseSeasonNumber("1.5")).toThrow(BadRequestException);
+  });
+});
+
+describe("parseSeasonDetailQuery", () => {
+  it("keeps backwards-compatible defaults", () => {
+    expect(parseSeasonDetailQuery({})).toEqual({
+      hydrate: true,
+      limit: undefined,
+      offset: 0,
+    });
+  });
+
+  it("accepts lightweight paged reads", () => {
+    expect(parseSeasonDetailQuery({
+      episodeLimit: "20",
+      episodeOffset: "40",
+      hydrate: "false",
+    })).toEqual({
+      hydrate: false,
+      limit: 20,
+      offset: 40,
+    });
+  });
+
+  it("rejects invalid season detail query params", () => {
+    expect(() => parseSeasonDetailQuery({ episodeLimit: "0" })).toThrow(BadRequestException);
+    expect(() => parseSeasonDetailQuery({ episodeOffset: "-1" })).toThrow(BadRequestException);
+    expect(() => parseSeasonDetailQuery({ hydrate: "maybe" })).toThrow(BadRequestException);
   });
 });
 

@@ -7,6 +7,10 @@ import { styles } from "./season-detail-styles";
 import type { EpisodeWatchActionState } from "./use-season-detail";
 
 export function SeasonContent({
+  episodeLoadError,
+  isHydratingEpisodes,
+  isLoadingMoreEpisodes,
+  onLoadMoreEpisodes,
   onSetEpisodeWatched,
   onSetSeasonWatched,
   onOpenEpisode,
@@ -15,6 +19,10 @@ export function SeasonContent({
   showProgress,
   watchAction,
 }: {
+  episodeLoadError: string | null;
+  isHydratingEpisodes: boolean;
+  isLoadingMoreEpisodes: boolean;
+  onLoadMoreEpisodes: () => void;
   onSetEpisodeWatched: (episodeId: string, watched: boolean) => void;
   onSetSeasonWatched: (watched: boolean) => void;
   onOpenEpisode: (episodeId: string) => void;
@@ -43,7 +51,12 @@ export function SeasonContent({
       <SeasonBulkPanel season={season} watchAction={watchAction} onSetWatched={onSetSeasonWatched} />
 
       <EpisodeList
+        episodeLoadError={episodeLoadError}
         episodes={season.episodes}
+        hasMore={season.episodePage.hasMore}
+        isHydratingEpisodes={isHydratingEpisodes}
+        isLoadingMoreEpisodes={isLoadingMoreEpisodes}
+        onLoadMoreEpisodes={onLoadMoreEpisodes}
         onOpenEpisode={onOpenEpisode}
         onSetEpisodeWatched={onSetEpisodeWatched}
         watchAction={watchAction}
@@ -95,12 +108,22 @@ export function SeasonDetailSkeleton() {
 }
 
 function EpisodeList({
+  episodeLoadError,
   episodes,
+  hasMore,
+  isHydratingEpisodes,
+  isLoadingMoreEpisodes,
+  onLoadMoreEpisodes,
   onOpenEpisode,
   onSetEpisodeWatched,
   watchAction,
 }: {
+  episodeLoadError: string | null;
   episodes: ShowEpisode[];
+  hasMore: boolean;
+  isHydratingEpisodes: boolean;
+  isLoadingMoreEpisodes: boolean;
+  onLoadMoreEpisodes: () => void;
   onOpenEpisode: (episodeId: string) => void;
   onSetEpisodeWatched: (episodeId: string, watched: boolean) => void;
   watchAction: EpisodeWatchActionState;
@@ -109,7 +132,9 @@ function EpisodeList({
     <View style={styles.episodeList}>
       <AppText style={styles.sectionTitle} variant="section">Episodes</AppText>
 
-      {episodes.length === 0 ? (
+      {episodeLoadError ? <AppText tone="danger">{episodeLoadError}</AppText> : null}
+
+      {episodes.length === 0 && !isHydratingEpisodes ? (
         <View style={styles.statusPanel}>
           <AppText variant="section">No episodes</AppText>
           <AppText tone="muted">This season has no episode data yet.</AppText>
@@ -125,6 +150,20 @@ function EpisodeList({
           watchAction={watchAction}
         />
       ))}
+
+      {isHydratingEpisodes || isLoadingMoreEpisodes ? <EpisodeRowsSkeleton count={isHydratingEpisodes ? 3 : 1} /> : null}
+
+      {hasMore && !isHydratingEpisodes ? (
+        <Button
+          disabled={isLoadingMoreEpisodes}
+          isLoading={isLoadingMoreEpisodes}
+          label="Load more episodes"
+          loadingLabel="Loading"
+          onPress={onLoadMoreEpisodes}
+          size="small"
+          variant="secondary"
+        />
+      ) : null}
     </View>
   );
 }
@@ -138,8 +177,8 @@ function SeasonBulkPanel({
   season: ShowSeasonDetailResponse;
   watchAction: EpisodeWatchActionState;
 }) {
-  const watchedCount = season.episodes.filter((episode) => episode.watched).length;
-  const episodeCount = season.episodes.length;
+  const watchedCount = season.episodePage.watchedCount;
+  const episodeCount = season.episodePage.totalCount;
   const hasEpisodes = episodeCount > 0;
   const isBulkSaving = watchAction.kind === "bulk-loading";
   const allWatched = hasEpisodes && watchedCount === episodeCount;
@@ -234,8 +273,7 @@ function getProgressText(season: ShowSeasonDetailResponse, showProgress: ShowPro
     return `Show progress ${showProgress.percentComplete}% - ${showProgress.watchedEpisodeCount}/${showProgress.totalEpisodeCount} episodes`;
   }
 
-  const watchedCount = season.episodes.filter((episode) => episode.watched).length;
-  return `${watchedCount}/${season.episodes.length} watched in this season`;
+  return `${season.episodePage.watchedCount}/${season.episodePage.totalCount} watched in this season`;
 }
 
 function getSeasonMeta(season: ShowSeasonDetailResponse, showProgress: ShowProgressResponse | null) {
@@ -263,4 +301,22 @@ function getEpisodeMeta(episode: ShowEpisode) {
 
 function formatDate(value: string) {
   return new Date(value).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+}
+
+function EpisodeRowsSkeleton({ count }: { count: number }) {
+  return (
+    <>
+      {Array.from({ length: count }, (_, index) => (
+        <View key={index} style={styles.skeletonEpisodeRow}>
+          <Skeleton height={64} width={96} />
+          <View style={styles.skeletonEpisodeBody}>
+            <Skeleton height={16} width="70%" />
+            <Skeleton height={14} width="46%" />
+            <Skeleton height={15} />
+            <Skeleton height={38} width={132} />
+          </View>
+        </View>
+      ))}
+    </>
+  );
 }

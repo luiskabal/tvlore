@@ -847,7 +847,7 @@ Expected behavior:
 - `POST /catalog/resolve` returns a TVLore UUID.
 - Running `GET /search` again after resolve should show `tvloreId` for the resolved item.
 - `GET /shows/:showId` returns show detail and season summaries.
-- `GET /shows/:showId/seasons/:seasonNumber` fetches and persists that season's episodes.
+- `GET /shows/:showId/seasons/:seasonNumber` can return a lightweight persisted season page or hydrate the season from TMDB before returning a paged episode slice.
 - `PUT /episodes/:episodeId/preference` stores a 1-5 episode rating for the authenticated user.
 - `DELETE /episodes/:episodeId/preference` clears that episode rating for the authenticated user.
 - `POST /episodes/:episodeId/watches` marks an episode watched for the authenticated user.
@@ -984,9 +984,9 @@ Current behavior:
 - Profile lets the user choose the `Where to watch` country through flag-labelled country chips.
 - Show and movie detail show `Where to watch` provider icons for the user's saved country preference, with device country and `CL` as fallback. Tapping a provider opens the title's TMDB/JustWatch availability link for that country.
 - Show detail lists seasons and opens a season route.
-- Season detail loads backend-owned episode IDs and watched state.
+- Season detail opens with persisted shell data, hydrates missing provider-backed episodes in the background, and loads episode pages progressively as the user scrolls.
 - Season detail can mark episodes watched or unwatched.
-- Season detail can mark all currently loaded episodes watched or unwatched.
+- Season detail can mark the full season watched or unwatched through backend-owned bulk actions.
 - Episode detail can rate or clear the selected episode with optimistic feedback.
 - Tracking, watchlist, and rating mutations invalidate `GET /library`, so recent watch changes, saved intent, and rated titles appear without pressing Refresh when the user returns to Library or Profile.
 - Episode watch actions update the touched episode and display returned show progress.

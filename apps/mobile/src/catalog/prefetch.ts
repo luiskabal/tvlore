@@ -54,7 +54,12 @@ export async function prefetchShowSeasonDetails(
       return;
     }
 
-    await Promise.allSettled(items.map((item) => getShowSeasonDetail(token, item.showId, item.seasonNumber)));
+    await Promise.allSettled(items.map((item) => (
+      getShowSeasonDetail(token, item.showId, item.seasonNumber, {
+        episodeLimit: 1,
+        hydrate: false,
+      })
+    )));
   } catch {
     return;
   }

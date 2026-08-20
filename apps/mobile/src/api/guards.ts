@@ -352,8 +352,25 @@ export function isShowSeasonDetailResponse(value: unknown): value is ShowSeasonD
   return (
     typeof candidate.showId === "string" &&
     typeof candidate.showTitle === "string" &&
+    isSeasonEpisodePage(candidate.episodePage) &&
     Array.isArray(candidate.episodes) &&
     candidate.episodes.every(isShowEpisode)
+  );
+}
+
+function isSeasonEpisodePage(value: unknown) {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.hasMore === "boolean" &&
+    (typeof value.limit === "number" || value.limit === null) &&
+    typeof value.offset === "number" &&
+    typeof value.returnedCount === "number" &&
+    typeof value.storedCount === "number" &&
+    typeof value.totalCount === "number" &&
+    typeof value.watchedCount === "number"
   );
 }
 

@@ -11,12 +11,20 @@ export default function SeasonDetailScreen() {
   const params = useLocalSearchParams<{ id?: string | string[]; seasonNumber?: string | string[] }>();
   const showId = typeof params.id === "string" ? params.id : null;
   const seasonNumber = typeof params.seasonNumber === "string" ? parseSeasonNumber(params.seasonNumber) : null;
-  const { refresh, setEpisodeWatched, setSeasonWatched, state, watchAction } = useSeasonDetail(showId, seasonNumber);
+  const { loadMoreEpisodes, refresh, setEpisodeWatched, setSeasonWatched, state, watchAction } = useSeasonDetail(showId, seasonNumber);
 
   return (
     <SafeAreaView style={styles.screen}>
       <StatusBar style="dark" />
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        onScroll={(event) => {
+          if (isNearBottom(event.nativeEvent)) {
+            void loadMoreEpisodes();
+          }
+        }}
+        scrollEventThrottle={200}
+      >
         <Pressable style={styles.backButton} onPress={() => router.back()}>
           <AppText style={styles.backButtonText}>Back</AppText>
         </Pressable>
@@ -35,6 +43,10 @@ export default function SeasonDetailScreen() {
 
         {state.kind === "ready" ? (
           <SeasonContent
+            episodeLoadError={state.episodeLoadError}
+            isHydratingEpisodes={state.isHydratingEpisodes}
+            isLoadingMoreEpisodes={state.isLoadingMoreEpisodes}
+            onLoadMoreEpisodes={loadMoreEpisodes}
             onSetEpisodeWatched={setEpisodeWatched}
             onSetSeasonWatched={setSeasonWatched}
             onOpenEpisode={openEpisode}
@@ -66,4 +78,8 @@ function openShow(showId: string) {
 function parseSeasonNumber(value: string) {
   const parsed = Number(value);
   return Number.isInteger(parsed) && parsed >= 0 ? parsed : null;
+}
+
+function isNearBottom(event: { contentOffset: { y: number }; contentSize: { height: number }; layoutMeasurement: { height: number } }) {
+  return event.contentOffset.y + event.layoutMeasurement.height >= event.contentSize.height - 360;
 }
