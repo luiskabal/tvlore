@@ -194,6 +194,7 @@ Tasks:
 - [x] Create first Android preview build and produce an installable APK.
 - [ ] Create first iOS preview build.
 - [ ] Confirm Supabase redirect URLs for production scheme/build.
+- [x] Add Supabase Google OAuth native callback smoke check.
 - [ ] Confirm Vercel envs are production-safe.
 - [x] Create draft reviewer notes for auth and core flows.
 
@@ -299,6 +300,7 @@ before TestFlight/closed testing. Quick gate:
 - [x] Support link opens from Profile and store metadata.
 - [x] Google Play deletion URL is public.
 - [x] Public store/legal URLs are covered by `corepack pnpm store:check`.
+- [x] Supabase Google OAuth native callback is covered by `corepack pnpm auth:redirect:check`.
 - [x] Search starts in a release-friendly state.
 - [x] `/health/error` is not publicly exposed in production.
 - [x] `release:preflight` blocks tracked `.env` files and known development-only mobile diagnostics.

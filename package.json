@@ -8,6 +8,7 @@
     "api:check": "node tools/check-api.mjs",
     "env:check": "node tools/check-env.mjs",
     "eas:env:check": "node tools/check-eas-envs.mjs",
+    "auth:redirect:check": "node tools/check-supabase-auth-redirect.mjs",
     "store:check": "node tools/check-store-public-pages.mjs",
     "release:preflight": "node tools/check-mobile-release.mjs",
     "db:migrate": "corepack pnpm --filter @tvlore/api db:migrate",
@@ -19,7 +20,7 @@
     "typecheck": "corepack pnpm -r typecheck",
     "verify": "corepack pnpm typecheck && corepack pnpm test:run",
     "verify:full": "corepack pnpm verify && corepack pnpm build",
-    "release:smoke": "corepack pnpm release:preflight && corepack pnpm store:check && corepack pnpm verify:full && corepack pnpm api:check",
+    "release:smoke": "corepack pnpm release:preflight && corepack pnpm store:check && corepack pnpm auth:redirect:check && corepack pnpm verify:full && corepack pnpm api:check",
     "build": "corepack pnpm -r --if-present build"
   },
   "workspaces": [

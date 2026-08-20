@@ -13,6 +13,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 ## Done Recently
 
 - [x] Run first EAS Android preview build and produce an installable APK.
+- [x] Add Supabase Google OAuth native redirect smoke check.
 - [x] Add EAS remote env smoke check for development, preview, and production.
 - [x] Add automated public store/legal URL smoke check.
 - [x] Add release preflight guard for required store metadata and public URLs.

@@ -36,6 +36,12 @@ To validate EAS remote env names without printing values:
 corepack pnpm eas:env:check
 ```
 
+To validate Supabase Google OAuth accepts the native callback:
+
+```powershell
+corepack pnpm auth:redirect:check
+```
+
 For authenticated API paths:
 
 ```powershell
@@ -52,6 +58,7 @@ Expected result:
 - Release preflight fails if a real `.env` file is tracked.
 - Release preflight fails if known development-only diagnostics appear in mobile UI source.
 - Store public URLs return `200` HTML without authentication.
+- Supabase Google OAuth returns a redirect for `tvlore:///auth/callback`.
 - Public API smoke returns `200` for root/health routes.
 - Protected routes return `401` without a token.
 - Authenticated product flow passes when a token is provided.
@@ -128,6 +135,7 @@ or emulator before Android beta.
 | --- | --- |
 | EAS envs | `EXPO_PUBLIC_TVLORE_API_BASE_URL`, `EXPO_PUBLIC_SUPABASE_URL`, and `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` exist in EAS `preview` and `production`. |
 | EAS env smoke | `corepack pnpm eas:env:check` passes for development, preview, and production. |
+| Supabase redirect smoke | `corepack pnpm auth:redirect:check` returns a Google OAuth redirect for `tvlore:///auth/callback`. |
 | EAS preview build | `eas build --profile preview --platform ios` and Android equivalent can produce installable builds. |
 | EAS production build | Production build starts only after preview QA passes. |
 | App icon and splash | Match current TVLore branding. |
