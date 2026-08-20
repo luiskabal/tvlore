@@ -9,7 +9,7 @@ import type {
 import { getHistoryActionKey } from "../library/library-action-keys";
 import type { LibraryActionState } from "../library/use-library-actions";
 import type { LibraryChronologyState } from "../library/use-library-chronology";
-import { Button, Skeleton, StatCard } from "../ui";
+import { Button, EmptyState, Skeleton, StatCard, Surface } from "../ui";
 import {
   getEpisodeSeasonKey,
   getLibraryFeedItemKey,
@@ -118,10 +118,10 @@ export function LibraryOverview({
 
   if (!library) {
     return (
-      <View style={styles.statusPanel}>
+      <Surface>
         <Text style={styles.statusLabel}>Library unavailable</Text>
         <Text style={styles.statusDetail}>Sign in is active. Library data is not loaded yet.</Text>
-      </View>
+      </Surface>
     );
   }
 
@@ -330,10 +330,11 @@ export function LibraryOverview({
           </View>
 
           {isEmpty ? (
-            <View style={styles.emptyPanel}>
-              <Text style={styles.statusLabel}>Your library is empty</Text>
-              <Text style={styles.statusDetail}>Saved and watched titles will appear here.</Text>
-            </View>
+            <EmptyState
+              detail="Saved and watched titles will appear here."
+              icon="add-circle-outline"
+              title="Your library is empty"
+            />
           ) : null}
         </View>
       )}

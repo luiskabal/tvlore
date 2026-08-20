@@ -4,7 +4,7 @@ import { ActivityIndicator, Pressable, View } from "react-native";
 
 import type { CatalogSearchResult, MediaType } from "../api/tvlore-api";
 import { getTmdbPosterUrl } from "../catalog/posters";
-import { AppText, Badge, PosterImage, Skeleton, ui } from "../ui";
+import { AppText, Badge, EmptyState, MediaRowSkeleton, PosterImage, ui } from "../ui";
 import type { SearchInlineRecommendation } from "./search-feed-model";
 import { styles } from "./search-styles";
 import { getResultKey, type ResolveState, type SearchState } from "./use-catalog-search";
@@ -31,10 +31,11 @@ export function SearchResults({
 
   if (search.kind === "error") {
     return (
-      <View style={styles.statusPanel}>
-        <AppText variant="section">Search failed</AppText>
-        <AppText tone="muted">{search.message}</AppText>
-      </View>
+      <EmptyState
+        detail={search.message}
+        icon="alert-circle-outline"
+        title="Search failed"
+      />
     );
   }
 
@@ -55,10 +56,11 @@ export function SearchResults({
       {isRefreshing ? <AppText tone="muted">Updating results</AppText> : null}
 
       {search.results.length === 0 ? (
-        <View style={styles.statusPanel}>
-          <AppText variant="section">No results</AppText>
-          <AppText tone="muted">Try another title or filter.</AppText>
-        </View>
+        <EmptyState
+          detail="Try another title or filter."
+          icon="search-outline"
+          title="No results"
+        />
       ) : null}
 
       {search.results.map((result) => (
@@ -86,19 +88,7 @@ export function SearchSkeleton() {
   return (
     <View style={styles.skeletonList}>
       {[0, 1, 2].map((item) => (
-        <View key={item} style={styles.skeletonRow}>
-          <Skeleton height={112} width={76} />
-          <View style={styles.skeletonBody}>
-            <View style={styles.resultHeading}>
-              <Skeleton height={20} width="74%" />
-              <Skeleton height={24} radius={999} width={64} />
-            </View>
-            <Skeleton height={13} width={48} />
-            <Skeleton height={15} width="92%" />
-            <Skeleton height={15} width="78%" />
-            <Skeleton height={14} width={108} />
-          </View>
-        </View>
+        <MediaRowSkeleton key={item} lines={5} size="search" />
       ))}
     </View>
   );

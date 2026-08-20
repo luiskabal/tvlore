@@ -1,14 +1,8 @@
-import type { ComponentProps } from "react";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
-import { Pressable, View } from "react-native";
 
 import type { PopularDiscoveryResponse } from "../api/tvlore-api";
-import { AppText, Button, Skeleton, ui } from "../ui";
-import { styles } from "./search-styles";
+import { AppText, Button, CalloutRow, EmptyState, MediaRowSkeleton } from "../ui";
 import type { PopularDiscoveryState } from "./use-popular-discovery";
-
-type IconName = ComponentProps<typeof Ionicons>["name"];
 
 type SearchPopularProps = {
   onRetry: () => void;
@@ -22,20 +16,19 @@ export function SearchPopular({
   state,
 }: SearchPopularProps) {
   if (state.kind === "loading" || state.kind === "idle") {
-    return (
-      <View style={styles.recommendationsSkeleton}>
-        <Skeleton height={76} />
-      </View>
-    );
+    return <MediaRowSkeleton lines={2} />;
   }
 
   if (state.kind === "error") {
     return (
-      <View style={styles.statusPanel}>
-        <AppText variant="section">Popular titles unavailable</AppText>
-        <AppText tone="muted">{state.message}</AppText>
+      <EmptyState
+        detail={state.message}
+        icon="alert-circle-outline"
+        title="Popular titles unavailable"
+        action={(
         <Button label="Retry" onPress={onRetry} size="small" />
-      </View>
+        )}
+      />
     );
   }
 
@@ -44,26 +37,15 @@ export function SearchPopular({
   }
 
   return (
-    <Pressable
+    <CalloutRow
       accessibilityLabel={`Open popular titles in ${popular.country}`}
-      accessibilityRole="button"
+      detail="Streaming-aware titles around your saved country."
+      eyebrow={popular.country}
+      icon="trending-up-outline"
+      meta={<AppText tone="accent" variant="caption">{popular.items.length}</AppText>}
       onPress={() => router.push("/popular")}
-      style={({ pressed }) => [styles.recommendationEntry, pressed ? styles.pressedResultRow : null]}
-    >
-      <View style={styles.recommendationEntryIcon}>
-        <Ionicons color={ui.color.white} name={"trending-up-outline" satisfies IconName} size={24} />
-      </View>
-
-      <View style={styles.recommendationEntryText}>
-        <AppText tone="accent" variant="caption">{popular.country}</AppText>
-        <AppText variant="section">Popular in your country</AppText>
-        <AppText tone="muted">Streaming-aware titles around your saved country.</AppText>
-      </View>
-
-      <View style={styles.recommendationEntryMeta}>
-        <AppText tone="accent" variant="caption">{popular.items.length}</AppText>
-        <Ionicons color={ui.color.muted} name={"chevron-forward" satisfies IconName} size={20} />
-      </View>
-    </Pressable>
+      title="Popular in your country"
+      tone="accent"
+    />
   );
 }

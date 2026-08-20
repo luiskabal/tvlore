@@ -2,6 +2,7 @@ import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from "rea
 
 import { AppText } from "./AppText";
 import { PosterImage } from "./PosterImage";
+import { Skeleton } from "./Skeleton";
 import { ui } from "./tokens";
 
 type MediaRowProps = {
@@ -10,6 +11,7 @@ type MediaRowProps = {
   onPress: () => void;
   posterLabel: string;
   posterUri: string | null;
+  size?: "default" | "large" | "search";
   style?: StyleProp<ViewStyle>;
   title: string;
   trailing?: string;
@@ -21,6 +23,7 @@ export function MediaRow({
   onPress,
   posterLabel,
   posterUri,
+  size = "default",
   style,
   title,
   trailing,
@@ -36,7 +39,7 @@ export function MediaRow({
         style,
       ]}
     >
-      <PosterImage label={posterLabel} uri={posterUri} />
+      <PosterImage label={posterLabel} size={size} uri={posterUri} />
       <View style={styles.text}>
         <AppText numberOfLines={2} variant="title">{title}</AppText>
         {detail ? <AppText tone="muted">{detail}</AppText> : null}
@@ -45,6 +48,37 @@ export function MediaRow({
     </Pressable>
   );
 }
+
+export function MediaRowSkeleton({
+  frame = true,
+  lines = 2,
+  size = "default",
+}: {
+  frame?: boolean;
+  lines?: number;
+  size?: "default" | "large" | "search";
+}) {
+  const posterSize = posterSkeletonSizes[size];
+
+  return (
+    <View style={[styles.row, frame ? styles.frame : null]}>
+      <Skeleton height={posterSize.height} width={posterSize.width} />
+      <View style={styles.text}>
+        <Skeleton height={18} width="76%" />
+        {Array.from({ length: Math.max(1, lines - 1) }, (_, index) => (
+          <Skeleton height={14} key={index} width={index % 2 === 0 ? "58%" : "88%"} />
+        ))}
+      </View>
+      <Skeleton height={14} width={48} />
+    </View>
+  );
+}
+
+const posterSkeletonSizes = {
+  default: { height: 64, width: 44 },
+  large: { height: 92, width: 64 },
+  search: { height: 112, width: 76 },
+} as const;
 
 const styles = StyleSheet.create({
   frame: {

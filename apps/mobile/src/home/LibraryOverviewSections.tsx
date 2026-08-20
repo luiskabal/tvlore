@@ -1,15 +1,38 @@
-import { Text, View } from "react-native";
-
-import { styles } from "./home-styles";
+import { EmptyState } from "../ui";
 import type { LibrarySectionFilter } from "./library-overview-model";
 
 export function EmptySection({ activeSection }: { activeSection: LibrarySectionFilter }) {
   return (
-    <View style={styles.emptyPanel}>
-      <Text style={styles.statusLabel}>{getEmptySectionTitle(activeSection)}</Text>
-      <Text style={styles.statusDetail}>{getEmptySectionDetail(activeSection)}</Text>
-    </View>
+    <EmptyState
+      detail={getEmptySectionDetail(activeSection)}
+      icon={getEmptySectionIcon(activeSection)}
+      title={getEmptySectionTitle(activeSection)}
+    />
   );
+}
+
+function getEmptySectionIcon(activeSection: LibrarySectionFilter) {
+  if (activeSection === "chronology") {
+    return "time-outline";
+  }
+
+  if (activeSection === "shows") {
+    return "tv-outline";
+  }
+
+  if (activeSection === "movies") {
+    return "film-outline";
+  }
+
+  if (activeSection === "episodes") {
+    return "albums-outline";
+  }
+
+  if (activeSection === "watchlist") {
+    return "bookmark-outline";
+  }
+
+  return "star-outline";
 }
 
 function getEmptySectionTitle(activeSection: LibrarySectionFilter) {

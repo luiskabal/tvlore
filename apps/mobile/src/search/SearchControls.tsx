@@ -1,6 +1,6 @@
-import { Pressable, TextInput, View } from "react-native";
+import { TextInput } from "react-native";
 
-import { AppText, Button, PageHeader } from "../ui";
+import { Button, PageHeader, SegmentedControl, Surface, ui } from "../ui";
 import type { SearchFilter } from "./use-catalog-search";
 import { styles } from "./search-styles";
 
@@ -34,38 +34,24 @@ export function SearchControls({
         title="Search"
       />
 
-      <View style={styles.searchPanel}>
+      <Surface style={styles.searchPanel}>
         <TextInput
           autoCapitalize="none"
           autoCorrect={false}
           onChangeText={onQueryChange}
           onSubmitEditing={onSubmit}
           placeholder="Dark, Severance, The Matrix"
+          placeholderTextColor={ui.color.muted2}
           returnKeyType="search"
           style={styles.input}
           value={query}
         />
 
-        <View style={styles.filterRow}>
-          {filters.map((item) => (
-            <Pressable
-              key={item.value}
-              style={[
-                styles.filterButton,
-                filter === item.value ? styles.activeFilterButton : null,
-                isSearching && filter !== item.value ? styles.pendingFilterButton : null,
-              ]}
-              onPress={() => onSelectFilter(item.value)}
-            >
-              <AppText
-                style={[styles.filterText, filter === item.value ? styles.activeFilterText : null]}
-                variant="caption"
-              >
-                {item.label}
-              </AppText>
-            </Pressable>
-          ))}
-        </View>
+        <SegmentedControl
+          options={filters}
+          onChange={onSelectFilter}
+          value={filter}
+        />
 
         <Button
           disabled={!canSearch || isSearching}
@@ -75,7 +61,7 @@ export function SearchControls({
           onPress={onSubmit}
           style={styles.searchButton}
         />
-      </View>
+      </Surface>
     </>
   );
 }

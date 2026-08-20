@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, FlatList, View, type ListRenderItemInfo } from "react-native";
 
 import type { CatalogSearchResult, MediaType } from "../api/tvlore-api";
-import { AppText, Screen, ui, useScreenContentStyle } from "../ui";
+import { AppText, EmptyState, Screen, Surface, ui, useScreenContentStyle } from "../ui";
 import { SearchControls } from "./SearchControls";
 import { SearchAvailable } from "./SearchAvailable";
 import { SearchPopular } from "./SearchPopular";
@@ -258,19 +258,21 @@ function SearchEmptyState({
 
   if (search.kind === "error") {
     return (
-      <View style={styles.statusPanel}>
-        <AppText variant="section">Search failed</AppText>
-        <AppText tone="muted">{search.message}</AppText>
-      </View>
+      <EmptyState
+        detail={search.message}
+        icon="alert-circle-outline"
+        title="Search failed"
+      />
     );
   }
 
   if (search.kind === "ready" && search.results.length === 0) {
     return (
-      <View style={styles.statusPanel}>
-        <AppText variant="section">No results</AppText>
-        <AppText tone="muted">Try another title or filter.</AppText>
-      </View>
+      <EmptyState
+        detail="Try another title or filter."
+        icon="search-outline"
+        title="No results"
+      />
     );
   }
 
@@ -280,10 +282,10 @@ function SearchEmptyState({
 function SearchFooter({ search }: { search: SearchState }) {
   if (search.kind === "ready" && search.loadMoreError) {
     return (
-      <View style={styles.statusPanel}>
+      <Surface>
         <AppText variant="section">Could not load more</AppText>
         <AppText tone="muted">{search.loadMoreError}</AppText>
-      </View>
+      </Surface>
     );
   }
 

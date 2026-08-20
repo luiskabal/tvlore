@@ -16,7 +16,7 @@ import {
 import {
   type LibraryActionState,
 } from "../library/use-library-actions";
-import { MediaRow, Skeleton } from "../ui";
+import { MediaRow, MediaRowSkeleton } from "../ui";
 import { styles } from "./home-styles";
 
 const swipeConfirmWindowMs = 4000;
@@ -24,16 +24,8 @@ const swipeConfirmWindowMs = 4000;
 export function LibraryRowsSkeleton() {
   return (
     <View style={styles.listSection}>
-      <Skeleton height={22} width="46%" />
       {[0, 1, 2].map((item) => (
-        <View key={item} style={styles.skeletonMediaRow}>
-          <Skeleton height={64} width={44} />
-          <View style={styles.skeletonMediaText}>
-            <Skeleton height={18} width="76%" />
-            <Skeleton height={14} width="58%" />
-          </View>
-          <Skeleton height={14} width={48} />
-        </View>
+        <MediaRowSkeleton key={item} lines={2} />
       ))}
     </View>
   );
