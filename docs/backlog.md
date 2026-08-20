@@ -16,6 +16,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 
 ## Done Recently
 
+- [x] Fix Android EAS build runner for the mobile app inside the monorepo.
 - [x] Run Android-focused release smoke with `corepack pnpm release:android:smoke`.
 - [x] Submit Google Play Developer account verification.
 - [x] Add Android-first release smoke/build scripts and document the Android release lane.
