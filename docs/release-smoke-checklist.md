@@ -23,6 +23,12 @@ Run from the repository root:
 corepack pnpm release:smoke
 ```
 
+To validate only the public store/legal URLs:
+
+```powershell
+corepack pnpm store:check
+```
+
 For authenticated API paths:
 
 ```powershell
@@ -38,6 +44,7 @@ Expected result:
 - API build passes.
 - Release preflight fails if a real `.env` file is tracked.
 - Release preflight fails if known development-only diagnostics appear in mobile UI source.
+- Store public URLs return `200` HTML without authentication.
 - Public API smoke returns `200` for root/health routes.
 - Protected routes return `401` without a token.
 - Authenticated product flow passes when a token is provided.
@@ -119,6 +126,7 @@ or emulator before Android beta.
 | Privacy link | Opens from Profile and can be used in store metadata. |
 | Support link | Opens from Profile and can be used in store metadata. |
 | Account deletion URL | Public page opens without login. |
+| Store URL smoke | `corepack pnpm store:check` returns `200` for Privacy, Terms, Support, and Account deletion. |
 | Delete account entry | Visible in Profile. |
 | Reviewer notes | `docs/store-reviewer-notes.md` explains login path and core flows. |
 | Store metadata | `docs/store-metadata.md` matches the actual app and public URLs. |

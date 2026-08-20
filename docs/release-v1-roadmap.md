@@ -297,6 +297,7 @@ before TestFlight/closed testing. Quick gate:
 - [x] Privacy Policy link opens from Profile and store metadata.
 - [x] Support link opens from Profile and store metadata.
 - [x] Google Play deletion URL is public.
+- [x] Public store/legal URLs are covered by `corepack pnpm store:check`.
 - [x] Search starts in a release-friendly state.
 - [x] `/health/error` is not publicly exposed in production.
 - [x] `release:preflight` blocks tracked `.env` files and known development-only mobile diagnostics.
