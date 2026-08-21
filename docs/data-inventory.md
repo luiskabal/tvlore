@@ -23,6 +23,19 @@ store privacy forms. It is an engineering inventory, not legal advice.
 | Catalog metadata | TMDB | Shared catalog tables | No | Search, detail, recommendations, watch paths. |
 | Watch-provider metadata | TMDB/JustWatch via TMDB | Not persisted long-term by TVLore | No | Country-aware availability display. |
 
+## Data Not Stored By TVLore
+
+| Data | Reason |
+| --- | --- |
+| Database passwords | Backend-only envs live outside git/mobile. |
+| TMDB access token | Backend-only env in Vercel/local API env. |
+| Supabase service-role key | Backend-only env used for privileged account deletion. |
+| Google provider tokens | Supabase/mobile session concern; not persisted in TVLore product tables. |
+| Raw OAuth callback URLs | Used transiently during login/testing only. |
+| Payment data | Payments/subscriptions are out of scope for v1.0. |
+| Public social content | Public comments, followers, and social matching are out of scope for v1.0. |
+| Exact device location | Country preference is user-selected; no GPS/location permission is required for current features. |
+
 ## Current Third Parties
 
 | Service | Role | Notes |
@@ -60,3 +73,18 @@ Use this as the engineering baseline when answering store forms:
 - Data is shared with service providers needed to run the product.
 
 Review the final answers against the exact store questions before submission.
+
+Practical mapping:
+
+| Store area | TVLore answer direction |
+| --- | --- |
+| Account info / personal info | Email, display name, avatar, and auth identifier are linked to the user and used for app functionality/account management. |
+| App activity | Watch history, watchlist, ratings, reflections, and watch paths are linked to the user and used for app functionality and personalization. |
+| User-generated content | Private comments/reflections and favorite-character selections are user-provided, private, and linked to the user. |
+| Diagnostics | Vercel/Supabase operational logs may contain request metadata for reliability and abuse prevention. |
+| Location | No precise or approximate device location; availability country is a manual profile setting. |
+| Financial info | None in v1.0. Revisit this document before adding payments/subscriptions. |
+| Advertising | No third-party advertising and no data sale in v1.0. |
+
+Before public release, re-check that the public Privacy Policy, Play Data
+Safety, and App Store privacy answers all describe the same data behavior.
