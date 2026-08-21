@@ -37,7 +37,7 @@ User-owned rows must be deleted with the user.
 | --- | --- | --- | --- |
 | Account | `users`, `user_identities` | TVLore user | Links Supabase Auth identity to TVLore product identity. |
 | Legacy/custom session model | `refresh_sessions` | TVLore user | Present in schema from the early custom-token plan; current MVP sessions are Supabase-managed. |
-| Shared catalog | `shows`, `movies`, `seasons`, `episodes`, `external_identifiers` | TVLore shared data, sourced from TMDB | Not user-owned; created when a user resolves or opens provider content. |
+| Shared catalog | `shows`, `movies`, `seasons`, `episodes`, `external_identifiers` | TVLore shared data, sourced from TMDB | Not user-owned; created when a user resolves or opens provider content. Shows and movies keep provider-facing metadata such as images, genres, dates, runtime, and public rating. |
 | Watched state | `episode_watches`, `movie_watches` | TVLore user | One active watched marker per user and episode/movie in MVP. |
 | Watchlist | `show_watchlist_items`, `movie_watchlist_items` | TVLore user | Saved intent to watch later. |
 | Ratings | `show_preferences`, `movie_preferences`, `episode_preferences` | TVLore user | User 1-5 star rating preferences. |
@@ -51,11 +51,11 @@ User-owned rows must be deleted with the user.
 | `users` | TVLore account profile and availability country. | `GET /users/me` upsert, `PATCH /users/me`. | Profile, Library, discovery, Where to Watch, recommendations. |
 | `user_identities` | Supabase provider subject to TVLore user link. | Authenticated user resolution. | Protected API request authorization context. |
 | `refresh_sessions` | Early TVLore-owned refresh-token table. | Not part of the current Supabase-session MVP flow. | Should not drive current auth behavior. |
-| `shows` | Internal show identity and cached TMDB metadata. | `POST /catalog/resolve`, season/detail hydration. | Show detail, Library, recommendations, watch paths. |
-| `movies` | Internal movie identity and cached TMDB metadata. | `POST /catalog/resolve`. | Movie detail, Library, recommendations, watch paths. |
+| `shows` | Internal show identity and cached TMDB metadata: title, overview, images, first air date, genres, and public rating. | `POST /catalog/resolve`, season/detail hydration. | Show detail, Library, recommendations, watch paths. |
+| `movies` | Internal movie identity and cached TMDB metadata: title, overview, images, release date, runtime, genres, and public rating. | `POST /catalog/resolve`. | Movie detail, Library, recommendations, watch paths. |
 | `seasons` | Internal season identity and metadata for a show. | `GET /shows/:showId/seasons/:seasonNumber`, catalog hydration. | Show/season detail, Library grouped episodes, progress. |
 | `episodes` | Internal episode identity and metadata. | Season detail hydration. | Season detail, episode detail, Library, progress. |
-| `external_identifiers` | Provider mapping, currently TMDB. | Catalog resolve/hydration. | Search known-item markers, resolve, path item opening. |
+| `external_identifiers` | Provider mapping, currently TMDB show/movie IDs. | Catalog resolve/hydration for shows and movies. | Search known-item markers, resolve, path item opening. |
 | `episode_watches` | User watched marker for an episode. | Episode, season, and show watched actions. | Library, progress, chronology, recommendations exclusions. |
 | `movie_watches` | User watched marker for a movie. | Movie watched action. | Library, chronology, recommendations exclusions. |
 | `show_watchlist_items` | User saved show intent. | Show watchlist action, save path to watchlist. | Library, detail state, recommendation exclusions. |
@@ -128,6 +128,16 @@ GET /shows/:showId/seasons/:seasonNumber
 
 This keeps the database from becoming a full TMDB mirror while still giving
 TVLore stable internal IDs for user actions.
+
+Watch path items intentionally store provider references first:
+
+```text
+user_watch_path_items
+-> mediaType + provider + providerId
+-> resolve only when the user opens or saves the item
+```
+
+This lets imported paths exist before every item has a TVLore UUID.
 
 ## 6. User-Owned Data Deletion
 
