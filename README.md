@@ -136,5 +136,6 @@ docs/
 - [Backlog](docs/backlog.md)
 - [Store Metadata Pack](docs/store-metadata.md)
 - [Mobile Architecture](docs/mobile-architecture.md)
+- [Mobile UI System](docs/mobile-ui-system.md)
 - [Backend Architecture](docs/backend-architecture.md)
 - [Infrastructure](docs/infrastructure.md)

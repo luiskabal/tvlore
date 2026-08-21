@@ -320,6 +320,7 @@ Product polish:
 - Architecture rules: [Architecture](architecture.md)
 - Backend details: [Backend Architecture](backend-architecture.md)
 - Mobile details: [Mobile Architecture](mobile-architecture.md)
+- Mobile UI/design system: [Mobile UI System](mobile-ui-system.md)
 - Stack choices: [Stack](stack.md)
 - Runtime infrastructure: [Infrastructure Setup](infrastructure.md)
 - v1.0 release plan: [Release v1.0 Roadmap](release-v1-roadmap.md)
