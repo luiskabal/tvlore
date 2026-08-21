@@ -127,6 +127,7 @@ docs/
 
 - [Current State](docs/current-state.md)
 - [Project Handbook](docs/project-handbook.md)
+- [Feature Catalog](docs/feature-catalog.md)
 - [Backlog](docs/backlog.md)
 - [Store Metadata Pack](docs/store-metadata.md)
 - [Mobile Architecture](docs/mobile-architecture.md)
