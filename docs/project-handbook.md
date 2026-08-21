@@ -311,6 +311,7 @@ Product polish:
 
 - Full current implementation: [Current State](current-state.md)
 - Product capability list: [Feature Catalog](feature-catalog.md)
+- Runtime service ownership: [Service Map](service-map.md)
 - Architecture rules: [Architecture](architecture.md)
 - Backend details: [Backend Architecture](backend-architecture.md)
 - Mobile details: [Mobile Architecture](mobile-architecture.md)
