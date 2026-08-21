@@ -12,8 +12,10 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Backend API is deployed on Vercel at `https://tvlore-api.vercel.app`.
 - Supabase Postgres is connected through Prisma; production DB connectivity and migrations are verified.
 - Google OAuth is configured through Supabase Auth and works from the Expo development build.
-- Expo mobile app can consume the deployed API from iPhone.
+- Expo mobile app can consume the deployed API from device builds.
 - Mobile EAS build profiles exist for development, preview, and production builds.
+- Google Play developer identity is verified.
+- Android package `com.luiskabal.tvlore` has an internal testing release `2 (1.0.0)` uploaded through a production AAB.
 
 ## Current Features
 
@@ -108,9 +110,11 @@ Use `corepack pnpm api:check` for local/Vercel HTTP smoke checks.
 
 ## Next Backlog Items
 
-- Refine recommendation quality with stronger taste signals after the provider/country baseline.
-- Evaluate additional public Watch Path import sources after TMDB Collection proves useful.
-- Configure EAS project envs and run the first preview builds.
+- Verify Google Play internal testing download after Play propagation/review.
+- Run Android manual QA from the release smoke checklist on a real device.
+- Capture Android store screenshots from a release-like build.
+- Complete Play Console app content, Data Safety, content rating, app access, and store listing forms.
+- Keep recommendation/import/social expansion behind the Android 1.0 release gates.
 
 ## Workspace Layout
 
