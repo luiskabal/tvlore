@@ -33,3 +33,33 @@ This should remain a UX/branding exploration. Technical/domain concepts should s
 - Refresh Session: backend-owned session record that supports refresh-token rotation and revocation.
 - Opaque Token: token whose contents are not meaningful to clients.
 
+## Release Terms
+
+- EAS Build: Expo's cloud build service. TVLore uses it to create Android APKs
+  for preview QA and Android App Bundles for Google Play.
+- APK: Android install package. Useful for direct preview install outside Play,
+  but not the preferred upload format for Play production/internal releases.
+- AAB: Android App Bundle. The artifact uploaded to Google Play. Play turns it
+  into optimized APKs for each device and signs/distributes those APKs.
+- Package name: Android's permanent application identifier. TVLore uses
+  `com.luiskabal.tvlore`; changing it would create a different app identity.
+- Version code: Android's monotonically increasing release number. Every Play
+  upload must use a higher version code than previous uploads.
+- Version name: Human-readable app version, such as `1.0.0`.
+- Internal testing: Google Play track for quickly sharing a build with invited
+  trusted testers. It proves Play-distributed installability before wider tests.
+- Closed testing: Google Play track for a controlled larger test group. New
+  personal developer accounts may need a closed test with enough opted-in
+  testers for enough time before production access.
+- Opt-in link: Google Play URL a tester opens to join a testing track before
+  installing the test app.
+- Play propagation: delay between a release being active in Play Console and
+  the install surface being available to every tester/device/account.
+- Release candidate: a build that is feature-frozen enough for final QA and
+  store-review preparation.
+- Deobfuscation mapping: file that lets Play translate minified Android crash
+  stack traces back to readable source names. Non-blocking for internal testing,
+  useful before production hardening if obfuscation/minification is enabled.
+- App access notes: store-review instructions explaining how reviewers can sign
+  in and test protected app functionality. Credentials belong in the store
+  console only, never in git.
