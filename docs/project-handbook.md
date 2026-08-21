@@ -312,6 +312,7 @@ Product polish:
 
 - Full current implementation: [Current State](current-state.md)
 - Product capability list: [Feature Catalog](feature-catalog.md)
+- One-pass system overview: [System Context Map](system-context-map.md)
 - Runtime service ownership: [Service Map](service-map.md)
 - Repo navigation by feature/file: [Code Tour](code-tour.md)
 - Current data ownership: [Data Model Map](data-model-map.md)
