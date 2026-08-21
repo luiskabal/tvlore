@@ -15,6 +15,8 @@
     "release:android:smoke": "corepack pnpm eas:env:check && corepack pnpm release:android:preflight && corepack pnpm store:check && corepack pnpm auth:redirect:check && corepack pnpm verify:full && corepack pnpm api:check",
     "release:android:build:preview": "node tools/run-eas-mobile.mjs build --profile preview --platform android",
     "release:android:build:production": "node tools/run-eas-mobile.mjs build --profile production --platform android",
+    "release:android:submit:production": "node tools/run-eas-mobile.mjs submit --profile production --platform android --latest --wait --non-interactive",
+    "release:android:build-and-submit:production": "node tools/run-eas-mobile.mjs build --profile production --platform android --auto-submit --wait --non-interactive",
     "db:migrate": "corepack pnpm --filter @tvlore/api db:migrate",
     "db:migrate:deploy": "corepack pnpm --filter @tvlore/api db:migrate:deploy",
     "db:logs": "docker compose logs -f postgres",

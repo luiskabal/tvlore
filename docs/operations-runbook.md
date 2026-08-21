@@ -206,6 +206,23 @@ Create an Android production AAB for Play Console:
 corepack pnpm release:android:build:production
 ```
 
+Submit the latest Android production AAB to the Google Play internal testing
+track:
+
+```powershell
+corepack pnpm release:android:submit:production
+```
+
+Build and submit in one command:
+
+```powershell
+corepack pnpm release:android:build-and-submit:production
+```
+
+Automated submit requires a Google Play service account JSON configured in EAS
+Submit. Keep that JSON outside git. Without it, EAS can still generate the AAB,
+but Play Console upload remains manual.
+
 Current Play package:
 
 ```text

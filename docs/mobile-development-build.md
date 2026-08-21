@@ -215,10 +215,12 @@ The submit profile is intentionally minimal until App Store Connect and Google
 Play app records exist.
 
 ```bash
-cd apps/mobile
-npx --yes eas-cli@latest submit --profile production --platform android
-npx --yes eas-cli@latest submit --profile production --platform ios
+corepack pnpm release:android:submit:production
+corepack pnpm release:android:build-and-submit:production
 ```
 
-Android is configured to submit to the internal track first. iOS will prompt for
-the App Store Connect app record until `ascAppId` is known.
+Android is configured to submit to the internal track first. Automated Google
+Play submit requires a Google Play service account JSON configured for EAS
+Submit. Keep that JSON outside git.
+
+iOS will prompt for the App Store Connect app record until `ascAppId` is known.
