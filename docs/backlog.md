@@ -19,6 +19,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 
 ## Done Recently
 
+- [x] Fix Android Google OAuth callback recovery when the session is saved but the callback route does not receive a usable URL.
 - [x] Apply reusable mobile UI primitives to secondary Search discovery, Watch Paths, catalog detail, season, episode, and check-in routes.
 - [x] Create the Google Play app record and roll out the first internal testing release.
 - [x] Apply reusable mobile UI molecules to Search discovery cards, filters, empty states, and list skeletons.

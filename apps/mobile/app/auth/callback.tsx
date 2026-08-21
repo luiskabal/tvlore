@@ -1,13 +1,36 @@
 import * as ExpoLinking from "expo-linking";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { SafeAreaView, StyleSheet, Text } from "react-native";
 
-import { completeOAuthCallback } from "../../src/auth/supabase-auth";
+import { completeOAuthCallback, getSupabaseAccessToken } from "../../src/auth/supabase-auth";
 
 export default function AuthCallbackRoute() {
   const callbackUrl = ExpoLinking.useURL();
   const [message, setMessage] = useState("Signing you in...");
+  const handledUrlRef = useRef<string | null>(null);
+  const isMountedRef = useRef(true);
+  const hasNavigatedRef = useRef(false);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  const openLibrary = useCallback(() => {
+    if (!isMountedRef.current || hasNavigatedRef.current) {
+      return;
+    }
+
+    hasNavigatedRef.current = true;
+    setMessage("Opening your library...");
+    setTimeout(() => {
+      if (isMountedRef.current) {
+        router.replace("/library");
+      }
+    }, 0);
+  }, []);
 
   useEffect(() => {
     const url = callbackUrl;
@@ -16,32 +39,69 @@ export default function AuthCallbackRoute() {
       return;
     }
 
-    let isMounted = true;
+    if (handledUrlRef.current === url) {
+      return;
+    }
+
+    handledUrlRef.current = url;
 
     async function completeCallback(urlToComplete: string) {
       try {
         const completed = await completeOAuthCallback(urlToComplete);
 
-        if (!completed) {
-          throw new Error("Auth callback did not include a session");
+        if (completed || (await getSupabaseAccessToken())) {
+          openLibrary();
+          return;
         }
 
-        if (isMounted) {
-          router.replace("/library");
+        if (isMountedRef.current) {
+          throw new Error("Auth callback did not include a session");
         }
       } catch (error) {
-        if (isMounted) {
+        if (isMountedRef.current) {
           setMessage(error instanceof Error ? error.message : "Sign-in callback failed");
         }
       }
     }
 
     void completeCallback(url);
+  }, [callbackUrl, openLibrary]);
+
+  useEffect(() => {
+    if (callbackUrl) {
+      return undefined;
+    }
+
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
+    let attempts = 0;
+
+    function checkStoredSession() {
+      attempts += 1;
+      void getSupabaseAccessToken()
+        .then((accessToken) => {
+          if (accessToken) {
+            openLibrary();
+          } else if (attempts < 8 && isMountedRef.current) {
+            retryTimer = setTimeout(checkStoredSession, 500);
+          } else if (isMountedRef.current) {
+            setMessage("Still finishing sign-in...");
+          }
+        })
+        .catch((error) => {
+          if (isMountedRef.current) {
+            setMessage(error instanceof Error ? error.message : "Sign-in callback failed");
+          }
+        });
+    }
+
+    retryTimer = setTimeout(checkStoredSession, 250);
 
     return () => {
-      isMounted = false;
+      if (retryTimer) {
+        clearTimeout(retryTimer);
+      }
     };
-  }, [callbackUrl]);
+  }, [callbackUrl, openLibrary]);
 
   return (
     <SafeAreaView style={styles.container}>
