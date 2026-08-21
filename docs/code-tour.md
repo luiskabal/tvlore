@@ -26,7 +26,31 @@ API controller -> service -> repository/provider
 The backend owns product state and rules. The mobile app owns presentation,
 navigation, loading states, and local interaction state.
 
-## 2. Backend Entry Points
+## 2. Fast Entry Points
+
+Use this table when you know the product behavior you want to change, but not
+which files to open first.
+
+| Intent | Start here | Why |
+| --- | --- | --- |
+| Add or change a backend endpoint | `apps/api/src/<feature>/<feature>.controller.ts` | Controllers show the public HTTP surface and route-level parsing. |
+| Change product rules for watched, ratings, watchlist, or progress | `apps/api/src/tracking`, `apps/api/src/preferences`, `apps/api/src/watchlist`, `apps/api/src/library` | These modules own persisted user state and derived library behavior. |
+| Change catalog search, details, cast, or availability | `apps/api/src/catalog`, then `apps/api/src/discovery` | Catalog owns TMDB mapping; discovery owns feed-like provider queries. |
+| Change TVLore recommendations | `apps/api/src/recommendations` | Recommendation scoring and explanations are backend-owned. |
+| Change mobile API shape | `apps/mobile/src/api/tvlore-api.ts` and the matching `src/api/*.ts` domain file | Mobile screens should consume the API facade, not raw fetch calls. |
+| Change Library UI or filters | `apps/mobile/src/library`, `apps/mobile/src/home`, `apps/mobile/app/library.tsx` | Library state is hook-driven; route files should stay thin. |
+| Change Search/Discover UI | `apps/mobile/src/search`, then `apps/mobile/app/search.tsx` | Search owns progressive feeds, filters, and recommendation entry points. |
+| Change movie/show/season/episode details | `apps/mobile/src/catalog`, then the route in `apps/mobile/app` | Catalog screens compose tracking, watchlist, ratings, cast, and providers. |
+| Change bottom tabs or route transitions | `apps/mobile/src/navigation`, `apps/mobile/app/_layout.tsx` | Navigation behavior should be centralized and predictable. |
+| Change reusable visual language | `apps/mobile/src/ui` and `docs/mobile-ui-system.md` | UI primitives should be reusable before they spread into feature code. |
+| Change Android release behavior | `apps/mobile/app.json`, `apps/mobile/eas.json`, `docs/google-play-android-release.md` | Package identity, build profile, and Play workflow must stay aligned. |
+| Change env requirements | `apps/api/src/config.ts`, `apps/mobile/src/config`, `.env.example`, docs config files | Env validation should fail at startup, not midway through a user flow. |
+
+When in doubt, start at the backend if the behavior changes stored data,
+authorization, external provider calls, or derived progress. Start at mobile
+only when the behavior is purely visual, navigational, or loading-state related.
+
+## 3. Backend Entry Points
 
 Start with `apps/api/src/app.module.ts` when you need to see what is wired into
 the Nest app. It registers controllers, services, repositories, providers,
@@ -41,7 +65,7 @@ rate limiting, Prisma, and Supabase auth.
 | Rate limiting | `apps/api/src/rate-limit.guard.ts` | `apps/api/src/__tests__/rate-limit.guard.test.ts` |
 | Database access | `apps/api/src/prisma.service.ts` | `apps/api/prisma/schema.prisma` |
 
-## 3. Backend Feature Modules
+## 4. Backend Feature Modules
 
 Most backend modules follow this shape:
 
@@ -73,7 +97,7 @@ __tests__/              feature-local tests
 Rule of thumb: if a change affects permission, persistence, progress, ratings,
 recommendation eligibility, or provider orchestration, start in the backend.
 
-## 4. Mobile Routes
+## 5. Mobile Routes
 
 Expo Router maps files in `apps/mobile/app` to screens.
 
@@ -99,7 +123,7 @@ Expo Router maps files in `apps/mobile/app` to screens.
 Route files should stay thin. They compose feature screens and pass route
 params, but should not own API parsing or domain rules.
 
-## 5. Mobile Feature Folders
+## 6. Mobile Feature Folders
 
 | Folder | Owns |
 | --- | --- |
@@ -118,7 +142,7 @@ params, but should not own API parsing or domain rules.
 Keep reusable visual atoms in `src/ui`. Keep feature-specific layout and copy in
 the feature folder. Keep HTTP and response-shape validation in `src/api`.
 
-## 6. Shared Contracts
+## 7. Shared Contracts
 
 `packages/contracts` is intentionally small. It currently exposes shared
 transport-level schemas such as the TVLore API error contract.
@@ -126,7 +150,7 @@ transport-level schemas such as the TVLore API error contract.
 Use contracts for DTO shape shared between app and API. Do not put business
 policy, persistence queries, or UI-specific model helpers in this package.
 
-## 7. Tests
+## 8. Tests
 
 Backend tests live near the feature they validate:
 
@@ -150,7 +174,7 @@ apps/mobile/src/navigation/*.test.ts
 Use `apps/api/src/__tests__` only for root-level shared behavior. Prefer
 feature-local `__tests__` folders for feature rules.
 
-## 8. Common Change Paths
+## 9. Common Change Paths
 
 | Task | Backend first | Mobile first | Verification |
 | --- | --- | --- | --- |
@@ -163,18 +187,22 @@ feature-local `__tests__` folders for feature rules.
 | Change env vars | `apps/api/src/config.ts`, `.env.example` | `src/config/env.ts`, EAS env docs | `corepack pnpm env:check`, `corepack pnpm eas:env:check`. |
 | Android release work | Release docs and config | EAS build config | `corepack pnpm release:android:preflight`, then Play Console upload. |
 
-## 9. Avoid These Shortcuts
+## 10. Avoid These Shortcuts
 
 - Do not put backend domain rules in route screens.
+- Do not start in a route file unless the change is only navigation wiring.
 - Do not make mobile local state the source of truth for watched/progress data.
 - Do not add a global store just to avoid prop drilling in one screen.
+- Do not add raw `fetch` calls inside components.
 - Do not call TMDB directly from mobile.
 - Do not persist provider IDs as if they were TVLore identity.
 - Do not store tokens or private viewing data in AsyncStorage.
+- Do not duplicate API DTO shapes in screens when a response guard or shared
+  type can own that boundary.
 - Do not add a dependency before checking whether the current hook/client
   boundary is enough.
 
-## 10. Fast Verification
+## 11. Fast Verification
 
 Use this after normal code changes:
 
