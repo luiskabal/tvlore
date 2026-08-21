@@ -44,28 +44,36 @@ GET /search
 POST /catalog/resolve
 GET /shows/:showId
 GET /shows/:showId/cast
+GET /shows/:showId/watch-providers
 GET /shows/:showId/seasons
 GET /shows/:showId/seasons/:seasonNumber
+POST /shows/:showId/seasons/:seasonNumber/watches
+DELETE /shows/:showId/seasons/:seasonNumber/watches
+POST /shows/:showId/watches
+DELETE /shows/:showId/watches
+POST /shows/:showId/watchlist
+DELETE /shows/:showId/watchlist
+PUT /shows/:showId/preference
+DELETE /shows/:showId/preference
+PUT /shows/:showId/reflection
+GET /shows/:showId/progress
 GET /episodes/:episodeId
 GET /episodes/:episodeId/cast
-GET /movies/:movieId
-GET /movies/:movieId/cast
 PUT /episodes/:episodeId/preference
 DELETE /episodes/:episodeId/preference
-PUT /shows/:showId/reflection
-PUT /movies/:movieId/reflection
 PUT /episodes/:episodeId/reflection
 POST /episodes/:episodeId/watches
 DELETE /episodes/:episodeId/watches
-POST /shows/:showId/seasons/:seasonNumber/watches
-DELETE /shows/:showId/seasons/:seasonNumber/watches
+GET /movies/:movieId
+GET /movies/:movieId/cast
+GET /movies/:movieId/watch-providers
 POST /movies/:movieId/watches
 DELETE /movies/:movieId/watches
-POST /shows/:showId/watchlist
-DELETE /shows/:showId/watchlist
 POST /movies/:movieId/watchlist
 DELETE /movies/:movieId/watchlist
-GET /shows/:showId/progress
+PUT /movies/:movieId/preference
+DELETE /movies/:movieId/preference
+PUT /movies/:movieId/reflection
 GET /library
 GET /library/chronology
 GET /recommendations
@@ -219,6 +227,8 @@ of exposing partial routes with a broken database dependency.
 - Runtime: Expo SDK 54.
 - Current API target for device testing: `https://tvlore-api.vercel.app`
 - EAS profiles: `development`, `preview`, and `production` in `apps/mobile/eas.json`.
+- Android package: `com.luiskabal.tvlore`.
+- Google Play internal testing release: `2 (1.0.0)`, version code `2`.
 - Supabase Auth client handles Google login and stores the mobile session.
 - Supabase Auth client also supports native iOS Apple Sign-In when Apple/Supabase provider configuration is complete.
 - Core product data should still go through the backend API, not direct table access from mobile.
@@ -289,8 +299,10 @@ the selected Postman environment.
 
 - GitHub repository is connected.
 - Vercel backend deploy is live.
-- Mobile app can call the Vercel API from iPhone through Expo Go.
+- Mobile app can call the Vercel API from device builds.
 - Mobile EAS build profiles are configured for development, preview, and production.
+- Android internal testing is active in Google Play Console for `com.luiskabal.tvlore`.
+- EAS production AAB version `2 (1.0.0)` has been uploaded to Google Play internal testing.
 - Supabase Google login works from an Expo development build.
 - Mobile has the native iOS Apple Sign-In flow wired through Supabase `signInWithIdToken`; Apple Developer and Supabase Apple provider configuration are required before release-like testing.
 - Prisma schema and initial migration exist.
