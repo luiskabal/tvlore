@@ -128,6 +128,7 @@ docs/
 - [Current State](docs/current-state.md)
 - [Project Handbook](docs/project-handbook.md)
 - [Feature Catalog](docs/feature-catalog.md)
+- [v1.0 Release Gap Map](docs/v1-release-gap-map.md)
 - [System Context Map](docs/system-context-map.md)
 - [Service Map](docs/service-map.md)
 - [Code Tour](docs/code-tour.md)

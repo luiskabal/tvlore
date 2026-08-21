@@ -74,12 +74,13 @@ The MVP goal is intentionally small: authenticate with Google, search catalog co
 25. [Infrastructure Setup](infrastructure.md)
 26. [Mobile Development Build](mobile-development-build.md)
 27. [Release v1.0 Roadmap](release-v1-roadmap.md)
-28. [Release Smoke Checklist](release-smoke-checklist.md)
-29. [Store Metadata Pack](store-metadata.md)
-30. [Google Play Android Release Prep](google-play-android-release.md)
-31. [Data Inventory](data-inventory.md)
-32. [Roadmap](roadmap.md)
-33. [Architecture Decision Records](adr/)
+28. [v1.0 Release Gap Map](v1-release-gap-map.md)
+29. [Release Smoke Checklist](release-smoke-checklist.md)
+30. [Store Metadata Pack](store-metadata.md)
+31. [Google Play Android Release Prep](google-play-android-release.md)
+32. [Data Inventory](data-inventory.md)
+33. [Roadmap](roadmap.md)
+34. [Architecture Decision Records](adr/)
 
 ## Documentation Index
 
@@ -110,6 +111,7 @@ The MVP goal is intentionally small: authenticate with Google, search catalog co
 - [Product Vision](product-vision.md)
 - [Project Handbook](project-handbook.md)
 - [Release v1.0 Roadmap](release-v1-roadmap.md)
+- [v1.0 Release Gap Map](v1-release-gap-map.md)
 - [Release Smoke Checklist](release-smoke-checklist.md)
 - [Store Metadata Pack](store-metadata.md)
 - [Google Play Android Release Prep](google-play-android-release.md)

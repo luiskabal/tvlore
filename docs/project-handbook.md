@@ -325,6 +325,7 @@ Product polish:
 - Stack choices: [Stack](stack.md)
 - Runtime infrastructure: [Infrastructure Setup](infrastructure.md)
 - v1.0 release plan: [Release v1.0 Roadmap](release-v1-roadmap.md)
+- v1.0 release gap map: [v1.0 Release Gap Map](v1-release-gap-map.md)
 - Android Play steps: [Google Play Android Release Prep](google-play-android-release.md)
 - Store metadata: [Store Metadata Pack](store-metadata.md)
 - Data safety inputs: [Data Inventory](data-inventory.md)
