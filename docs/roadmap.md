@@ -31,7 +31,7 @@ Status: done.
 
 ## Phase 2 - Identity
 
-Status: partial for production.
+Status: ready for Android 1.0 baseline; partial for iOS production.
 
 Done:
 
@@ -45,8 +45,9 @@ Done:
 
 Missing for v1.0:
 
-- Apple Developer and Supabase Apple provider configuration for release-like Sign in with Apple testing.
-- `SUPABASE_SERVICE_ROLE_KEY` configuration in Vercel before account-deletion QA.
+- Apple Developer and Supabase Apple provider configuration for release-like
+  Sign in with Apple testing.
+- Account-deletion QA on a disposable account before public production.
 
 ## Phase 3 - Catalog and Tracking
 
@@ -90,9 +91,24 @@ Post-1.0 candidates:
 
 Status: active target.
 
+Android status:
+
+- Google Play developer identity is verified.
+- Google Play app record exists for `com.luiskabal.tvlore`.
+- Internal testing release `2 (1.0.0)` is active.
+- Play install from the tester flow still needs confirmation after
+  review/propagation.
+- Android manual QA, screenshots, app content, Data Safety, content rating, and
+  closed-testing gates are still pending.
+
+iOS status:
+
+- Sign in with Apple exists in code but cannot be release-tested until Apple
+  Developer membership/provider configuration is available.
+
 Required:
 
-- Sign in with Apple.
+- Sign in with Apple for iOS release.
 - Privacy Policy, Support URL, and account deletion URL.
 - App Store privacy answers.
 - Google Play Data Safety answers.
