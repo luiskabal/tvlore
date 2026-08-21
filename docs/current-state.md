@@ -2,6 +2,29 @@
 
 This document explains what TVLore has implemented right now. It is intentionally practical: read it when you want to understand the current moving parts, request flows, database state, and what each piece is doing.
 
+## Current Snapshot
+
+Status on August 21, 2026:
+
+| Area | State | What it means |
+| --- | --- | --- |
+| Product loop | Working | A signed-in user can search, open titles, save to watchlist, mark watched, rate, check in, and see Library updates. |
+| Backend | Deployed | The NestJS API runs on Vercel and uses Supabase Postgres, Supabase Auth, and TMDB through server-side env vars. |
+| Mobile app | Functional | Expo/React Native app has Library, Search, Paths, Profile, detail screens, post-watch check-in, and reusable UI primitives. |
+| Android release | Internal testing | Google Play app exists, AAB version code 2 is on the internal testing track, and tester opt-in is available. Store install may still be propagating/reviewing. |
+| iOS release | Blocked | Apple Sign-In is wired in code, but Apple Developer membership/provider setup is blocked until Apple account renewal. |
+| Public store 1.0 | Not yet | Play closed testing, screenshots, Data Safety, review access, and final QA still need completion before production access. |
+
+Use the docs like this:
+
+| Question | Read |
+| --- | --- |
+| What is built? | This document and [Feature Catalog](feature-catalog.md). |
+| Where is the code? | [Code Tour](code-tour.md). |
+| How do services connect? | [System Context Map](system-context-map.md) and [Service Map](service-map.md). |
+| What blocks Android 1.0? | [v1.0 Release Gap Map](v1-release-gap-map.md) and [Google Play Android Release Prep](google-play-android-release.md). |
+| How do we verify it? | [Operations Runbook](operations-runbook.md), [Release Smoke Checklist](release-smoke-checklist.md), and [API Endpoint Map](api-endpoint-map.md). |
+
 ## 1. What Exists Today
 
 Implemented:
