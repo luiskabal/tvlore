@@ -27,7 +27,7 @@ flowchart LR
 flowchart TB
   subgraph MobileApp[Mobile App]
     Screens[Screens]
-    Hooks[Query and Mutation Hooks]
+    Hooks[Route and Mutation Hooks]
     ApiClient[TVLore API Client]
     SecureStore[SecureStore]
     AsyncStorage[AsyncStorage]
@@ -186,15 +186,15 @@ sequenceDiagram
 ```mermaid
 flowchart TB
   ReactState[React State: local UI]
-  Query[TanStack Query: server state]
-  Zustand[Zustand: global app state]
+  ServerHooks[Route hooks + API client cache: server state]
+  AppState[Optional global UI state]
   Secure[SecureStore: sensitive credentials]
   Async[AsyncStorage: non-sensitive preferences]
   Backend[Backend: business state and rules]
 
   ReactState --> UI[Presentation]
-  Query --> Backend
-  Zustand --> UI
+  ServerHooks --> Backend
+  AppState --> UI
   Secure --> AuthBootstrap[Auth Bootstrap]
   Async --> Preferences[Preferences]
   Backend --> Domain[Tracking, Progress, Privacy, Matching]
@@ -382,4 +382,3 @@ flowchart TB
   Mobile --> SecureStore
   Mobile --> AsyncStorage
 ```
-

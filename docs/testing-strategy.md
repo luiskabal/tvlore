@@ -204,7 +204,7 @@ Use focused tests where they provide confidence:
 - Authentication bootstrap tests.
 - Mutation invalidation tests.
 
-Do not test React Native, Expo Router, or TanStack Query internals.
+Do not test React Native, Expo Router, or future query-library internals.
 
 The first mobile tests cover pure search and chronology helpers:
 

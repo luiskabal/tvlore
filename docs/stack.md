@@ -24,17 +24,27 @@ Use it as TVLore's navigation layer.
 
 TypeScript is required across mobile, backend, and contracts. Use strict mode.
 
-### TanStack Query
+### Mobile Server-State Hooks
 
-TanStack Query owns server state on the mobile client: fetching, caching, mutation lifecycle, retries, refetching, invalidation, background refresh, and stale data management.
+The current mobile MVP keeps server state behind route-level hooks and the
+TVLore API client. The API client owns a small in-memory read cache for
+search/detail reads and request de-duplication.
 
-Server resources must not be duplicated into Zustand.
+Use this because the current invalidation surface is still small and explicit.
+Revisit TanStack Query only if fetching, stale data, background refresh, and
+mutation lifecycles become too broad for the local hook/API-client boundary.
 
-### Zustand
+Server resources must not be duplicated into a global client store.
 
-Zustand owns only genuine global application/client state, such as theme, onboarding state, UI preferences, and ephemeral auth bootstrap state.
+### Global Client State
 
-It must not become a client-side representation of the backend database.
+The current mobile app does not need a global state library. Local React state,
+route hooks, SecureStore, AsyncStorage, and the API client cover the MVP.
+
+If a real cross-screen UI concern appears, Zustand remains an acceptable small
+store for client-only state such as theme, onboarding state, UI preferences, or
+ephemeral auth bootstrap state. It must not become a client-side representation
+of the backend database.
 
 ### Zod
 
@@ -100,8 +110,8 @@ Do not use Gmail API.
 ## References Consulted
 
 - Expo navigation and Expo Router: https://docs.expo.dev/develop/app-navigation/
-- TanStack Query: https://tanstack.com/query/latest
-- Zustand: https://zustand.docs.pmnd.rs/
+- TanStack Query candidate reference: https://tanstack.com/query/latest
+- Zustand candidate reference: https://zustand.docs.pmnd.rs/
 - Expo SecureStore: https://docs.expo.dev/versions/latest/sdk/securestore/
 - Expo AsyncStorage page: https://docs.expo.dev/versions/latest/sdk/async-storage/
 - Zod: https://zod.dev/
@@ -112,4 +122,3 @@ Do not use Gmail API.
 - TypeORM docs: https://typeorm.io/
 - TMDB authentication docs: https://developer.themoviedb.org/docs/authentication-application
 - Google OpenID Connect docs: https://developers.google.com/identity/openid-connect/openid-connect
-

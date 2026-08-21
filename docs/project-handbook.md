@@ -98,7 +98,8 @@ authenticates with Supabase, then calls TVLore with a Supabase bearer token.
   persistence, provider orchestration, and privacy boundaries.
 - TMDB IDs are external references. TVLore UUIDs are product identity.
 - Shared contracts validate transport shape, not business policy.
-- TanStack Query owns server-state behavior in mobile.
+- Mobile server state stays behind route hooks and the TVLore API client's
+  short-lived read cache.
 - AsyncStorage is only for non-sensitive preferences.
 - SecureStore is for sensitive mobile auth material.
 - New product features should reuse the existing route/hook/API-client shape.

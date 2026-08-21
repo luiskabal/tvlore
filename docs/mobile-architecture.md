@@ -600,7 +600,7 @@ Do not implement offline-first synchronization in MVP.
 
 MVP offline behavior:
 
-- Show cached TanStack Query data where available.
+- Show the last ready hook/API-client snapshot where available.
 - Disable or queue nothing for watched/unwatched mutations.
 - Present clear retry affordances.
 - Revalidate when the app returns online.

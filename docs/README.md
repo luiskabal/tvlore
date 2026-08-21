@@ -11,8 +11,8 @@ The MVP goal is intentionally small: authenticate with Google, search catalog co
 - Authentication: Supabase Auth with Google as the first identity provider.
 - Shared contracts: TypeScript and Zod transport schemas only.
 - Source of truth: the backend.
-- Server state: TanStack Query.
-- Global client state: Zustand only for genuine application/UI state.
+- Server state: route hooks plus the TVLore API client's short-lived read cache.
+- Global client state: avoid a global store until a concrete cross-screen UI need appears.
 - Sensitive credentials: Expo SecureStore.
 - Provider catalog data: TMDB initially, isolated behind an adapter.
 - Product identity: TVLore internal UUIDs, not provider IDs.
@@ -31,9 +31,9 @@ The MVP goal is intentionally small: authenticate with Google, search catalog co
 
 > TVLore owns its internal identifiers.
 
-> TanStack Query owns server state.
+> Server state stays behind hooks and the TVLore API client.
 
-> Zustand is not a client-side database.
+> Do not turn mobile state into a client-side database.
 
 > Sensitive credentials live in secure device storage.
 

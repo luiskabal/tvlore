@@ -46,7 +46,8 @@ to Supabase directly for authentication/session work.
 2. Mobile restores the Supabase session from device storage.
 3. Mobile calls `GET /users/me` with the Supabase access token.
 4. Backend validates the token with Supabase and returns the TVLore user.
-5. Mobile hydrates Library/Profile through TanStack Query.
+5. Mobile hydrates Library/Profile through route hooks and the TVLore API
+   client.
 
 Why this shape: Supabase proves identity; TVLore still owns product identity,
 profile settings, library state, and authorization decisions.
@@ -87,7 +88,7 @@ entities when the user expresses intent.
 1. Mobile sends watched/watchlist/rating/reflection mutation.
 2. Mobile applies optimistic UI where the action is reversible.
 3. Backend validates the user and writes user-owned rows in Postgres.
-4. Mobile invalidates affected TanStack Query keys and reconciles the server
+4. Mobile invalidates local library/detail cache and reconciles the server
    response.
 
 Why this shape: product state remains backend-owned while the UI feels fast.
@@ -184,4 +185,3 @@ changes.
 - Closed testing is still expected before production access for a new personal
   Play Console account.
 - iOS release remains blocked by Apple Developer membership/provider setup.
-
