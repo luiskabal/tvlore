@@ -30,20 +30,30 @@ TVLore owns:
 
 - Users.
 - Identities.
-- Viewing history.
+- Availability country.
+- Viewing state.
 - Watched timestamps.
-- Rewatches.
 - Show progress.
 - Movie history.
 - Ratings.
-- Favorites.
+- Private post-watch reflections.
+- Favorite-character selections.
 - Watchlists.
+- User-created watch paths.
+- Imported watch paths.
 - Future friendship relationships.
 - Future match sessions.
 - Future taste-profile data.
 - Privacy settings.
 
 Provider metadata should not determine application identity.
+
+Current MVP rule:
+
+```text
+External providers describe titles.
+TVLore owns what a signed-in user does with those titles.
+```
 
 ## Internal Identifiers
 
@@ -123,7 +133,7 @@ Cons:
 
 Use `ExternalIdentifier` for media catalog entities from the start. It is small enough for MVP and prevents TMDB IDs from becoming product identity.
 
-## MVP Entities
+## Current Entities
 
 ### User
 
@@ -133,6 +143,7 @@ Fields:
 
 - `id`
 - `displayName`
+- `availabilityCountry`
 - `createdAt`
 - `updatedAt`
 
@@ -156,7 +167,9 @@ Unique constraint:
 
 ### RefreshSession
 
-Represents a mobile refresh session.
+Represents an early TVLore-owned refresh session. It remains in the schema from
+the first custom-token design, but the current MVP session flow is managed by
+Supabase Auth.
 
 Fields:
 
@@ -183,6 +196,8 @@ Fields:
 - `posterPath`
 - `backdropPath`
 - `firstAirDate`
+- `genreNames`
+- `publicRating`
 - `createdAt`
 - `updatedAt`
 
@@ -244,6 +259,8 @@ Fields:
 - `backdropPath`
 - `releaseDate`
 - `runtimeMinutes`
+- `genreNames`
+- `publicRating`
 - `createdAt`
 - `updatedAt`
 
@@ -283,6 +300,149 @@ Unique constraint:
 
 Future rewatch history can relax this constraint and count multiple rows.
 
+### ShowWatchlistItem
+
+Represents a user's intent to watch a show later.
+
+Fields:
+
+- `id`
+- `userId`
+- `showId`
+- `createdAt`
+
+Unique constraint:
+
+- `(userId, showId)`
+
+### MovieWatchlistItem
+
+Represents a user's intent to watch a movie later.
+
+Fields:
+
+- `id`
+- `userId`
+- `movieId`
+- `createdAt`
+
+Unique constraint:
+
+- `(userId, movieId)`
+
+### ShowPreference
+
+Represents a user's show-level star rating.
+
+Fields:
+
+- `id`
+- `userId`
+- `showId`
+- `rating`
+- `createdAt`
+- `updatedAt`
+
+Unique constraint:
+
+- `(userId, showId)`
+
+### MoviePreference
+
+Represents a user's movie-level star rating.
+
+Fields:
+
+- `id`
+- `userId`
+- `movieId`
+- `rating`
+- `createdAt`
+- `updatedAt`
+
+Unique constraint:
+
+- `(userId, movieId)`
+
+### EpisodePreference
+
+Represents a user's episode-level star rating.
+
+Fields:
+
+- `id`
+- `userId`
+- `episodeId`
+- `rating`
+- `createdAt`
+- `updatedAt`
+
+Unique constraint:
+
+- `(userId, episodeId)`
+
+### ShowReflection, MovieReflection, EpisodeReflection
+
+Represent a private post-watch check-in for a show, movie, or episode.
+
+Fields:
+
+- `id`
+- `userId`
+- media FK: `showId`, `movieId`, or `episodeId`
+- `reaction`
+- `favoriteCharacter`
+- `comment`
+- `createdAt`
+- `updatedAt`
+
+Unique constraint:
+
+- One reflection per user and media item.
+
+Current behavior:
+
+- Re-submitting a reflection updates the existing row.
+- Favorite-character percentages are not implemented yet; current selections
+  are private user data.
+
+### UserWatchPath
+
+Represents a user-owned ordered viewing guide, such as an imported franchise
+order or personal list.
+
+Fields:
+
+- `id`
+- `userId`
+- `title`
+- `description`
+- `createdAt`
+- `updatedAt`
+
+### UserWatchPathItem
+
+Represents one ordered provider reference inside a user watch path.
+
+Fields:
+
+- `id`
+- `pathId`
+- `mediaType`
+- `provider`
+- `providerId`
+- `title`
+- `note`
+- `posterPath`
+- `year`
+- `position`
+- `createdAt`
+
+Unique constraints:
+
+- `(pathId, position)`
+- `(pathId, mediaType, provider, providerId)`
+
 ### ExternalIdentifier
 
 Maps internal entities to provider identifiers.
@@ -308,8 +468,15 @@ Do not create these tables in the MVP unless promoted into scope:
 - MatchShareToken.
 - MatchSession.
 - ProfilePrivacySettings.
+- Rewatch event history.
+- Public favorite-character percentages.
+- Social activity feed.
 
-## MVP ER Diagram
+## Current ER Diagram
+
+`ExternalIdentifier` is a polymorphic provider mapping. It stores `entityType`
+and `entityId`, so the relationships shown below are conceptual domain
+relationships, not database-level foreign keys.
 
 ```mermaid
 erDiagram
@@ -317,13 +484,32 @@ erDiagram
   USER ||--o{ REFRESH_SESSION : has
   USER ||--o{ EPISODE_WATCH : records
   USER ||--o{ MOVIE_WATCH : records
+  USER ||--o{ SHOW_WATCHLIST_ITEM : saves
+  USER ||--o{ MOVIE_WATCHLIST_ITEM : saves
+  USER ||--o{ SHOW_PREFERENCE : rates
+  USER ||--o{ MOVIE_PREFERENCE : rates
+  USER ||--o{ EPISODE_PREFERENCE : rates
+  USER ||--o{ SHOW_REFLECTION : reflects
+  USER ||--o{ MOVIE_REFLECTION : reflects
+  USER ||--o{ EPISODE_REFLECTION : reflects
+  USER ||--o{ USER_WATCH_PATH : owns
 
   SHOW ||--o{ SEASON : has
   SHOW ||--o{ EPISODE : has
+  SHOW ||--o{ SHOW_WATCHLIST_ITEM : saved_as
+  SHOW ||--o{ SHOW_PREFERENCE : rated_as
+  SHOW ||--o{ SHOW_REFLECTION : reflected_as
   SEASON ||--o{ EPISODE : contains
 
   EPISODE ||--o{ EPISODE_WATCH : watched_as
+  EPISODE ||--o{ EPISODE_PREFERENCE : rated_as
+  EPISODE ||--o{ EPISODE_REFLECTION : reflected_as
   MOVIE ||--o{ MOVIE_WATCH : watched_as
+  MOVIE ||--o{ MOVIE_WATCHLIST_ITEM : saved_as
+  MOVIE ||--o{ MOVIE_PREFERENCE : rated_as
+  MOVIE ||--o{ MOVIE_REFLECTION : reflected_as
+
+  USER_WATCH_PATH ||--o{ USER_WATCH_PATH_ITEM : contains
 
   SHOW ||--o{ EXTERNAL_IDENTIFIER : maps
   SEASON ||--o{ EXTERNAL_IDENTIFIER : maps
@@ -333,6 +519,7 @@ erDiagram
   USER {
     uuid id PK
     string displayName
+    string availabilityCountry
     datetime createdAt
     datetime updatedAt
   }
@@ -357,6 +544,8 @@ erDiagram
     uuid id PK
     string title
     date firstAirDate
+    string[] genreNames
+    float publicRating
   }
 
   SEASON {
@@ -377,6 +566,9 @@ erDiagram
     uuid id PK
     string title
     date releaseDate
+    int runtimeMinutes
+    string[] genreNames
+    float publicRating
   }
 
   EPISODE_WATCH {
@@ -391,6 +583,78 @@ erDiagram
     uuid userId FK
     uuid movieId FK
     datetime watchedAt
+  }
+
+  SHOW_WATCHLIST_ITEM {
+    uuid id PK
+    uuid userId FK
+    uuid showId FK
+  }
+
+  MOVIE_WATCHLIST_ITEM {
+    uuid id PK
+    uuid userId FK
+    uuid movieId FK
+  }
+
+  SHOW_PREFERENCE {
+    uuid id PK
+    uuid userId FK
+    uuid showId FK
+    int rating
+  }
+
+  MOVIE_PREFERENCE {
+    uuid id PK
+    uuid userId FK
+    uuid movieId FK
+    int rating
+  }
+
+  EPISODE_PREFERENCE {
+    uuid id PK
+    uuid userId FK
+    uuid episodeId FK
+    int rating
+  }
+
+  SHOW_REFLECTION {
+    uuid id PK
+    uuid userId FK
+    uuid showId FK
+    string reaction
+    string favoriteCharacter
+  }
+
+  MOVIE_REFLECTION {
+    uuid id PK
+    uuid userId FK
+    uuid movieId FK
+    string reaction
+    string favoriteCharacter
+  }
+
+  EPISODE_REFLECTION {
+    uuid id PK
+    uuid userId FK
+    uuid episodeId FK
+    string reaction
+    string favoriteCharacter
+  }
+
+  USER_WATCH_PATH {
+    uuid id PK
+    uuid userId FK
+    string title
+  }
+
+  USER_WATCH_PATH_ITEM {
+    uuid id PK
+    uuid pathId FK
+    string mediaType
+    string provider
+    string providerId
+    int position
   }
 
   EXTERNAL_IDENTIFIER {
