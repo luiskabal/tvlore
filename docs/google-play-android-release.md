@@ -21,6 +21,12 @@ Pack](store-metadata.md), and the public privacy page.
   https://play.google.com/console/about/internal-testing/
 - Google Play Data safety:
   https://support.google.com/googleplay/android-developer/answer/10787469
+- Android App Bundle:
+  https://developer.android.com/guide/app-bundle
+- Upload Android App Bundles to Play Console:
+  https://developer.android.com/studio/publish/upload-bundle
+- Deobfuscate or symbolicate crash stack traces:
+  https://support.google.com/googleplay/android-developer/answer/9848633
 
 ## Current Android Lane
 
@@ -63,6 +69,28 @@ external entertainment catalog metadata that can include mature shows or movies,
 so avoid the Families surface unless the product is deliberately redesigned for
 that audience.
 
+## Android App Bundle
+
+Google Play receives Android store builds as an Android App Bundle, or `.aab`.
+The bundle is not the same thing as the final APK installed on the device:
+
+```text
+EAS production build -> .aab upload -> Google Play generates device-specific APKs
+```
+
+The AAB contains the app's compiled code and resources. Google Play then
+generates optimized APKs for each device configuration and signs/distributes
+those APKs through Play.
+
+For TVLore this means:
+
+- Upload `.aab` files to Play Console tracks.
+- Use preview APKs only for direct install QA outside Play.
+- Increase Android `versionCode` for every new Play upload.
+- Keep the package name stable as `com.luiskabal.tvlore`.
+- Treat Play-generated APK install behavior as the real release signal, not the
+  local APK alone.
+
 ## Current Internal Testing State
 
 Current Android internal testing baseline:
@@ -80,6 +108,15 @@ If a tester can open the opt-in page but Play Store says the item was not
 found, treat it first as a Play propagation/review issue rather than an app
 code issue.
 
+Typical signals:
+
+| Signal | Meaning |
+| --- | --- |
+| Opt-in page says the account is a tester | The tester list/opt-in link is probably working. |
+| Play Store says the item was not found | The install surface may not have propagated, the account/device may not match, or Play review/setup may still be pending. |
+| Console track is `Active` and shows a release | The artifact is rolled out to that track, but Store availability can still lag. |
+| App name shows `com.luiskabal.tvlore (unreviewed)` | Expected while Google has not fully reviewed/listed the app. |
+
 Troubleshooting order:
 
 1. Confirm the tester opted in with the same Google account used in Play Store.
@@ -93,6 +130,10 @@ Troubleshooting order:
 6. If the app still cannot be downloaded after the propagation window, create a
    new release only after confirming tester account, track status, and app
    content tasks are correct.
+
+If the opt-in page works but the Store page fails, do not change the package
+name, app record, signing setup, or release track unless Play Console points to
+one of those as the problem. Those identifiers are hard release anchors.
 
 Do not rebuild solely because the first Store tap says the item was not found.
 Rebuild only when Play Console flags the artifact or the installed app fails
@@ -128,7 +169,7 @@ features.
 Use the provided reviewer Google account to sign in:
 
 Email: REVIEWER_GOOGLE_EMAIL
-Password: REVIEWER_GOOGLE_PASSWORD
+Credential: configure the reviewer credential in Play Console only.
 
 After sign-in, verify:
 1. Open Search.
@@ -294,12 +335,32 @@ Smoke Checklist](release-smoke-checklist.md), especially:
 Google Play may warn that the uploaded Android App Bundle has no deobfuscation
 file. This is non-blocking for internal testing.
 
-If Android minification/obfuscation is enabled, R8 rewrites class, method, and
-field names to shorter symbols. That reduces app size and makes reverse
-engineering harder, but crash stack traces can become unreadable without the
-matching mapping file. Upload the mapping file before public production
-hardening so Play Console crash and ANR reports can be translated back to
-source-level names.
+Obfuscation is a release build optimization/debugging tradeoff. Android's R8
+tool can rewrite class, method, and field names to shorter symbols. That can
+reduce app size and make reverse engineering harder, but crash stack traces can
+become unreadable:
+
+```text
+Readable source trace:
+CatalogDetailScreen.markMovieWatched(...)
+
+Obfuscated trace:
+a.b.c(...)
+```
+
+The deobfuscation mapping file is the dictionary between those two worlds. It
+lets Play Console translate crash and ANR reports back to source-level names.
+Without it, a production crash can still be detected, but the stack trace is
+harder to diagnose.
+
+For TVLore:
+
+- Internal testing can continue without the mapping file.
+- Before public production, upload the mapping file if minification or
+  obfuscation is enabled.
+- Upload the mapping for the matching version code only.
+- Do not commit mapping files unless we intentionally decide they belong in a
+  private release artifact flow.
 
 Keep this as release hardening, not a blocker for the first internal testing
 build.
