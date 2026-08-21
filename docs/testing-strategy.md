@@ -2,6 +2,36 @@
 
 Tests should focus on TVLore behavior, not framework internals.
 
+## Confidence Map
+
+Use different test layers for different risks:
+
+| Risk | Best check | Why |
+| --- | --- | --- |
+| Type drift, broken imports, invalid DTO usage | `corepack pnpm verify` | Fast deterministic check for TypeScript and unit tests. |
+| Backend domain rule regression | Feature-local Vitest tests in `apps/api/src/**/__tests__` | Rules such as progress, tracking, ratings, recommendations, and parsing should fail before deploy. |
+| Mobile pure-state regression | Vitest tests for helpers/hooks that do not need a device | Search filters, chronology merges, and view-model helpers are cheap to test locally. |
+| Deployed API contract regression | `corepack pnpm api:check` | Exercises the real HTTP API against local or Vercel. |
+| Authenticated product regression | `TVLORE_SUPABASE_ACCESS_TOKEN` plus `corepack pnpm api:check` | Verifies real protected flows with a live Supabase session. |
+| Env/config/release drift | `env:check`, `eas:env:check`, `store:check`, `auth:redirect:check` | Catches missing remote config before a mobile build or store submission. |
+| Android artifact/distribution risk | `release:android:smoke`, EAS production AAB, Play internal testing | Confirms the app can be built, uploaded, and distributed by Google Play. |
+| Real UX risk | Manual device QA from `docs/release-smoke-checklist.md` | Navigation, OAuth callback, perceived speed, and store install behavior need a real device. |
+
+Current automated baseline as of August 21, 2026:
+
+| Layer | Current signal |
+| --- | --- |
+| API Vitest | 33 test files, 120 tests passing. |
+| Mobile Vitest | 13 test files, 57 tests passing. |
+| TypeScript | API, mobile, and contracts typecheck through `corepack pnpm verify`. |
+| HTTP smoke | Public routes, protected 401s, rate-limit headers, legal pages, and authenticated product flows are covered by `api:check`. |
+| Release smoke | Android-specific smoke chains EAS env, release preflight, public store URLs, Supabase native redirect, full verify/build, and API smoke. |
+
+This does not mean "no bugs exist." It means the current safety net is good at
+catching contract, rule, and release-configuration regressions. Device UX,
+Google Play propagation, screenshots, store forms, and reviewer behavior remain
+manual release gates.
+
 ## Current Tooling
 
 Normal deterministic verification:
@@ -84,7 +114,9 @@ corepack pnpm api:check
 Without `TVLORE_SUPABASE_ACCESS_TOKEN`, `api:check` verifies:
 
 - Public health responses.
+- Public privacy, terms, support, and account-deletion pages.
 - Protected routes return the TVLore `UNAUTHORIZED` error contract.
+- Protected-route rate-limit headers on representative endpoints.
 - New routes are registered and protected.
 
 With a current Supabase access token, `api:check` also verifies the real authenticated product flow:
@@ -98,8 +130,11 @@ corepack pnpm api:check
 Authenticated `api:check` covers:
 
 - `/users/me` contract.
+- `/users/me/account-deletion` readiness contract.
 - `/users/me` availability-country update and validation contract.
 - Search response shape.
+- Watch Paths list/detail contracts.
+- Watch Path TMDB Collection import validation.
 - Validation errors for bad search/resolve/watch inputs.
 - Not-found errors for missing show/movie/episode IDs.
 - Show resolve idempotency.
@@ -107,12 +142,18 @@ Authenticated `api:check` covers:
 - Search result `tvloreId` after resolve.
 - Show, season, episode detail contracts.
 - Show, movie, and episode cast contracts.
+- Show, movie, and episode watch-provider availability contracts.
 - Episode watch/unwatch idempotency.
 - Movie watch/unwatch idempotency.
+- Show-level and season-level watched/unwatched contracts.
+- Show, movie, and episode preference contracts.
+- Show, movie, and episode reflection contracts.
 - Progress after marking an episode watched.
 - Library summary, recently watched, watchlist, and rated titles after marking watched items and setting ratings.
+- Paginated library chronology contract.
 - Recommendations contract after rating titles.
 - Recommendations availability-country contract.
+- Discovery contracts for TVLore Picks, Popular in country, and Available to stream.
 
 The first tests cover pure authentication/user helpers:
 
