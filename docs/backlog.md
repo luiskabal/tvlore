@@ -4,8 +4,9 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 
 ## Active
 
+- [ ] Verify Google Play internal testing download after Play propagation/review.
 - [ ] Capture Android store screenshots from a preview/production build using `docs/store-metadata.md`.
-- [ ] Fill internal/closed Android tester list and feedback channel outside git.
+- [ ] Fill closed Android tester list and feedback channel outside git.
 - [ ] Continue removing release-blocking development affordances before store submission.
 - [ ] Continue applying reusable mobile UI primitives only when a screen gets new UX work.
 - [ ] Run account-deletion QA on a disposable account now that `SUPABASE_SERVICE_ROLE_KEY` is configured in Vercel.

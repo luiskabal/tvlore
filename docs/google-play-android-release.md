@@ -63,6 +63,41 @@ external entertainment catalog metadata that can include mature shows or movies,
 so avoid the Families surface unless the product is deliberately redesigned for
 that audience.
 
+## Current Internal Testing State
+
+Current Android internal testing baseline:
+
+| Field | Value |
+| --- | --- |
+| Track | Internal testing |
+| Status | Active |
+| Release | `2 (1.0.0)` |
+| Android package | `com.luiskabal.tvlore` |
+| Track visibility | Available to invited internal testers |
+| Play listing state | Temporary app name may show as `com.luiskabal.tvlore (unreviewed)` until Google finishes review/processing |
+
+If a tester can open the opt-in page but Play Store says the item was not
+found, treat it first as a Play propagation/review issue rather than an app
+code issue.
+
+Troubleshooting order:
+
+1. Confirm the tester opted in with the same Google account used in Play Store.
+2. Wait for Play processing/propagation. Internal testing releases can be
+   available in Console before the Store install surface resolves everywhere.
+3. Reopen the opt-in link from the Android device.
+4. In Play Console, verify the track still shows `Active` and the release is
+   available to internal testers.
+5. Check Publishing overview for pending review/tasks that block listing
+   availability.
+6. If the app still cannot be downloaded after the propagation window, create a
+   new release only after confirming tester account, track status, and app
+   content tasks are correct.
+
+Do not rebuild solely because the first Store tap says the item was not found.
+Rebuild only when Play Console flags the artifact or the installed app fails
+manual QA.
+
 ## App Content Checklist
 
 Complete these in Play Console under Policy and programs -> App content:
@@ -271,7 +306,8 @@ build.
 
 ## Open Items
 
-- Prepare an internal tester email list and feedback channel.
+- Verify the internal testing download link after Play propagation/review.
+- Prepare the closed-testing tester email list and feedback channel.
 - Add reviewer Google credentials in Play Console only.
 - Capture screenshots from a preview or production Android build.
 - Complete Data safety and Content rating forms.
