@@ -18,7 +18,33 @@ system owns a behavior.
 | Google Play Console | Google | Play Console | Android app record, internal testing, closed testing, production review. |
 | GitHub | Source control | `https://github.com/luiskabal/tvlore` | Versioned source, docs, release rollback trail. |
 
-## 2. High-Level Flow
+## 2. Service Dependency Matrix
+
+| TVLore capability | Internal owner | External services | Sensitive server envs |
+| --- | --- | --- | --- |
+| Login/session | Mobile `src/auth`, API `auth`/`users` | Supabase Auth, Google OAuth | None in mobile; backend uses `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`. |
+| User profile/country | API `users` | Supabase Auth, Supabase Postgres | `DATABASE_URL`. |
+| Account deletion | API `users`/`auth` | Supabase Auth Admin, Supabase Postgres | `DATABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`. |
+| Catalog search/resolve | API `catalog` | TMDB, Supabase Postgres | `DATABASE_URL`, `TMDB_ACCESS_TOKEN`. |
+| Details/cast/providers | API `catalog` | TMDB, Supabase Postgres | `DATABASE_URL`, `TMDB_ACCESS_TOKEN`. |
+| Tracking/progress | API `tracking`, `library` | Supabase Postgres, TMDB for bulk hydration | `DATABASE_URL`, `TMDB_ACCESS_TOKEN` when hydration is needed. |
+| Watchlist | API `watchlist` | Supabase Postgres | `DATABASE_URL`. |
+| Ratings/reflections | API `preferences`, `reflections` | Supabase Postgres | `DATABASE_URL`. |
+| Recommendations/discovery | API `recommendations`, `discovery` | Supabase Postgres, TMDB | `DATABASE_URL`, `TMDB_ACCESS_TOKEN`. |
+| Watch Paths | API `watch-paths`, `catalog` | Supabase Postgres, TMDB | `DATABASE_URL`, `TMDB_ACCESS_TOKEN`. |
+| Legal/store pages | API `legal` | Vercel | None beyond API runtime. |
+| Android release | EAS/Play Console | Expo EAS, Google Play | EAS public mobile envs, no backend secrets in mobile. |
+
+Rule of thumb:
+
+```text
+If the mobile app needs provider data, ask TVLore API.
+If TVLore API needs product data, ask Postgres.
+If TVLore API needs identity proof, ask Supabase Auth.
+If TVLore API needs catalog/provider metadata, ask TMDB.
+```
+
+## 3. High-Level Flow
 
 ```mermaid
 flowchart LR
@@ -38,7 +64,7 @@ flowchart LR
 Core rule: the mobile app talks to the backend for product data. It only talks
 to Supabase directly for authentication/session work.
 
-## 3. Request Ownership
+## 4. Request Ownership
 
 ### App Bootstrap
 
@@ -103,7 +129,7 @@ Why this shape: product state remains backend-owned while the UI feels fast.
 Why this shape: availability changes by country and provider, so the backend
 keeps that logic centralized.
 
-## 4. Configuration Ownership
+## 5. Configuration Ownership
 
 | Variable | Runtime | Secret? | Owner |
 | --- | --- | --- | --- |
@@ -123,7 +149,7 @@ Mobile `EXPO_PUBLIC_*` values are bundled into the app. Never put database
 credentials, TMDB tokens, service-role keys, or provider secrets behind an
 `EXPO_PUBLIC_` prefix.
 
-## 5. Deployment Chain
+## 6. Deployment Chain
 
 ```mermaid
 flowchart TD
@@ -145,7 +171,7 @@ Operational notes:
 - The iOS bundle identifier is also `com.luiskabal.tvlore`, but iOS release is
   blocked until Apple Developer/Supabase Apple provider setup is complete.
 
-## 6. Failure Points
+## 7. Failure Points
 
 | Symptom | Likely owner | First check |
 | --- | --- | --- |
@@ -157,7 +183,7 @@ Operational notes:
 | Internal test app not found | Google Play | Tester email, opt-in state, Play propagation/review delay. |
 | Account deletion not configured | Backend env | `SUPABASE_SERVICE_ROLE_KEY` in Vercel Production/Preview. |
 
-## 7. Verification Commands
+## 8. Verification Commands
 
 ```powershell
 corepack pnpm env:check
@@ -175,7 +201,7 @@ Use `verify` for normal code changes. Use `verify:full` and Android release
 checks when build output, EAS config, store readiness, or release packaging
 changes.
 
-## 8. Current Release State
+## 9. Current Release State
 
 - Backend production API is deployed on Vercel.
 - Supabase Auth, Supabase Postgres, and TMDB are wired.
