@@ -74,21 +74,21 @@ UI Screen
 
 Example hooks:
 
-- `useCurrentUser()`
-- `useSearch(query)`
-- `useResolveCatalogItem()`
-- `useShow(id)`
-- `useMovie(id)`
-- `useSeason(showId, seasonNumber)`
-- `useMarkEpisodeWatched()`
-- `useMarkEpisodeUnwatched()`
-- `useMarkMovieWatched()`
-- `useMarkMovieUnwatched()`
-- `useMarkShowWatched()`
-- `useMarkShowUnwatched()`
-- `useAddToWatchlist()`
-- `useRemoveFromWatchlist()`
-- `useLibrary()`
+- `useAuthSession()`
+- `useHomeData()`
+- `useHomeModel()`
+- `useCatalogSearch()`
+- `useCatalogDetail()`
+- `useSeasonDetail()`
+- `useEpisodeDetail()`
+- `useLibraryActions()`
+- `useLibraryChronology()`
+- `useLibraryLookahead()`
+- `useWatchPaths()`
+- `useTvlorePicks()`
+- `useSearchRecommendations()`
+- `usePopularDiscovery()`
+- `useAvailableDiscovery()`
 
 Query hooks are client infrastructure. They must not implement backend business decisions.
 
@@ -132,17 +132,22 @@ src/
 |-- api/
 |   |-- catalog.ts
 |   |-- client.ts
+|   |-- discovery.ts
 |   |-- guards.ts
 |   |-- home.ts
+|   |-- library.ts
 |   |-- preferences.ts
+|   |-- recommendations.ts
 |   |-- reflections.ts
 |   |-- tracking.ts
 |   |-- tvlore-api.ts
 |   |-- types.ts
+|   |-- users.ts
 |   |-- watch-paths.ts
 |   `-- watchlist.ts
 |
 |-- auth/
+|   |-- auth-callback.ts
 |   |-- supabase-auth.ts
 |   `-- use-auth-session.ts
 |
@@ -151,15 +156,25 @@ src/
 |
 |-- navigation/
 |   |-- AppTabBar.tsx
+|   |-- app-tabs.ts
 |   `-- app-tab-bar-styles.ts
 |
 |-- catalog/
+|   |-- CatalogDetailActions.tsx
 |   |-- CatalogDetailContent.tsx
+|   |-- CatalogDetailPanels.tsx
 |   |-- CatalogDetailScreen.tsx
+|   |-- CatalogDetailSkeleton.tsx
+|   |-- catalog-detail-format.ts
 |   |-- catalog-detail-styles.ts
 |   |-- EpisodeDetailScreen.tsx
 |   |-- episode-detail-styles.ts
 |   |-- posters.ts
+|   |-- PostWatchCheckIn.tsx
+|   |-- PostWatchCheckInScreen.tsx
+|   |-- post-watch-check-in-model.ts
+|   |-- prefetch.ts
+|   |-- prefetch-model.ts
 |   |-- SeasonContent.tsx
 |   |-- SeasonDetailScreen.tsx
 |   |-- season-detail-styles.ts
@@ -172,16 +187,24 @@ src/
 |   |-- HoloProfileCard.tsx
 |   |-- home-styles.ts
 |   |-- HomeScreen.tsx
+|   |-- library-feed-model.ts
+|   |-- library-overview-model.ts
 |   |-- LibraryOverview.tsx
+|   |-- LibraryOverviewSections.tsx
+|   |-- LibraryRows.tsx
+|   |-- recommendation-detail.ts
 |   |-- RecommendationsPanel.tsx
-|   |-- use-recommendation-actions.ts
 |   |-- use-home-model.ts
 |   `-- use-home-data.ts
 |
 |-- library/
+|   |-- chronology-items.ts
+|   |-- library-action-keys.ts
 |   |-- LibraryScreen.tsx
 |   |-- library-refresh.ts
-|   `-- use-library-actions.ts
+|   |-- use-library-actions.ts
+|   |-- use-library-chronology.ts
+|   `-- use-library-lookahead.ts
 |
 |-- profile/
 |   `-- ProfileScreen.tsx
@@ -215,11 +238,25 @@ src/
 |   `-- tokens.ts
 |
 `-- search/
+    |-- AvailableDiscoveryScreen.tsx
+    |-- PopularDiscoveryScreen.tsx
+    |-- RecommendationsScreen.tsx
+    |-- SearchAvailable.tsx
     |-- SearchControls.tsx
+    |-- SearchPicks.tsx
+    |-- SearchPopular.tsx
+    |-- SearchRecommendations.tsx
     |-- SearchResults.tsx
     |-- SearchScreen.tsx
+    |-- search-feed-model.ts
+    |-- search-model.ts
     |-- search-styles.ts
-    `-- use-catalog-search.ts
+    |-- TvlorePicksScreen.tsx
+    |-- use-available-discovery.ts
+    |-- use-catalog-search.ts
+    |-- use-popular-discovery.ts
+    |-- use-search-recommendations.ts
+    `-- use-tvlore-picks.ts
 ```
 
 The rule is:
@@ -227,6 +264,10 @@ The rule is:
 ```text
 Screen -> hook -> API/auth client -> external system
 ```
+
+Tests stay close to the behavior they protect. Pure model/parser/cache rules use
+nearby `*.test.ts` files, while feature screens keep tests around the model or
+hook instead of testing visual layout directly.
 
 Route screens render state and handle button wiring. `useHomeData` owns the
 authenticated library loading flow. `src/api/tvlore-api.ts` is a compatibility
