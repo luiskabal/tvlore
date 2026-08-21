@@ -126,6 +126,29 @@ or emulator before Android beta.
 | Tab navigation | [ ] | [ ] | Library, Search, Paths, Profile animate in correct direction. |
 | Active tab press | [ ] | [ ] | Pressing current tab does not re-animate the screen. |
 
+## Android Play Install Smoke
+
+Run this once the internal testing release appears in Google Play for the tester
+account. This validates Play distribution rather than EAS artifact generation.
+
+| Step | Expected |
+| --- | --- |
+| Open opt-in link on the Android device. | Page says the Google account is a tester for `com.luiskabal.tvlore`. |
+| Tap Download test app. | Play Store opens the TVLore test listing. |
+| Install from Play Store. | Install completes without sideloading or APK prompts. |
+| Launch the Play-installed app. | App opens with the release UI and no development diagnostics. |
+| Sign in with Google. | OAuth returns to `tvlore:///auth/callback` and the app stores the session. |
+| Cold restart the app. | Session restores and Library loads against `https://tvlore-api.vercel.app`. |
+| Open Profile legal links. | Privacy, Terms, Support, and Account deletion public pages open. |
+
+If the opt-in page works but Play Store says the item was not found:
+
+- Do not create a new app record.
+- Do not change `com.luiskabal.tvlore`.
+- Do not rebuild immediately.
+- First confirm tester account, track activity, Publishing overview, and Play
+  propagation/review state.
+
 ## Core Product Flows
 
 | Flow | Steps | Expected |
