@@ -82,6 +82,20 @@ The MVP goal is intentionally small: authenticate with Google, search catalog co
 33. [Roadmap](roadmap.md)
 34. [Architecture Decision Records](adr/)
 
+## Fast Reading Paths
+
+Use these paths when you are doing a specific job:
+
+| Job | Read in this order |
+| --- | --- |
+| Understand the whole project | [Project Handbook](project-handbook.md) -> [Current State](current-state.md) -> [System Context Map](system-context-map.md) |
+| Change backend code | [Backend Architecture](backend-architecture.md) -> [API Endpoint Map](api-endpoint-map.md) -> [Testing Strategy](testing-strategy.md) |
+| Change mobile code | [Mobile Architecture](mobile-architecture.md) -> [Mobile UI System](mobile-ui-system.md) -> [State Management](state-management.md) |
+| Operate the app day to day | [Operations Runbook](operations-runbook.md) -> [Configuration](configuration.md) -> [Infrastructure Setup](infrastructure.md) |
+| Prepare Android 1.0 | [v1.0 Release Gap Map](v1-release-gap-map.md) -> [Google Play Android Release Prep](google-play-android-release.md) -> [Release Smoke Checklist](release-smoke-checklist.md) |
+| Fill Play Console | [Store Metadata Pack](store-metadata.md) -> [Data Inventory](data-inventory.md) -> [Store Reviewer Notes](store-reviewer-notes.md) |
+| Decide what to build next | [Release v1.0 Roadmap](release-v1-roadmap.md) -> [Backlog](backlog.md) |
+
 ## Documentation Index
 
 - [Architecture](architecture.md)
