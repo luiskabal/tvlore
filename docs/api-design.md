@@ -2,6 +2,9 @@
 
 TVLore starts with a REST API. REST is sufficient for the MVP's resource shape, works well for mobile clients, and keeps the backend easy to debug.
 
+For a compact day-to-day index of implemented routes, mobile API clients, cache
+behavior, and smoke-check coverage, see [API Endpoint Map](api-endpoint-map.md).
+
 All protected endpoints derive the authenticated user from the access token. Clients must not send `userId` for user-scoped operations.
 
 ## Common Response Conventions

@@ -315,6 +315,7 @@ Product polish:
 - Runtime service ownership: [Service Map](service-map.md)
 - Repo navigation by feature/file: [Code Tour](code-tour.md)
 - Current data ownership: [Data Model Map](data-model-map.md)
+- Daily endpoint index: [API Endpoint Map](api-endpoint-map.md)
 - Day-to-day operations: [Operations Runbook](operations-runbook.md)
 - Architecture rules: [Architecture](architecture.md)
 - Backend details: [Backend Architecture](backend-architecture.md)

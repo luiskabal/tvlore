@@ -131,6 +131,7 @@ docs/
 - [Service Map](docs/service-map.md)
 - [Code Tour](docs/code-tour.md)
 - [Data Model Map](docs/data-model-map.md)
+- [API Endpoint Map](docs/api-endpoint-map.md)
 - [Operations Runbook](docs/operations-runbook.md)
 - [Backlog](docs/backlog.md)
 - [Store Metadata Pack](docs/store-metadata.md)
