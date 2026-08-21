@@ -9,14 +9,16 @@ flowchart LR
   User[Mobile User]
   Mobile[TVLore Mobile App]
   API[TVLore API]
-  DB[(PostgreSQL)]
-  Google[Google Identity]
+  Auth[Supabase Auth]
+  DB[(Supabase Postgres)]
+  Google[Google OAuth]
   TMDB[TMDB API]
 
   User --> Mobile
   Mobile --> API
-  Mobile --> Google
-  API --> Google
+  Mobile --> Auth
+  Auth --> Google
+  API --> Auth
   API --> DB
   API --> TMDB
 ```
@@ -29,6 +31,7 @@ flowchart TB
     Screens[Screens]
     Hooks[Route and Mutation Hooks]
     ApiClient[TVLore API Client]
+    SupabaseClient[Supabase Client]
     SecureStore[SecureStore]
     AsyncStorage[AsyncStorage]
   end
@@ -41,60 +44,68 @@ flowchart TB
     TmdbAdapter[TMDB Adapter]
   end
 
-  DB[(PostgreSQL)]
+  Auth[Supabase Auth]
+  DB[(Supabase Postgres)]
   TMDB[TMDB API]
 
   Screens --> Hooks
   Hooks --> ApiClient
+  Hooks --> SupabaseClient
+  SupabaseClient --> Auth
   ApiClient --> Controllers
+  Controllers --> Auth
   Controllers --> UseCases
   UseCases --> Domain
   UseCases --> Repos
   UseCases --> TmdbAdapter
   Repos --> DB
   TmdbAdapter --> TMDB
-  ApiClient --> SecureStore
+  SupabaseClient --> SecureStore
   Screens --> AsyncStorage
 ```
 
-## 3. Google Authentication Flow
+## 3. Supabase Google Authentication Flow
 
 ```mermaid
 sequenceDiagram
   participant U as User
   participant M as Mobile App
   participant G as Google
+  participant S as Supabase Auth
   participant A as TVLore API
-  participant D as PostgreSQL
+  participant D as Supabase Postgres
 
   U->>M: Tap Google Sign-In
-  M->>G: Start Google Sign-In
-  G-->>M: Google credential
-  M->>A: POST /auth/google
-  A->>G: Verify credential
-  G-->>A: Valid provider subject
+  M->>S: signInWithOAuth(provider: google)
+  S->>G: Redirect to Google consent/login
+  G-->>S: Provider callback
+  S-->>M: tvlore:///auth/callback with session tokens
+  M->>M: Store Supabase session in SecureStore
+  M->>A: GET /users/me with Supabase bearer token
+  A->>S: Validate token via /auth/v1/user
+  S-->>A: Supabase user
   A->>D: Find or create UserIdentity and User
-  D-->>A: TVLore User
-  A->>D: Create RefreshSession
-  A-->>M: Access token and refresh token
-  M->>M: Store refresh token in SecureStore
+  D-->>A: TVLore user
+  A-->>M: TVLore user profile
 ```
 
-## 4. Token Refresh Flow
+## 4. Supabase Session Refresh and API Validation Flow
 
 ```mermaid
 sequenceDiagram
   participant M as Mobile App
+  participant S as Supabase Auth
   participant A as TVLore API
-  participant D as PostgreSQL
+  participant D as Supabase Postgres
 
-  M->>A: POST /auth/refresh
-  A->>D: Find active session by token hash
-  D-->>A: RefreshSession
-  A->>A: Validate expiration and revocation
-  A->>D: Rotate token hash and update lastUsedAt
-  A-->>M: New access token and optional refresh token
-  M->>M: Update SecureStore
+  M->>S: Supabase client refreshes session when needed
+  S-->>M: Fresh Supabase access token
+  M->>A: Protected request with Authorization: Bearer token
+  A->>S: Validate token via /auth/v1/user
+  S-->>A: Supabase user
+  A->>D: Resolve TVLore user identity
+  D-->>A: TVLore user and permissions context
+  A-->>M: Protected resource response
 ```
 
 ## 5. Show Search Flow
@@ -159,7 +170,7 @@ sequenceDiagram
   D-->>T: Watch state and progress
   T-->>A: Result
   A-->>M: Watched state and progress
-  M->>M: Invalidate show, season, library queries
+  M->>M: Invalidate local show, season, and library cache
 ```
 
 ## 8. Mark Movie Watched Flow
@@ -178,7 +189,7 @@ sequenceDiagram
   D-->>T: Watch state
   T-->>A: Result
   A-->>M: Watched state
-  M->>M: Invalidate movie and library queries
+  M->>M: Invalidate local movie and library cache
 ```
 
 ## 9. State Ownership
@@ -200,7 +211,11 @@ flowchart TB
   Backend --> Domain[Tracking, Progress, Privacy, Matching]
 ```
 
-## 10. MVP Database ER Model
+## 10. Core Database ER Model
+
+`REFRESH_SESSION` remains in the schema from the earlier custom-token strategy,
+but current MVP sessions are Supabase-managed. Do not build new authentication
+behavior around it without an explicit auth architecture change.
 
 ```mermaid
 erDiagram
@@ -208,25 +223,47 @@ erDiagram
   USER ||--o{ REFRESH_SESSION : has
   USER ||--o{ EPISODE_WATCH : records
   USER ||--o{ MOVIE_WATCH : records
+  USER ||--o{ SHOW_WATCHLIST_ITEM : saves
+  USER ||--o{ MOVIE_WATCHLIST_ITEM : saves
+  USER ||--o{ SHOW_PREFERENCE : rates
+  USER ||--o{ MOVIE_PREFERENCE : rates
+  USER ||--o{ EPISODE_PREFERENCE : rates
+  USER ||--o{ SHOW_REFLECTION : reflects
+  USER ||--o{ MOVIE_REFLECTION : reflects
+  USER ||--o{ EPISODE_REFLECTION : reflects
+  USER ||--o{ USER_WATCH_PATH : owns
+
   SHOW ||--o{ SEASON : has
   SHOW ||--o{ EPISODE : has
+  SHOW ||--o{ SHOW_WATCHLIST_ITEM : saved_as
+  SHOW ||--o{ SHOW_PREFERENCE : rated_as
+  SHOW ||--o{ SHOW_REFLECTION : reflected_as
+  MOVIE ||--o{ MOVIE_WATCH : watched_as
+  MOVIE ||--o{ MOVIE_WATCHLIST_ITEM : saved_as
+  MOVIE ||--o{ MOVIE_PREFERENCE : rated_as
+  MOVIE ||--o{ MOVIE_REFLECTION : reflected_as
+
   SEASON ||--o{ EPISODE : contains
   EPISODE ||--o{ EPISODE_WATCH : watched_as
-  MOVIE ||--o{ MOVIE_WATCH : watched_as
-  SHOW ||--o{ EXTERNAL_IDENTIFIER : maps
-  SEASON ||--o{ EXTERNAL_IDENTIFIER : maps
-  EPISODE ||--o{ EXTERNAL_IDENTIFIER : maps
-  MOVIE ||--o{ EXTERNAL_IDENTIFIER : maps
+  EPISODE ||--o{ EPISODE_PREFERENCE : rated_as
+  EPISODE ||--o{ EPISODE_REFLECTION : reflected_as
+  USER_WATCH_PATH ||--o{ USER_WATCH_PATH_ITEM : contains
+  EXTERNAL_IDENTIFIER }o--|| SHOW : maps_show
+  EXTERNAL_IDENTIFIER }o--|| SEASON : maps_season
+  EXTERNAL_IDENTIFIER }o--|| EPISODE : maps_episode
+  EXTERNAL_IDENTIFIER }o--|| MOVIE : maps_movie
 
   USER {
     uuid id PK
     string displayName
+    string availabilityCountry
   }
   USER_IDENTITY {
     uuid id PK
     uuid userId FK
     string provider
     string providerSubject
+    string email
   }
   REFRESH_SESSION {
     uuid id PK
@@ -236,21 +273,27 @@ erDiagram
   SHOW {
     uuid id PK
     string title
+    stringArray genreNames
+    float publicRating
+  }
+  MOVIE {
+    uuid id PK
+    string title
+    stringArray genreNames
+    float publicRating
   }
   SEASON {
     uuid id PK
     uuid showId FK
     int seasonNumber
+    int episodeCount
   }
   EPISODE {
     uuid id PK
     uuid showId FK
     uuid seasonId FK
+    int seasonNumber
     int episodeNumber
-  }
-  MOVIE {
-    uuid id PK
-    string title
   }
   EPISODE_WATCH {
     uuid id PK
@@ -264,12 +307,66 @@ erDiagram
     uuid movieId FK
     datetime watchedAt
   }
+  SHOW_WATCHLIST_ITEM {
+    uuid userId FK
+    uuid showId FK
+  }
+  MOVIE_WATCHLIST_ITEM {
+    uuid userId FK
+    uuid movieId FK
+  }
+  SHOW_PREFERENCE {
+    uuid userId FK
+    uuid showId FK
+    int rating
+  }
+  MOVIE_PREFERENCE {
+    uuid userId FK
+    uuid movieId FK
+    int rating
+  }
+  EPISODE_PREFERENCE {
+    uuid userId FK
+    uuid episodeId FK
+    int rating
+  }
+  SHOW_REFLECTION {
+    uuid userId FK
+    uuid showId FK
+    string reaction
+    string favoriteCharacter
+  }
+  MOVIE_REFLECTION {
+    uuid userId FK
+    uuid movieId FK
+    string reaction
+    string favoriteCharacter
+  }
+  EPISODE_REFLECTION {
+    uuid userId FK
+    uuid episodeId FK
+    string reaction
+    string favoriteCharacter
+  }
   EXTERNAL_IDENTIFIER {
     uuid id PK
     string entityType
     uuid entityId
     string provider
     string providerId
+  }
+  USER_WATCH_PATH {
+    uuid id PK
+    uuid userId FK
+    string title
+  }
+  USER_WATCH_PATH_ITEM {
+    uuid id PK
+    uuid pathId FK
+    string mediaType
+    string provider
+    string providerId
+    int position
   }
 ```
 
@@ -361,15 +458,18 @@ flowchart TB
   end
 
   subgraph Data[Data Boundary]
-    DB[(PostgreSQL)]
+    DB[(Supabase Postgres)]
   end
 
   subgraph Providers[External Providers]
-    Google[Google Identity]
+    SupabaseAuth[Supabase Auth]
+    Google[Google OAuth]
     TMDB[TMDB API]
   end
 
   Mobile --> HTTPS
+  Mobile --> SupabaseAuth
+  SupabaseAuth --> Google
   HTTPS --> API
   API --> Auth
   API --> Privacy
@@ -377,7 +477,7 @@ flowchart TB
   Auth --> DB
   Privacy --> DB
   Domain --> DB
-  Auth --> Google
+  Auth --> SupabaseAuth
   Domain --> TMDB
   Mobile --> SecureStore
   Mobile --> AsyncStorage
