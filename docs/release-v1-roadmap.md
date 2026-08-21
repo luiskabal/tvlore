@@ -79,7 +79,7 @@ enough value to justify a first release.
 | --- | --- | --- |
 | Backend deployment | Ready | Vercel API is deployed at `https://tvlore-api.vercel.app`. |
 | Database | Ready | Supabase Postgres + Prisma migrations are in place. |
-| Authentication | Partial | Google OAuth works. Native iOS Apple Sign-In is wired in mobile; Apple Developer and Supabase provider configuration are still required for release-like testing. |
+| Authentication | Android ready, iOS blocked | Google OAuth works through Supabase. Native iOS Apple Sign-In is wired in mobile, but Apple Developer and Supabase provider configuration are still required for release-like iOS testing. |
 | User profile | Ready | `GET /users/me`, `PATCH /users/me`, availability country. |
 | Search | Ready | TMDB-backed show/movie search through backend. |
 | Resolve | Ready | TMDB refs become internal TVLore IDs on demand. |
@@ -95,9 +95,9 @@ enough value to justify a first release.
 | Where to Watch | Ready | TMDB Watch Providers by saved country, shown on detail screens. |
 | Watch Paths | Ready | Curated paths, personal imports, TMDB title URL parsing, TMDB Collection import, save-to-watchlist. |
 | Mobile architecture | Ready | Screen -> hook -> API/auth client boundary is established. Reusable responsive UI primitives now cover primary and secondary layouts, panels, headers, back navigation, icon actions, segmented filters, empty states, discovery callouts, and common list skeletons. |
-| Tests | Partial | Unit/type checks are good; device QA and release smoke checklist are still needed. |
+| Tests | Partial | Unit/type checks and smoke scripts are good; Play-installed Android device QA is still needed. |
 | Postman/API smoke | Ready | Collection and `api:check` exist. |
-| Documentation | Partial | Architecture/current state exist; release-specific plan begins here. |
+| Documentation | Ready for current release lane | Architecture, service map, stack, current state, release gap map, store metadata, reviewer notes, and smoke checklists exist. |
 
 ## 3. Store / Release Gap Catalog
 
@@ -105,13 +105,13 @@ enough value to justify a first release.
 
 | Gap | Why It Blocks | Target |
 | --- | --- | --- |
-| In-app account deletion | Apple and Google require account deletion if account creation exists. | Implemented in Profile and `DELETE /users/me`; configure `SUPABASE_SERVICE_ROLE_KEY` in deployment before release. |
+| In-app account deletion | Apple and Google require account deletion if account creation exists. | Implemented in Profile and `DELETE /users/me`; backend readiness is configured in Vercel. Run disposable-account QA before public production. |
 | Web account deletion URL | Google requires a web resource for users who uninstalled the app. | Done: `https://tvlore-api.vercel.app/account-deletion`. |
-| Sign in with Apple | Apple requires an equivalent login option when third-party login creates the app account. | Mobile UI/token exchange is implemented; configure Apple Developer and Supabase Apple provider before release. |
+| Sign in with Apple | Apple requires an equivalent login option when third-party login creates the app account. | iOS-only blocker. Mobile UI/token exchange is implemented; configure Apple Developer and Supabase Apple provider before iOS release. |
 | Privacy Policy | Required for collected personal data and store metadata. | Done as developer-preview URL: `https://tvlore-api.vercel.app/privacy`; review final wording before submission. |
 | Data Safety / App Privacy answers | Required in Play Console and App Store Connect. | Data inventory exists; final forms still need completion. |
 | Reviewer access | Reviewers need to access protected app functionality. | Provide test credentials/instructions or a reviewable auth path. |
-| Production EAS profiles | Partial | EAS project is linked and development/preview/production envs are configured. First real store builds still need validation. |
+| Production EAS profiles | Android ready, iOS blocked | EAS project is linked and development/preview/production envs are configured. Android production AAB was uploaded to Play internal testing; iOS remains blocked by Apple Developer setup. |
 | Store assets | App icon, splash, screenshots, support URL, marketing copy. | Metadata draft is in `docs/store-metadata.md`; screenshots still need capture from a release-like build. |
 
 Current release lane: Android first. The Apple Developer Program membership for
@@ -166,6 +166,7 @@ Tasks:
 - [ ] Configure Apple Developer identifiers and Supabase Apple provider.
 - [x] Add backend account deletion flow.
 - [x] Add mobile delete-account UI under Profile.
+- [x] Configure backend deletion readiness in Vercel.
 - [x] Decide deletion behavior:
   - delete Supabase Auth user where possible,
   - delete or anonymize TVLore user records,
@@ -200,6 +201,7 @@ Tasks:
 - [x] Run Android-focused release smoke with `corepack pnpm release:android:smoke`.
 - [ ] Capture Android screenshots from a preview/production build.
 - [x] Create the Google Play app record and roll out the first Android internal testing release.
+- [ ] Verify the Play internal tester install path from Google Play.
 - [ ] Create first iOS preview build.
 - [ ] Confirm Supabase redirect URLs for production scheme/build.
 - [x] Add Supabase Google OAuth native callback smoke check.
@@ -244,6 +246,7 @@ Tasks:
 
 - [ ] Ship TestFlight build.
 - [x] Ship Google Play internal testing build.
+- [ ] Confirm Google Play install works from the internal tester opt-in flow.
 - If required for the personal Play Console account, run a closed testing build
   with 12 opted-in testers for 14 continuous days before production access.
 - Test fresh install, login, logout, account deletion, country update, search, watchlist, watched state, ratings, check-in, Where to Watch, Watch Paths, recommendations, Available to stream, Popular in your country.
@@ -306,7 +309,8 @@ before TestFlight/closed testing. Quick gate:
 - [ ] `corepack pnpm env:check` passes.
 - [ ] Authenticated `corepack pnpm api:check` passes against Vercel.
 - [ ] iOS production build installs.
-- [ ] Android production build installs.
+- [x] Android production AAB uploads to Google Play internal testing.
+- [ ] Android Play-distributed internal build installs from the tester flow.
 - [ ] Google login works where allowed.
 - [ ] Apple login works on iOS after provider configuration.
 - [ ] Account deletion works and removes/anonymizes user-owned data.
