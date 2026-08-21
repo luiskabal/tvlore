@@ -254,13 +254,29 @@ Smoke Checklist](release-smoke-checklist.md), especially:
 - Profile legal links.
 - Account deletion only on a disposable account.
 
+## Deobfuscation Mapping
+
+Google Play may warn that the uploaded Android App Bundle has no deobfuscation
+file. This is non-blocking for internal testing.
+
+If Android minification/obfuscation is enabled, R8 rewrites class, method, and
+field names to shorter symbols. That reduces app size and makes reverse
+engineering harder, but crash stack traces can become unreadable without the
+matching mapping file. Upload the mapping file before public production
+hardening so Play Console crash and ANR reports can be translated back to
+source-level names.
+
+Keep this as release hardening, not a blocker for the first internal testing
+build.
+
 ## Open Items
 
-- Create the Play Console app record.
 - Prepare an internal tester email list and feedback channel.
 - Add reviewer Google credentials in Play Console only.
 - Capture screenshots from a preview or production Android build.
 - Complete Data safety and Content rating forms.
 - Run Android manual QA from the release checklist.
+- Upload Android deobfuscation mapping before production hardening if
+  minification is enabled.
 - Run a Closed testing track with 12 opted-in testers for 14 days before public
   production access if Play Console requires it for the personal account.
