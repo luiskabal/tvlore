@@ -129,6 +129,7 @@ docs/
 - [Project Handbook](docs/project-handbook.md)
 - [Feature Catalog](docs/feature-catalog.md)
 - [Service Map](docs/service-map.md)
+- [Code Tour](docs/code-tour.md)
 - [Backlog](docs/backlog.md)
 - [Store Metadata Pack](docs/store-metadata.md)
 - [Mobile Architecture](docs/mobile-architecture.md)
