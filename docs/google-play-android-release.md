@@ -139,6 +139,21 @@ Do not rebuild solely because the first Store tap says the item was not found.
 Rebuild only when Play Console flags the artifact or the installed app fails
 manual QA.
 
+Observed TVLore case on August 21, 2026:
+
+```text
+Console: Internal testing track is Active.
+Release: 2 (1.0.0), version code 2.
+Tester page: account accepted as tester for com.luiskabal.tvlore (unreviewed).
+Android Play Store: "No se encontro el elemento" after tapping Download test app.
+```
+
+Treat that exact combination as a distribution-state issue first. The app
+bundle was accepted and rolled out to the internal track, so the next checks are
+account/device propagation and Play review/listing status, not code changes.
+The safest response is to wait, retry from the same tester account, and inspect
+Publishing overview before uploading another bundle.
+
 ## App Content Checklist
 
 Complete these in Play Console under Policy and programs -> App content:
