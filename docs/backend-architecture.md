@@ -15,7 +15,13 @@ src/
 |   `-- episodes/
 |
 |-- tracking/
+|-- preferences/
+|-- reflections/
+|-- watchlist/
 |-- library/
+|-- recommendations/
+|-- discovery/
+|-- watch-paths/
 |
 `-- integrations/
     `-- tmdb/
@@ -24,7 +30,6 @@ src/
 Future modules may include:
 
 ```text
-ratings/
 social/
 matches/
 notifications/
@@ -110,6 +115,8 @@ src/
 |-- watch-paths/
 |   |-- watch-paths.controller.ts
 |   |-- watch-paths.data.ts
+|   |-- watch-paths-input.ts
+|   |-- watch-paths.repository.ts
 |   |-- watch-paths.service.ts
 |   |-- watch-paths.types.ts
 |   `-- __tests__/
@@ -117,7 +124,10 @@ src/
 |-- __tests__/
 |-- progress.ts
 |-- config.ts
+|-- health.controller.ts
+|-- legal.controller.ts
 |-- prisma.service.ts
+|-- root.controller.ts
 `-- app.module.ts
 ```
 
@@ -291,10 +301,14 @@ hydration before making mobile wait for every row.
 Use transactions for operations that must stay consistent:
 
 - Creating a user and user identity.
-- Refresh-token rotation.
 - Resolving a catalog entity plus external identifiers.
 - Marking watched and returning updated progress.
 - Deleting watch records and returning updated progress.
+- Bulk-marking a season or full show watched/unwatched.
+- Writing a rating plus its related post-watch reflection.
+- Creating or importing a user-owned Watch Path plus ordered items.
+- Saving every item in a Watch Path to watchlist.
+- Deleting a TVLore account's private user-owned data.
 
 ## Authorization
 
