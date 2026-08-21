@@ -10,6 +10,58 @@ Status legend:
 - `Partial`: implemented but blocked by external setup, review, or release QA.
 - `Deferred`: intentionally outside v1.0.
 
+## v1 Product Loop
+
+The implemented v1 loop is private and user-owned:
+
+```mermaid
+flowchart LR
+  Login[Sign in]
+  Search[Search or discover]
+  Detail[Open detail]
+  Intent[Save or watch]
+  Reflect[Rate and reflect]
+  Library[Review Library]
+  Taste[Improve recommendations]
+
+  Login --> Search
+  Search --> Detail
+  Detail --> Intent
+  Intent --> Reflect
+  Reflect --> Library
+  Library --> Taste
+  Taste --> Search
+```
+
+This loop defines what counts as release-critical:
+
+| Step | Release-critical behavior |
+| --- | --- |
+| Sign in | Google auth returns to the app and restores the session after restart. |
+| Search or discover | Search, picks, recommendations, available-to-stream, and popular rows open details. |
+| Open detail | Show, movie, season, and episode screens load from backend-owned IDs. |
+| Save or watch | Watchlist, movie watched, episode watched, season watched, and full-show watched mutate backend state. |
+| Rate and reflect | Star rating, emotion, favorite character, and optional comment save without blocking watched state. |
+| Review Library | Library refreshes counts and rows without manual refresh after returning. |
+| Improve recommendations | Recommendation inputs come from explicit ratings and hydrated catalog data. |
+
+Everything outside this loop is either hardening, store compliance, or post-1.0
+product expansion.
+
+## Ready Criteria
+
+A feature is `Ready` only when these are true:
+
+- The backend endpoint or provider boundary exists.
+- The mobile surface calls the backend through a hook/API-client boundary.
+- The flow works with a Supabase-authenticated user.
+- The user-visible state can recover from loading or errors.
+- The feature appears in release smoke or backlog documentation when it affects
+  the v1 path.
+
+Features can still be visually polished after they are `Ready`; polish alone
+does not change the product status.
+
 ## 1. Account And Profile
 
 | Feature | Status | User behavior | Backend/API | Mobile surface |
