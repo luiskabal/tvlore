@@ -1,5 +1,8 @@
 # Domain Model
 
+This document captures the conceptual modeling decisions. For the current
+implemented table-by-table map, see [Data Model Map](data-model-map.md).
+
 TVLore separates external catalog metadata from TVLore-owned product data.
 
 ## Data Ownership
@@ -44,7 +47,7 @@ Provider metadata should not determine application identity.
 
 ## Internal Identifiers
 
-Tvlore entities should use internal UUIDs.
+TVLore entities should use internal UUIDs.
 
 TMDB IDs must not be exposed as TVLore's permanent domain identity. Provider IDs are mappings, not primary identity.
 
@@ -297,13 +300,10 @@ Unique constraint:
 
 - `(entityType, provider, providerId)`
 
-## Future Concepts
+## Deferred Concepts
 
 Do not create these tables in the MVP unless promoted into scope:
 
-- Rating.
-- Favorite.
-- Watchlist.
 - Friendship.
 - MatchShareToken.
 - MatchSession.
