@@ -1108,26 +1108,30 @@ Search screen
 -> detail screens can PUT /shows|movies|episodes/:id/reflection after watched state is saved
 ```
 
-The remaining near-term frontend product flow is:
+The remaining near-term product flow is:
 
 ```text
-Richer loading and mutation feedback
--> recommendation quality from stronger behavior signals
--> social matching after the personal library loop stays stable
+Play internal install
+-> Android manual QA
+-> store screenshots and Play app-content forms
+-> closed testing gate if required
 ```
 
 ## 14. Recommended Next Step
 
-Add stronger recommendation signals from watch behavior:
+Confirm the Android internal testing install path:
 
 ```text
-Track completed shows, watched movies, and ratings
--> derive preferred genres and media balance
--> tune recommendation reasons for "because you watched/rated X"
+Open Play tester opt-in link
+-> install from Google Play
+-> run release smoke on the Play-installed build
+-> record blockers only
 ```
 
 Why this is next:
 
-- Watched history, watchlist, ratings, and bulk tracking now cover the core personal-library loop.
-- Recommendations now use explicit ratings, hydrated catalog rows, genre names, media affinity, user-country streaming availability, and an explainable TVLore score.
-- Deeper behavior signals can improve suggestions without adding social complexity yet.
+- The personal-library product loop is already broad enough for Android 1.0.
+- The current risk is distribution and release quality, not missing product
+  imagination.
+- Recommendation tuning, social matching, and larger UX experiments should stay
+  behind the Android release gates unless they fix a blocker.
