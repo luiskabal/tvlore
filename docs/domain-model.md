@@ -445,7 +445,9 @@ Unique constraints:
 
 ### ExternalIdentifier
 
-Maps internal entities to provider identifiers.
+Maps internal catalog entities to provider identifiers. In the current
+implementation this is used for `show` and `movie` records. The table shape is
+generic enough to support more entity types later if needed.
 
 Fields:
 
@@ -476,7 +478,8 @@ Do not create these tables in the MVP unless promoted into scope:
 
 `ExternalIdentifier` is a polymorphic provider mapping. It stores `entityType`
 and `entityId`, so the relationships shown below are conceptual domain
-relationships, not database-level foreign keys.
+relationships, not database-level foreign keys. Current code writes provider
+identifiers for shows and movies.
 
 ```mermaid
 erDiagram
@@ -512,8 +515,6 @@ erDiagram
   USER_WATCH_PATH ||--o{ USER_WATCH_PATH_ITEM : contains
 
   SHOW ||--o{ EXTERNAL_IDENTIFIER : maps
-  SEASON ||--o{ EXTERNAL_IDENTIFIER : maps
-  EPISODE ||--o{ EXTERNAL_IDENTIFIER : maps
   MOVIE ||--o{ EXTERNAL_IDENTIFIER : maps
 
   USER {
