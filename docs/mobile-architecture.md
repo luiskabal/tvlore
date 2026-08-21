@@ -105,10 +105,17 @@ The mobile app now follows this smaller version of the target shape:
 app/
 |-- _layout.tsx
 |-- index.tsx
+|-- available.tsx
+|-- check-in.tsx
 |-- search.tsx
 |-- library.tsx
 |-- paths.tsx
+|-- picks.tsx
+|-- popular.tsx
 |-- profile.tsx
+|-- recommendations.tsx
+|-- auth/
+|   `-- callback.tsx
 |-- paths/
 |   `-- [id].tsx
 |-- movies/
@@ -188,13 +195,22 @@ src/
 |
 |-- ui/
 |   |-- AppText.tsx
+|   |-- BackButton.tsx
 |   |-- Badge.tsx
 |   |-- Button.tsx
+|   |-- CalloutRow.tsx
+|   |-- EmptyState.tsx
+|   |-- IconButton.tsx
 |   |-- MediaRow.tsx
+|   |-- PageHeader.tsx
 |   |-- PosterImage.tsx
+|   |-- RatingStars.tsx
+|   |-- Screen.tsx
+|   |-- SegmentedControl.tsx
 |   |-- Skeleton.tsx
 |   |-- StatCard.tsx
 |   |-- StillImage.tsx
+|   |-- Surface.tsx
 |   |-- index.ts
 |   `-- tokens.ts
 |
@@ -261,12 +277,14 @@ The Library route renders `LibraryOverview`. The Profile route renders
 `HoloProfileCard`. The card uses Supabase Google avatar metadata when available
 and keeps the holo/tilt effect inside presentation code.
 
-`src/ui` owns the first reusable visual pool: tokens, text, buttons, badges,
-skeleton blocks, stat cards, poster frames, still-image frames, and media rows.
-Library, Search, catalog detail, and season detail use this pool for repeated
-visual patterns. These components are presentation-only. They do not fetch
-data, resolve catalog IDs, calculate progress, or own domain-specific mutation
-logic.
+`src/ui` owns the reusable visual pool: tokens, screen scaffolding, page
+headers, back buttons, text, buttons, icon buttons, badges, callout rows,
+surfaces, segmented controls, skeleton blocks, empty states, stat cards, poster
+frames, still-image frames, rating stars, and media rows. Library, Search,
+Paths, Profile, catalog detail, season detail, episode detail, and check-in
+surfaces should reuse this pool for repeated visual patterns. These components
+are presentation-only. They do not fetch data, resolve catalog IDs, calculate
+progress, or own domain-specific mutation logic.
 
 Search renders a `TVLore Picks` entry card. The editorial list lives in
 `TvlorePicksScreen`. `useTvlorePicks` loads only `GET /discovery/picks`,
