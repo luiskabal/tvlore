@@ -1,5 +1,39 @@
 # Stack
 
+This document explains the current TVLore technology choices and why each one
+exists. It is intentionally practical: if a tool is not needed for Android 1.0,
+it should not appear in the runtime path.
+
+## Current Stack Snapshot
+
+| Layer | Current choice | Role in TVLore |
+| --- | --- | --- |
+| Mobile app | React Native, Expo SDK 54, Expo Router, TypeScript | Native mobile UI, navigation, auth callback handling, local interaction state. |
+| Mobile build | EAS Build | Produces Android APKs for preview QA and AABs for Google Play. |
+| Android distribution | Google Play Console | Internal testing, closed testing, and future production release. |
+| Backend | NestJS modular monolith, TypeScript | Domain rules, auth verification, persistence, provider orchestration, public legal pages. |
+| API hosting | Vercel Functions | Production API deployment at `https://tvlore-api.vercel.app`. |
+| Database | Supabase Postgres | TVLore users, identities, catalog rows, tracking, ratings, reflections, and paths. |
+| ORM | Prisma | Typed database access and migrations. |
+| Auth/session | Supabase Auth | Google OAuth, future Apple provider, access tokens, refresh sessions. |
+| Media provider | TMDB | Catalog search/detail, images, cast, ratings, discovery, and watch-provider data. |
+| Shared contracts | TypeScript and Zod | Shared transport DTOs and runtime response/request validation. |
+| Tests | Vitest, TypeScript checks, smoke scripts | Fast validation for API, mobile pure logic, envs, and deployed routes. |
+| Source control | GitHub | Version history, rollback trail, Vercel deploy source, EAS build source. |
+
+## Runtime Shape
+
+```text
+Expo mobile app
+-> Supabase Auth for login/session
+-> TVLore API on Vercel
+-> Supabase Postgres for product data
+-> TMDB for provider catalog data
+```
+
+The mobile app never receives database credentials, Supabase service-role keys,
+or the TMDB access token.
+
 ## Mobile Stack
 
 ### React Native
@@ -64,6 +98,20 @@ AsyncStorage stores non-sensitive persistent preferences such as theme, onboardi
 
 It is unencrypted and must not store credentials, refresh tokens, access tokens, provider secrets, or private viewing data.
 
+### EAS Build
+
+EAS Build produces the mobile artifacts used for release-like testing.
+
+For Android:
+
+```text
+Preview QA -> APK
+Google Play -> AAB
+```
+
+Use APKs for direct install checks. Use AABs for Google Play tracks because
+Google Play generates optimized device-specific APKs from the bundle.
+
 ## Backend Stack
 
 ### NestJS
@@ -78,11 +126,33 @@ Use strict TypeScript on the backend. Domain services, use cases, repositories, 
 
 PostgreSQL is the primary database. It is relational, mature, transaction-safe, and well-suited for identity, catalog references, watch history, privacy settings, and future comparison queries.
 
+### Supabase Postgres
+
+Supabase hosts the Postgres database. TVLore uses it as infrastructure, not as
+the owner of product rules. The backend still owns identity mapping, library
+state, progress, tracking semantics, and authorization.
+
+### Prisma
+
+Prisma provides migrations and typed database access.
+
+Use it for persistence boundaries inside repositories. Do not leak Prisma models
+directly into mobile contracts.
+
 ### REST
 
 REST is the initial API style. It is simple, cache-friendly, mobile-friendly, easy to debug, and sufficient for MVP resources.
 
 Do not add GraphQL until there is a concrete API composition problem.
+
+### Vercel
+
+Vercel hosts the NestJS API as the production backend runtime.
+
+Use it because the current API is a single deployable modular monolith with
+simple HTTP traffic, environment-variable support, and GitHub-backed deploys.
+
+Keep production env vars in Vercel only. Do not commit real secrets.
 
 ### TMDB Integration
 
@@ -93,6 +163,42 @@ TMDB is the initial media catalog provider. It must be accessed only by the back
 Google proves external identity. TVLore owns application identity.
 
 Do not use Gmail API.
+
+### Supabase Auth
+
+Supabase Auth owns OAuth/session issuance. TVLore accepts Supabase access tokens
+on protected backend routes and resolves them into internal TVLore users.
+
+Google is the active provider. Apple Sign-In is wired in mobile but still needs
+Apple Developer and Supabase provider setup for release-like iOS testing.
+
+### Google Play Console
+
+Google Play Console owns Android distribution.
+
+Current lane:
+
+```text
+EAS production AAB -> Play internal testing -> Android device QA -> closed
+testing if required -> production access -> public release
+```
+
+For a new personal Play developer account, closed testing with 12 opted-in
+testers for 14 days may be required before public production access.
+
+## Development And Verification Tooling
+
+| Tool | Use |
+| --- | --- |
+| `pnpm` workspaces | Monorepo install/scripts. |
+| TypeScript | Compile-time contract and implementation checks. |
+| Vitest | API unit tests and mobile pure-logic tests. |
+| Postman | Manual API exploration with Supabase OAuth tokens. |
+| `api:check` | Local/Vercel HTTP smoke checks. |
+| `env:check` | Local and Vercel env-name validation. |
+| `eas:env:check` | EAS remote env-name validation. |
+| `release:android:smoke` | Android release-lane smoke before Play builds. |
+| `release:preflight` | Release guard for env leaks, dev-only diagnostics, public URLs, and obvious secrets. |
 
 ## Explicitly Excluded from MVP
 
@@ -106,6 +212,15 @@ Do not use Gmail API.
 - GraphQL.
 - CQRS frameworks.
 - Event sourcing.
+- Global server-state store in mobile.
+- Offline mutation queue.
+- Public social infrastructure.
+
+Why they are excluded:
+
+The current problem is a private entertainment tracker, not a distributed
+social platform. These tools add operational and cognitive cost before TVLore
+has the release pressure that would justify them.
 
 ## References Consulted
 
