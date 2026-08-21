@@ -266,7 +266,7 @@ Current Play Console state:
 - Google Play developer identity is verified.
 - TVLore app record exists.
 - Internal testing track is active.
-- Release `2 (1.0.0)` is rolled out to internal testers.
+- Release `3 (1.0.0)` is rolled out to internal testers.
 - The first uploaded artifact is an EAS production AAB.
 - Google Play may show the app as `unreviewed` while the listing/release
   propagates.

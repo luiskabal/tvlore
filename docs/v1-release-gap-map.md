@@ -15,7 +15,7 @@ For TVLore, Android 1.0 has three levels:
 
 | Level | Meaning | Current state |
 | --- | --- | --- |
-| Internal testing build | A Play-distributed build that trusted testers can install. | In progress: release `2 (1.0.0)` is active, but Play install availability still needs verification on device. |
+| Internal testing build | A Play-distributed build that trusted testers can install. | In progress: release `3 (1.0.0)` is active, but Play install availability still needs verification on device. |
 | Release candidate | The internal/closed build passes manual QA, store forms are complete, and no blocker bugs remain. | Not yet. |
 | Public production | Google Play approves production access and the app is visible publicly. | Not yet. |
 
@@ -151,4 +151,3 @@ do it before Android 1.0.
 
 If it makes the product cooler but does not reduce release risk, defer it.
 ```
-

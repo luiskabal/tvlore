@@ -11,7 +11,7 @@ Status on August 21, 2026:
 | Product loop | Working | A signed-in user can search, open titles, save to watchlist, mark watched, rate, check in, and see Library updates. |
 | Backend | Deployed | The NestJS API runs on Vercel and uses Supabase Postgres, Supabase Auth, and TMDB through server-side env vars. |
 | Mobile app | Functional | Expo/React Native app has Library, Search, Paths, Profile, detail screens, post-watch check-in, and reusable UI primitives. |
-| Android release | Internal testing | Google Play app exists, AAB version code 2 is on the internal testing track, and tester opt-in is available. Store install may still be propagating/reviewing. |
+| Android release | Internal testing | Google Play app exists, AAB version code 3 is on the internal testing track, and tester opt-in is available. Store install may still be propagating/reviewing. |
 | iOS release | Blocked | Apple Sign-In is wired in code, but Apple Developer membership/provider setup is blocked until Apple account renewal. |
 | Public store 1.0 | Not yet | Play closed testing, screenshots, Data Safety, review access, and final QA still need completion before production access. |
 

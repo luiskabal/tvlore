@@ -15,7 +15,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Expo mobile app can consume the deployed API from device builds.
 - Mobile EAS build profiles exist for development, preview, and production builds.
 - Google Play developer identity is verified.
-- Android package `com.luiskabal.tvlore` has an internal testing release `2 (1.0.0)` uploaded through a production AAB.
+- Android package `com.luiskabal.tvlore` has an internal testing release `3 (1.0.0)` uploaded through a production AAB.
 
 ## Current Features
 

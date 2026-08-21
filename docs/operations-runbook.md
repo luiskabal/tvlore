@@ -233,7 +233,7 @@ Current internal testing state:
 
 ```text
 Track: Internal testing
-Release: 2 (1.0.0)
+Release: 3 (1.0.0)
 Distribution: invited internal testers
 ```
 

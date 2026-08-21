@@ -9,7 +9,6 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 - [ ] Fill closed Android tester list and feedback channel outside git.
 - [ ] Continue removing release-blocking development affordances before store submission.
 - [ ] Continue applying reusable mobile UI primitives only when a screen gets new UX work.
-- [ ] Configure a Google Play service account JSON for automated EAS submit. Keep the JSON outside git.
 - [ ] Run account-deletion QA on a disposable account now that `SUPABASE_SERVICE_ROLE_KEY` is configured in Vercel.
 - [ ] Add Android deobfuscation mapping upload before production release hardening.
 
@@ -23,6 +22,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 - [x] Fix Android Google OAuth callback recovery when the session is saved but the callback route does not receive a usable URL.
 - [x] Generate Android production AAB version code `3` with the Android OAuth callback fix.
 - [x] Add Android EAS submit scripts for automated Play internal-track uploads.
+- [x] Configure Google Play service account JSON in EAS and submit Android version code `3` to internal testing.
 - [x] Apply reusable mobile UI primitives to secondary Search discovery, Watch Paths, catalog detail, season, episode, and check-in routes.
 - [x] Create the Google Play app record and roll out the first internal testing release.
 - [x] Apply reusable mobile UI molecules to Search discovery cards, filters, empty states, and list skeletons.

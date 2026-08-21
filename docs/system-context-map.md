@@ -182,7 +182,7 @@ Current state:
 - Backend is deployed on Vercel.
 - Supabase Auth/Postgres are wired.
 - Android app exists in Google Play Console.
-- Internal testing release `2 (1.0.0)` is active.
+- Internal testing release `3 (1.0.0)` is active.
 - The tester install surface may still show "item not found" during Play
   review/propagation.
 - Closed testing and store content forms remain before public Android

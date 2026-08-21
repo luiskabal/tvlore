@@ -99,7 +99,7 @@ Current Android internal testing baseline:
 | --- | --- |
 | Track | Internal testing |
 | Status | Active |
-| Release | `2 (1.0.0)` |
+| Release | `3 (1.0.0)` |
 | Android package | `com.luiskabal.tvlore` |
 | Track visibility | Available to invited internal testers |
 | Play listing state | Temporary app name may show as `com.luiskabal.tvlore (unreviewed)` until Google finishes review/processing |
@@ -143,7 +143,7 @@ Observed TVLore case on August 21, 2026:
 
 ```text
 Console: Internal testing track is Active.
-Release: 2 (1.0.0), version code 2.
+Release: 3 (1.0.0), version code 3.
 Tester page: account accepted as tester for com.luiskabal.tvlore (unreviewed).
 Android Play Store: "No se encontro el elemento" after tapping Download test app.
 ```
