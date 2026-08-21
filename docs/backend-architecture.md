@@ -60,7 +60,9 @@ src/
 |-- catalog/
 |   |-- catalog.controller.ts
 |   |-- catalog-cast.ts
+|   |-- catalog-collection.ts
 |   |-- catalog-detail.ts
+|   |-- catalog-response.mapper.ts
 |   |-- catalog-watch-providers.ts
 |   |-- catalog.repository.ts
 |   |-- catalog-resolve.ts
@@ -103,6 +105,7 @@ src/
 |   |-- recommendations.controller.ts
 |   |-- recommendations.repository.ts
 |   |-- recommendations.service.ts
+|   |-- recommendation-scoring.ts
 |   `-- recommendations.types.ts
 |
 |-- discovery/
@@ -136,6 +139,26 @@ The rule is:
 ```text
 Controller -> Service / use case -> Repository or provider -> external system
 ```
+
+## Module Responsibility Map
+
+| Module | Owns | Must not own |
+| --- | --- | --- |
+| `auth` | Supabase bearer-token validation and authenticated-user shape. | Product profile mutations or UI session storage. |
+| `users` | TVLore user upsert, profile settings, account deletion readiness/deletion. | Catalog behavior, watch history, or mobile-only preferences. |
+| `catalog` | TMDB search/resolve/detail/cast/watch-provider normalization and catalog persistence. | User-owned tracking rules beyond reading user state for detail responses. |
+| `tracking` | Watched/unwatched mutations for movies, episodes, seasons, and full shows. | Ratings, reflections, or watchlist intent. |
+| `watchlist` | Saved intent to watch later for shows/movies. | Watched state or ratings. |
+| `preferences` | Explicit 1-5 user ratings for shows/movies/episodes. | Reflection comments or provider public ratings. |
+| `reflections` | Post-watch reaction, favorite character, optional comment, and related preference write. | Public/social aggregation. |
+| `library` | User library summary, chronology, grouped episodes, progress projections. | Mutations except through downstream modules. |
+| `recommendations` | TVLore recommendation candidate selection and score. | Provider search UI state. |
+| `discovery` | Popular/available/editorial discovery rows for a user's country. | Personalized recommendation scoring. |
+| `watch-paths` | Curated/user imported paths and bulk save-to-watchlist flow. | Playback progress or rating semantics. |
+
+This table is a navigation aid, not a second source of truth. If a module needs
+behavior from another module, prefer an explicit service/repository dependency
+over duplicating the rule.
 
 For example, `GET /users/me` and `PATCH /users/me` are split as:
 
@@ -295,6 +318,10 @@ hydration before making mobile wait for every row.
 - Put business rules near the domain they govern.
 - Do not create a shared "utils" dumping ground.
 - Prefer explicit dependencies.
+- Keep backend tests in `__tests__` folders near the module or at `src/__tests__`
+  when the behavior crosses modules.
+- Keep pure parsers/mappers/scoring functions testable without Nest, Prisma, or
+  HTTP wiring.
 
 ## Transactions
 
