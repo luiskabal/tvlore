@@ -2,6 +2,7 @@
 
 TVLore is a mobile-first entertainment tracking application for shows, seasons, episodes, and movies.
 
+The project handbook lives in [docs/project-handbook.md](docs/project-handbook.md).
 The architecture baseline lives in [docs/README.md](docs/README.md).
 The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastructure.md).
 
@@ -125,6 +126,7 @@ docs/
 ## Useful Docs
 
 - [Current State](docs/current-state.md)
+- [Project Handbook](docs/project-handbook.md)
 - [Backlog](docs/backlog.md)
 - [Store Metadata Pack](docs/store-metadata.md)
 - [Mobile Architecture](docs/mobile-architecture.md)
