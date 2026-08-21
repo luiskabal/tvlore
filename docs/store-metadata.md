@@ -18,6 +18,46 @@ release candidate.
 | Terms URL | `https://tvlore-api.vercel.app/terms` |
 | Account deletion URL | `https://tvlore-api.vercel.app/account-deletion` |
 
+## Current Android Store State
+
+Use this as the current Play Console baseline:
+
+| Field | Current value |
+| --- | --- |
+| Developer account | Personal account |
+| Identity verification | Verified |
+| Android app record | Created |
+| Android package | `com.luiskabal.tvlore` |
+| Default language | English (United States) - `en-US` |
+| App or game | App |
+| Pricing | Free |
+| Track | Internal testing |
+| Release | `2 (1.0.0)` |
+| Version code | `2` |
+| Bundle format | Android App Bundle (`.aab`) |
+| Current install blocker | Play Store may still show the item as unavailable while the internal listing is unreviewed or propagating. |
+
+Android 1.0 currently means an internal/closed-testable Play build, not public
+production. Public production is a later gate after closed testing, Play review,
+store forms, screenshots, and required tester windows are complete.
+
+## Play Console Fields Still To Finish
+
+Keep these in Play Console, not in git when they include private contact data or
+credentials:
+
+| Area | Status | Source of truth |
+| --- | --- | --- |
+| Internal tester list | In Play Console only | Private tester roster outside git |
+| Reviewer login credentials | Pending | Play Console App access field only |
+| Store listing graphics | Pending | Screenshots from release-like Android build |
+| Data safety | Pending | [Data Inventory](data-inventory.md) |
+| Content rating | Pending | Play Console questionnaire |
+| App access/sign-in details | Pending | [Store Reviewer Notes](store-reviewer-notes.md) |
+| Target audience | Pending | Adult/non-children positioning |
+| Support/developer contact email | Pending | Prefer a dedicated support alias, not a personal inbox if possible |
+| Deobfuscation mapping | Deferred | [Google Play Android Release Prep](google-play-android-release.md) |
+
 ## Short Copy
 
 Use this for subtitles, short descriptions, and first-line store copy:
@@ -61,8 +101,9 @@ tv tracker, movie tracker, show tracker, watchlist, episodes, series, streaming,
 
 ## Screenshot Set
 
-Capture screenshots from a preview or production build, not from a local debug
-session.
+Capture screenshots from a preview or production Android build, not from a local
+debug session or Expo Go. The screenshots should show the release UX, not
+developer diagnostics.
 
 | Slot | Screen | What it should show |
 | --- | --- | --- |
@@ -73,6 +114,33 @@ session.
 | 5 | Check-in | Star rating, emotion, favorite-character picker, and optional note field. |
 | 6 | Watch Paths | Curated or personal ordered path with posters and saved state. |
 | 7 | Profile | Country preference plus Privacy, Terms, Support, and account deletion links. |
+
+## Feature Claim Boundaries
+
+Store text and screenshots may claim these v1.0 behaviors:
+
+- Private Google-authenticated library.
+- Search for shows and movies.
+- Show, season, episode, and movie tracking.
+- Watchlist.
+- Star ratings for shows, movies, and episodes.
+- Private post-watch check-ins with emotion, favorite character, and optional
+  notes.
+- Country-aware Where to Watch provider icons and attribution.
+- Curated and imported Watch Paths.
+- Personalized recommendations, Popular in your country, Available in your
+  country, and TVLore Picks.
+- Public Privacy, Terms, Support, and Account deletion pages.
+
+Do not claim these until they are implemented and reviewed:
+
+- Public social feeds or comments.
+- Friend matching, QR sharing, or TVLore Match.
+- Push notifications.
+- Paid subscriptions, purchases, or monetization.
+- Offline mode.
+- Family/children-specific design.
+- Production iOS availability.
 
 ## Screenshot Rules
 
