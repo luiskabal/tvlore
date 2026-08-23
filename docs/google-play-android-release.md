@@ -99,8 +99,8 @@ Current Android internal testing baseline:
 | --- | --- |
 | Track | Internal testing |
 | Status | Active |
-| Release | `7 (1.0.0)` |
-| Version code | `7` |
+| Release | `8 (1.0.0)` |
+| Version code | `8` |
 | Android package | `com.luiskabal.tvlore` |
 | Track visibility | Available to invited internal testers |
 | Play install | Confirmed from the tester opt-in flow |
@@ -159,7 +159,7 @@ Publishing overview before uploading another bundle.
 Current TVLore state on August 23, 2026:
 
 ```text
-Release: 7 (1.0.0), version code 7.
+Release: 8 (1.0.0), version code 8.
 Tester install from Google Play internal testing is confirmed.
 Next gate: Android manual QA from the Play-installed build.
 ```
@@ -167,13 +167,13 @@ Next gate: Android manual QA from the Play-installed build.
 Latest internal release:
 
 ```text
-Release: 7 (1.0.0), version code 7.
-Git commit: 127a2b3.
-EAS build ID: 92f13dca-4f4f-41b5-bc46-f292fb8207b6.
-EAS submission ID: 9d2c5d47-f2e1-40a6-9e88-d31cf882ff6c.
-AAB artifact: https://expo.dev/artifacts/eas/s5S9LOQnnvK_YSHe4GnX-XqGXCVg8mYQnms9mz-RLzU.aab
-Purpose: keep bottom tabs visible on secondary/detail routes and enable stack
-swipe-back gestures where the platform supports them.
+Release: 8 (1.0.0), version code 8.
+Git commit: 51436f0.
+EAS build ID: 30f5d81b-e475-420d-b5e4-ecffb2804e60.
+EAS submission ID: f7be05ea-35ab-4e07-9db3-b0a6b46e2ab1.
+AAB artifact: https://expo.dev/artifacts/eas/7U3ikjz0Vygm3YxcM_YpaIPVkedei3Q_IIXCcBqbmhs.aab
+Purpose: add app-level edge-pan back gestures and enable Android predictive
+back for secondary/detail routes.
 ```
 
 ## App Content Checklist

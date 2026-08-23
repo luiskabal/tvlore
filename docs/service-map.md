@@ -205,7 +205,7 @@ changes.
 
 - Backend production API is deployed on Vercel.
 - Supabase Auth, Supabase Postgres, and TMDB are wired.
-- Android internal testing release `7 (1.0.0)` has been created in Google Play.
+- Android internal testing release `8 (1.0.0)` has been created in Google Play.
 - Tester install from the Google Play internal testing flow has been confirmed.
 - Closed testing is still expected before production access for a new personal
   Play Console account.
