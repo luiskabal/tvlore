@@ -99,9 +99,11 @@ Current Android internal testing baseline:
 | --- | --- |
 | Track | Internal testing |
 | Status | Active |
-| Release | `3 (1.0.0)` |
+| Release | `5 (1.0.0)` |
+| Version code | `5` |
 | Android package | `com.luiskabal.tvlore` |
 | Track visibility | Available to invited internal testers |
+| Play install | Confirmed from the tester opt-in flow |
 | Play listing state | Temporary app name may show as `com.luiskabal.tvlore (unreviewed)` until Google finishes review/processing |
 
 If a tester can open the opt-in page but Play Store says the item was not
@@ -139,7 +141,7 @@ Do not rebuild solely because the first Store tap says the item was not found.
 Rebuild only when Play Console flags the artifact or the installed app fails
 manual QA.
 
-Observed TVLore case on August 21, 2026:
+Historical TVLore case on August 21, 2026:
 
 ```text
 Console: Internal testing track is Active.
@@ -153,6 +155,14 @@ bundle was accepted and rolled out to the internal track, so the next checks are
 account/device propagation and Play review/listing status, not code changes.
 The safest response is to wait, retry from the same tester account, and inspect
 Publishing overview before uploading another bundle.
+
+Current TVLore state on August 23, 2026:
+
+```text
+Release: 5 (1.0.0), version code 5.
+Tester install from Google Play internal testing is confirmed.
+Next gate: Android manual QA from the Play-installed build.
+```
 
 ## App Content Checklist
 
@@ -400,7 +410,6 @@ build.
 
 ## Open Items
 
-- Verify the internal testing download link after Play propagation/review.
 - Prepare the closed-testing tester email list and feedback channel.
 - Add reviewer Google credentials in Play Console only.
 - Capture screenshots from a preview or production Android build.

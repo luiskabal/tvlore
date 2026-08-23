@@ -15,7 +15,7 @@ For TVLore, Android 1.0 has three levels:
 
 | Level | Meaning | Current state |
 | --- | --- | --- |
-| Internal testing build | A Play-distributed build that trusted testers can install. | In progress: release `3 (1.0.0)` is active, but Play install availability still needs verification on device. |
+| Internal testing build | A Play-distributed build that trusted testers can install. | Ready: release `5 (1.0.0)` is active and tester install from Play has been confirmed on device. |
 | Release candidate | The internal/closed build passes manual QA, store forms are complete, and no blocker bugs remain. | Not yet. |
 | Public production | Google Play approves production access and the app is visible publicly. | Not yet. |
 
@@ -51,8 +51,8 @@ flowchart LR
 Current position:
 
 ```text
-EAS production AAB uploaded -> Play internal testing active -> waiting for
-confirmed tester install and full Android device QA.
+EAS production AAB uploaded -> Play internal testing active -> tester install
+confirmed -> full Android device QA and Play app-content gates pending.
 ```
 
 ## 3. Ready Now
@@ -80,7 +80,7 @@ Android 1.0 candidate.
 
 | Gate | Why it matters | Next proof |
 | --- | --- | --- |
-| Play internal install | The app must install from Google Play, not only from a local APK. | Opt-in tester can tap Download test app and install TVLore from Play. |
+| Play internal install | The app must install from Google Play, not only from a local APK. | Done: opt-in tester can tap Download test app and install TVLore from Play. |
 | Android manual QA | Store-distributed builds can expose auth, deep-link, network, and packaging issues that local dev builds hide. | Run `docs/release-smoke-checklist.md` on the Play build. |
 | Google auth callback | The release build must return from Supabase/Google OAuth into the app. | Log in from the installed Play build, cold restart, and keep the session. |
 | Core loop QA | v1.0 is the private tracking loop. | Search -> detail -> watchlist -> watched -> check-in -> Library refresh works. |
@@ -131,15 +131,14 @@ causes a severe first-session failure.
 
 Do these in order:
 
-1. Confirm the Play internal testing install works on Android.
-2. Run Android manual QA from `docs/release-smoke-checklist.md`.
-3. Record only blocker or major bugs in `docs/backlog.md`.
-4. Fix blocker bugs in small commits and rebuild only when needed.
-5. Capture store screenshots from a release-like build.
-6. Complete Play Console app content, Data safety, Content rating, App access,
+1. Run Android manual QA from `docs/release-smoke-checklist.md`.
+2. Record only blocker or major bugs in `docs/backlog.md`.
+3. Fix blocker bugs in small commits and rebuild only when needed.
+4. Capture store screenshots from a release-like build.
+5. Complete Play Console app content, Data safety, Content rating, App access,
    account deletion, and store listing.
-7. Move to closed testing if Play Console requires the 12-tester/14-day gate.
-8. Apply for production access after the closed-test gate is satisfied.
+6. Move to closed testing if Play Console requires the 12-tester/14-day gate.
+7. Apply for production access after the closed-test gate is satisfied.
 
 ## 9. Decision Rule
 

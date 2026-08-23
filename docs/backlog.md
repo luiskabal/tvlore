@@ -4,7 +4,6 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 
 ## Active
 
-- [ ] Verify Google Play internal testing download after Play propagation/review.
 - [ ] Capture Android store screenshots from a preview/production build using `docs/store-metadata.md`.
 - [ ] Fill closed Android tester list and feedback channel outside git.
 - [ ] Continue removing release-blocking development affordances before store submission.
@@ -19,6 +18,9 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 
 ## Done Recently
 
+- [x] Add backend-owned catalog search ranking by textual relevance and TMDB popularity/rating signals.
+- [x] Submit Android version code `5` to Google Play internal testing.
+- [x] Verify Google Play internal testing install from the tester opt-in flow.
 - [x] Fix Android Google OAuth callback recovery when the session is saved but the callback route does not receive a usable URL.
 - [x] Generate Android production AAB version code `3` with the Android OAuth callback fix.
 - [x] Add Android EAS submit scripts for automated Play internal-track uploads.

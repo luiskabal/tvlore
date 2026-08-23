@@ -201,7 +201,7 @@ Tasks:
 - [x] Run Android-focused release smoke with `corepack pnpm release:android:smoke`.
 - [ ] Capture Android screenshots from a preview/production build.
 - [x] Create the Google Play app record and roll out the first Android internal testing release.
-- [ ] Verify the Play internal tester install path from Google Play.
+- [x] Verify the Play internal tester install path from Google Play.
 - [ ] Create first iOS preview build.
 - [ ] Confirm Supabase redirect URLs for production scheme/build.
 - [x] Add Supabase Google OAuth native callback smoke check.
@@ -246,7 +246,7 @@ Tasks:
 
 - [ ] Ship TestFlight build.
 - [x] Ship Google Play internal testing build.
-- [ ] Confirm Google Play install works from the internal tester opt-in flow.
+- [x] Confirm Google Play install works from the internal tester opt-in flow.
 - If required for the personal Play Console account, run a closed testing build
   with 12 opted-in testers for 14 continuous days before production access.
 - Test fresh install, login, logout, account deletion, country update, search, watchlist, watched state, ratings, check-in, Where to Watch, Watch Paths, recommendations, Available to stream, Popular in your country.
@@ -282,14 +282,12 @@ Exit criteria:
 
 Do these next:
 
-1. Wait for the internal testing opt-in link to resolve in Google Play.
-2. Install the internal testing build on Android.
-3. Run Android manual QA from the release checklist.
-4. Capture Android screenshots from the Play/internal build.
-5. Complete Play Console app content, store listing, data-safety, and content-rating forms.
-6. Fix only Android blockers or severe UX failures.
-7. Promote to closed testing if Play Console requires the 12-tester/14-day gate.
-8. Resume iOS Sign in with Apple after Apple Developer Program renewal.
+1. Run Android manual QA from the Play-installed internal testing build.
+2. Capture Android screenshots from the Play/internal build.
+3. Complete Play Console app content, store listing, data-safety, and content-rating forms.
+4. Fix only Android blockers or severe UX failures.
+5. Promote to closed testing if Play Console requires the 12-tester/14-day gate.
+6. Resume iOS Sign in with Apple after Apple Developer Program renewal.
 
 Skip for now:
 
@@ -310,7 +308,7 @@ before TestFlight/closed testing. Quick gate:
 - [ ] Authenticated `corepack pnpm api:check` passes against Vercel.
 - [ ] iOS production build installs.
 - [x] Android production AAB uploads to Google Play internal testing.
-- [ ] Android Play-distributed internal build installs from the tester flow.
+- [x] Android Play-distributed internal build installs from the tester flow.
 - [ ] Google login works where allowed.
 - [ ] Apple login works on iOS after provider configuration.
 - [ ] Account deletion works and removes/anonymizes user-owned data.

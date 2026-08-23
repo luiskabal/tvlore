@@ -266,8 +266,9 @@ Current Play Console state:
 - Google Play developer identity is verified.
 - TVLore app record exists.
 - Internal testing track is active.
-- Release `3 (1.0.0)` is rolled out to internal testers.
-- The first uploaded artifact is an EAS production AAB.
+- Release `5 (1.0.0)` is rolled out to internal testers.
+- The uploaded artifact is an EAS production AAB.
+- Tester install from Google Play has been confirmed.
 - Google Play may show the app as `unreviewed` while the listing/release
   propagates.
 
@@ -278,19 +279,18 @@ Known non-blocking warning:
 
 Next Android gates:
 
-1. Install from the internal testing opt-in link once Play propagation finishes.
-2. Run Android manual QA from `docs/release-smoke-checklist.md`.
-3. Capture store screenshots from a release-like build.
-4. Complete Play Console app content, data safety, content rating, app access,
+1. Run Android manual QA from `docs/release-smoke-checklist.md`.
+2. Capture store screenshots from a release-like build.
+3. Complete Play Console app content, data safety, content rating, app access,
    and store listing.
-5. Promote to closed testing if Play Console requires the 12-tester/14-day
+4. Promote to closed testing if Play Console requires the 12-tester/14-day
    personal-account gate before production access.
 
 ## 12. v1.0 Remaining Work
 
 Release blockers:
 
-- Android internal Play install and manual QA.
+- Android manual QA from the Play-installed internal build.
 - Store screenshots.
 - Play Console app content forms.
 - Closed testing gate if required.

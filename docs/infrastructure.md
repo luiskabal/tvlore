@@ -228,7 +228,7 @@ of exposing partial routes with a broken database dependency.
 - Current API target for device testing: `https://tvlore-api.vercel.app`
 - EAS profiles: `development`, `preview`, and `production` in `apps/mobile/eas.json`.
 - Android package: `com.luiskabal.tvlore`.
-- Google Play internal testing release: `3 (1.0.0)`, version code `3`.
+- Google Play internal testing release: `5 (1.0.0)`, version code `5`.
 - Supabase Auth client handles Google login and stores the mobile session.
 - Supabase Auth client also supports native iOS Apple Sign-In when Apple/Supabase provider configuration is complete.
 - Core product data should still go through the backend API, not direct table access from mobile.
@@ -302,7 +302,7 @@ the selected Postman environment.
 - Mobile app can call the Vercel API from device builds.
 - Mobile EAS build profiles are configured for development, preview, and production.
 - Android internal testing is active in Google Play Console for `com.luiskabal.tvlore`.
-- EAS production AAB version `3 (1.0.0)` has been uploaded to Google Play internal testing.
+- EAS production AAB version `5 (1.0.0)` has been uploaded to Google Play internal testing and installs through the tester flow.
 - Supabase Google login works from an Expo development build.
 - Mobile has the native iOS Apple Sign-In flow wired through Supabase `signInWithIdToken`; Apple Developer and Supabase Apple provider configuration are required before release-like testing.
 - Prisma schema and initial migration exist.

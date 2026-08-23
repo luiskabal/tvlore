@@ -15,7 +15,7 @@ The current infrastructure setup lives in [docs/infrastructure.md](docs/infrastr
 - Expo mobile app can consume the deployed API from device builds.
 - Mobile EAS build profiles exist for development, preview, and production builds.
 - Google Play developer identity is verified.
-- Android package `com.luiskabal.tvlore` has an internal testing release `3 (1.0.0)` uploaded through a production AAB.
+- Android package `com.luiskabal.tvlore` has internal testing release `5 (1.0.0)` active in Google Play, and tester install from Play has been confirmed.
 
 ## Current Features
 
@@ -110,7 +110,6 @@ Use `corepack pnpm api:check` for local/Vercel HTTP smoke checks.
 
 ## Next Backlog Items
 
-- Verify Google Play internal testing download after Play propagation/review.
 - Run Android manual QA from the release smoke checklist on a real device.
 - Capture Android store screenshots from a release-like build.
 - Complete Play Console app content, Data Safety, content rating, app access, and store listing forms.

@@ -95,9 +95,8 @@ Android status:
 
 - Google Play developer identity is verified.
 - Google Play app record exists for `com.luiskabal.tvlore`.
-- Internal testing release `3 (1.0.0)` is active.
-- Play install from the tester flow still needs confirmation after
-  review/propagation.
+- Internal testing release `5 (1.0.0)` is active.
+- Play install from the tester opt-in flow is confirmed on Android.
 - Android manual QA, screenshots, app content, Data Safety, content rating, and
   closed-testing gates are still pending.
 

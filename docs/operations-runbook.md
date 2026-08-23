@@ -233,8 +233,9 @@ Current internal testing state:
 
 ```text
 Track: Internal testing
-Release: 3 (1.0.0)
+Release: 5 (1.0.0)
 Distribution: invited internal testers
+Install: confirmed from Google Play tester flow
 ```
 
 If the Play opt-in page works but the Play Store says the item was not found,
