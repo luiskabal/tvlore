@@ -2,7 +2,6 @@ import { router, usePathname } from "expo-router";
 import { useCallback, useMemo, type ReactNode } from "react";
 import { View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { runOnJS } from "react-native-reanimated";
 
 import { styles } from "./app-tab-bar-styles";
 import { navigationEdgePanWidth, navigationPanStartDistance, shouldCompleteBackPan } from "./navigation-gestures";
@@ -19,24 +18,26 @@ export function NavigationGestureSurface({ children }: { children: ReactNode }) 
 
   const backGesture = useMemo(() => {
     const leftEdgePan = Gesture.Pan()
+      .runOnJS(true)
       .enabled(!isAuthRoute)
       .hitSlop({ left: 0, width: navigationEdgePanWidth })
       .activeOffsetX([-navigationPanStartDistance, navigationPanStartDistance])
       .failOffsetY([-32, 32])
       .onEnd((event) => {
         if (event.translationX > 0 && shouldCompleteBackPan(event.translationX, event.translationY, event.velocityX)) {
-          runOnJS(navigateBack)();
+          navigateBack();
         }
       });
 
     const rightEdgePan = Gesture.Pan()
+      .runOnJS(true)
       .enabled(!isAuthRoute)
       .hitSlop({ right: 0, width: navigationEdgePanWidth })
       .activeOffsetX([-navigationPanStartDistance, navigationPanStartDistance])
       .failOffsetY([-32, 32])
       .onEnd((event) => {
         if (event.translationX < 0 && shouldCompleteBackPan(event.translationX, event.translationY, event.velocityX)) {
-          runOnJS(navigateBack)();
+          navigateBack();
         }
       });
 
