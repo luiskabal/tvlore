@@ -1,10 +1,10 @@
 import { Stack, usePathname } from "expo-router";
 import { useEffect, useRef } from "react";
-import { View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import { AppTabBar } from "../src/navigation/AppTabBar";
+import { NavigationGestureSurface } from "../src/navigation/NavigationGestureSurface";
 import { styles } from "../src/navigation/app-tab-bar-styles";
 import { getActiveTab, getTabStackScreenOptions, getVisibleTab, type AppTab } from "../src/navigation/app-tabs";
 
@@ -24,7 +24,7 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <GestureHandlerRootView style={styles.rootShell}>
-        <View style={styles.stackShell}>
+        <NavigationGestureSurface>
           <Stack
             screenOptions={{
               fullScreenGestureEnabled: true,
@@ -33,7 +33,7 @@ export default function RootLayout() {
               ...tabStackScreenOptions,
             }}
           />
-        </View>
+        </NavigationGestureSurface>
         {visibleTab ? (
           <SafeAreaView edges={["bottom"]} style={styles.tabSafeArea}>
             <AppTabBar active={visibleTab} />

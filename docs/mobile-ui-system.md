@@ -149,6 +149,9 @@ Route direction should feel spatial:
 - Pressing the active tab does nothing.
 - Secondary and detail routes keep the last active tab visible and use stack
   navigation.
+- Secondary/detail routes support edge-pan back from either screen edge. This
+  intentionally maps only to the existing back stack; forward gestures need a
+  real forward-history model before they should be added.
 
 ## Responsive Baseline
 

@@ -18,6 +18,7 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 
 ## Done Recently
 
+- [x] Add app-level edge-pan back gestures for secondary/detail mobile routes.
 - [x] Submit Android version code `7` to Google Play internal testing with persistent bottom navigation on secondary/detail routes.
 - [x] Keep bottom navigation visible on secondary/detail mobile routes and enable stack swipe-back gestures where the platform supports them.
 - [x] Submit Android version code `6` to Google Play internal testing with the season progress, full-show watch, chronology, and country-discovery refresh fixes.

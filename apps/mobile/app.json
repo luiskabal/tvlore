@@ -28,7 +28,7 @@
         "backgroundColor": "#f7f4ee"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": true
     },
     "experiments": {
       "typedRoutes": true

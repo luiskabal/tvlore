@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { getActiveTab, getTabStackScreenOptions, getVisibleTab } from "./app-tabs";
+import { isBackPanStart, shouldCompleteBackPan } from "./navigation-gestures";
 
 describe("app tabs", () => {
   it("maps root tab routes to active tabs", () => {
@@ -52,5 +53,21 @@ describe("app tabs", () => {
 
   it("hides tabs during auth callback routes", () => {
     expect(getVisibleTab("/auth/callback", "profile")).toBeNull();
+  });
+});
+
+describe("navigation gestures", () => {
+  it("starts back pan only from an edge with horizontal intent", () => {
+    expect(isBackPanStart({ canGoBack: true, dx: 24, dy: 2, startX: 12, width: 390 })).toBe(true);
+    expect(isBackPanStart({ canGoBack: true, dx: -24, dy: 2, startX: 382, width: 390 })).toBe(true);
+    expect(isBackPanStart({ canGoBack: true, dx: 24, dy: 2, startX: 100, width: 390 })).toBe(false);
+    expect(isBackPanStart({ canGoBack: false, dx: 24, dy: 2, startX: 12, width: 390 })).toBe(false);
+  });
+
+  it("completes back pan only after a deliberate swipe", () => {
+    expect(shouldCompleteBackPan(90, 8, 0.6)).toBe(true);
+    expect(shouldCompleteBackPan(90, 80, 0.6)).toBe(false);
+    expect(shouldCompleteBackPan(40, 8, 0.6)).toBe(false);
+    expect(shouldCompleteBackPan(90, 8, 0.1)).toBe(false);
   });
 });
