@@ -64,6 +64,7 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
   const [reflectionAction, setReflectionAction] = useState<ReflectionActionState>({ kind: "idle" });
   const [castState, setCastState] = useState<PostWatchCastState>({ kind: "idle" });
   const movieWatchRequestId = useRef(0);
+  const showWatchRequestId = useRef(0);
   const ratingRequestId = useRef(0);
   const reflectionRequestId = useRef(0);
   const castRequestId = useRef(0);
@@ -181,6 +182,9 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
     const previousDetail = state.kind === "ready" && state.detail.mediaType === "show" && state.detail.id === showId
       ? state.detail
       : null;
+    const requestId = showWatchRequestId.current + 1;
+
+    showWatchRequestId.current = requestId;
 
     setWatchAction({ kind: "loading", watched });
 
@@ -189,6 +193,10 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
       const progress = watched
         ? await markShowWatched(token, showId)
         : await unmarkShowWatched(token, showId);
+
+      if (showWatchRequestId.current !== requestId) {
+        return false;
+      }
 
       setState((current) => {
         if (current.kind !== "ready" || current.detail.mediaType !== "show" || current.detail.id !== showId) {
@@ -207,6 +215,10 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
       setWatchAction({ kind: "idle" });
       return true;
     } catch (error) {
+      if (showWatchRequestId.current !== requestId) {
+        return false;
+      }
+
       rollbackDetail(previousDetail, setState);
       setWatchAction({
         kind: "error",

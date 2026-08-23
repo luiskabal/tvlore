@@ -197,8 +197,20 @@ describe("LibraryRepository", () => {
       },
     ];
     const client = {
-      episodeWatch: { findMany: vi.fn().mockResolvedValue(episodeWatches) },
-      movieWatch: { findMany: vi.fn().mockResolvedValue(movieWatches) },
+      episodeWatch: {
+        count: vi.fn().mockResolvedValueOnce(1),
+        findMany: vi.fn()
+          .mockResolvedValueOnce(episodeWatches)
+          .mockResolvedValueOnce([])
+          .mockResolvedValueOnce([episodeWatches[1]]),
+      },
+      movieWatch: {
+        count: vi.fn().mockResolvedValueOnce(0),
+        findMany: vi.fn()
+          .mockResolvedValueOnce(movieWatches)
+          .mockResolvedValueOnce([movieWatches[1]])
+          .mockResolvedValueOnce([]),
+      },
     };
     const repository = new LibraryRepository({ getClient: () => client } as unknown as PrismaService);
     const chronology = await repository.getChronology(userId, { limit: 3 });
@@ -233,5 +245,48 @@ describe("LibraryRepository", () => {
       take: 3,
       where: { userId, watchedAt: { lt: cursor } },
     }));
+  });
+
+  it("keeps chronology items with the same boundary timestamp on one page", async () => {
+    const watchedAt = new Date("2026-08-14T10:00:00.000Z");
+    const episodeWatches = [1, 2, 3].map((episodeNumber) => ({
+      episode: {
+        episodeNumber,
+        id: `episode-${episodeNumber}`,
+        seasonNumber: 1,
+        show: { id: showId, posterPath: "/dark.jpg", title: "Dark" },
+        stillPath: null,
+        title: `Episode ${episodeNumber}`,
+      },
+      watchedAt,
+    }));
+    const movieWatches = [{
+      movie: { id: "movie-new", posterPath: "/new.jpg", title: "Newest Movie" },
+      watchedAt: new Date("2026-08-14T10:03:00.000Z"),
+    }];
+    const client = {
+      episodeWatch: {
+        count: vi.fn().mockResolvedValue(0),
+        findMany: vi.fn()
+          .mockResolvedValueOnce(episodeWatches)
+          .mockResolvedValueOnce(episodeWatches),
+      },
+      movieWatch: {
+        count: vi.fn().mockResolvedValue(0),
+        findMany: vi.fn()
+          .mockResolvedValueOnce(movieWatches)
+          .mockResolvedValueOnce([]),
+      },
+    };
+    const repository = new LibraryRepository({ getClient: () => client } as unknown as PrismaService);
+    const chronology = await repository.getChronology(userId, { limit: 2 });
+
+    expect(chronology.items.map((item) => item.id)).toEqual([
+      "movie-new",
+      "episode-1",
+      "episode-2",
+      "episode-3",
+    ]);
+    expect(chronology.nextCursor).toBeNull();
   });
 });

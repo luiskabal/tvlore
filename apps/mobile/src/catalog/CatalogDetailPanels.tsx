@@ -9,6 +9,8 @@ import { getTmdbLogoUrl } from "./posters";
 import type { PreferenceActionState, WatchProvidersState } from "./use-catalog-detail";
 import { formatWatchCountry } from "./watch-country";
 
+type SeasonProgress = ShowDetailResponse["progress"]["seasons"][number];
+
 export function WhereToWatchPanel({ state }: { state: WatchProvidersState }) {
   if (state.kind === "loading") {
     return (
@@ -150,7 +152,13 @@ export function RatingMatchPanel({
 export function ShowProgressPanel({ show }: { show: ShowDetailResponse }) {
   return (
     <View style={styles.statusPanel}>
-      <AppText variant="section">Progress</AppText>
+      <View style={styles.panelHeaderRow}>
+        <AppText variant="section">Progress</AppText>
+        <Badge
+          label={show.progress.isComplete ? "Vista" : `${show.progress.percentComplete}%`}
+          tone={show.progress.isComplete ? "accent" : "neutral"}
+        />
+      </View>
       <AppText tone="muted">{getShowProgressLine(show)}</AppText>
       {show.progress.nextEpisode ? (
         <AppText tone="muted">
@@ -168,6 +176,8 @@ export function ShowSeasonsPanel({
   onOpenShowSeason: (showId: string, seasonNumber: number) => void;
   show: ShowDetailResponse;
 }) {
+  const progressBySeason = new Map(show.progress.seasons.map((season) => [season.seasonNumber, season]));
+
   return (
     <View style={styles.seasonsSection}>
       <AppText style={styles.sectionTitle} variant="section">Seasons</AppText>
@@ -177,6 +187,7 @@ export function ShowSeasonsPanel({
         <SeasonRow
           key={season.id}
           onOpenShowSeason={onOpenShowSeason}
+          progress={progressBySeason.get(season.seasonNumber)}
           season={season}
           showId={show.id}
         />
@@ -214,13 +225,17 @@ function ProviderPill({ provider, watchUrl }: { provider: WatchProvider; watchUr
 
 function SeasonRow({
   onOpenShowSeason,
+  progress,
   season,
   showId,
 }: {
   onOpenShowSeason: (showId: string, seasonNumber: number) => void;
+  progress?: SeasonProgress;
   season: ShowSeasonSummary;
   showId: string;
 }) {
+  const progressLabel = getSeasonProgressLabel(progress);
+
   return (
     <Pressable
       onPress={() => onOpenShowSeason(showId, season.seasonNumber)}
@@ -233,8 +248,22 @@ function SeasonRow({
         </AppText>
         {season.airDate ? <AppText tone="muted">{formatDate(season.airDate)}</AppText> : null}
       </View>
+      {progressLabel ? (
+        <Badge
+          label={progressLabel}
+          tone={progress?.percentComplete === 100 ? "accent" : "neutral"}
+        />
+      ) : null}
     </Pressable>
   );
+}
+
+function getSeasonProgressLabel(progress: SeasonProgress | undefined) {
+  if (!progress || progress.totalEpisodeCount === 0) {
+    return null;
+  }
+
+  return progress.percentComplete === 100 ? "Vista" : `${progress.percentComplete}%`;
 }
 
 function openWatchProviderLink(watchUrl: string | null) {

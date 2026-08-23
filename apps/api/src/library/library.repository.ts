@@ -180,11 +180,64 @@ export class LibraryRepository {
       }),
     ]);
     const chronologyItems = toChronologyItems(episodeWatches, movieWatches);
-    const items = chronologyItems.slice(0, input.limit);
+
+    if (chronologyItems.length <= input.limit) {
+      return {
+        items: chronologyItems,
+        nextCursor: null,
+      };
+    }
+
+    const boundaryWatchedAt = chronologyItems[input.limit - 1]?.watchedAt;
+
+    if (!boundaryWatchedAt) {
+      return {
+        items: chronologyItems.slice(0, input.limit),
+        nextCursor: null,
+      };
+    }
+
+    const boundaryDate = new Date(boundaryWatchedAt);
+    const [
+      boundaryEpisodeWatches,
+      boundaryMovieWatches,
+      olderEpisodeCount,
+      olderMovieCount,
+    ] = await Promise.all([
+      client.episodeWatch.findMany({
+        include: {
+          episode: {
+            select: {
+              episodeNumber: true,
+              id: true,
+              seasonNumber: true,
+              show: { select: { id: true, posterPath: true, title: true } },
+              stillPath: true,
+              title: true,
+            },
+          },
+        },
+        orderBy: { watchedAt: "desc" },
+        where: { userId, watchedAt: boundaryDate },
+      }),
+      client.movieWatch.findMany({
+        include: {
+          movie: { select: { id: true, posterPath: true, title: true } },
+        },
+        orderBy: { watchedAt: "desc" },
+        where: { userId, watchedAt: boundaryDate },
+      }),
+      client.episodeWatch.count({ where: { userId, watchedAt: { lt: boundaryDate } } }),
+      client.movieWatch.count({ where: { userId, watchedAt: { lt: boundaryDate } } }),
+    ]);
+    const expandedItems = [
+      ...chronologyItems.filter((item) => item.watchedAt > boundaryWatchedAt),
+      ...toChronologyItems(boundaryEpisodeWatches, boundaryMovieWatches),
+    ].sort((left, right) => compareIsoDates(right.watchedAt, left.watchedAt));
 
     return {
-      items,
-      nextCursor: chronologyItems.length > input.limit ? items[items.length - 1]?.watchedAt ?? null : null,
+      items: expandedItems,
+      nextCursor: olderEpisodeCount + olderMovieCount > 0 ? boundaryWatchedAt : null,
     };
   }
 

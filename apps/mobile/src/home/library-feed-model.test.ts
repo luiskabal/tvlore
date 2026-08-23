@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { LibraryResponse, WatchedEpisodeItem } from "../api/tvlore-api";
+import type { LibraryResponse, RecentlyWatchedItem, WatchedEpisodeItem } from "../api/tvlore-api";
 import type { LibraryChronologyState } from "../library/use-library-chronology";
 import {
   getEpisodeSeasonKey,
@@ -67,6 +67,30 @@ describe("library feed model", () => {
     }));
   });
 
+  it("groups show episodes inside chronology by show and season", () => {
+    const items = getLibraryFeedItems({
+      activeSection: "chronology",
+      chronology: readyChronology(),
+      chronologyItems: [
+        episode("episode-2", 2),
+        episode("episode-1", 1),
+        movie("movie-1"),
+      ],
+      collapsedSeasonKeys: new Set(),
+      isEmpty: false,
+      library: libraryWithEpisodes([]),
+    });
+
+    expect(items.map((item) => item.kind)).toEqual([
+      "section-title",
+      "episode-show-header",
+      "episode-season-header",
+      "episode",
+      "episode",
+      "history",
+    ]);
+  });
+
   it("opens the watchlist section first when saved titles exist", () => {
     const baseLibrary = libraryWithEpisodes([episode("episode-1", 1)]);
     const library = {
@@ -127,5 +151,15 @@ function episode(id: string, episodeNumber: number): WatchedEpisodeItem {
     stillPath: "/episode.jpg",
     title: `Episode ${episodeNumber}`,
     watchedAt: "2026-08-15T00:00:00.000Z",
+  };
+}
+
+function movie(id: string): RecentlyWatchedItem {
+  return {
+    id,
+    mediaType: "movie",
+    posterPath: "/movie.jpg",
+    title: "Movie",
+    watchedAt: "2026-08-14T00:00:00.000Z",
   };
 }

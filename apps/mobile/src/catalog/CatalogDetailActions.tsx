@@ -52,8 +52,12 @@ export function TitleTrackingPanel({
   const isWatched = detail.mediaType === "movie" ? detail.watched : detail.progress.isComplete;
   const canUnwatch = detail.mediaType === "movie" ? detail.watched : detail.progress.watchedEpisodeCount > 0;
   const canMarkWatched = detail.mediaType === "movie" || detail.progress.totalEpisodeCount > 0;
-  const markWatchedLabel = detail.mediaType === "movie" ? "Mark watched" : "Mark full show watched";
-  const markUnwatchedLabel = detail.mediaType === "movie" ? "Mark unwatched" : "Mark full show unwatched";
+  const markWatchedLabel = detail.mediaType === "movie"
+    ? "Mark watched"
+    : detail.progress.watchedEpisodeCount > 0
+      ? "Mark all watched"
+      : "Mark watched";
+  const markUnwatchedLabel = detail.mediaType === "movie" ? "Mark unwatched" : "Clear progress";
 
   const markWatched = async () => {
     const saved = detail.mediaType === "movie"

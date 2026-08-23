@@ -94,7 +94,7 @@ export function getLibraryFeedItems({
     return getEpisodeFeedItems(groupEpisodesByShowAndSeason(library.watchedEpisodes), collapsedSeasonKeys);
   }
 
-  return getChronologyFeedItems(chronology, chronologyItems);
+  return getChronologyFeedItems(chronology, chronologyItems, collapsedSeasonKeys);
 }
 
 export function getLibraryFeedItemKey(item: LibraryFeedItem) {
@@ -140,34 +140,14 @@ export function getEpisodeSeasonKey(showId: string, seasonNumber: number) {
 function getEpisodeFeedItems(groups: EpisodeGroup[], collapsedSeasonKeys: Set<string>): LibraryFeedItem[] {
   return [
     { id: "episodes-title", kind: "section-title", title: "Episodes" },
-    ...groups.flatMap((group) => [
-      { group, kind: "episode-show-header" as const },
-      ...group.seasons.flatMap((season) => {
-        const seasonKey = getEpisodeSeasonKey(group.showId, season.seasonNumber);
-        const isCollapsed = collapsedSeasonKeys.has(seasonKey);
-        const header: LibraryFeedItem = {
-          isCollapsed,
-          kind: "episode-season-header",
-          seasonKey,
-          seasonNumber: season.seasonNumber,
-          showId: group.showId,
-          watchedCount: season.episodes.length,
-        };
-
-        return isCollapsed
-          ? [header]
-          : [
-              header,
-              ...season.episodes.map((item) => ({ item, kind: "episode" as const })),
-            ];
-      }),
-    ]),
+    ...getEpisodeGroupFeedItems(groups, collapsedSeasonKeys),
   ];
 }
 
 function getChronologyFeedItems(
   chronology: LibraryChronologyState,
   items: RecentlyWatchedItem[],
+  collapsedSeasonKeys: Set<string>,
 ): LibraryFeedItem[] {
   if (chronology.kind === "loading" && items.length === 0) {
     return [{ kind: "skeleton" }];
@@ -187,7 +167,7 @@ function getChronologyFeedItems(
     ...(chronology.kind === "error"
       ? [{ id: "chronology-error", kind: "status" as const, message: chronology.message ?? "Could not load chronology", tone: "error" as const }]
       : []),
-    ...items.map((item) => ({ item, kind: "history" as const })),
+    ...getChronologyGroupedRows(items, collapsedSeasonKeys),
     ...(chronology.nextCursor
       ? [{
           id: "chronology-footer",
@@ -196,4 +176,60 @@ function getChronologyFeedItems(
         }]
       : []),
   ];
+}
+
+function getEpisodeGroupFeedItems(groups: EpisodeGroup[], collapsedSeasonKeys: Set<string>): LibraryFeedItem[] {
+  return groups.flatMap((group) => [
+    { group, kind: "episode-show-header" as const },
+    ...group.seasons.flatMap((season) => {
+      const seasonKey = getEpisodeSeasonKey(group.showId, season.seasonNumber);
+      const isCollapsed = collapsedSeasonKeys.has(seasonKey);
+      const header: LibraryFeedItem = {
+        isCollapsed,
+        kind: "episode-season-header",
+        seasonKey,
+        seasonNumber: season.seasonNumber,
+        showId: group.showId,
+        watchedCount: season.episodes.length,
+      };
+
+      return isCollapsed
+        ? [header]
+        : [
+            header,
+            ...season.episodes.map((item) => ({ item, kind: "episode" as const })),
+          ];
+    }),
+  ]);
+}
+
+function getChronologyGroupedRows(items: RecentlyWatchedItem[], collapsedSeasonKeys: Set<string>): LibraryFeedItem[] {
+  const episodeGroups = groupEpisodesByShowAndSeason(items.filter(isWatchedEpisodeItem));
+  const groupByShowId = new Map(episodeGroups.map((group) => [group.showId, group]));
+  const emittedShowIds = new Set<string>();
+  const rows: LibraryFeedItem[] = [];
+
+  for (const item of items) {
+    if (item.mediaType === "movie") {
+      rows.push({ item, kind: "history" });
+      continue;
+    }
+
+    if (emittedShowIds.has(item.showId)) {
+      continue;
+    }
+
+    const group = groupByShowId.get(item.showId);
+
+    if (group) {
+      rows.push(...getEpisodeGroupFeedItems([group], collapsedSeasonKeys));
+      emittedShowIds.add(item.showId);
+    }
+  }
+
+  return rows;
+}
+
+function isWatchedEpisodeItem(item: RecentlyWatchedItem): item is WatchedEpisodeItem {
+  return item.mediaType === "episode";
 }

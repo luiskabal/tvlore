@@ -121,10 +121,10 @@ export class TrackingService {
       throwNotFound("SHOW_NOT_FOUND", "Show was not found");
     }
 
-    for (const season of seasons.seasons.filter((item) => item.seasonNumber > 0)) {
+    await Promise.all(seasons.seasons.filter((item) => item.seasonNumber > 0).map(async (season) => {
       const seasonDetail = await this.tmdbClient.getResolvedSeason(providerShowId, season.seasonNumber);
       await this.catalogRepository.upsertSeasonDetail(showId, seasonDetail);
-    }
+    }));
   }
 
   private async hydrateShowSeason(showId: string, seasonNumber: number) {

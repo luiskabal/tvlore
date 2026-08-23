@@ -10,6 +10,7 @@ import { apiBaseUrl } from "../config/env";
 import { HoloProfileCard, HoloProfileCardSkeleton } from "../home/HoloProfileCard";
 import { styles } from "../home/home-styles";
 import { useHomeModel } from "../home/use-home-model";
+import { notifyLibraryChanged } from "../library/library-refresh";
 import { AppText, Button, PageHeader, Screen, ScreenScroll, Surface } from "../ui";
 
 const availabilityCountries = ["CL", "US", "MX", "AR", "BR", "ES"] as const;
@@ -108,6 +109,7 @@ export default function ProfileScreen() {
       const token = await getSupabaseAccessToken();
 
       await updateCurrentUser(token, { availabilityCountry });
+      notifyLibraryChanged();
       await refreshHome();
       setCountryAction({ kind: "idle" });
     } catch (error) {
