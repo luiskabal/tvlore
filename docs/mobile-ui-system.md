@@ -147,7 +147,8 @@ Route direction should feel spatial:
 - Moving to a tab on the right animates from right to left.
 - Moving to a tab on the left animates from left to right.
 - Pressing the active tab does nothing.
-- Detail screens sit above the tabs and use stack navigation.
+- Secondary and detail routes keep the last active tab visible and use stack
+  navigation.
 
 ## Responsive Baseline
 

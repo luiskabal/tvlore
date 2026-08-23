@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getActiveTab, getTabStackScreenOptions } from "./app-tabs";
+import { getActiveTab, getTabStackScreenOptions, getVisibleTab } from "./app-tabs";
 
 describe("app tabs", () => {
   it("maps root tab routes to active tabs", () => {
@@ -41,5 +41,16 @@ describe("app tabs", () => {
     expect(getTabStackScreenOptions("search", "search")).toEqual({});
     expect(getTabStackScreenOptions("search", null)).toEqual({});
     expect(getTabStackScreenOptions(null, "search")).toEqual({});
+  });
+
+  it("keeps the previous tab visible on detail routes", () => {
+    expect(getVisibleTab("/movies/123", "search")).toBe("search");
+    expect(getVisibleTab("/shows/123/seasons/1", "library")).toBe("library");
+    expect(getVisibleTab("/episodes/123", "paths")).toBe("paths");
+    expect(getVisibleTab("/movies/123", null)).toBe("library");
+  });
+
+  it("hides tabs during auth callback routes", () => {
+    expect(getVisibleTab("/auth/callback", "profile")).toBeNull();
   });
 });

@@ -29,6 +29,14 @@ export function getActiveTab(pathname: string): AppTab | null {
   return null;
 }
 
+export function getVisibleTab(pathname: string, previousTab: AppTab | null): AppTab | null {
+  if (pathname.startsWith("/auth/")) {
+    return null;
+  }
+
+  return getActiveTab(pathname) ?? previousTab ?? "library";
+}
+
 export function getTabStackScreenOptions(previousTab: AppTab | null, nextTab: AppTab | null) {
   if (!previousTab || !nextTab || previousTab === nextTab) {
     return {};

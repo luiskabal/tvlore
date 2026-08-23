@@ -6,11 +6,13 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import { AppTabBar } from "../src/navigation/AppTabBar";
 import { styles } from "../src/navigation/app-tab-bar-styles";
-import { getActiveTab, getTabStackScreenOptions, type AppTab } from "../src/navigation/app-tabs";
+import { getActiveTab, getTabStackScreenOptions, getVisibleTab, type AppTab } from "../src/navigation/app-tabs";
 
 export default function RootLayout() {
-  const activeTab = getActiveTab(usePathname());
+  const pathname = usePathname();
+  const activeTab = getActiveTab(pathname);
   const previousTabRef = useRef<AppTab | null>(activeTab);
+  const visibleTab = getVisibleTab(pathname, previousTabRef.current);
   const tabStackScreenOptions = getTabStackScreenOptions(previousTabRef.current, activeTab);
 
   useEffect(() => {
@@ -23,11 +25,18 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <GestureHandlerRootView style={styles.rootShell}>
         <View style={styles.stackShell}>
-          <Stack screenOptions={{ headerShown: false, ...tabStackScreenOptions }} />
+          <Stack
+            screenOptions={{
+              fullScreenGestureEnabled: true,
+              gestureEnabled: true,
+              headerShown: false,
+              ...tabStackScreenOptions,
+            }}
+          />
         </View>
-        {activeTab ? (
+        {visibleTab ? (
           <SafeAreaView edges={["bottom"]} style={styles.tabSafeArea}>
-            <AppTabBar active={activeTab} />
+            <AppTabBar active={visibleTab} />
           </SafeAreaView>
         ) : null}
       </GestureHandlerRootView>
