@@ -18,6 +18,10 @@ This backlog tracks implementation tasks. The roadmap stays higher level; this f
 
 ## Done Recently
 
+- [x] Submit Android version code `6` to Google Play internal testing with the season progress, full-show watch, chronology, and country-discovery refresh fixes.
+- [x] Preserve full-show watched chronology entries that share the same backend timestamp.
+- [x] Add season completion/progress badges to show season summaries.
+- [x] Refresh country-aware discovery after changing the Profile availability country.
 - [x] Add backend-owned catalog search ranking by textual relevance and TMDB popularity/rating signals.
 - [x] Submit Android version code `5` to Google Play internal testing.
 - [x] Verify Google Play internal testing install from the tester opt-in flow.

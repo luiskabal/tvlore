@@ -219,7 +219,7 @@ Known gaps:
 | Feature | Status | Notes |
 | --- | --- | --- |
 | Android package | Ready | `com.luiskabal.tvlore`. |
-| Android production AAB | Ready | EAS generated version `5 (1.0.0)`. |
+| Android production AAB | Ready | EAS generated version `6 (1.0.0)`. |
 | Google Play internal testing | Ready | Release is active and tester install from Play has been confirmed. |
 | Store metadata draft | Ready | `docs/store-metadata.md`. |
 | Data inventory | Ready | `docs/data-inventory.md`. |

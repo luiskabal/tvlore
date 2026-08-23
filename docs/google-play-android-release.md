@@ -99,8 +99,8 @@ Current Android internal testing baseline:
 | --- | --- |
 | Track | Internal testing |
 | Status | Active |
-| Release | `5 (1.0.0)` |
-| Version code | `5` |
+| Release | `6 (1.0.0)` |
+| Version code | `6` |
 | Android package | `com.luiskabal.tvlore` |
 | Track visibility | Available to invited internal testers |
 | Play install | Confirmed from the tester opt-in flow |
@@ -159,9 +159,21 @@ Publishing overview before uploading another bundle.
 Current TVLore state on August 23, 2026:
 
 ```text
-Release: 5 (1.0.0), version code 5.
+Release: 6 (1.0.0), version code 6.
 Tester install from Google Play internal testing is confirmed.
 Next gate: Android manual QA from the Play-installed build.
+```
+
+Latest internal release:
+
+```text
+Release: 6 (1.0.0), version code 6.
+Git commit: 4f91ef6.
+EAS build ID: b45c5ea9-961b-48b6-ab13-dc1681d63952.
+EAS submission ID: a54ff6a9-004b-421d-aab2-d9cb6702844b.
+Purpose: preserve full-show chronology entries, speed full-show hydration,
+guard stale show-watch responses, show season completion/progress badges, and
+refresh country-aware discovery after Profile country changes.
 ```
 
 ## App Content Checklist
@@ -407,6 +419,11 @@ For TVLore:
 
 Keep this as release hardening, not a blocker for the first internal testing
 build.
+
+Observed in TVLore internal release `6 (1.0.0)`: Play Console showed the missing
+deobfuscation file as a warning only. The release can stay in internal testing;
+add mapping upload before public production hardening if minification remains
+enabled.
 
 ## Open Items
 
