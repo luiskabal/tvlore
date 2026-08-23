@@ -1,7 +1,8 @@
-export const navigationEdgePanWidth = 36;
-export const navigationPanStartDistance = 18;
-export const navigationPanCompleteDistance = 72;
-export const navigationPanCompleteVelocity = 0.45;
+export const navigationEdgePanWidth = 64;
+export const navigationPanStartDistance = 12;
+export const navigationPanCompleteDistance = 64;
+export const navigationPanVelocityDistance = 36;
+export const navigationPanCompleteVelocity = 0.25;
 
 export type BackPanInput = {
   canGoBack: boolean;
@@ -27,6 +28,11 @@ export function isBackPanStart({ canGoBack, dx, dy, startX, width }: BackPanInpu
 export function shouldCompleteBackPan(dx: number, dy: number, vx: number) {
   const absDx = Math.abs(dx);
   const absDy = Math.abs(dy);
+  const hasHorizontalIntent = absDx > absDy * 1.2;
 
-  return absDx >= navigationPanCompleteDistance && absDx > absDy * 1.4 && Math.abs(vx) >= navigationPanCompleteVelocity;
+  if (!hasHorizontalIntent) {
+    return false;
+  }
+
+  return absDx >= navigationPanCompleteDistance || (absDx >= navigationPanVelocityDistance && Math.abs(vx) >= navigationPanCompleteVelocity);
 }

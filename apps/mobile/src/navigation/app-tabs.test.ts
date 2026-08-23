@@ -65,9 +65,10 @@ describe("navigation gestures", () => {
   });
 
   it("completes back pan only after a deliberate swipe", () => {
-    expect(shouldCompleteBackPan(90, 8, 0.6)).toBe(true);
+    expect(shouldCompleteBackPan(90, 8, 0.1)).toBe(true);
+    expect(shouldCompleteBackPan(40, 8, 0.6)).toBe(true);
     expect(shouldCompleteBackPan(90, 80, 0.6)).toBe(false);
-    expect(shouldCompleteBackPan(40, 8, 0.6)).toBe(false);
-    expect(shouldCompleteBackPan(90, 8, 0.1)).toBe(false);
+    expect(shouldCompleteBackPan(28, 8, 0.6)).toBe(false);
+    expect(shouldCompleteBackPan(40, 8, 0.1)).toBe(false);
   });
 });
