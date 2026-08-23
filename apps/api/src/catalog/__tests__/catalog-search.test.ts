@@ -74,6 +74,50 @@ describe("toCatalogSearchResults", () => {
     }, ["show"])).toHaveLength(1);
   });
 
+  it("orders search results by title relevance and provider ranking", () => {
+    expect(toCatalogSearchResults({
+      results: [
+        {
+          id: 1,
+          media_type: "movie",
+          popularity: 1,
+          title: "Dark Low",
+          vote_average: 8,
+          vote_count: 100,
+        },
+        {
+          id: 2,
+          media_type: "movie",
+          popularity: 50,
+          title: "Dark Popular",
+          vote_average: 3,
+          vote_count: 5,
+        },
+        {
+          id: 3,
+          media_type: "movie",
+          popularity: 0.1,
+          title: "Dark",
+          vote_average: 1,
+          vote_count: 1,
+        },
+        {
+          id: 4,
+          media_type: "movie",
+          popularity: 500,
+          title: "The Dark Knight",
+          vote_average: 9,
+          vote_count: 10000,
+        },
+      ],
+    }, ["movie"], "dark").map((result) => result.title)).toEqual([
+      "Dark",
+      "Dark Popular",
+      "Dark Low",
+      "The Dark Knight",
+    ]);
+  });
+
   it("maps discover results by assigning the known media type", () => {
     expect(toCatalogSearchResultsForMediaType({
       results: [

@@ -62,15 +62,26 @@ export function toCatalogSearchResult(value: unknown): CatalogSearchResultDto | 
   };
 }
 
-export function toCatalogSearchResults(value: unknown, mediaTypes: MediaType[]) {
+export function toCatalogSearchResults(value: unknown, mediaTypes: MediaType[], query = "") {
   if (!isRecord(value) || !Array.isArray(value.results)) {
     return [];
   }
 
   return value.results
-    .map(toCatalogSearchResult)
-    .filter((result): result is CatalogSearchResultDto => Boolean(result))
-    .filter((result) => mediaTypes.includes(result.mediaType));
+    .map((raw, index) => ({ index, raw, result: toCatalogSearchResult(raw) }))
+    .filter((item): item is {
+      index: number;
+      raw: Record<string, unknown>;
+      result: CatalogSearchResultDto;
+    } => {
+      if (!isRecord(item.raw) || !item.result) {
+        return false;
+      }
+
+      return mediaTypes.includes(item.result.mediaType);
+    })
+    .sort((left, right) => compareSearchResults(left, right, query))
+    .map((item) => item.result);
 }
 
 export function toCatalogSearchPage(
@@ -84,7 +95,7 @@ export function toCatalogSearchPage(
   return {
     nextPage: input.page < totalPages ? input.page + 1 : null,
     page: input.page,
-    results: toCatalogSearchResults(value, input.mediaTypes),
+    results: toCatalogSearchResults(value, input.mediaTypes, input.query),
   };
 }
 
@@ -165,6 +176,65 @@ function getYear(value: string | null) {
   const year = Number(value.slice(0, 4));
 
   return Number.isInteger(year) ? year : null;
+}
+
+function compareSearchResults(
+  left: { index: number; raw: Record<string, unknown>; result: CatalogSearchResultDto },
+  right: { index: number; raw: Record<string, unknown>; result: CatalogSearchResultDto },
+  query: string,
+) {
+  const relevanceDelta = getTitleRelevance(right.result.title, query) - getTitleRelevance(left.result.title, query);
+
+  if (relevanceDelta !== 0) {
+    return relevanceDelta;
+  }
+
+  const rankDelta = getProviderRank(right.raw) - getProviderRank(left.raw);
+
+  if (rankDelta !== 0) {
+    return rankDelta;
+  }
+
+  return left.index - right.index;
+}
+
+function getTitleRelevance(title: string, query: string) {
+  const normalizedTitle = normalizeSearchText(title);
+  const normalizedQuery = normalizeSearchText(query);
+
+  if (!normalizedQuery) {
+    return 0;
+  }
+
+  if (normalizedTitle === normalizedQuery) {
+    return 3;
+  }
+
+  if (normalizedTitle.startsWith(normalizedQuery)) {
+    return 2;
+  }
+
+  return normalizedTitle.includes(normalizedQuery) ? 1 : 0;
+}
+
+function getProviderRank(value: Record<string, unknown>) {
+  const popularity = getNonNegativeNumber(value.popularity);
+  const voteAverage = getRating(value.vote_average);
+  const voteCount = getNonNegativeNumber(value.vote_count);
+
+  return popularity + (voteAverage * Math.log10(voteCount + 1));
+}
+
+function getNonNegativeNumber(value: unknown) {
+  return typeof value === "number" && Number.isFinite(value) && value > 0 ? value : 0;
+}
+
+function getRating(value: unknown) {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 10 ? value : 0;
+}
+
+function normalizeSearchText(value: string) {
+  return value.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
