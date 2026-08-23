@@ -32,8 +32,8 @@ Use this as the current Play Console baseline:
 | App or game | App |
 | Pricing | Free |
 | Track | Internal testing |
-| Release | `6 (1.0.0)` |
-| Version code | `6` |
+| Release | `7 (1.0.0)` |
+| Version code | `7` |
 | Bundle format | Android App Bundle (`.aab`) |
 | Current install blocker | None for internal testing install; tester install from Play is confirmed. |
 

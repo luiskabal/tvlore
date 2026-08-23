@@ -99,8 +99,8 @@ Current Android internal testing baseline:
 | --- | --- |
 | Track | Internal testing |
 | Status | Active |
-| Release | `6 (1.0.0)` |
-| Version code | `6` |
+| Release | `7 (1.0.0)` |
+| Version code | `7` |
 | Android package | `com.luiskabal.tvlore` |
 | Track visibility | Available to invited internal testers |
 | Play install | Confirmed from the tester opt-in flow |
@@ -159,7 +159,7 @@ Publishing overview before uploading another bundle.
 Current TVLore state on August 23, 2026:
 
 ```text
-Release: 6 (1.0.0), version code 6.
+Release: 7 (1.0.0), version code 7.
 Tester install from Google Play internal testing is confirmed.
 Next gate: Android manual QA from the Play-installed build.
 ```
@@ -167,13 +167,13 @@ Next gate: Android manual QA from the Play-installed build.
 Latest internal release:
 
 ```text
-Release: 6 (1.0.0), version code 6.
-Git commit: 4f91ef6.
-EAS build ID: b45c5ea9-961b-48b6-ab13-dc1681d63952.
-EAS submission ID: a54ff6a9-004b-421d-aab2-d9cb6702844b.
-Purpose: preserve full-show chronology entries, speed full-show hydration,
-guard stale show-watch responses, show season completion/progress badges, and
-refresh country-aware discovery after Profile country changes.
+Release: 7 (1.0.0), version code 7.
+Git commit: 127a2b3.
+EAS build ID: 92f13dca-4f4f-41b5-bc46-f292fb8207b6.
+EAS submission ID: 9d2c5d47-f2e1-40a6-9e88-d31cf882ff6c.
+AAB artifact: https://expo.dev/artifacts/eas/s5S9LOQnnvK_YSHe4GnX-XqGXCVg8mYQnms9mz-RLzU.aab
+Purpose: keep bottom tabs visible on secondary/detail routes and enable stack
+swipe-back gestures where the platform supports them.
 ```
 
 ## App Content Checklist
