@@ -99,7 +99,7 @@ Current Android internal testing baseline:
 | --- | --- |
 | Track | Internal testing |
 | Status | Active |
-| Release | `8 (1.0.0)` |
+| Release | `9 (1.0.0)` |
 | Version code | `8` |
 | Android package | `com.luiskabal.tvlore` |
 | Track visibility | Available to invited internal testers |
@@ -159,7 +159,7 @@ Publishing overview before uploading another bundle.
 Current TVLore state on August 23, 2026:
 
 ```text
-Release: 8 (1.0.0), version code 8.
+Release: 9 (1.0.0), version code 9.
 Tester install from Google Play internal testing is confirmed.
 Next gate: Android manual QA from the Play-installed build.
 ```
@@ -167,7 +167,7 @@ Next gate: Android manual QA from the Play-installed build.
 Latest internal release:
 
 ```text
-Release: 8 (1.0.0), version code 8.
+Release: 9 (1.0.0), version code 9.
 Git commit: 51436f0.
 EAS build ID: 30f5d81b-e475-420d-b5e4-ecffb2804e60.
 EAS submission ID: f7be05ea-35ab-4e07-9db3-b0a6b46e2ab1.

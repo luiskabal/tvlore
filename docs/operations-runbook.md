@@ -233,7 +233,7 @@ Current internal testing state:
 
 ```text
 Track: Internal testing
-Release: 8 (1.0.0)
+Release: 9 (1.0.0)
 Distribution: invited internal testers
 Install: confirmed from Google Play tester flow
 ```
