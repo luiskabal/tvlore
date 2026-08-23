@@ -98,6 +98,10 @@ export function deleteSetValue<T>(values: Set<T>, value: T) {
 }
 
 export function getDefaultSection(library: LibraryResponse): LibrarySectionFilter {
+  if (library.watchlist.length > 0) {
+    return "watchlist";
+  }
+
   return library.shows.length > 0 ? "shows" : "chronology";
 }
 

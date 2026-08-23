@@ -6,6 +6,7 @@ import {
   getEpisodeSeasonKey,
   getLibraryFeedItems,
 } from "./library-feed-model";
+import { getDefaultSection } from "./library-overview-model";
 
 describe("library feed model", () => {
   it("flattens watched episodes into virtualizable feed rows", () => {
@@ -64,6 +65,26 @@ describe("library feed model", () => {
       kind: "footer",
       message: "Scroll for more history",
     }));
+  });
+
+  it("opens the watchlist section first when saved titles exist", () => {
+    const baseLibrary = libraryWithEpisodes([episode("episode-1", 1)]);
+    const library = {
+      ...baseLibrary,
+      summary: {
+        ...baseLibrary.summary,
+        watchlistItemCount: 1,
+      },
+      watchlist: [{
+        createdAt: "2026-08-15T00:00:00.000Z",
+        id: "movie-1",
+        mediaType: "movie" as const,
+        posterPath: "/movie.jpg",
+        title: "Saved movie",
+      }],
+    };
+
+    expect(getDefaultSection(library)).toBe("watchlist");
   });
 });
 

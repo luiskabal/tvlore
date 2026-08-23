@@ -77,7 +77,7 @@ function LibraryHeader({ showSearchButton }: { showSearchButton: boolean }) {
         <IconButton icon="add" label="Search catalog" onPress={() => router.push("/search")} />
       ) : null}
       subtitle="Pick up where you left off."
-      title="Library"
+      title="TVLore"
     />
   );
 }
