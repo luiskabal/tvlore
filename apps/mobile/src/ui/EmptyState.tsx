@@ -38,7 +38,9 @@ export function EmptyState({
 const styles = StyleSheet.create({
   iconFrame: {
     alignItems: "center",
-    backgroundColor: ui.color.accentSoft,
+    backgroundColor: ui.colors.accent.surface,
+    borderColor: ui.colors.accent.border,
+    borderWidth: 1,
     borderRadius: ui.radius.pill,
     height: 42,
     justifyContent: "center",

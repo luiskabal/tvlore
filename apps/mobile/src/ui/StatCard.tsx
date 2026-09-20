@@ -29,12 +29,12 @@ export function StatCard({ isActive = false, label, value, ...props }: StatCardP
 
 const styles = StyleSheet.create({
   active: {
-    backgroundColor: ui.color.accentSoft,
-    borderColor: ui.color.accent,
+    backgroundColor: ui.colors.accent.surface,
+    borderColor: ui.colors.accent.border,
   },
   card: {
-    backgroundColor: ui.color.panel,
-    borderColor: ui.color.border,
+    backgroundColor: ui.colors.surface.card,
+    borderColor: ui.colors.border.subtle,
     borderRadius: ui.radius.md,
     borderWidth: 1,
     flexBasis: "30%",

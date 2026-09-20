@@ -1,7 +1,8 @@
 import { router } from "expo-router";
 
 import type { RecommendationsResponse } from "../api/tvlore-api";
-import { AppText, Button, CalloutRow, EmptyState, MediaRowSkeleton } from "../ui";
+import { Button, EmptyState, MediaRowSkeleton } from "../ui";
+import { SearchDiscoveryRail } from "./SearchDiscoveryRail";
 import type { SearchRecommendationsState } from "./use-search-recommendations";
 
 type SearchRecommendationsProps = {
@@ -42,15 +43,15 @@ export function SearchRecommendations({
   }
 
   return (
-    <CalloutRow
+    <SearchDiscoveryRail
       accessibilityLabel="Open recommended picks"
+      count={recommendations.items.length}
       detail="Open your personalized suggestions."
       eyebrow="For you"
       icon="sparkles-outline"
-      meta={<AppText tone="accent" variant="caption">{recommendations.items.length}</AppText>}
+      items={recommendations.items}
       onPress={() => router.push("/recommendations")}
       title="Recommended picks"
-      tone="accent"
     />
   );
 }

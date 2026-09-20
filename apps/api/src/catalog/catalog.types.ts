@@ -101,6 +101,7 @@ export type ShowEpisodeDto = CatalogResolvedEpisode & {
 export type ShowDetailResponseDto = {
   backdropPath: string | null;
   firstAirDate: string | null;
+  genreNames: string[];
   id: string;
   inWatchlist: boolean;
   originalTitle: string | null;
@@ -116,6 +117,7 @@ export type ShowDetailResponseDto = {
 
 export type MovieDetailResponseDto = {
   backdropPath: string | null;
+  genreNames: string[];
   id: string;
   inWatchlist: boolean;
   lastWatchedAt: string | null;
@@ -169,6 +171,7 @@ export type ShowSeasonDetailResponseDto = ShowSeasonSummaryDto & {
 };
 
 export type EpisodeDetailResponseDto = ShowEpisodeDto & {
+  genreNames: string[];
   rating: number | null;
   reflection: WatchReflectionDto | null;
   seasonId: string;

@@ -1,7 +1,8 @@
 import { router } from "expo-router";
 
 import type { PopularDiscoveryResponse } from "../api/tvlore-api";
-import { AppText, Button, CalloutRow, EmptyState, MediaRowSkeleton } from "../ui";
+import { Button, EmptyState, MediaRowSkeleton } from "../ui";
+import { SearchDiscoveryRail } from "./SearchDiscoveryRail";
 import type { PopularDiscoveryState } from "./use-popular-discovery";
 
 type SearchPopularProps = {
@@ -37,15 +38,15 @@ export function SearchPopular({
   }
 
   return (
-    <CalloutRow
+    <SearchDiscoveryRail
       accessibilityLabel={`Open popular titles in ${popular.country}`}
+      count={popular.items.length}
       detail="Streaming-aware titles around your saved country."
       eyebrow={popular.country}
       icon="trending-up-outline"
-      meta={<AppText tone="accent" variant="caption">{popular.items.length}</AppText>}
+      items={popular.items}
       onPress={() => router.push("/popular")}
       title="Popular in your country"
-      tone="accent"
     />
   );
 }

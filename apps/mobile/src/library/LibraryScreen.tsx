@@ -1,5 +1,6 @@
 import { router } from "expo-router";
 
+import { openCatalogDetail } from "../catalog/catalog-navigation";
 import { isSupabaseConfigured } from "../auth/supabase-auth";
 import { LibraryOverview, LibraryOverviewSkeleton } from "../home/LibraryOverview";
 import { useHomeModel } from "../home/use-home-model";
@@ -83,7 +84,7 @@ function LibraryHeader({ showSearchButton }: { showSearchButton: boolean }) {
 }
 
 function openMovie(id: string) {
-  router.push({ pathname: "/movies/[id]", params: { id } });
+  openCatalogDetail("movie", id);
 }
 
 function openEpisode(id: string) {
@@ -91,7 +92,7 @@ function openEpisode(id: string) {
 }
 
 function openShow(id: string) {
-  router.push({ pathname: "/shows/[id]", params: { id } });
+  openCatalogDetail("show", id);
 }
 
 function openShowSeason(showId: string, seasonNumber: number) {

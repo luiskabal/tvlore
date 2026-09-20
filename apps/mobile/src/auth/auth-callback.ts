@@ -27,15 +27,19 @@ export function extractSessionFromAuthCallbackUrl(url: string): AuthCallbackSess
 function getDeepLinkPath(url: string) {
   try {
     const parsedUrl = new URL(url);
+    const protocol = parsedUrl.protocol.toLowerCase();
 
-    if (parsedUrl.protocol !== "tvlore:") {
+    if (protocol !== "tvlore:" && protocol !== "exp:" && protocol !== "exps:") {
       return null;
     }
 
+    const pathname = parsedUrl.pathname.replace(/^\/+|\/+$/g, "").split("/");
+    const expoPath = protocol === "exp:" || protocol === "exps:";
+    const expoPathMarker = pathname.indexOf("--");
+    const pathSegments = expoPath && expoPathMarker >= 0 ? pathname.slice(expoPathMarker + 1) : pathname;
     const hostname = parsedUrl.hostname.replace(/^\/+|\/+$/g, "");
-    const pathname = parsedUrl.pathname.replace(/^\/+|\/+$/g, "");
 
-    return [hostname, pathname].filter(Boolean).join("/");
+    return [expoPath ? null : hostname, ...pathSegments].filter(Boolean).join("/");
   } catch {
     return null;
   }

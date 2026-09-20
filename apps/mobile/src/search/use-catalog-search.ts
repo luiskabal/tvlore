@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   resolveCatalogItem,
@@ -35,6 +35,8 @@ export function useCatalogSearch() {
   const [search, setSearch] = useState<SearchState>({ kind: "idle" });
   const [resolveState, setResolveState] = useState<ResolveState>({ kind: "idle" });
   const requestIdRef = useRef(0);
+  const resolveAbortControllerRef = useRef<AbortController | null>(null);
+  const resolveRequestIdRef = useRef(0);
 
   const runSearch = useCallback(async (rawQuery: string, filter: SearchFilter, options: RunSearchOptions = {}) => {
     const query = rawQuery.trim();
@@ -120,25 +122,57 @@ export function useCatalogSearch() {
 
   const resolveResult = useCallback(async (result: CatalogSearchResult) => {
     const resultKey = getResultKey(result);
+    const requestId = resolveRequestIdRef.current + 1;
+    const abortController = new AbortController();
+
+    resolveRequestIdRef.current = requestId;
+    resolveAbortControllerRef.current?.abort();
+    resolveAbortControllerRef.current = abortController;
     setResolveState({ kind: "loading", resultKey });
 
     try {
       const token = await getSupabaseAccessToken();
-      const item = await resolveCatalogItem(token, result);
+      const item = await resolveCatalogItem(token, result, { signal: abortController.signal });
+
+      if (resolveRequestIdRef.current !== requestId) {
+        return null;
+      }
+
       void prefetchCatalogDetails([{ id: item.id, mediaType: item.mediaType }], { accessToken: token });
       setResolveState({ item, kind: "resolved", resultKey, title: result.title });
       return item;
     } catch (error) {
+      if (resolveRequestIdRef.current !== requestId || abortController.signal.aborted) {
+        return null;
+      }
+
       setResolveState({
         kind: "error",
         message: error instanceof Error ? error.message : "Resolve failed",
         resultKey,
       });
       return null;
+    } finally {
+      if (resolveAbortControllerRef.current === abortController) {
+        resolveAbortControllerRef.current = null;
+      }
     }
   }, []);
 
-  return { loadMore, resolveResult, resolveState, runSearch, search };
+  const cancelResolve = useCallback(() => {
+    resolveRequestIdRef.current += 1;
+    resolveAbortControllerRef.current?.abort();
+    resolveAbortControllerRef.current = null;
+    setResolveState({ kind: "idle" });
+  }, []);
+
+  useEffect(() => () => {
+    resolveRequestIdRef.current += 1;
+    resolveAbortControllerRef.current?.abort();
+    resolveAbortControllerRef.current = null;
+  }, []);
+
+  return { cancelResolve, loadMore, resolveResult, resolveState, runSearch, search };
 }
 
 function prefetchResolvedResults(results: CatalogSearchResult[], accessToken: string | null) {

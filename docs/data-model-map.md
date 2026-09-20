@@ -41,7 +41,7 @@ User-owned rows must be deleted with the user.
 | Watched state | `episode_watches`, `movie_watches` | TVLore user | One active watched marker per user and episode/movie in MVP. |
 | Watchlist | `show_watchlist_items`, `movie_watchlist_items` | TVLore user | Saved intent to watch later. |
 | Ratings | `show_preferences`, `movie_preferences`, `episode_preferences` | TVLore user | User 1-5 star rating preferences. |
-| Reflections | `show_reflections`, `movie_reflections`, `episode_reflections` | TVLore user | Private post-watch emotion, favorite character, and optional comment. |
+| Reflections | `show_reflections`, `movie_reflections`, `episode_reflections` | TVLore user | Private post-watch reaction, favorite character, character role, and optional comment; catalog genres are joined through the media relation. |
 | Watch paths | `user_watch_paths`, `user_watch_path_items` | TVLore user | User-created/imported ordered lists. Curated paths are backend-owned constants today. |
 
 ## 3. Table Map
@@ -85,7 +85,7 @@ User-owned rows must be deleted with the user.
 | Full show watched | `episode_watches` for eligible persisted episodes in the show | `shows`, `seasons`, `episodes` |
 | Watchlist | `show_watchlist_items`, `movie_watchlist_items` | Watchlist tables plus catalog tables |
 | Rating | `show_preferences`, `movie_preferences`, `episode_preferences` | Preference tables plus catalog tables |
-| Check-in | Reflection table plus matching preference table when rating is provided | Reflection, preference, and cast data |
+| Check-in | Reflection table plus matching preference table when rating is provided | Reflection, preference, cast, and catalog genre data |
 | Library | Usually no writes | Watches, watchlist, preferences, reflections, catalog, user |
 | Chronologia | No writes | `episode_watches`, `movie_watches`, catalog tables |
 | Recommendations | No direct writes | Preferences, watches, watchlist, catalog, user country |
@@ -200,6 +200,10 @@ Do not change these without an explicit architecture decision:
   separate watch-event table.
 - Favorite-character percentages: current reflections store private selections.
   Public percentages need aggregate rules, privacy rules, and abuse handling.
+- Personalization signals: reflections now retain a controlled reaction and
+  optional favorite-character role, while genres remain normalized in the
+  catalog. A future profile can aggregate these joins after a minimum rating
+  threshold without changing the raw check-in rows.
 - Social match: current schema can support future derived comparisons, but raw
   watch history should not be exposed to other users by default.
 - Direct mobile database access: mobile should not write Supabase tables

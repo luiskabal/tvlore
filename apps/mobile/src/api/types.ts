@@ -1,6 +1,18 @@
 export type MediaType = "movie" | "show";
 export type PreferenceMediaType = "episode" | MediaType;
-export type WatchReaction = "loved" | "liked" | "mixed" | "not_for_me";
+export type WatchReaction =
+  | "loved"
+  | "liked"
+  | "surprised"
+  | "moved"
+  | "tense"
+  | "scared"
+  | "amused"
+  | "confused"
+  | "disappointed"
+  | "mixed"
+  | "not_for_me";
+export type FavoriteCharacterRole = "lead" | "supporting" | "ensemble" | "other";
 
 export type UserResponse = {
   availabilityCountry: string;
@@ -195,6 +207,7 @@ export type CatalogResolveResponse = {
 export type WatchReflection = {
   comment: string | null;
   favoriteCharacter: string | null;
+  favoriteCharacterRole: FavoriteCharacterRole | null;
   reaction: WatchReaction;
   updatedAt: string;
 };
@@ -202,6 +215,7 @@ export type WatchReflection = {
 export type WatchReflectionInput = {
   comment: string | null;
   favoriteCharacter: string | null;
+  favoriteCharacterRole: FavoriteCharacterRole | null;
   rating: number;
   reaction: WatchReaction;
 };
@@ -317,6 +331,7 @@ export type ShowSeasonDetailResponse = ShowSeasonSummary & {
 };
 
 export type EpisodeDetailResponse = ShowEpisode & {
+  genreNames: string[];
   rating: number | null;
   reflection: WatchReflection | null;
   seasonId: string;
@@ -329,6 +344,7 @@ export type EpisodeDetailResponse = ShowEpisode & {
 export type ShowDetailResponse = {
   backdropPath: string | null;
   firstAirDate: string | null;
+  genreNames: string[];
   id: string;
   inWatchlist: boolean;
   mediaType: "show";
@@ -345,6 +361,7 @@ export type ShowDetailResponse = {
 
 export type MovieDetailResponse = {
   backdropPath: string | null;
+  genreNames: string[];
   id: string;
   inWatchlist: boolean;
   lastWatchedAt: string | null;

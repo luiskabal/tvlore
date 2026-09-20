@@ -7,18 +7,18 @@ export const styles = StyleSheet.create({
     opacity: 1,
   },
   activeTabText: {
-    color: ui.color.ink,
+    color: ui.colors.accent.bright,
   },
   rootShell: {
-    backgroundColor: ui.color.panelAlt,
+    backgroundColor: ui.colors.background.primary,
     flex: 1,
   },
   stackShell: {
     flex: 1,
   },
   tabBar: {
-    backgroundColor: ui.color.panelAlt,
-    borderColor: ui.color.border,
+    backgroundColor: ui.colors.background.secondary,
+    borderColor: ui.colors.border.subtle,
     borderTopWidth: 1,
     flexDirection: "row",
     gap: 4,
@@ -43,14 +43,14 @@ export const styles = StyleSheet.create({
     paddingTop: 3,
   },
   activeIconRail: {
-    borderTopColor: ui.color.accent,
+    borderTopColor: ui.colors.accent.bright,
   },
   tabText: {
-    color: ui.color.muted,
+    color: ui.colors.text.tertiary,
     fontSize: 11,
     fontWeight: "800",
   },
   tabSafeArea: {
-    backgroundColor: ui.color.panelAlt,
+    backgroundColor: ui.colors.background.secondary,
   },
 });

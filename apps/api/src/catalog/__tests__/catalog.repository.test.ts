@@ -201,6 +201,7 @@ describe("CatalogRepository", () => {
           seasonNumber: 1,
           show: {
             id: showId,
+            genreNames: ["Drama", "Mystery"],
             posterPath: "/poster.jpg",
             title: "Dark Winds",
           },
@@ -215,6 +216,7 @@ describe("CatalogRepository", () => {
     await expect(repository.findEpisodeDetail(episodeId, userId)).resolves.toEqual({
       airDate: "2022-06-11",
       episodeNumber: 1,
+      genreNames: ["Drama", "Mystery"],
       id: episodeId,
       lastWatchedAt: watchedAt.toISOString(),
       overview: "Pilot overview.",

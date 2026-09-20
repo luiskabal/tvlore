@@ -1,4 +1,5 @@
 export type AppTab = "library" | "paths" | "profile" | "search";
+export type AuthRouteKind = "error" | "loading" | "signedIn" | "signedOut" | "unconfigured";
 
 export const tabs: { href: "/library" | "/search" | "/paths" | "/profile"; key: AppTab; label: string }[] = [
   { href: "/library", key: "library", label: "Library" },
@@ -30,11 +31,27 @@ export function getActiveTab(pathname: string): AppTab | null {
 }
 
 export function getVisibleTab(pathname: string, previousTab: AppTab | null): AppTab | null {
-  if (pathname.startsWith("/auth/")) {
+  if (pathname === "/login" || pathname.startsWith("/auth/")) {
     return null;
   }
 
   return getActiveTab(pathname) ?? previousTab ?? "library";
+}
+
+export function getAuthRedirect(pathname: string, authKind: AuthRouteKind): "/library" | "/login" | null {
+  if (authKind === "loading") {
+    return null;
+  }
+
+  if (authKind === "signedIn" && (pathname === "/login" || pathname.startsWith("/auth/"))) {
+    return "/library";
+  }
+
+  if (authKind !== "signedIn" && pathname !== "/login" && !pathname.startsWith("/auth/")) {
+    return "/login";
+  }
+
+  return null;
 }
 
 export function getTabStackScreenOptions(previousTab: AppTab | null, nextTab: AppTab | null) {

@@ -392,6 +392,7 @@ Fields:
 - media FK: `showId`, `movieId`, or `episodeId`
 - `reaction`
 - `favoriteCharacter`
+- `favoriteCharacterRole`
 - `comment`
 - `createdAt`
 - `updatedAt`
@@ -403,6 +404,10 @@ Unique constraint:
 Current behavior:
 
 - Re-submitting a reflection updates the existing row.
+- Reactions use a controlled vocabulary and favorite-character role is an
+  optional controlled vocabulary (`lead`, `supporting`, `ensemble`, `other`).
+- Genre context comes from the related show or movie catalog row instead of
+  being duplicated in each reflection.
 - Favorite-character percentages are not implemented yet; current selections
   are private user data.
 

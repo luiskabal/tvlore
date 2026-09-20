@@ -23,14 +23,16 @@ export function StillImage({ label, uri }: StillImageProps) {
 const styles = StyleSheet.create({
   placeholder: {
     alignItems: "center",
-    backgroundColor: ui.color.skeleton,
+    backgroundColor: ui.colors.background.elevated,
     borderRadius: ui.radius.md,
+    borderColor: ui.colors.border.subtle,
+    borderWidth: 1,
     height: 64,
     justifyContent: "center",
     width: 96,
   },
   still: {
-    backgroundColor: ui.color.skeleton,
+    backgroundColor: ui.colors.background.elevated,
     borderRadius: ui.radius.md,
     height: 64,
     width: 96,

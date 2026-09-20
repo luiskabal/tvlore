@@ -39,7 +39,8 @@ let hasError = false;
 const releaseTarget = parseReleaseTarget(process.argv.slice(2));
 const app = readJson("apps/mobile/app.json").expo;
 const eas = readJson("apps/mobile/eas.json");
-const mobileEnv = parseEnvFile("apps/mobile/.env");
+const mobileEnvFile = ["apps/mobile/.env", "apps/mobile/.env.local"].find(existsSync) ?? "apps/mobile/.env";
+const mobileEnv = parseEnvFile(mobileEnvFile);
 
 console.log(`\nmobile app config (${releaseTarget})`);
 expectString(app.name, "expo.name");
@@ -48,7 +49,7 @@ expectEqual(app.scheme, "tvlore", "expo.scheme");
 expectEqual(app.owner, "luiskabal", "expo.owner");
 expectSemver(app.version, "expo.version");
 expectFile(app.icon, "expo.icon");
-expectFile(app.splash?.image, "expo.splash.image");
+expectFile(getSplashImage(app), "expo splash image");
 expectArrayIncludes(app.plugins, "expo-apple-authentication", "expo.plugins");
 expectUuid(app.extra?.eas?.projectId, "expo.extra.eas.projectId");
 expectEqual(app.ios?.bundleIdentifier, "com.luiskabal.tvlore", "expo.ios.bundleIdentifier");
@@ -58,6 +59,7 @@ expectFile(app.android?.adaptiveIcon?.foregroundImage, "expo.android.adaptiveIco
 
 console.log("\neas profiles");
 expectEqual(eas.cli?.appVersionSource, "remote", "eas.cli.appVersionSource");
+expectEqual(eas.cli?.requireCommit, true, "eas.cli.requireCommit");
 expectEqual(eas.build?.development?.developmentClient, true, "eas.build.development.developmentClient");
 expectEqual(eas.build?.development?.distribution, "internal", "eas.build.development.distribution");
 expectEqual(eas.build?.development?.environment, "development", "eas.build.development.environment");
@@ -112,9 +114,21 @@ function parseReleaseTarget(args) {
   return "all";
 }
 
+function getSplashImage(app) {
+  if (typeof app.splash?.image === "string") {
+    return app.splash.image;
+  }
+
+  const splashPlugin = app.plugins?.find((plugin) => Array.isArray(plugin) && plugin[0] === "expo-splash-screen");
+
+  return Array.isArray(splashPlugin) && typeof splashPlugin[1]?.image === "string"
+    ? splashPlugin[1].image
+    : undefined;
+}
+
 function parseEnvFile(file) {
   if (!existsSync(file)) {
-    fail(`local file missing: ${file}`);
+    fail(`local env file missing: apps/mobile/.env or apps/mobile/.env.local`);
     return new Map();
   }
 

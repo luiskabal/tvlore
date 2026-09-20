@@ -169,9 +169,9 @@ async function checkAuthenticatedProductFlow(token) {
   const episodeWatchedAt = new Date().toISOString();
   const showWatchedAt = new Date(Date.now() + 500).toISOString();
   const movieWatchedAt = new Date(Date.now() + 1000).toISOString();
-  const showReflection = { rating: 5, reaction: "loved", favoriteCharacter: "Jonas", comment: "Dense, but worth it." };
-  const episodeReflection = { rating: 4, reaction: "mixed", favoriteCharacter: "Martha", comment: null };
-  const movieReflection = { rating: 4, reaction: "liked", favoriteCharacter: null, comment: "Great pacing." };
+  const showReflection = { rating: 5, reaction: "loved", favoriteCharacter: "Jonas", favoriteCharacterRole: "lead", comment: "Dense, but worth it." };
+  const episodeReflection = { rating: 4, reaction: "mixed", favoriteCharacter: "Martha", favoriteCharacterRole: "supporting", comment: null };
+  const movieReflection = { rating: 4, reaction: "liked", favoriteCharacter: null, favoriteCharacterRole: null, comment: "Great pacing." };
 
   const currentUser = await check("/users/me", {
     assert: assertUser,
@@ -1108,6 +1108,7 @@ function assertShowDetail(body, showId, inWatchlist, rating) {
   expectEqual(body.rating, rating, "show.rating");
   expectPublicRating(body.publicRating, "show.publicRating");
   assertNullableReflection(body.reflection, "show.reflection");
+  expectStringArray(body.genreNames, "show.genreNames");
   expectString(body.title, "show.title");
   expectString(body.overview, "show.overview");
   expectArray(body.seasons, "show.seasons");
@@ -1151,6 +1152,7 @@ function assertEpisodeDetail(body, episodeId, showId, watched, rating) {
   expectUuid(body.seasonId, "episode detail.seasonId");
   expectString(body.showTitle, "episode detail.showTitle");
   expectString(body.seasonTitle, "episode detail.seasonTitle");
+  expectStringArray(body.genreNames, "episode detail.genreNames");
   expectPositiveInteger(body.episodeNumber, "episode detail.episodeNumber");
   expectNonNegativeInteger(body.seasonNumber, "episode detail.seasonNumber");
   expectString(body.title, "episode detail.title");
@@ -1208,6 +1210,7 @@ function assertMovieDetail(body, movieId, watched, inWatchlist, rating) {
   expectEqual(body.rating, rating, "movie.rating");
   expectPublicRating(body.publicRating, "movie.publicRating");
   assertNullableReflection(body.reflection, "movie.reflection");
+  expectStringArray(body.genreNames, "movie.genreNames");
   expectString(body.title, "movie.title");
   expectString(body.overview, "movie.overview");
   expectEqual(body.watched, watched, "movie.watched");
@@ -1289,14 +1292,16 @@ function assertNullableReflection(value, label) {
 
 function assertReflection(value, label, expected) {
   expectRecord(value, label);
-  expect(["loved", "liked", "mixed", "not_for_me"].includes(value.reaction), `${label}.reaction`);
+  expect(["loved", "liked", "surprised", "moved", "tense", "scared", "amused", "confused", "disappointed", "mixed", "not_for_me"].includes(value.reaction), `${label}.reaction`);
   expectNullableString(value.favoriteCharacter, `${label}.favoriteCharacter`);
+  expect(value.favoriteCharacterRole === null || ["lead", "supporting", "ensemble", "other"].includes(value.favoriteCharacterRole), `${label}.favoriteCharacterRole`);
   expectNullableString(value.comment, `${label}.comment`);
   expectIsoString(value.updatedAt, `${label}.updatedAt`);
 
   if (expected) {
     expectEqual(value.reaction, expected.reaction, `${label}.reaction`);
     expectEqual(value.favoriteCharacter, expected.favoriteCharacter, `${label}.favoriteCharacter`);
+    expectEqual(value.favoriteCharacterRole, expected.favoriteCharacterRole, `${label}.favoriteCharacterRole`);
     expectEqual(value.comment, expected.comment, `${label}.comment`);
   }
 }
@@ -1495,6 +1500,11 @@ function expectBoolean(value, label) {
 
 function expectArray(value, label) {
   expect(Array.isArray(value), `${label} should be an array`);
+}
+
+function expectStringArray(value, label) {
+  expectArray(value, label);
+  expect(value.every((item) => typeof item === "string"), `${label} should contain only strings`);
 }
 
 function expectUuid(value, label) {

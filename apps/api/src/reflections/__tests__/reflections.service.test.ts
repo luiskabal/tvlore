@@ -16,12 +16,14 @@ const episodeId = "00000000-0000-4000-8000-000000000004";
 const body = {
   comment: "That ending worked.",
   favoriteCharacter: "Jonas",
+  favoriteCharacterRole: "lead",
   rating: 5,
   reaction: "loved",
 };
 const parsedInput = {
   comment: "That ending worked.",
   favoriteCharacter: "Jonas",
+  favoriteCharacterRole: "lead",
   rating: 5,
   reaction: "loved",
 };

@@ -1,6 +1,7 @@
 import { router } from "expo-router";
 import { View } from "react-native";
 
+import { openCatalogDetail } from "../catalog/catalog-navigation";
 import { RecommendationsPanel } from "../home/RecommendationsPanel";
 import { AppText, BackButton, Button, EmptyState, MediaRowSkeleton, PageHeader, Screen, ScreenScroll } from "../ui";
 import { styles } from "./search-styles";
@@ -56,9 +57,9 @@ export default function RecommendationsScreen() {
 }
 
 function openMovie(id: string) {
-  router.push({ pathname: "/movies/[id]", params: { id } });
+  openCatalogDetail("movie", id);
 }
 
 function openShow(id: string) {
-  router.push({ pathname: "/shows/[id]", params: { id } });
+  openCatalogDetail("show", id);
 }

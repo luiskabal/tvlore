@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getActiveTab, getTabStackScreenOptions, getVisibleTab } from "./app-tabs";
+import { getActiveTab, getAuthRedirect, getTabStackScreenOptions, getVisibleTab } from "./app-tabs";
 import { isBackPanStart, shouldCompleteBackPan } from "./navigation-gestures";
 
 describe("app tabs", () => {
@@ -53,6 +53,16 @@ describe("app tabs", () => {
 
   it("hides tabs during auth callback routes", () => {
     expect(getVisibleTab("/auth/callback", "profile")).toBeNull();
+    expect(getVisibleTab("/login", "profile")).toBeNull();
+  });
+
+  it("protects app routes and sends signed-in users to the library", () => {
+    expect(getAuthRedirect("/search", "signedOut")).toBe("/login");
+    expect(getAuthRedirect("/movies/123", "error")).toBe("/login");
+    expect(getAuthRedirect("/auth/callback", "signedOut")).toBeNull();
+    expect(getAuthRedirect("/login", "signedIn")).toBe("/library");
+    expect(getAuthRedirect("/search", "signedIn")).toBeNull();
+    expect(getAuthRedirect("/library", "loading")).toBeNull();
   });
 });
 

@@ -182,6 +182,7 @@ function SeasonBulkPanel({
   const watchedCount = season.episodePage.watchedCount;
   const episodeCount = season.episodePage.totalCount;
   const hasEpisodes = episodeCount > 0;
+  const isWatchSaving = watchAction.kind === "loading" || watchAction.kind === "bulk-loading";
   const isBulkSaving = watchAction.kind === "bulk-loading";
   const allWatched = hasEpisodes && watchedCount === episodeCount;
   const noneWatched = watchedCount === 0;
@@ -195,7 +196,7 @@ function SeasonBulkPanel({
 
       <View style={styles.bulkButtonRow}>
         <Button
-          disabled={!hasEpisodes || allWatched || isBulkSaving}
+          disabled={!hasEpisodes || allWatched || isWatchSaving}
           icon="checkmark-done"
           isLoading={isBulkSaving && watchAction.watched}
           label="Mark all watched"
@@ -205,7 +206,7 @@ function SeasonBulkPanel({
         />
 
         <Button
-          disabled={!hasEpisodes || noneWatched || isBulkSaving}
+          disabled={!hasEpisodes || noneWatched || isWatchSaving}
           icon="eye-off-outline"
           isLoading={isBulkSaving && !watchAction.watched}
           label="Mark all unwatched"
@@ -230,7 +231,7 @@ function EpisodeRow({
   onSetWatched: (episodeId: string, watched: boolean) => void;
   watchAction: EpisodeWatchActionState;
 }) {
-  const isDisabled = watchAction.kind === "bulk-loading";
+  const isDisabled = watchAction.kind === "loading" || watchAction.kind === "bulk-loading";
   const actionError = watchAction.kind === "error" && watchAction.episodeId === episode.id
     ? watchAction.message
     : null;

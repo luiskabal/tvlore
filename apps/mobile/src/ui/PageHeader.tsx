@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 
 import { AppText } from "./AppText";
+import { BrandMark } from "./BrandMark";
 import { ui } from "./tokens";
 
 type PageHeaderProps = {
@@ -13,6 +14,7 @@ type PageHeaderProps = {
 export function PageHeader({ action, subtitle, title }: PageHeaderProps) {
   return (
     <View style={styles.header}>
+      <BrandMark />
       <View style={styles.text}>
         <AppText style={styles.title}>{title}</AppText>
         {subtitle ? (
@@ -28,26 +30,26 @@ export function PageHeader({ action, subtitle, title }: PageHeaderProps) {
 
 const styles = StyleSheet.create({
   action: {
-    paddingTop: ui.space.xs,
+    paddingTop: 2,
   },
   header: {
     alignItems: "flex-start",
     flexDirection: "row",
-    gap: ui.space.lg,
+    gap: ui.space.md,
     justifyContent: "space-between",
   },
   subtitle: {
-    fontSize: 17,
-    lineHeight: 24,
+    fontSize: ui.type.body,
+    lineHeight: 23,
   },
   text: {
     flex: 1,
-    gap: ui.space.sm,
+    gap: ui.space.xs,
     minWidth: 0,
   },
   title: {
-    fontSize: 44,
-    fontWeight: "900",
-    lineHeight: 50,
+    fontSize: ui.type.screenTitle,
+    fontWeight: "800",
+    lineHeight: 36,
   },
 });

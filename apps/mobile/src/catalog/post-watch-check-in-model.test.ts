@@ -7,6 +7,7 @@ describe("post-watch check-in model", () => {
     expect(createCheckInDraft(null, null)).toEqual({
       comment: null,
       favoriteCharacter: null,
+      favoriteCharacterRole: null,
       rating: 5,
       reaction: "liked",
     });
@@ -16,11 +17,13 @@ describe("post-watch check-in model", () => {
     expect(createCheckInDraft(4, {
       comment: "Great",
       favoriteCharacter: "Jonas",
+      favoriteCharacterRole: null,
       reaction: "loved",
       updatedAt: "2026-08-14T00:00:00.000Z",
     })).toEqual({
       comment: "Great",
       favoriteCharacter: "Jonas",
+      favoriteCharacterRole: null,
       rating: 4,
       reaction: "loved",
     });
@@ -30,11 +33,13 @@ describe("post-watch check-in model", () => {
     expect(normalizeCheckInDraft({
       comment: "  ",
       favoriteCharacter: "  Martha  ",
+      favoriteCharacterRole: "supporting",
       rating: 3,
       reaction: "mixed",
     })).toEqual({
       comment: null,
       favoriteCharacter: "Martha",
+      favoriteCharacterRole: "supporting",
       rating: 3,
       reaction: "mixed",
     });

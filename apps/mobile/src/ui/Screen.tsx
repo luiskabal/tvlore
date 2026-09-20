@@ -40,7 +40,7 @@ type ScreenScrollProps = Omit<ScrollViewProps, "contentContainerStyle"> & {
 export function Screen({ children, style, ...props }: ScreenProps) {
   return (
     <SafeAreaView {...props} style={[styles.screen, style]}>
-      <StatusBar style="dark" />
+      <StatusBar style="light" />
       {children}
     </SafeAreaView>
   );
@@ -73,7 +73,7 @@ export function ScreenScroll({
 
 export function useScreenContentStyle(options: ContentOptions = {}) {
   const { width } = useWindowDimensions();
-  const horizontalPadding = width < 380 ? ui.space.xxl : 24;
+  const horizontalPadding = width < 380 ? ui.space.lg : ui.space.xl;
   const maxWidth = width >= 760 ? 680 : undefined;
 
   return [
@@ -81,9 +81,9 @@ export function useScreenContentStyle(options: ContentOptions = {}) {
     {
       gap: options.gap ?? 20,
       maxWidth,
-      paddingBottom: options.bottom ?? 32,
+      paddingBottom: options.bottom ?? ui.space.xxxl,
       paddingHorizontal: horizontalPadding,
-      paddingTop: options.top ?? 64,
+      paddingTop: options.top ?? 56,
     },
   ];
 }
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   screen: {
-    backgroundColor: ui.color.panelAlt,
+    backgroundColor: ui.colors.background.primary,
     flex: 1,
   },
 });

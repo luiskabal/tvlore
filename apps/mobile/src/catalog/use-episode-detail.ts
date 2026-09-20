@@ -190,6 +190,7 @@ export function useEpisodeDetail(episodeId: string | null) {
         reflection: {
           comment: input.comment,
           favoriteCharacter: input.favoriteCharacter,
+          favoriteCharacterRole: input.favoriteCharacterRole,
           reaction: input.reaction,
           updatedAt: new Date().toISOString(),
         },
@@ -210,6 +211,7 @@ export function useEpisodeDetail(episodeId: string | null) {
         reflection: {
           comment: response.comment,
           favoriteCharacter: response.favoriteCharacter,
+          favoriteCharacterRole: response.favoriteCharacterRole,
           reaction: response.reaction,
           updatedAt: response.updatedAt,
         },

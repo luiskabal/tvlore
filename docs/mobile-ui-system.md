@@ -24,13 +24,17 @@ identity, or decide whether a user can perform a domain action.
 
 | Token group | Current responsibility |
 | --- | --- |
-| `ui.color` | App ink, muted copy, accent green, danger, panels, borders, skeleton colors. |
-| `ui.radius` | Small, medium, and pill radius values. |
+| `ui.colors` | Semantic dark cinematic palette: background, surface, border, accent, text, rating, and status groups. |
+| `ui.color` | Compatibility aliases for older component code while the app migrates to `ui.colors`. |
+| `ui.radius` | Small, medium, large, xl, and pill radius values. |
 | `ui.space` | Shared spacing steps for rows, panels, buttons, and screen gaps. |
-| `ui.type` | Body, button, label, row title, section title, and stat sizes. |
+| `ui.type` | Display, screen title, section title, card title, body, metadata, label, and stat sizes. |
+| `ui.shadow` | Subtle dark-card elevation values for reusable surfaces. |
 
-The palette is intentionally warm and restrained: off-white surfaces, dark ink,
-green actions, and red only for destructive or failed states.
+The palette is intentionally dark and restrained: near-black backgrounds,
+elevated dark cards, muted gray metadata, purple product accents, gold only for
+public aggregate rating stars, and red only for destructive or failed states.
+Artwork should provide most of the screen color.
 
 ## Component Layers
 

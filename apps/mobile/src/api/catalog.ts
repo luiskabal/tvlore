@@ -45,6 +45,7 @@ export async function searchCatalog(
 export async function resolveCatalogItem(
   accessToken: string | null,
   result: CatalogSearchResult,
+  options: Pick<RequestInit, "signal"> = {},
 ): Promise<CatalogResolveResponse> {
   return fetchMutationJson(
     "/catalog/resolve",
@@ -61,6 +62,7 @@ export async function resolveCatalogItem(
         "Content-Type": "application/json",
       },
       method: "POST",
+      signal: options.signal,
     },
   );
 }

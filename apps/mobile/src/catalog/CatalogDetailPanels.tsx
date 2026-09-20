@@ -1,8 +1,10 @@
 import { useState } from "react";
+import type { ComponentProps } from "react";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { Image, Linking, Pressable, View } from "react-native";
 
-import type { CatalogDetailResponse, MediaType, ShowDetailResponse, ShowSeasonSummary, WatchProvider } from "../api/tvlore-api";
-import { AppText, Badge, RatingStars, Skeleton } from "../ui";
+import type { CatalogDetailResponse, MediaType, ShowDetailResponse, ShowSeasonSummary, WatchProvider, WatchReaction } from "../api/tvlore-api";
+import { AppText, Badge, RatingStars, Skeleton, ui } from "../ui";
 import { styles } from "./catalog-detail-styles";
 import { formatCount, formatDate, formatPublicRating, getProviderInitials, getShowProgressLine, getStatusLine } from "./catalog-detail-format";
 import { getTmdbLogoUrl } from "./posters";
@@ -10,6 +12,8 @@ import type { PreferenceActionState, WatchProvidersState } from "./use-catalog-d
 import { formatWatchCountry } from "./watch-country";
 
 type SeasonProgress = ShowDetailResponse["progress"]["seasons"][number];
+type IconName = ComponentProps<typeof Ionicons>["name"];
+const ratingValues = [1, 2, 3, 4, 5] as const;
 
 export function WhereToWatchPanel({ state }: { state: WatchProvidersState }) {
   if (state.kind === "loading") {
@@ -53,9 +57,10 @@ export function WhereToWatchPanel({ state }: { state: WatchProvidersState }) {
         sections.map((section) => (
           <View key={section.label} style={styles.providerSection}>
             <AppText tone="muted" variant="caption">{section.label}</AppText>
-            <View style={styles.providerRow}>
+            <View style={styles.providerList}>
               {section.providers.map((provider) => (
-                <ProviderPill
+                <ProviderRow
+                  availabilityLabel={section.label}
                   key={`${section.label}-${provider.id}`}
                   provider={provider}
                   watchUrl={state.providers.link}
@@ -101,7 +106,7 @@ export function RatingMatchPanel({
           ]}
         >
           <AppText tone="muted" variant="caption">TMDB</AppText>
-          <AppText style={styles.ratingMetricValue} variant="title">
+          <AppText style={[styles.ratingMetricValue, styles.ratingMetricPublicValue]} variant="title">
             {formatPublicRating(detail.publicRating, showPublicRating)}
           </AppText>
         </Pressable>
@@ -113,7 +118,7 @@ export function RatingMatchPanel({
           style={[styles.ratingMetric, styles.ratingMetricUser]}
         >
           <AppText tone="muted" variant="caption">You</AppText>
-          <AppText style={styles.ratingMetricValue} variant="title">
+          <AppText style={[styles.ratingMetricValue, styles.ratingMetricUserValue]} variant="title">
             {detail.rating ? `${detail.rating}/5` : "--"}
           </AppText>
         </Pressable>
@@ -147,6 +152,77 @@ export function RatingMatchPanel({
       ) : null}
     </View>
   );
+}
+
+export function CheckInPanel({ detail }: { detail: CatalogDetailResponse }) {
+  if (!detail.reflection) {
+    return null;
+  }
+
+  return (
+    <View style={styles.checkInCard}>
+      <View style={styles.panelHeaderRow}>
+        <View>
+          <AppText variant="section">My Check-in</AppText>
+          <AppText tone="muted" variant="caption">{formatDate(detail.reflection.updatedAt)}</AppText>
+        </View>
+        {detail.rating ? <ReadonlyRating value={detail.rating} /> : null}
+      </View>
+
+      <View style={styles.checkInMetaRow}>
+        <Badge label={formatReaction(detail.reflection.reaction)} />
+        {detail.reflection.favoriteCharacter ? (
+          <Badge label={detail.reflection.favoriteCharacter} tone="neutral" />
+        ) : null}
+        {detail.reflection.favoriteCharacterRole ? (
+          <Badge label={formatCharacterRole(detail.reflection.favoriteCharacterRole)} tone="neutral" />
+        ) : null}
+      </View>
+
+      {detail.reflection.comment ? (
+        <AppText style={styles.checkInComment}>{detail.reflection.comment}</AppText>
+      ) : null}
+    </View>
+  );
+}
+
+function ReadonlyRating({ value }: { value: number }) {
+  return (
+    <View accessibilityLabel={`Your rating ${value} out of 5`} style={styles.readonlyRatingRow}>
+      {ratingValues.map((rating) => (
+        <Ionicons
+          color={rating <= value ? ui.colors.accent.bright : ui.color.muted2}
+          key={rating}
+          name={"star" satisfies IconName}
+          size={15}
+        />
+      ))}
+    </View>
+  );
+}
+
+function formatReaction(value: WatchReaction) {
+  if (value === "not_for_me") {
+    return "Not for me";
+  }
+
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function formatCharacterRole(value: NonNullable<CatalogDetailResponse["reflection"]>["favoriteCharacterRole"]) {
+  if (value === "lead") {
+    return "Lead character";
+  }
+
+  if (value === "supporting") {
+    return "Supporting character";
+  }
+
+  if (value === "ensemble") {
+    return "Ensemble character";
+  }
+
+  return "Other character";
 }
 
 export function ShowProgressPanel({ show }: { show: ShowDetailResponse }) {
@@ -196,7 +272,15 @@ export function ShowSeasonsPanel({
   );
 }
 
-function ProviderPill({ provider, watchUrl }: { provider: WatchProvider; watchUrl: string | null }) {
+function ProviderRow({
+  availabilityLabel,
+  provider,
+  watchUrl,
+}: {
+  availabilityLabel: string;
+  provider: WatchProvider;
+  watchUrl: string | null;
+}) {
   return (
     <Pressable
       accessibilityLabel={`Open ${provider.name} availability`}
@@ -204,9 +288,9 @@ function ProviderPill({ provider, watchUrl }: { provider: WatchProvider; watchUr
       disabled={!watchUrl}
       onPress={() => openWatchProviderLink(watchUrl)}
       style={({ pressed }) => [
-        styles.providerPill,
+        styles.providerRowItem,
         pressed ? styles.pressedSeasonRow : null,
-        !watchUrl ? styles.providerPillDisabled : null,
+        !watchUrl ? styles.providerRowDisabled : null,
       ]}
     >
       {provider.logoPath ? (
@@ -217,8 +301,17 @@ function ProviderPill({ provider, watchUrl }: { provider: WatchProvider; watchUr
           style={styles.providerLogo}
         />
       ) : (
-        <AppText style={styles.providerFallbackText} variant="caption">{getProviderInitials(provider.name)}</AppText>
+        <View style={styles.providerLogoFallback}>
+          <AppText style={styles.providerFallbackText} variant="caption">{getProviderInitials(provider.name)}</AppText>
+        </View>
       )}
+
+      <View style={styles.providerText}>
+        <AppText numberOfLines={1} variant="title">{provider.name}</AppText>
+        <AppText tone="muted" variant="caption">{availabilityLabel}</AppText>
+      </View>
+
+      <Ionicons color={ui.color.muted} name={"chevron-forward" satisfies IconName} size={18} />
     </Pressable>
   );
 }

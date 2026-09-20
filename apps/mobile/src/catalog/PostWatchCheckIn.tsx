@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { Image, Pressable, ScrollView, TextInput, View } from "react-native";
 
 import type { PreferenceMediaType, WatchReaction, WatchReflection, WatchReflectionInput } from "../api/tvlore-api";
-import { AppText, Button, RatingStars, ui } from "../ui";
+import { AppText, Badge, Button, RatingStars, ui } from "../ui";
 import { styles } from "./catalog-detail-styles";
-import { createCheckInDraft, normalizeCheckInDraft, type PostWatchCastState, reactionOptions } from "./post-watch-check-in-model";
+import { characterRoleOptions, createCheckInDraft, normalizeCheckInDraft, type PostWatchCastState, reactionOptions } from "./post-watch-check-in-model";
 import { getTmdbProfileUrl } from "./posters";
 
 type IconName = ComponentProps<typeof Ionicons>["name"];
@@ -14,6 +14,7 @@ type IconName = ComponentProps<typeof Ionicons>["name"];
 export type PostWatchCheckInTarget = {
   id: string;
   mediaType: PreferenceMediaType;
+  genreNames: string[];
   rating: number | null;
   reflection: WatchReflection | null;
   title: string;
@@ -25,10 +26,17 @@ export type PostWatchCheckInActionState =
   | { kind: "error"; message: string };
 
 const reactionIconByValue: Record<WatchReaction, IconName> = {
+  amused: "happy-outline",
+  confused: "help-circle-outline",
+  disappointed: "sad-outline",
   liked: "happy-outline",
   loved: "heart-outline",
+  moved: "heart-circle-outline",
   mixed: "contrast-outline",
   not_for_me: "sad-outline",
+  scared: "eye-off-outline",
+  surprised: "alert-circle-outline",
+  tense: "pulse-outline",
 };
 
 export function PostWatchCheckIn({
@@ -78,6 +86,15 @@ export function PostWatchCheckIn({
       <AppText tone="accent" variant="caption">Watched</AppText>
       <AppText variant="section">How was it?</AppText>
       <AppText numberOfLines={2} tone="muted">{target.title}</AppText>
+
+      {target.genreNames.length > 0 ? (
+        <View style={styles.checkInSection}>
+          <AppText variant="button">Genres</AppText>
+          <View style={styles.checkInMetaRow}>
+            {target.genreNames.map((genre) => <Badge key={genre} label={genre} tone="neutral" />)}
+          </View>
+        </View>
+      ) : null}
 
       {actionState.kind === "error" ? <AppText tone="danger">{actionState.message}</AppText> : null}
 
@@ -154,6 +171,33 @@ export function PostWatchCheckIn({
             style={styles.checkInInput}
             value={draft.favoriteCharacter ?? ""}
           />
+        ) : null}
+
+        {draft.favoriteCharacter ? (
+          <View style={styles.checkInSection}>
+            <AppText variant="button">Character role</AppText>
+            <View style={styles.reactionRow}>
+              {characterRoleOptions.map((option) => {
+                const isSelected = draft.favoriteCharacterRole === option.value;
+
+                return (
+                  <Pressable
+                    accessibilityLabel={`Character role ${option.label}`}
+                    accessibilityRole="button"
+                    accessibilityState={{ disabled: isSaving, selected: isSelected }}
+                    disabled={isSaving}
+                    key={option.value}
+                    onPress={() => setDraft((current) => ({ ...current, favoriteCharacterRole: option.value }))}
+                    style={[styles.reactionPill, isSelected ? styles.reactionPillSelected : null, isSaving ? styles.iconActionButtonDisabled : null]}
+                  >
+                    <AppText style={isSelected ? styles.reactionPillTextSelected : styles.reactionPillText} variant="caption">
+                      {option.label}
+                    </AppText>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
         ) : null}
       </View>
 

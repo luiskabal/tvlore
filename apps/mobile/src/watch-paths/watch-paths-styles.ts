@@ -28,8 +28,8 @@ export const styles = StyleSheet.create({
   },
   itemBadge: {
     alignItems: "center",
-    backgroundColor: ui.color.accentSoft,
-    borderColor: ui.color.panel,
+    backgroundColor: ui.colors.accent.surface,
+    borderColor: ui.colors.accent.border,
     borderWidth: 1,
     borderRadius: ui.radius.pill,
     height: 24,
@@ -44,7 +44,7 @@ export const styles = StyleSheet.create({
   },
   itemRow: {
     alignItems: "center",
-    backgroundColor: ui.color.panel,
+    backgroundColor: ui.colors.surface.cardElevated,
     borderColor: ui.color.border,
     borderRadius: ui.radius.md,
     borderWidth: 1,
@@ -71,7 +71,7 @@ export const styles = StyleSheet.create({
     gap: ui.space.md,
   },
   input: {
-    backgroundColor: ui.color.panel,
+    backgroundColor: ui.colors.background.secondary,
     borderColor: ui.color.border,
     borderRadius: ui.radius.md,
     borderWidth: 1,
@@ -81,7 +81,8 @@ export const styles = StyleSheet.create({
     paddingVertical: ui.space.md,
   },
   pathCard: {
-    backgroundColor: ui.color.panel,
+    ...ui.shadow.card,
+    backgroundColor: ui.colors.surface.cardElevated,
     borderColor: ui.color.border,
     borderRadius: ui.radius.md,
     borderWidth: 1,

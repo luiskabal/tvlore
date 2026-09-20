@@ -3,6 +3,7 @@ import "react-native-url-polyfill/auto";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createClient, processLock } from "@supabase/supabase-js";
 import * as AppleAuthentication from "expo-apple-authentication";
+import Constants, { AppOwnership, ExecutionEnvironment } from "expo-constants";
 import * as ExpoLinking from "expo-linking";
 import * as SecureStore from "expo-secure-store";
 import * as WebBrowser from "expo-web-browser";
@@ -11,11 +12,16 @@ import { AppState, Linking as NativeLinking, Platform } from "react-native";
 import { clearApiReadCache } from "../api/client";
 import { supabaseProjectUrl, supabasePublishableKey, supabaseUrl } from "../config/env";
 import { extractSessionFromAuthCallbackUrl, isAuthCallbackUrl } from "./auth-callback";
+import { getAuthRedirectOptions } from "./auth-redirect";
 
-const authRedirectUrl = ExpoLinking.createURL("auth/callback", {
-  isTripleSlashed: true,
-  scheme: "tvlore",
-});
+const isExpoGo =
+  Constants.executionEnvironment === ExecutionEnvironment.StoreClient ||
+  Constants.appOwnership === AppOwnership.Expo;
+
+const authRedirectUrl = ExpoLinking.createURL(
+  "auth/callback",
+  getAuthRedirectOptions(isExpoGo ? "expo-go" : "native"),
+);
 const androidAuthCallbackGracePeriodMs = 1500;
 
 WebBrowser.maybeCompleteAuthSession();

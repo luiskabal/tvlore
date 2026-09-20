@@ -315,6 +315,7 @@ export function isShowDetailResponse(value: unknown): value is Omit<ShowDetailRe
 
   return (
     typeof value.id === "string" &&
+    isGenreNames(value.genreNames) &&
     typeof value.inWatchlist === "boolean" &&
     typeof value.title === "string" &&
     isNullableString(value.originalTitle) &&
@@ -388,6 +389,7 @@ export function isEpisodeDetailResponse(value: unknown): value is EpisodeDetailR
 
   return (
     typeof candidate.seasonId === "string" &&
+    isGenreNames(candidate.genreNames) &&
     typeof candidate.seasonTitle === "string" &&
     typeof candidate.showId === "string" &&
     isNullableString(candidate.showPosterPath) &&
@@ -425,6 +427,7 @@ export function isMovieDetailResponse(value: unknown): value is Omit<MovieDetail
   return (
     typeof value.id === "string" &&
     typeof value.title === "string" &&
+    isGenreNames(value.genreNames) &&
     isNullableString(value.originalTitle) &&
     typeof value.overview === "string" &&
     isNullableString(value.posterPath) &&
@@ -673,13 +676,22 @@ function isWatchReflection(value: unknown): value is WatchReflection {
     isRecord(value) &&
     isNullableString(value.comment) &&
     isNullableString(value.favoriteCharacter) &&
+    isNullableFavoriteCharacterRole(value.favoriteCharacterRole) &&
     isWatchReaction(value.reaction) &&
     typeof value.updatedAt === "string"
   );
 }
 
 function isWatchReaction(value: unknown) {
-  return value === "loved" || value === "liked" || value === "mixed" || value === "not_for_me";
+  return value === "loved" || value === "liked" || value === "surprised" || value === "moved" || value === "tense" || value === "scared" || value === "amused" || value === "confused" || value === "disappointed" || value === "mixed" || value === "not_for_me";
+}
+
+function isNullableFavoriteCharacterRole(value: unknown) {
+  return value === null || value === "lead" || value === "supporting" || value === "ensemble" || value === "other";
+}
+
+function isGenreNames(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every(isString);
 }
 
 function isCatalogCastMember(value: unknown) {

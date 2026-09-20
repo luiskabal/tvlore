@@ -22,7 +22,9 @@ import {
 } from "../api/tvlore-api";
 import { getSupabaseAccessToken } from "../auth/supabase-auth";
 import { notifyLibraryChanged } from "../library/library-refresh";
+import { updateCatalogDetailRating } from "./catalog-detail-rating";
 import type { PostWatchCastState } from "./post-watch-check-in-model";
+import { getOptimisticShowProgress } from "./catalog-detail-format";
 import { getDeviceWatchCountry } from "./watch-country";
 
 export type CatalogDetailState =
@@ -179,6 +181,10 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
   }, [state]);
 
   const setShowWatched = useCallback(async (showId: string, watched: boolean) => {
+    if (state.kind !== "ready" || state.detail.mediaType !== "show" || state.detail.id !== showId) {
+      return false;
+    }
+
     const previousDetail = state.kind === "ready" && state.detail.mediaType === "show" && state.detail.id === showId
       ? state.detail
       : null;
@@ -187,6 +193,19 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
     showWatchRequestId.current = requestId;
 
     setWatchAction({ kind: "loading", watched });
+    setState((current) => {
+      if (current.kind !== "ready" || current.detail.mediaType !== "show" || current.detail.id !== showId) {
+        return current;
+      }
+
+      return {
+        detail: {
+          ...current.detail,
+          progress: getOptimisticShowProgress(current.detail, watched),
+        },
+        kind: "ready",
+      };
+    });
 
     try {
       const token = await getSupabaseAccessToken();
@@ -292,15 +311,12 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
 
     setPreferenceAction({ kind: "loading" });
     setState((current) => {
-      if (current.kind !== "ready" || current.detail.id !== targetId || current.detail.mediaType !== targetMediaType) {
+      if (current.kind !== "ready") {
         return current;
       }
 
       return {
-        detail: {
-          ...current.detail,
-          rating,
-        },
+        detail: updateCatalogDetailRating(current.detail, targetMediaType, targetId, rating),
         kind: "ready",
       };
     });
@@ -316,19 +332,12 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
       }
 
       setState((current) => {
-        if (
-          current.kind !== "ready" ||
-          current.detail.id !== response.id ||
-          current.detail.mediaType !== response.mediaType
-        ) {
+        if (current.kind !== "ready") {
           return current;
         }
 
         return {
-          detail: {
-            ...current.detail,
-            rating: response.rating,
-          },
+          detail: updateCatalogDetailRating(current.detail, targetMediaType, targetId, response.rating),
           kind: "ready",
         };
       });
@@ -366,6 +375,7 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
       reflection: {
         comment: input.comment,
         favoriteCharacter: input.favoriteCharacter,
+        favoriteCharacterRole: input.favoriteCharacterRole,
         reaction: input.reaction,
         updatedAt: new Date().toISOString(),
       },
@@ -384,6 +394,7 @@ export function useCatalogDetail(mediaType: MediaType, id: string | null) {
         reflection: {
           comment: response.comment,
           favoriteCharacter: response.favoriteCharacter,
+          favoriteCharacterRole: response.favoriteCharacterRole,
           reaction: response.reaction,
           updatedAt: response.updatedAt,
         },

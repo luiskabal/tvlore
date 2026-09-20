@@ -55,6 +55,7 @@ function CatalogCheckIn({ id, mediaType }: { id: string; mediaType: MediaType })
   const target: PostWatchCheckInTarget = {
     id: state.detail.id,
     mediaType: state.detail.mediaType,
+    genreNames: state.detail.genreNames,
     rating: state.detail.rating,
     reflection: state.detail.reflection,
     title: state.detail.title,
@@ -101,6 +102,7 @@ function EpisodeCheckIn({ id }: { id: string }) {
   const target: PostWatchCheckInTarget = {
     id: state.detail.id,
     mediaType: "episode",
+    genreNames: state.detail.genreNames,
     rating: state.detail.rating,
     reflection: state.detail.reflection,
     title: `${state.detail.showTitle} - ${state.detail.title}`,

@@ -161,6 +161,63 @@ describe("LibraryRepository", () => {
     });
   });
 
+  it("excludes specials from library progress and continue watching", async () => {
+    const watchedAt = new Date("2026-08-14T10:00:00.000Z");
+    const episodeWatch = {
+      episode: {
+        episodeNumber: 1,
+        id: "episode-regular",
+        seasonNumber: 1,
+        show: { id: showId, posterPath: "/dark.jpg", title: "Dark" },
+        stillPath: null,
+        title: "Secrets",
+      },
+      watchedAt,
+    };
+    const client = {
+      episodeWatch: { findMany: vi.fn().mockResolvedValue([episodeWatch]) },
+      moviePreference: { findMany: vi.fn().mockResolvedValue([]) },
+      movieWatch: { findMany: vi.fn().mockResolvedValue([]) },
+      movieWatchlistItem: { findMany: vi.fn().mockResolvedValue([]) },
+      show: {
+        findMany: vi.fn().mockResolvedValue([{
+          episodes: [
+            {
+              episodeNumber: 1,
+              id: "episode-special",
+              seasonNumber: 0,
+              title: "Behind the scenes",
+              watches: [],
+            },
+            {
+              episodeNumber: 1,
+              id: "episode-regular",
+              seasonNumber: 1,
+              title: "Secrets",
+              watches: [{ watchedAt }],
+            },
+          ],
+          id: showId,
+          posterPath: "/dark.jpg",
+          title: "Dark",
+        }]),
+      },
+      showPreference: { findMany: vi.fn().mockResolvedValue([]) },
+      showWatchlistItem: { findMany: vi.fn().mockResolvedValue([]) },
+    };
+    const repository = new LibraryRepository({ getClient: () => client } as unknown as PrismaService);
+    const library = await repository.getLibrary(userId);
+
+    expect(library.continueWatching).toEqual([]);
+    expect(library.shows[0]).toMatchObject({
+      nextEpisode: null,
+      percentComplete: 100,
+      status: "completed",
+      totalEpisodeCount: 1,
+      watchedEpisodeCount: 1,
+    });
+  });
+
   it("returns paginated chronology sorted across movies and episodes", async () => {
     const episodeWatches = [
       {

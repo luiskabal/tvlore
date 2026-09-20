@@ -111,6 +111,7 @@ function toReflectionUpdate(input: WatchReflectionInput) {
   return {
     comment: input.comment,
     favoriteCharacter: input.favoriteCharacter,
+    favoriteCharacterRole: input.favoriteCharacterRole,
     reaction: input.reaction,
   };
 }
@@ -122,6 +123,7 @@ function toResponse(
   reflection: {
     comment: string | null;
     favoriteCharacter: string | null;
+    favoriteCharacterRole: string | null;
     reaction: string;
     updatedAt: Date;
   },
@@ -129,6 +131,7 @@ function toResponse(
   return {
     comment: reflection.comment,
     favoriteCharacter: reflection.favoriteCharacter,
+    favoriteCharacterRole: reflection.favoriteCharacterRole as WatchReflectionResponseDto["favoriteCharacterRole"],
     id,
     mediaType,
     rating,

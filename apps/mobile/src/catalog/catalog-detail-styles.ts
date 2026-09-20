@@ -11,7 +11,7 @@ export const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   backButtonText: {
-    color: "#1f7a5c",
+    color: ui.color.accent,
     fontSize: 16,
     fontWeight: "800",
   },
@@ -112,22 +112,61 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 11,
   },
+  checkInCard: {
+    ...ui.shadow.card,
+    backgroundColor: ui.colors.surface.cardElevated,
+    borderColor: ui.colors.border.subtle,
+    borderRadius: ui.radius.large,
+    borderWidth: 1,
+    gap: ui.space.md,
+    padding: ui.space.lg,
+  },
+  checkInComment: {
+    lineHeight: 23,
+  },
+  checkInMetaRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: ui.space.sm,
+  },
   detail: {
     gap: 20,
   },
-  hero: {
-    flexDirection: "row",
-    gap: 16,
+  heroBackdrop: {
+    backgroundColor: ui.colors.surface.cardElevated,
+    borderColor: ui.colors.border.subtle,
+    borderRadius: ui.radius.xl,
+    borderWidth: 1,
+    minHeight: 260,
+    justifyContent: "flex-end",
+    overflow: "hidden",
+  },
+  heroBackdropFallback: {
+    minHeight: 220,
+  },
+  heroBackdropImage: {
+    borderRadius: ui.radius.xl,
+  },
+  heroBackdropOverlay: {
+    bottom: 0,
+    backgroundColor: ui.colors.surface.overlay,
+    left: 0,
+    position: "absolute",
+    right: 0,
+    top: 0,
+  },
+  heroContent: {
+    justifyContent: "flex-end",
+    minHeight: 220,
+    padding: ui.space.lg,
+    paddingTop: 116,
   },
   heroHeaderRow: {
-    alignItems: "flex-start",
+    alignItems: "flex-end",
     flexDirection: "row",
     gap: 12,
     justifyContent: "space-between",
-  },
-  heroText: {
-    flex: 1,
-    justifyContent: "center",
+    zIndex: 1,
   },
   heroTitleBlock: {
     flex: 1,
@@ -179,27 +218,38 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   providerLogo: {
-    backgroundColor: ui.color.panelAlt,
+    backgroundColor: ui.colors.background.elevated,
     borderRadius: ui.radius.md,
     height: 44,
+    width: 44,
+  },
+  providerLogoFallback: {
+    alignItems: "center",
+    backgroundColor: ui.colors.background.elevated,
+    borderRadius: ui.radius.md,
+    height: 44,
+    justifyContent: "center",
     width: 44,
   },
   providerFallbackText: {
     color: ui.color.ink,
     fontWeight: "800",
   },
-  providerPill: {
+  providerList: {
+    gap: ui.space.sm,
+  },
+  providerRowItem: {
     alignItems: "center",
-    backgroundColor: ui.color.panelAlt,
+    backgroundColor: ui.colors.surface.cardElevated,
     borderColor: ui.color.border,
     borderRadius: ui.radius.md,
     borderWidth: 1,
-    height: 54,
-    justifyContent: "center",
-    padding: 4,
-    width: 54,
+    flexDirection: "row",
+    gap: ui.space.md,
+    minHeight: 60,
+    padding: ui.space.sm,
   },
-  providerPillDisabled: {
+  providerRowDisabled: {
     opacity: 0.56,
   },
   providerRow: {
@@ -209,6 +259,11 @@ export const styles = StyleSheet.create({
   },
   providerSection: {
     gap: 8,
+  },
+  providerText: {
+    flex: 1,
+    gap: 2,
+    minWidth: 0,
   },
   providerSkeletonRow: {
     flexDirection: "row",
@@ -265,7 +320,7 @@ export const styles = StyleSheet.create({
   },
   ratingMetricSpoiler: {
     backgroundColor: ui.color.accentSoft,
-    borderColor: "#b8ddcd",
+    borderColor: ui.color.accentBorder,
   },
   ratingMetricUser: {
     alignItems: "flex-end",
@@ -274,10 +329,20 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 23,
   },
+  ratingMetricPublicValue: {
+    color: ui.colors.rating.star,
+  },
+  ratingMetricUserValue: {
+    color: ui.colors.accent.bright,
+  },
   ratingRow: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
+  },
+  readonlyRatingRow: {
+    flexDirection: "row",
+    gap: 2,
   },
   clearRatingInlineButton: {
     alignItems: "center",

@@ -68,7 +68,7 @@ export function useAuthSession(onSessionChange: () => void) {
     return () => {
       isMounted = false;
     };
-  }, [isAuthActionRunning]);
+  }, []);
 
   const continueWithApple = useCallback(async () => {
     if (isAuthActionRunning) {
@@ -110,7 +110,7 @@ export function useAuthSession(onSessionChange: () => void) {
     } finally {
       setIsAuthActionRunning(false);
     }
-  }, []);
+  }, [isAuthActionRunning]);
 
   const signOut = useCallback(async () => {
     setAuthActionMessage(null);

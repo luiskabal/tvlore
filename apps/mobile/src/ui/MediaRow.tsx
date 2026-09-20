@@ -82,7 +82,8 @@ const posterSkeletonSizes = {
 
 const styles = StyleSheet.create({
   frame: {
-    borderColor: ui.color.border,
+    backgroundColor: ui.colors.surface.card,
+    borderColor: ui.colors.border.subtle,
     borderRadius: ui.radius.md,
     borderWidth: 1,
     padding: ui.space.lg,

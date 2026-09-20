@@ -279,9 +279,10 @@ function toContinueWatchingShow(show: {
   posterPath: string | null;
   title: string;
 }): LibraryContinueWatchingShowDto | null {
-  const totalEpisodeCount = show.episodes.length;
-  const watchedEpisodeCount = countWatched(show.episodes);
-  const nextEpisode = toNextEpisode(show.episodes.find((episode) => episode.watches.length === 0));
+  const regularEpisodes = show.episodes.filter((episode) => episode.seasonNumber > 0);
+  const totalEpisodeCount = regularEpisodes.length;
+  const watchedEpisodeCount = countWatched(regularEpisodes);
+  const nextEpisode = toNextEpisode(regularEpisodes.find((episode) => episode.watches.length === 0));
 
   if (!nextEpisode || watchedEpisodeCount === 0 || watchedEpisodeCount === totalEpisodeCount) {
     return null;
@@ -344,8 +345,9 @@ function toLibraryShows({
   const watchlistItemByShowId = new Map(showWatchlistItems.map((item) => [item.show.id, item]));
 
   return shows.map((show) => {
-    const totalEpisodeCount = show.episodes.length;
-    const watchedEpisodeCount = countWatched(show.episodes);
+    const regularEpisodes = show.episodes.filter((episode) => episode.seasonNumber > 0);
+    const totalEpisodeCount = regularEpisodes.length;
+    const watchedEpisodeCount = countWatched(regularEpisodes);
     const preference = preferenceByShowId.get(show.id);
     const watchlistItem = watchlistItemByShowId.get(show.id);
     const latestActivityAt = getLatestIsoDate([
@@ -359,7 +361,7 @@ function toLibraryShows({
       inWatchlist: Boolean(watchlistItem),
       latestActivityAt,
       mediaType: "show" as const,
-      nextEpisode: toNextEpisode(show.episodes.find((episode) => episode.watches.length === 0)),
+      nextEpisode: toNextEpisode(regularEpisodes.find((episode) => episode.watches.length === 0)),
       percentComplete: calculatePercentComplete(watchedEpisodeCount, totalEpisodeCount),
       posterPath: show.posterPath,
       rating: preference?.rating ?? null,

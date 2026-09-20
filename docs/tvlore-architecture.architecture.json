@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "TVLore - mapa de arquitectura actual",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/luiskabal/tvlore.git",
+      "revision": "72077ed0fda899d2c5ba970d92356972b9491ee8"
+    },
+    "viewBox": [1390, 790],
+    "views": [
+      {
+        "id": "runtime-path",
+        "label": "Camino runtime",
+        "focus": ["user", "mobile", "api", "domain", "repositories", "postgres"],
+        "note": "Sigue una solicitud desde la app hasta la persistencia gobernada por el backend."
+      },
+      {
+        "id": "provider-boundary",
+        "label": "Auth y proveedores",
+        "focus": ["mobile", "api", "auth", "domain", "tmdb"],
+        "note": "Inspecciona identidad Supabase y datos de catalogo/proveedores TMDB."
+      },
+      {
+        "id": "release-lane",
+        "label": "Release Android",
+        "focus": ["eas", "play", "mobile"],
+        "note": "Recorre el camino EAS hacia Google Play y el dispositivo."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "user",
+      "type": "external",
+      "label": "Usuario",
+      "sublabel": "Explora",
+      "pos": [40, 300],
+      "size": [150, 72],
+      "sources": [{ "path": "docs/architecture.md" }]
+    },
+    {
+      "id": "mobile",
+      "type": "frontend",
+      "label": "TVLore Mobile",
+      "sublabel": "Expo + React Native + Router",
+      "tag": "PRESENTACION",
+      "pos": [240, 300],
+      "size": [190, 72],
+      "sources": [
+        { "path": "apps/mobile/app/_layout.tsx" },
+        { "path": "apps/mobile/src/api/tvlore-api.ts" },
+        { "path": "apps/mobile/src/auth/supabase-auth.ts" }
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "TVLore API",
+      "sublabel": "NestJS en Vercel",
+      "tag": "BORDE HTTP",
+      "pos": [480, 300],
+      "size": [190, 72],
+      "sources": [
+        { "path": "apps/api/src/main.ts" },
+        { "path": "apps/api/src/app.module.ts" },
+        { "path": "docs/backend-architecture.md" }
+      ]
+    },
+    {
+      "id": "domain",
+      "type": "backend",
+      "label": "Modulos de dominio",
+      "sublabel": "Catalogo, tracking, library, paths",
+      "tag": "REGLAS",
+      "pos": [720, 300],
+      "size": [210, 72],
+      "sources": [
+        { "path": "apps/api/src/catalog/catalog.service.ts" },
+        { "path": "apps/api/src/tracking/tracking.service.ts" },
+        { "path": "docs/architecture.md" }
+      ]
+    },
+    {
+      "id": "repositories",
+      "type": "backend",
+      "label": "Repositorios y Prisma",
+      "sublabel": "Persistencia y consultas",
+      "tag": "DATOS",
+      "pos": [980, 300],
+      "size": [190, 72],
+      "sources": [
+        { "path": "apps/api/src/prisma.service.ts" },
+        { "path": "apps/api/src/library/library.repository.ts" },
+        { "path": "apps/api/prisma/schema.prisma" }
+      ]
+    },
+    {
+      "id": "postgres",
+      "type": "database",
+      "label": "Supabase Postgres",
+      "sublabel": "Estado canonico TVLore",
+      "tag": "DURABLE STATE",
+      "pos": [1194, 300],
+      "size": [190, 72],
+      "sources": [
+        { "path": "apps/api/prisma/schema.prisma" },
+        { "path": "docs/data-model-map.md" }
+      ]
+    },
+    {
+      "id": "auth",
+      "type": "security",
+      "label": "Supabase Auth",
+      "sublabel": "Google + Apple + sesiones",
+      "tag": "IDENTIDAD",
+      "pos": [480, 120],
+      "size": [190, 72],
+      "sources": [
+        { "path": "apps/mobile/src/auth/supabase-auth.ts" },
+        { "path": "apps/api/src/auth/supabase-auth.service.ts" },
+        { "path": "docs/authentication.md" }
+      ]
+    },
+    {
+      "id": "tmdb",
+      "type": "external",
+      "label": "TMDB",
+      "sublabel": "Catalogo y watch providers",
+      "tag": "PROVIDER",
+      "pos": [980, 510],
+      "size": [190, 72],
+      "sources": [
+        { "path": "apps/api/src/catalog/tmdb-client.ts" },
+        { "path": "docs/tmdb-integration.md" }
+      ]
+    },
+    {
+      "id": "eas",
+      "type": "cloud",
+      "label": "EAS Build",
+      "sublabel": "Development, preview, production",
+      "tag": "RELEASE",
+      "pos": [240, 680],
+      "size": [190, 72],
+      "sources": [
+        { "path": "apps/mobile/eas.json" },
+        { "path": "docs/mobile-development-build.md" }
+      ]
+    },
+    {
+      "id": "play",
+      "type": "external",
+      "label": "Google Play",
+      "sublabel": "Internal testing Android",
+      "tag": "DISTRIBUTION",
+      "pos": [480, 680],
+      "size": [190, 72],
+      "sources": [{ "path": "docs/google-play-android-release.md" }]
+    }
+  ],
+  "connections": [
+    { "id": "user-to-mobile", "from": "user", "to": "mobile", "label": "interactua", "labelDy": -30, "variant": "emphasis" },
+    { "id": "mobile-to-api", "from": "mobile", "to": "api", "label": "Bearer HTTP", "labelDy": -30, "variant": "emphasis" },
+    { "id": "mobile-to-auth", "from": "mobile", "to": "auth", "label": "Google / Apple", "fromSide": "top", "toSide": "bottom", "variant": "security" },
+    { "id": "api-to-auth", "from": "api", "to": "auth", "label": "validar token", "fromSide": "top", "toSide": "bottom", "variant": "security" },
+    { "id": "api-to-domain", "from": "api", "to": "domain", "label": "Controller -> Service", "labelDy": -30 },
+    { "id": "domain-to-repositories", "from": "domain", "to": "repositories", "label": "Repository / Provider", "labelDy": -30 },
+    { "id": "repositories-to-postgres", "from": "repositories", "to": "postgres", "label": "SQL", "labelDy": -30, "variant": "emphasis" },
+    { "id": "domain-to-tmdb", "from": "domain", "to": "tmdb", "label": "catalogo / providers", "fromSide": "bottom", "toSide": "top" },
+    { "id": "eas-to-play", "from": "eas", "to": "play", "label": "APK / AAB", "variant": "dashed" },
+    { "id": "play-to-mobile", "from": "play", "to": "mobile", "label": "instalar / actualizar", "variant": "dashed", "fromSide": "top", "toSide": "bottom", "via": [[575, 620], [575, 430], [335, 430]] }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Responsabilidades",
+      "items": [
+        "Mobile: presentacion, navegacion y UI temporal",
+        "Backend: autorizacion, progreso, reglas y datos"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Identidad",
+      "items": [
+        "Supabase: identidad Google o Apple",
+        "API: usuario autenticado"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Ruta de release",
+      "items": [
+        "EAS: artefactos instalables",
+        "Play: distribucion Android interna"
+      ]
+    }
+  ]
+}

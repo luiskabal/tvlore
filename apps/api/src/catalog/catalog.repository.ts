@@ -75,6 +75,7 @@ export class CatalogRepository {
           select: {
             comment: true,
             favoriteCharacter: true,
+            favoriteCharacterRole: true,
             reaction: true,
             updatedAt: true,
           },
@@ -124,6 +125,7 @@ export class CatalogRepository {
           select: {
             comment: true,
             favoriteCharacter: true,
+            favoriteCharacterRole: true,
             reaction: true,
             updatedAt: true,
           },
@@ -305,6 +307,7 @@ export class CatalogRepository {
           select: {
             comment: true,
             favoriteCharacter: true,
+            favoriteCharacterRole: true,
             reaction: true,
             updatedAt: true,
           },
@@ -314,6 +317,7 @@ export class CatalogRepository {
         season: true,
         show: {
           select: {
+            genreNames: true,
             id: true,
             posterPath: true,
             title: true,

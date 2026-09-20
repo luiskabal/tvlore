@@ -1,10 +1,10 @@
 import { existsSync, readFileSync } from "node:fs";
 
-const envFile = "apps/mobile/.env";
+const envFile = ["apps/mobile/.env", "apps/mobile/.env.local"].find(existsSync) ?? "apps/mobile/.env";
 const redirectUrl = "tvlore:///auth/callback";
+let hasError = false;
 const env = parseEnvFile(envFile);
 const supabaseUrl = env.get("EXPO_PUBLIC_SUPABASE_URL");
-let hasError = false;
 
 if (!supabaseUrl) {
   fail(`${envFile} missing EXPO_PUBLIC_SUPABASE_URL`);

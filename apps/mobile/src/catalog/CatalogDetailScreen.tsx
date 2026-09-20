@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 
 import type { MediaType } from "../api/tvlore-api";
 import { useLibraryRevision } from "../library/library-refresh";
+import { settleCatalogDetailNavigation } from "./catalog-navigation";
 import { BackButton, Button, EmptyState, Screen, ScreenScroll } from "../ui";
 import { CatalogDetailContent, CatalogDetailSkeleton } from "./CatalogDetailContent";
 import { useCatalogDetail } from "./use-catalog-detail";
@@ -12,6 +13,13 @@ export default function CatalogDetailScreen({ mediaType }: { mediaType: MediaTyp
   const id = typeof params.id === "string" ? params.id : null;
   const libraryRevision = useLibraryRevision();
   const didMountRevisionRef = useRef(false);
+
+  useEffect(() => {
+    if (id) {
+      settleCatalogDetailNavigation(mediaType, id);
+    }
+  }, [id, mediaType]);
+
   const {
     preferenceAction,
     refresh,

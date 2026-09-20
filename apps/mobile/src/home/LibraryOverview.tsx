@@ -2,14 +2,16 @@ import { useEffect, useRef, useState } from "react";
 import { FlatList, Pressable, Text, View, type ListRenderItemInfo } from "react-native";
 
 import type {
+  ContinueWatchingShow,
   LibraryResponse,
   LibraryWatchlistItem,
   RecentlyWatchedItem,
 } from "../api/tvlore-api";
+import { getTmdbPosterUrl } from "../catalog/posters";
 import { getHistoryActionKey } from "../library/library-action-keys";
 import type { LibraryActionState } from "../library/use-library-actions";
 import type { LibraryChronologyState } from "../library/use-library-chronology";
-import { Button, EmptyState, Skeleton, StatCard, Surface } from "../ui";
+import { AppText, Button, EmptyState, PosterImage, Skeleton, StatCard, Surface } from "../ui";
 import {
   getEpisodeSeasonKey,
   getLibraryFeedItemKey,
@@ -316,6 +318,13 @@ export function LibraryOverview({
       keyExtractor={getLibraryFeedItemKey}
       ListHeaderComponent={(
         <View style={styles.libraryFeedHeader}>
+          {visibleLibrary.continueWatching[0] ? (
+            <ContinueWatchingCard
+              item={visibleLibrary.continueWatching[0]}
+              onOpenShowSeason={onOpenShowSeason}
+            />
+          ) : null}
+
           <View style={styles.summaryGrid}>
             {summaryStats.map((stat) => (
               <StatCard
@@ -344,6 +353,42 @@ export function LibraryOverview({
       showsVerticalScrollIndicator={false}
       style={styles.libraryListScroll}
     />
+  );
+}
+
+function ContinueWatchingCard({
+  item,
+  onOpenShowSeason,
+}: {
+  item: ContinueWatchingShow;
+  onOpenShowSeason: (showId: string, seasonNumber: number) => void;
+}) {
+  const progress = Math.max(0, Math.min(100, item.percentComplete));
+
+  return (
+    <Pressable
+      accessibilityLabel={`Continue watching ${item.title}`}
+      accessibilityRole="button"
+      onPress={() => onOpenShowSeason(item.id, item.nextEpisode.seasonNumber)}
+      style={({ pressed }) => [styles.continueCard, pressed ? styles.pressedListItem : null]}
+    >
+      <PosterImage
+        label="TV"
+        size="large"
+        uri={item.posterPath ? getTmdbPosterUrl(item.posterPath) : null}
+      />
+
+      <View style={styles.continueText}>
+        <AppText tone="accent" variant="caption">Continue Watching</AppText>
+        <AppText numberOfLines={2} style={styles.continueTitle} variant="section">{item.title}</AppText>
+        <AppText numberOfLines={1} tone="muted">
+          S{item.nextEpisode.seasonNumber} E{item.nextEpisode.episodeNumber} - {item.nextEpisode.title}
+        </AppText>
+        <View style={styles.continueProgressTrack}>
+          <View style={[styles.continueProgressFill, { width: `${progress}%` }]} />
+        </View>
+      </View>
+    </Pressable>
   );
 }
 

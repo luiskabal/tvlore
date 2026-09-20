@@ -3,31 +3,39 @@
     "name": "TVLore",
     "slug": "tvlore",
     "scheme": "tvlore",
-    "version": "1.0.0",
+    "version": "1.0.8",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+    "userInterfaceStyle": "dark",
     "plugins": [
-      "expo-apple-authentication"
+      "expo-apple-authentication",
+      "expo-font",
+      "expo-router",
+      "expo-secure-store",
+      "expo-web-browser",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#080b12"
+        }
+      ]
     ],
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#f7f4ee"
-    },
     "ios": {
       "bundleIdentifier": "com.luiskabal.tvlore",
       "supportsTablet": true,
-      "usesAppleSignIn": true
+      "usesAppleSignIn": true,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.luiskabal.tvlore",
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
-        "backgroundColor": "#f7f4ee"
+        "backgroundColor": "#080b12"
       },
-      "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": true
     },
     "experiments": {

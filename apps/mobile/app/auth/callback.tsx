@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { SafeAreaView, StyleSheet, Text } from "react-native";
 
 import { completeOAuthCallback, getSupabaseAccessToken } from "../../src/auth/supabase-auth";
+import { ui } from "../../src/ui";
 
 export default function AuthCallbackRoute() {
   const callbackUrl = ExpoLinking.useURL();
@@ -113,18 +114,18 @@ export default function AuthCallbackRoute() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#f7f4ee",
+    backgroundColor: ui.color.panelAlt,
     flex: 1,
     justifyContent: "center",
     padding: 32,
   },
   message: {
-    color: "#554e48",
+    color: ui.color.muted,
     fontSize: 18,
     marginTop: 12,
   },
   title: {
-    color: "#17110f",
+    color: ui.color.ink,
     fontSize: 44,
     fontWeight: "900",
   },

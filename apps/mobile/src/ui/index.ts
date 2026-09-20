@@ -1,6 +1,7 @@
 export * from "./AppText";
 export * from "./BackButton";
 export * from "./Badge";
+export * from "./BrandMark";
 export * from "./Button";
 export * from "./CalloutRow";
 export * from "./EmptyState";

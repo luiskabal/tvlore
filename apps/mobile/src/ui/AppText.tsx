@@ -21,12 +21,12 @@ const toneStyles: Record<AppTextTone, TextStyle> = {
 };
 
 const variantStyles: Record<AppTextVariant, TextStyle> = {
-  body: { fontSize: ui.type.body, lineHeight: 20 },
-  button: { fontSize: ui.type.button, fontWeight: "700" },
-  caption: { fontSize: ui.type.label, fontWeight: "800" },
-  section: { fontSize: ui.type.sectionTitle, fontWeight: "800" },
+  body: { fontSize: ui.type.body, lineHeight: 23 },
+  button: { fontSize: ui.type.button, fontWeight: "700", lineHeight: 21 },
+  caption: { fontSize: ui.type.label, fontWeight: "700", lineHeight: 16 },
+  section: { fontSize: ui.type.sectionTitle, fontWeight: "700", lineHeight: 28 },
   stat: { fontSize: ui.type.stat, fontWeight: "900" },
-  title: { fontSize: ui.type.rowTitle, fontWeight: "700" },
+  title: { fontSize: ui.type.rowTitle, fontWeight: "700", lineHeight: 23 },
 };
 
 export function AppText({

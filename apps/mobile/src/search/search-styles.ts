@@ -4,8 +4,8 @@ import { ui } from "../ui";
 
 export const styles = StyleSheet.create({
   activeFilterButton: {
-    backgroundColor: ui.color.ink,
-    borderColor: ui.color.ink,
+    backgroundColor: ui.colors.accent.surface,
+    borderColor: ui.colors.accent.border,
   },
   activeFilterText: {
     color: ui.color.white,
@@ -20,6 +20,60 @@ export const styles = StyleSheet.create({
   disabledButton: {
     opacity: 0.6,
   },
+  discoveryCountPill: {
+    alignItems: "center",
+    backgroundColor: ui.colors.accent.surface,
+    borderColor: ui.colors.accent.border,
+    borderRadius: ui.radius.pill,
+    borderWidth: 1,
+    minWidth: 34,
+    paddingHorizontal: ui.space.sm,
+    paddingVertical: 5,
+  },
+  discoveryPosterItem: {
+    alignItems: "center",
+    flex: 1,
+    gap: ui.space.xs,
+    minWidth: 0,
+  },
+  discoveryPosterRow: {
+    flexDirection: "row",
+    gap: ui.space.md,
+    justifyContent: "space-between",
+  },
+  discoveryPosterTitle: {
+    maxWidth: 82,
+    textAlign: "center",
+  },
+  discoveryRail: {
+    ...ui.shadow.card,
+    backgroundColor: ui.colors.surface.card,
+    borderColor: ui.colors.border.subtle,
+    borderRadius: ui.radius.md,
+    borderWidth: 1,
+    gap: ui.space.md,
+    padding: ui.space.md,
+  },
+  discoveryRailHeader: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: ui.space.md,
+  },
+  discoveryRailIcon: {
+    alignItems: "center",
+    backgroundColor: ui.colors.accent.surface,
+    borderColor: ui.colors.accent.border,
+    borderRadius: ui.radius.pill,
+    borderWidth: 1,
+    height: 40,
+    justifyContent: "center",
+    width: 40,
+  },
+  discoveryRailText: {
+    flex: 1,
+    gap: 2,
+    minWidth: 0,
+  },
   filterButton: {
     alignItems: "center",
     borderColor: ui.color.border,
@@ -33,7 +87,7 @@ export const styles = StyleSheet.create({
     gap: 8,
   },
   filterText: {
-    color: ui.color.ink,
+    color: ui.color.muted,
     fontSize: 14,
     fontWeight: "800",
   },
@@ -41,8 +95,8 @@ export const styles = StyleSheet.create({
     gap: 8,
   },
   input: {
-    backgroundColor: ui.color.white,
-    borderColor: ui.color.border,
+    backgroundColor: ui.colors.background.secondary,
+    borderColor: ui.colors.border.strong,
     borderRadius: ui.radius.md,
     borderWidth: 1,
     color: ui.color.ink,
@@ -63,8 +117,8 @@ export const styles = StyleSheet.create({
     zIndex: 1,
   },
   inlineRecommendationRow: {
-    backgroundColor: ui.color.accentSoft,
-    borderColor: "#b8ddcd",
+    backgroundColor: ui.colors.surface.cardElevated,
+    borderColor: ui.colors.accent.border,
     borderRadius: ui.radius.md,
     borderWidth: 1,
     flexDirection: "row",
@@ -73,6 +127,7 @@ export const styles = StyleSheet.create({
   },
   loadingStrip: {
     alignItems: "center",
+    backgroundColor: ui.colors.surface.card,
     borderColor: ui.color.border,
     borderRadius: ui.radius.md,
     borderWidth: 1,
@@ -92,8 +147,8 @@ export const styles = StyleSheet.create({
   },
   recommendationEntry: {
     alignItems: "center",
-    backgroundColor: ui.color.accentSoft,
-    borderColor: "#b8ddcd",
+    backgroundColor: ui.colors.surface.cardElevated,
+    borderColor: ui.colors.accent.border,
     borderRadius: ui.radius.md,
     borderWidth: 1,
     flexDirection: "row",
@@ -187,6 +242,7 @@ export const styles = StyleSheet.create({
     padding: 12,
   },
   statusPanel: {
+    backgroundColor: ui.colors.surface.card,
     borderColor: ui.color.border,
     borderRadius: ui.radius.md,
     borderWidth: 1,
@@ -194,12 +250,12 @@ export const styles = StyleSheet.create({
     padding: 16,
   },
   subtitle: {
-    fontSize: 17,
-    lineHeight: 24,
+    fontSize: ui.type.body,
+    lineHeight: 23,
   },
   title: {
-    fontSize: 42,
+    fontSize: ui.type.screenTitle,
     fontWeight: "800",
-    lineHeight: 50,
+    lineHeight: 36,
   },
 });

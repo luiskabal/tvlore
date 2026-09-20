@@ -21,15 +21,16 @@ export function Surface({ children, style, tone = "default" }: SurfaceProps) {
 
 const styles = StyleSheet.create({
   soft: {
-    backgroundColor: ui.color.accentSoft,
-    borderColor: "#b8ddcd",
+    backgroundColor: ui.colors.accent.surface,
+    borderColor: ui.colors.accent.border,
   },
   surface: {
-    backgroundColor: ui.color.panel,
-    borderColor: ui.color.border,
+    ...ui.shadow.card,
+    backgroundColor: ui.colors.surface.card,
+    borderColor: ui.colors.border.subtle,
     borderRadius: ui.radius.md,
     borderWidth: 1,
-    gap: ui.space.sm,
+    gap: ui.space.md,
     padding: ui.space.xl,
   },
 });

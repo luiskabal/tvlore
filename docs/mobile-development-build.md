@@ -6,9 +6,11 @@ TVLore uses a native URL scheme for Google OAuth:
 tvlore:///auth/callback
 ```
 
-Expo Go cannot reliably validate this flow because it does not own TVLore's
-native scheme. Use Expo Go for UI and backend smoke tests. Use a development
-build for Google OAuth and release-like Apple Sign-In testing.
+Expo Go does not own TVLore's native scheme. It generates a temporary
+`exp://.../--/auth/callback` URL instead. Use Expo Go for UI and backend smoke
+tests, and for local Google OAuth only when the current callback is allowed by
+Supabase. Use a development build for stable Google OAuth and release-like
+Apple Sign-In testing.
 
 ## Current Native IDs
 
@@ -27,9 +29,15 @@ Supabase Auth must allow:
 tvlore:///auth/callback
 ```
 
-The app also accepts the legacy `tvlore://auth/callback` callback shape, but
-new builds generate the triple-slash URL so Expo Router treats
-`/auth/callback` as the route path instead of treating `auth` as a URL host.
+When running in Expo Go, Expo generates a temporary callback such as
+`exp://192.168.1.29:8081/--/auth/callback`. The app accepts this callback for
+local testing, but its host changes with the development server and it should
+not replace the stable native callback above.
+
+The app also accepts the legacy `tvlore://auth/callback` callback shape and
+Expo Go's temporary callback shape. Native builds generate the triple-slash URL
+so Expo Router treats `/auth/callback` as the route path instead of treating
+`auth` as a URL host.
 
 ## Build With EAS
 

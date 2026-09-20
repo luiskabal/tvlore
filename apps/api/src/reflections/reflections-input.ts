@@ -1,8 +1,21 @@
 import { BadRequestException } from "@nestjs/common";
 
-import type { WatchReaction, WatchReflectionInput } from "./reflections.types";
+import type { FavoriteCharacterRole, WatchReaction, WatchReflectionInput } from "./reflections.types";
 
-const reactions: WatchReaction[] = ["loved", "liked", "mixed", "not_for_me"];
+const reactions: WatchReaction[] = [
+  "loved",
+  "liked",
+  "surprised",
+  "moved",
+  "tense",
+  "scared",
+  "amused",
+  "confused",
+  "disappointed",
+  "mixed",
+  "not_for_me",
+];
+const favoriteCharacterRoles: FavoriteCharacterRole[] = ["lead", "supporting", "ensemble", "other"];
 const maxFavoriteCharacterLength = 80;
 const maxCommentLength = 500;
 
@@ -22,12 +35,33 @@ export function parseWatchReflectionInput(body: unknown): WatchReflectionInput {
     throwValidation(`reaction must be one of: ${reactions.join(", ")}`);
   }
 
+  const comment = parseOptionalText(body.comment, "comment", maxCommentLength);
+  const favoriteCharacter = parseOptionalText(body.favoriteCharacter, "favoriteCharacter", maxFavoriteCharacterLength);
+  const favoriteCharacterRole = parseOptionalChoice(body.favoriteCharacterRole, "favoriteCharacterRole", favoriteCharacterRoles);
+
+  if (favoriteCharacterRole && !favoriteCharacter) {
+    throwValidation("favoriteCharacterRole requires favoriteCharacter");
+  }
+
   return {
-    comment: parseOptionalText(body.comment, "comment", maxCommentLength),
-    favoriteCharacter: parseOptionalText(body.favoriteCharacter, "favoriteCharacter", maxFavoriteCharacterLength),
+    comment,
+    favoriteCharacter,
+    favoriteCharacterRole,
     rating,
     reaction,
   };
+}
+
+function parseOptionalChoice<T extends string>(value: unknown, name: string, choices: readonly T[]): T | null {
+  if (value === undefined || value === null) {
+    return null;
+  }
+
+  if (typeof value !== "string" || !choices.includes(value as T)) {
+    throwValidation(`${name} must be one of: ${choices.join(", ")}`);
+  }
+
+  return value as T;
 }
 
 function parseOptionalText(value: unknown, name: string, maxLength: number) {

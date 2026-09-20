@@ -46,7 +46,7 @@ export function SegmentedControl<T extends string>({
               pressed ? styles.pressed : null,
             ]}
           >
-            <AppText tone={isSelected ? "inverse" : "default"} variant="caption">
+            <AppText tone={isSelected ? "default" : "muted"} variant="caption">
               {option.label}
             </AppText>
           </Pressable>
@@ -58,9 +58,9 @@ export function SegmentedControl<T extends string>({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: ui.color.panelAlt,
-    borderColor: ui.color.border,
-    borderRadius: ui.radius.md,
+    backgroundColor: ui.colors.background.secondary,
+    borderColor: ui.colors.border.subtle,
+    borderRadius: ui.radius.pill,
     borderWidth: 1,
     flexDirection: "row",
     gap: ui.space.xs,
@@ -71,7 +71,9 @@ const styles = StyleSheet.create({
   },
   option: {
     alignItems: "center",
-    borderRadius: ui.radius.sm,
+    borderColor: "transparent",
+    borderWidth: 1,
+    borderRadius: ui.radius.pill,
     flex: 1,
     justifyContent: "center",
     minHeight: 42,
@@ -81,6 +83,8 @@ const styles = StyleSheet.create({
     opacity: 0.72,
   },
   selected: {
-    backgroundColor: ui.color.ink,
+    backgroundColor: ui.colors.accent.surface,
+    borderColor: ui.colors.accent.border,
+    borderWidth: 1,
   },
 });

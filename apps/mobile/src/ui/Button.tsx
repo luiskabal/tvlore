@@ -65,10 +65,18 @@ export function Button({
 }
 
 const variantStyles: Record<ButtonVariant, ViewStyle> = {
-  danger: { backgroundColor: ui.color.danger },
-  outline: { backgroundColor: ui.color.panel, borderColor: ui.color.border, borderWidth: 1 },
-  primary: { backgroundColor: ui.color.accent },
-  secondary: { backgroundColor: ui.color.ink },
+  danger: { backgroundColor: ui.colors.status.danger },
+  outline: {
+    backgroundColor: ui.colors.surface.card,
+    borderColor: ui.colors.border.strong,
+    borderWidth: 1,
+  },
+  primary: { backgroundColor: ui.colors.accent.primary },
+  secondary: {
+    backgroundColor: ui.colors.surface.cardElevated,
+    borderColor: ui.colors.border.subtle,
+    borderWidth: 1,
+  },
 };
 
 const styles = StyleSheet.create({
@@ -76,6 +84,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: ui.radius.md,
     justifyContent: "center",
+    minHeight: 44,
   },
   content: {
     alignItems: "center",
@@ -86,7 +95,7 @@ const styles = StyleSheet.create({
   default: {
     alignSelf: "flex-start",
     minWidth: 120,
-    paddingHorizontal: ui.space.xxl,
+    paddingHorizontal: ui.space.xl,
     paddingVertical: ui.space.md,
   },
   disabled: {
@@ -98,6 +107,6 @@ const styles = StyleSheet.create({
   small: {
     minWidth: 68,
     paddingHorizontal: ui.space.md,
-    paddingVertical: 10,
+    paddingVertical: ui.space.sm,
   },
 });

@@ -7,17 +7,18 @@ import { styles } from "./catalog-detail-styles";
 export function CatalogDetailSkeleton({ mediaType }: { mediaType: MediaType }) {
   return (
     <View style={styles.detail}>
-      <View style={styles.hero}>
-        <Skeleton height={168} width={114} />
-        <View style={styles.skeletonHeroText}>
-          <View style={styles.heroHeaderRow}>
-            <View style={styles.heroTitleBlock}>
-              <Skeleton height={26} width={62} />
-              <Skeleton height={34} width="84%" />
-              <Skeleton height={14} width="54%" />
-            </View>
+      <View style={[styles.heroBackdrop, styles.heroBackdropFallback]}>
+        <View style={styles.heroContent}>
+          <View style={styles.skeletonHeroText}>
+            <View style={styles.heroHeaderRow}>
+              <View style={styles.heroTitleBlock}>
+                <Skeleton height={26} width={62} />
+                <Skeleton height={34} width="84%" />
+                <Skeleton height={14} width="54%" />
+              </View>
 
-            <QuickActionSkeleton />
+              <QuickActionSkeleton />
+            </View>
           </View>
         </View>
       </View>

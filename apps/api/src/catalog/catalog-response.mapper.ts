@@ -1,4 +1,5 @@
 import { toShowProgress, type ProgressEpisode } from "../progress";
+import type { FavoriteCharacterRole, WatchReaction } from "../reflections/reflections.types";
 import type {
   EpisodeDetailResponseDto,
   MovieDetailResponseDto,
@@ -13,6 +14,7 @@ import type {
 export function toShowDetailResponse(show: {
   backdropPath: string | null;
   firstAirDate: Date | null;
+  genreNames: string[];
   id: string;
   originalTitle: string | null;
   overview: string;
@@ -27,6 +29,7 @@ export function toShowDetailResponse(show: {
   return {
     backdropPath: show.backdropPath,
     firstAirDate: toDateString(show.firstAirDate),
+    genreNames: show.genreNames,
     id: show.id,
     inWatchlist: show.watchlistItems.length > 0,
     originalTitle: show.originalTitle,
@@ -43,6 +46,7 @@ export function toShowDetailResponse(show: {
 
 export function toMovieDetailResponse(movie: {
   backdropPath: string | null;
+  genreNames: string[];
   id: string;
   originalTitle: string | null;
   overview: string;
@@ -60,6 +64,7 @@ export function toMovieDetailResponse(movie: {
 
   return {
     backdropPath: movie.backdropPath,
+    genreNames: movie.genreNames,
     id: movie.id,
     inWatchlist: movie.watchlistItems.length > 0,
     lastWatchedAt: watch ? watch.watchedAt.toISOString() : null,
@@ -160,6 +165,7 @@ export function toEpisodeDetailResponse(episode: Parameters<typeof toEpisodeResp
     title: string;
   };
   show: {
+    genreNames: string[];
     id: string;
     posterPath: string | null;
     title: string;
@@ -167,6 +173,7 @@ export function toEpisodeDetailResponse(episode: Parameters<typeof toEpisodeResp
 }): EpisodeDetailResponseDto {
   return {
     ...toEpisodeResponse(episode),
+    genreNames: episode.show.genreNames,
     rating: episode.preferences[0]?.rating ?? null,
     reflection: toReflection(episode.reflections),
     seasonId: episode.season.id,
@@ -208,6 +215,7 @@ function toEpisodeResponse(episode: {
 type ReflectionRecord = {
   comment: string | null;
   favoriteCharacter: string | null;
+  favoriteCharacterRole: string | null;
   reaction: string;
   updatedAt: Date;
 };
@@ -219,7 +227,8 @@ function toReflection(reflections: ReflectionRecord[] | undefined) {
     ? {
         comment: reflection.comment,
         favoriteCharacter: reflection.favoriteCharacter,
-        reaction: reflection.reaction as "loved" | "liked" | "mixed" | "not_for_me",
+        favoriteCharacterRole: reflection.favoriteCharacterRole as FavoriteCharacterRole | null,
+        reaction: reflection.reaction as WatchReaction,
         updatedAt: reflection.updatedAt.toISOString(),
       }
     : null;

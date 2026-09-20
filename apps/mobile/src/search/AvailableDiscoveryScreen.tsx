@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
 
 import type { CatalogSearchResult, MediaType } from "../api/tvlore-api";
+import { openCatalogDetail } from "../catalog/catalog-navigation";
 import { AppText, BackButton, Button, EmptyState, MediaRowSkeleton, PageHeader, Screen, ScreenScroll, ui } from "../ui";
 import { SearchResultRow } from "./SearchResults";
 import { styles } from "./search-styles";
@@ -9,19 +10,20 @@ import { useAvailableDiscovery } from "./use-available-discovery";
 import { useCatalogSearch } from "./use-catalog-search";
 
 export default function AvailableDiscoveryScreen() {
-  const { resolveResult, resolveState } = useCatalogSearch();
+  const { cancelResolve, resolveResult, resolveState } = useCatalogSearch();
   const { available, availableState, retryAvailable } = useAvailableDiscovery();
 
   const openResult = async (result: CatalogSearchResult) => {
+    if (result.tvloreId) {
+      cancelResolve();
+      pushDetail(result.mediaType, result.tvloreId);
+      return;
+    }
+
     const item = await resolveResult(result);
 
     if (item) {
       pushDetail(item.mediaType, item.id);
-      return;
-    }
-
-    if (result.tvloreId) {
-      pushDetail(result.mediaType, result.tvloreId);
     }
   };
 
@@ -92,10 +94,5 @@ export default function AvailableDiscoveryScreen() {
 }
 
 function pushDetail(mediaType: MediaType, id: string) {
-  if (mediaType === "show") {
-    router.push({ pathname: "/shows/[id]", params: { id } });
-    return;
-  }
-
-  router.push({ pathname: "/movies/[id]", params: { id } });
+  openCatalogDetail(mediaType, id);
 }

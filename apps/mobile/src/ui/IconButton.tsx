@@ -65,14 +65,14 @@ const styles = StyleSheet.create({
     opacity: 0.56,
   },
   plain: {
-    backgroundColor: ui.color.panel,
-    borderColor: ui.color.border,
+    backgroundColor: ui.colors.surface.card,
+    borderColor: ui.colors.border.strong,
     borderWidth: 1,
   },
   pressed: {
     opacity: 0.72,
   },
   primary: {
-    backgroundColor: ui.color.accent,
+    backgroundColor: ui.colors.accent.primary,
   },
 });

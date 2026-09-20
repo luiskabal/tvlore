@@ -1,7 +1,8 @@
 import { router } from "expo-router";
 
 import type { TvlorePicksDiscoveryResponse } from "../api/tvlore-api";
-import { AppText, Button, CalloutRow, EmptyState, MediaRowSkeleton } from "../ui";
+import { Button, EmptyState, MediaRowSkeleton } from "../ui";
+import { SearchDiscoveryRail } from "./SearchDiscoveryRail";
 import type { TvlorePicksState } from "./use-tvlore-picks";
 
 type SearchPicksProps = {
@@ -37,15 +38,15 @@ export function SearchPicks({
   }
 
   return (
-    <CalloutRow
+    <SearchDiscoveryRail
       accessibilityLabel="Open TVLore Picks"
+      count={picks.items.length}
       detail="Curated titles worth opening."
       eyebrow="TVLore"
       icon="star-outline"
-      meta={<AppText tone="accent" variant="caption">{picks.items.length}</AppText>}
+      items={picks.items}
       onPress={() => router.push("/picks")}
       title="Picks de la casa"
-      tone="accent"
     />
   );
 }

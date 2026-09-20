@@ -41,7 +41,7 @@ This loop defines what counts as release-critical:
 | Search or discover | Search, picks, recommendations, available-to-stream, and popular rows open details. |
 | Open detail | Show, movie, season, and episode screens load from backend-owned IDs. |
 | Save or watch | Watchlist, movie watched, episode watched, season watched, and full-show watched mutate backend state. |
-| Rate and reflect | Star rating, emotion, favorite character, and optional comment save without blocking watched state. |
+| Rate and reflect | Star rating, contextual genres, expanded emotion, favorite character with role, and optional comment save without blocking watched state. |
 | Review Library | Library refreshes counts and rows without manual refresh after returning. |
 | Improve recommendations | Recommendation inputs come from explicit ratings and hydrated catalog data. |
 
@@ -135,14 +135,16 @@ Known gaps:
 | --- | --- | --- | --- | --- |
 | Show/movie watchlist | Ready | User saves titles for later and removes them. | `POST/DELETE /shows/:id/watchlist`, `POST/DELETE /movies/:id/watchlist`. | Detail and Library. |
 | Star ratings | Ready | User rates shows, movies, and episodes from 1 to 5 stars. | `PUT/DELETE /shows|movies|episodes/:id/preference`. | Detail/check-in. |
-| Post-watch check-in | Ready | After watched, user can rate, pick emotion, favorite character, comment. | `PUT /shows|movies|episodes/:id/reflection`. | Check-in route. |
-| Private reflection storage | Ready | Reflection is private product data for now. | Reflection tables per media type. | Check-in/detail state. |
+| Post-watch check-in | Ready | After watched, user can rate, see the title genres, pick a richer emotion, choose a favorite character and role, and add a comment. | `PUT /shows|movies|episodes/:id/reflection`. | Check-in route. |
+| Private reflection storage | Ready | Reflection stores structured signals for future personalization while remaining private product data. | Reflection tables per media type, joined to catalog genres. | Check-in/detail state. |
 | Swipe removal | Ready | User can remove saved/recent items with confirmable swipe actions. | Existing watchlist/tracking endpoints. | Library rows. |
 
 Known gaps:
 
 - Favorite-character community percentages are deferred until aggregate vote and
   privacy rules exist.
+- Profile generation is deferred until enough rated titles exist; the current
+  foundation captures rating, genres, reaction, favorite character, and role.
 - No public comments or social visibility in v1.0.
 
 ## 6. Library

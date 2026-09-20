@@ -12,7 +12,7 @@ type BadgeProps = {
 export function Badge({ label, style, tone = "accent" }: BadgeProps) {
   return (
     <View style={[styles.badge, tone === "neutral" ? styles.neutral : styles.accent, style]}>
-      <AppText tone={tone === "neutral" ? "default" : "accent"} variant="caption">
+      <AppText tone={tone === "neutral" ? "muted" : "accent"} variant="caption">
         {label}
       </AppText>
     </View>
@@ -21,15 +21,18 @@ export function Badge({ label, style, tone = "accent" }: BadgeProps) {
 
 const styles = StyleSheet.create({
   accent: {
-    backgroundColor: ui.color.accentSoft,
+    backgroundColor: ui.colors.accent.surface,
+    borderColor: ui.colors.accent.border,
   },
   badge: {
     alignSelf: "flex-start",
+    borderWidth: 1,
     borderRadius: ui.radius.pill,
     paddingHorizontal: ui.space.md,
     paddingVertical: 5,
   },
   neutral: {
-    backgroundColor: ui.color.panelAlt,
+    backgroundColor: ui.colors.surface.cardElevated,
+    borderColor: ui.colors.border.subtle,
   },
 });

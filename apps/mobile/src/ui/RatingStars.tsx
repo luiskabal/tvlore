@@ -45,7 +45,7 @@ export function RatingStars({
             ]}
           >
             <Ionicons
-              color={isFilled ? ui.color.accent : ui.color.muted2}
+              color={isFilled ? ui.colors.accent.bright : ui.color.muted2}
               name={icon}
               size={25}
             />
@@ -59,8 +59,8 @@ export function RatingStars({
 const styles = StyleSheet.create({
   button: {
     alignItems: "center",
-    backgroundColor: ui.color.panel,
-    borderColor: ui.color.border,
+    backgroundColor: ui.colors.surface.card,
+    borderColor: ui.colors.border.subtle,
     borderRadius: ui.radius.md,
     borderWidth: 1,
     height: 44,
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   selected: {
-    backgroundColor: ui.color.accentSoft,
-    borderColor: ui.color.accent,
+    backgroundColor: ui.colors.accent.surface,
+    borderColor: ui.colors.accent.border,
   },
 });

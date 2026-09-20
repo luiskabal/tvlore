@@ -50,12 +50,16 @@ tvlore:///auth/callback
 `tvlore:///auth/callback` is the app callback used by development builds and
 production builds. The triple slash keeps `/auth/callback` as the route path
 instead of treating `auth` as a URL host. The mobile callback parser still
-accepts the legacy `tvlore://auth/callback` shape for compatibility. OAuth
-should not be validated in Expo Go because Expo Go does not own the `tvlore://`
-scheme.
+accepts the legacy `tvlore://auth/callback` shape for compatibility. OAuth in
+Expo Go uses Expo's dynamic callback shape, such as
+`exp://192.168.1.29:8081/--/auth/callback`; the parser accepts that shape too.
+It changes with the local host and is only for development checks. The stable
+callback for development builds and production builds remains
+`tvlore:///auth/callback`.
 
-Expo Go can still be used for UI and backend smoke tests. Google OAuth requires a
-development build or production build.
+Expo Go can be used for UI, backend smoke tests, and OAuth only when its
+current `exp://` callback is allowed by Supabase. Google OAuth release testing
+should use a development build or production build so the callback is stable.
 
 Apple Sign-In is native iOS auth. TVLore enables the Expo
 `expo-apple-authentication` plugin and `ios.usesAppleSignIn` capability. Real
@@ -64,6 +68,19 @@ release testing requires the Apple Developer App ID for
 Apple provider must accept the app's Apple client ID / bundle ID. If a web
 Services ID is also configured, keep that Services ID first in Supabase's Apple
 Client IDs list and include the native app ID as an accepted audience.
+
+## Protected App Routes
+
+The mobile root layout checks the Supabase session before rendering product
+routes. While the session is loading, the app shows a session-loading state.
+When there is no valid session, `/login` is the only normal public route and
+the app redirects every product route to it. `/auth/callback` remains public so
+Google OAuth can finish and store the returned session.
+
+After Google or Apple sign-in completes, a signed-in user who is on `/login`
+or the callback route is redirected to `/library`. The bottom navigation stays
+hidden on both authentication routes. This guard protects navigation UX; the
+backend still validates the bearer token on every protected API request.
 
 ## Identity Model
 

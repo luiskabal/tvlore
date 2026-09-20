@@ -1,8 +1,8 @@
-import { router } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, FlatList, View, type ListRenderItemInfo } from "react-native";
 
 import type { CatalogSearchResult, MediaType } from "../api/tvlore-api";
+import { openCatalogDetail } from "../catalog/catalog-navigation";
 import { AppText, EmptyState, Screen, Surface, ui, useScreenContentStyle } from "../ui";
 import { SearchControls } from "./SearchControls";
 import { SearchAvailable } from "./SearchAvailable";
@@ -41,13 +41,14 @@ const discoveryItems: DiscoveryFeedItem[] = [
 export default function SearchScreen() {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<SearchFilter>("all");
-  const { loadMore, resolveResult, resolveState, runSearch, search } = useCatalogSearch();
+  const { cancelResolve, loadMore, resolveResult, resolveState, runSearch, search } = useCatalogSearch();
   const { picks, picksState, retryPicks } = useTvlorePicks();
   const { recommendations, recommendationsState, retryRecommendations } = useSearchRecommendations();
   const { available, availableState, retryAvailable } = useAvailableDiscovery();
   const { popular, popularState, retryPopular } = usePopularDiscovery();
   const contentStyle = useScreenContentStyle();
   const skipNextDebouncedSearchRef = useRef(false);
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasTypedQuery = query.trim().length > 0;
   const canSearch = canRunSearch(query);
   const isSearching = search.kind === "loading" || search.kind === "refreshing" || search.kind === "loadingMore";
@@ -72,6 +73,11 @@ export default function SearchScreen() {
   }, [available, canSearch, filter, hasTypedQuery, picks, popular, recommendations, searchResults]);
 
   useEffect(() => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+      searchTimeoutRef.current = null;
+    }
+
     if (skipNextDebouncedSearchRef.current) {
       skipNextDebouncedSearchRef.current = false;
       return;
@@ -82,14 +88,25 @@ export default function SearchScreen() {
       return;
     }
 
-    const timeout = setTimeout(() => {
+    searchTimeoutRef.current = setTimeout(() => {
+      searchTimeoutRef.current = null;
       void runSearch(query, filter);
     }, searchDebounceMs);
 
-    return () => clearTimeout(timeout);
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+        searchTimeoutRef.current = null;
+      }
+    };
   }, [canSearch, filter, query, runSearch]);
 
   const submitSearch = () => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+      searchTimeoutRef.current = null;
+    }
+
     void runSearch(query, filter);
   };
 
@@ -107,15 +124,16 @@ export default function SearchScreen() {
   };
 
   const openResult = async (result: CatalogSearchResult) => {
+    if (result.tvloreId) {
+      cancelResolve();
+      pushDetail(result.mediaType, result.tvloreId);
+      return;
+    }
+
     const item = await resolveResult(result);
 
     if (item) {
       pushDetail(item.mediaType, item.id);
-      return;
-    }
-
-    if (result.tvloreId) {
-      pushDetail(result.mediaType, result.tvloreId);
     }
   };
 
@@ -302,10 +320,5 @@ function SearchFooter({ search }: { search: SearchState }) {
 }
 
 function pushDetail(mediaType: MediaType, id: string) {
-  if (mediaType === "show") {
-    router.push({ pathname: "/shows/[id]", params: { id } });
-    return;
-  }
-
-  router.push({ pathname: "/movies/[id]", params: { id } });
+  openCatalogDetail(mediaType, id);
 }

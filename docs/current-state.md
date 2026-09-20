@@ -977,7 +977,7 @@ Current behavior:
 - Episode groups keep each season collapsible so long watched histories stay scannable; the show title opens show detail, the season label opens season detail, and the +/- control expands or collapses the group.
 - Library rows include compact poster thumbnails for quicker visual scanning.
 - Continue-watching rows open the next season, recently watched movies open movie detail, and recently watched episodes open episode detail.
-- Paths lists curated viewing orders such as Marvel Infinity Saga and Star Wars Skywalker Saga, plus personal paths created by the authenticated user.
+- Paths lists curated viewing orders for Marvel, Star Wars, Harry Potter, Middle-earth, The Hunger Games, Jurassic, X-Men, Terminator, Planet of the Apes, Alien, Fast & Furious, and Indiana Jones, plus personal paths created by the authenticated user.
 - Paths can create a personal list from TMDB import lines such as `movie,155`, pasted TMDB title URLs such as `https://www.themoviedb.org/tv/70523-dark`, or a TMDB Collection URL such as `https://www.themoviedb.org/collection/10-star-wars-collection`.
 - Path detail rows navigate by tapping the full row and resolve the selected item into TVLore identity only when needed.
 - Path detail can save all path titles into the user's watchlist through one backend-owned bulk action.
@@ -1073,6 +1073,7 @@ Product foundation:
 - Mobile can add/remove shows and movies from the watchlist through backend watchlist endpoints.
 - Mobile can rate shows, movies, and episodes through backend preference endpoints.
 - Mobile can save private post-watch reflections for shows, movies, and episodes through backend reflection endpoints.
+- Check-in reflections capture catalog genres, an expanded controlled reaction, and an optional favorite-character role for future personalization; profile generation is not implemented.
 - Mobile can remove watchlist/history rows immediately after swipe confirmation backed by existing backend watchlist and tracking endpoints.
 - Mobile can render library thumbnails from existing poster data without extra API calls.
 - Mobile can open a show season, hydrate episode IDs, and mark episodes watched/unwatched through backend tracking endpoints.

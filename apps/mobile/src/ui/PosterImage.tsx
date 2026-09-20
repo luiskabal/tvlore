@@ -38,12 +38,14 @@ const styles = StyleSheet.create({
   },
   placeholder: {
     alignItems: "center",
-    backgroundColor: ui.color.skeleton,
+    backgroundColor: ui.colors.background.elevated,
     borderRadius: ui.radius.sm,
+    borderColor: ui.colors.border.subtle,
+    borderWidth: 1,
     justifyContent: "center",
   },
   poster: {
-    backgroundColor: ui.color.skeleton,
+    backgroundColor: ui.colors.background.elevated,
     borderRadius: ui.radius.sm,
   },
   search: {

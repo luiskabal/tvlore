@@ -1,7 +1,8 @@
 import { router } from "expo-router";
 
 import type { AvailableDiscoveryResponse } from "../api/tvlore-api";
-import { AppText, Button, CalloutRow, EmptyState, MediaRowSkeleton } from "../ui";
+import { Button, EmptyState, MediaRowSkeleton } from "../ui";
+import { SearchDiscoveryRail } from "./SearchDiscoveryRail";
 import type { AvailableDiscoveryState } from "./use-available-discovery";
 
 type SearchAvailableProps = {
@@ -37,15 +38,15 @@ export function SearchAvailable({
   }
 
   return (
-    <CalloutRow
+    <SearchDiscoveryRail
       accessibilityLabel={`Open streamable titles in ${available.country}`}
+      count={available.items.length}
       detail="Highly rated titles with streaming availability."
       eyebrow={available.country}
       icon="play-circle-outline"
-      meta={<AppText tone="accent" variant="caption">{available.items.length}</AppText>}
+      items={available.items}
       onPress={() => router.push("/available")}
       title="Available to stream"
-      tone="accent"
     />
   );
 }

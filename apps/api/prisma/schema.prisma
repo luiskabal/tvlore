@@ -274,6 +274,7 @@ model ShowReflection {
   showId            String   @map("show_id") @db.Uuid
   reaction          String
   favoriteCharacter String?  @map("favorite_character")
+  favoriteCharacterRole String? @map("favorite_character_role")
   comment           String?
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @updatedAt @map("updated_at")
@@ -292,6 +293,7 @@ model MovieReflection {
   movieId           String   @map("movie_id") @db.Uuid
   reaction          String
   favoriteCharacter String?  @map("favorite_character")
+  favoriteCharacterRole String? @map("favorite_character_role")
   comment           String?
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @updatedAt @map("updated_at")
@@ -310,6 +312,7 @@ model EpisodeReflection {
   episodeId         String   @map("episode_id") @db.Uuid
   reaction          String
   favoriteCharacter String?  @map("favorite_character")
+  favoriteCharacterRole String? @map("favorite_character_role")
   comment           String?
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @updatedAt @map("updated_at")

@@ -15,6 +15,6 @@ export function Skeleton({ height, radius = ui.radius.md, style, width = "100%" 
 
 const styles = StyleSheet.create({
   block: {
-    backgroundColor: ui.color.skeleton,
+    backgroundColor: ui.colors.background.elevated,
   },
 });

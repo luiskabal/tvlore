@@ -39,6 +39,16 @@ export function useSeasonDetail(showId: string | null, seasonNumber: number | nu
   const [watchAction, setWatchAction] = useState<EpisodeWatchActionState>({ kind: "idle" });
   const episodeRequestIds = useRef(new Map<string, number>());
   const seasonRequestId = useRef(0);
+  const watchMutationInFlight = useRef(false);
+
+  const beginWatchMutation = useCallback(() => {
+    if (watchMutationInFlight.current) {
+      return false;
+    }
+
+    watchMutationInFlight.current = true;
+    return true;
+  }, []);
 
   const refresh = useCallback(async () => {
     if (!showId || seasonNumber === null) {
@@ -165,9 +175,15 @@ export function useSeasonDetail(showId: string | null, seasonNumber: number | nu
   }, [seasonNumber, showId, state]);
 
   const setEpisodeWatched = useCallback(async (episodeId: string, watched: boolean) => {
-    const previousEpisode = state.kind === "ready"
-      ? state.detail.episodes.find((episode) => episode.id === episodeId) ?? null
-      : null;
+    if (state.kind !== "ready") {
+      return;
+    }
+
+    if (!beginWatchMutation()) {
+      return;
+    }
+
+    const previousEpisode = state.detail.episodes.find((episode) => episode.id === episodeId) ?? null;
     const requestId = (episodeRequestIds.current.get(episodeId) ?? 0) + 1;
 
     episodeRequestIds.current.set(episodeId, requestId);
@@ -206,8 +222,10 @@ export function useSeasonDetail(showId: string | null, seasonNumber: number | nu
         kind: "error",
         message: error instanceof Error ? error.message : "Episode watch update failed",
       });
+    } finally {
+      watchMutationInFlight.current = false;
     }
-  }, [state]);
+  }, [beginWatchMutation, state]);
 
   const setSeasonWatched = useCallback(async (watched: boolean) => {
     if (state.kind !== "ready" || !showId || seasonNumber === null) {
@@ -219,6 +237,10 @@ export function useSeasonDetail(showId: string | null, seasonNumber: number | nu
     const watchedEpisodeCount = state.detail.episodePage.watchedCount;
 
     if (watched ? watchedEpisodeCount >= totalEpisodeCount : watchedEpisodeCount === 0) {
+      return;
+    }
+
+    if (!beginWatchMutation()) {
       return;
     }
 
@@ -267,8 +289,10 @@ export function useSeasonDetail(showId: string | null, seasonNumber: number | nu
         message: error instanceof Error ? error.message : "Season watch update failed",
         watched,
       });
+    } finally {
+      watchMutationInFlight.current = false;
     }
-  }, [seasonNumber, showId, state]);
+  }, [beginWatchMutation, seasonNumber, showId, state]);
 
   useEffect(() => {
     void refresh();

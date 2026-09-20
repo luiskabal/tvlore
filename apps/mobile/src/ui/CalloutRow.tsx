@@ -46,7 +46,7 @@ export function CalloutRow({
       ]}
     >
       <View style={[styles.iconFrame, isAccent ? styles.accentIconFrame : null]}>
-        <Ionicons color={isAccent ? ui.color.white : ui.color.accent} name={icon} size={22} />
+        <Ionicons color={isAccent ? ui.color.accent : ui.color.accent} name={icon} size={22} />
       </View>
 
       <View style={styles.text}>
@@ -65,15 +65,18 @@ export function CalloutRow({
 
 const styles = StyleSheet.create({
   accentIconFrame: {
-    backgroundColor: ui.color.accent,
+    backgroundColor: ui.colors.accent.surface,
+    borderColor: ui.colors.accent.border,
   },
   accentRow: {
-    backgroundColor: ui.color.accentSoft,
-    borderColor: "#b8ddcd",
+    backgroundColor: ui.colors.surface.cardElevated,
+    borderColor: ui.colors.accent.border,
   },
   iconFrame: {
     alignItems: "center",
-    backgroundColor: ui.color.panelAlt,
+    backgroundColor: ui.colors.background.elevated,
+    borderColor: ui.colors.border.subtle,
+    borderWidth: 1,
     borderRadius: ui.radius.pill,
     height: 44,
     justifyContent: "center",
@@ -89,8 +92,8 @@ const styles = StyleSheet.create({
   },
   row: {
     alignItems: "center",
-    backgroundColor: ui.color.panel,
-    borderColor: ui.color.border,
+    backgroundColor: ui.colors.surface.card,
+    borderColor: ui.colors.border.subtle,
     borderRadius: ui.radius.md,
     borderWidth: 1,
     flexDirection: "row",

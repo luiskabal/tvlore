@@ -50,13 +50,12 @@ export function TitleTrackingPanel({
   const isSaving = watchAction.kind === "loading";
   const pendingWatched = watchAction.kind === "loading" ? watchAction.watched : null;
   const isWatched = detail.mediaType === "movie" ? detail.watched : detail.progress.isComplete;
+  const showEditCheckIn = !isSaving && isWatched;
   const canUnwatch = detail.mediaType === "movie" ? detail.watched : detail.progress.watchedEpisodeCount > 0;
-  const canMarkWatched = detail.mediaType === "movie" || detail.progress.totalEpisodeCount > 0;
+  const canMarkWatched = detail.mediaType === "movie" || detail.seasons.some((season) => season.seasonNumber > 0 && season.episodeCount > 0);
   const markWatchedLabel = detail.mediaType === "movie"
     ? "Mark watched"
-    : detail.progress.watchedEpisodeCount > 0
-      ? "Mark all watched"
-      : "Mark watched";
+    : "Mark all watched";
   const markUnwatchedLabel = detail.mediaType === "movie" ? "Mark unwatched" : "Clear progress";
 
   const markWatched = async () => {
@@ -92,7 +91,7 @@ export function TitleTrackingPanel({
       </AppText>
 
       <View style={styles.trackingActionRow}>
-        {isWatched ? (
+        {showEditCheckIn ? (
           <Button
             disabled={isSaving}
             icon="create-outline"
@@ -103,9 +102,9 @@ export function TitleTrackingPanel({
         ) : (
           <Button
             disabled={isSaving || !canMarkWatched}
-            icon="checkmark"
-            isLoading={pendingWatched === true}
-            label={canMarkWatched ? markWatchedLabel : "Open a season first"}
+            icon={pendingWatched === false ? "eye-off-outline" : "checkmark"}
+            isLoading={isSaving}
+            label={pendingWatched === false ? markUnwatchedLabel : canMarkWatched ? markWatchedLabel : "No episodes available"}
             loadingLabel="Saving"
             onPress={() => {
               void markWatched();
@@ -114,7 +113,7 @@ export function TitleTrackingPanel({
           />
         )}
 
-        {canUnwatch ? (
+        {canUnwatch && !isSaving ? (
           <Button
             disabled={isSaving}
             icon="eye-off-outline"

@@ -45,9 +45,10 @@ This structure is a starting point, not a permanent requirement.
 
 ## Authentication Bootstrap
 
-Google OAuth must be tested in a development build or production build. Expo Go
-does not provide TVLore's native `tvlore://` URL scheme, so it cannot reliably
-receive the OAuth callback.
+Google OAuth release testing must use a development build or production build,
+which provide TVLore's stable `tvlore://` URL scheme. Expo Go generates a
+temporary `exp://.../--/auth/callback` URL and the mobile callback parser accepts
+it for local checks when Supabase allows the current host.
 
 On launch:
 

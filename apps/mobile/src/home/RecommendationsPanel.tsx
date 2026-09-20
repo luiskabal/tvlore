@@ -4,7 +4,7 @@ import { Pressable, Text, View } from "react-native";
 
 import type { RecommendationItem, RecommendationsResponse } from "../api/tvlore-api";
 import { getTmdbPosterUrl } from "../catalog/posters";
-import { AppText, PosterImage } from "../ui";
+import { AppText, PosterImage, ui } from "../ui";
 import { styles } from "./home-styles";
 import { getRecommendationDetail } from "./recommendation-detail";
 
@@ -57,7 +57,7 @@ function RecommendationHeader({ itemCount }: { itemCount: number }) {
   return (
     <View style={styles.recommendationHeader}>
       <View style={styles.recommendationIconFrame}>
-        <Ionicons color="#ffffff" name={"sparkles-outline" satisfies IconName} size={24} />
+        <Ionicons color={ui.color.white} name={"sparkles-outline" satisfies IconName} size={24} />
       </View>
 
       <View style={styles.recommendationHeaderText}>
@@ -114,7 +114,7 @@ function RecommendationRow({
       <View style={styles.recommendationScorePill}>
         <AppText tone="accent" variant="caption">{item.tvloreScore}</AppText>
       </View>
-      <Ionicons color="#5f564d" name={"chevron-forward" satisfies IconName} size={20} />
+      <Ionicons color={ui.color.muted} name={"chevron-forward" satisfies IconName} size={20} />
     </Pressable>
   );
 }
